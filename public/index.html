@@ -75,24 +75,69 @@ font-weight:300;opacity:0;animation:fadeUp .9s var(--ease) .5s forwards}
 .about p{color:var(--muted);font-weight:300;line-height:1.9;font-size:.95rem}
 .about p+p{margin-top:1.2rem}
 
-/* PROPERTIES */
+/* PROPERTIES - EXPLORE */
 .properties{padding:clamp(5rem,10vh,8rem) 0;background:var(--bg2);margin:0 calc(-50vw + 50%);padding-left:calc(50vw - 50%);padding-right:calc(50vw - 50%)}
 .properties .wrap{max-width:1200px;margin:0 auto;padding:0 clamp(1.5rem,4vw,3rem)}
 .section-header{text-align:center;margin-bottom:clamp(3rem,6vh,5rem)}
 .section-label{font-size:.72rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
 .section-title{font-family:var(--serif);font-weight:300;font-size:clamp(2rem,3.5vw,3rem);line-height:1.15}
-.prop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
-.prop-card{background:var(--bg);padding:2.5rem 2rem;position:relative;overflow:hidden;transition:transform .4s var(--ease),box-shadow .4s var(--ease);cursor:pointer}
-.prop-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px -20px rgba(30,32,25,.12)}
-.prop-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
-.prop-card:hover::before{transform:scaleX(1)}
-.prop-icon{width:48px;height:48px;margin-bottom:1.8rem;position:relative}
-.prop-icon svg{width:100%;height:100%}
-.prop-card h3{font-family:var(--serif);font-weight:400;font-size:1.35rem;margin-bottom:.8rem;letter-spacing:.01em}
-.prop-card p{font-size:.85rem;color:var(--muted);line-height:1.7;font-weight:300}
-.prop-card .arrow{position:absolute;bottom:2rem;right:2rem;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
-display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease)}
-.prop-card:hover .arrow{border-color:var(--accent);background:var(--accent);color:#fff}
+.section-subtitle{color:var(--muted);font-weight:300;font-size:.95rem;margin-top:.8rem;max-width:48ch;margin-left:auto;margin-right:auto}
+
+/* LISTING CARDS */
+.listings{display:flex;flex-direction:column;gap:4rem}
+.listing-card{background:var(--bg);overflow:hidden;transition:box-shadow .5s var(--ease);position:relative}
+.listing-card:hover{box-shadow:0 24px 80px -20px rgba(30,32,25,.1)}
+.listing-inner{display:grid;grid-template-columns:1fr 1fr;min-height:420px}
+.listing-card:nth-child(even) .listing-inner{direction:rtl}
+.listing-card:nth-child(even) .listing-inner > *{direction:ltr}
+
+/* PHOTO */
+.listing-photo{position:relative;overflow:hidden;min-height:420px}
+.listing-photo img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.listing-card:hover .listing-photo img{transform:scale(1.03)}
+.listing-badge{position:absolute;top:1.2rem;left:1.2rem;background:rgba(44,53,39,.88);backdrop-filter:blur(12px);
+color:#fff;padding:.4rem 1rem;font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+display:flex;align-items:center;gap:.4rem;z-index:2}
+.listing-badge svg{width:13px;height:13px}
+
+/* INFO */
+.listing-info{padding:clamp(2rem,3vw,3rem);display:flex;flex-direction:column}
+.listing-location{font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem;
+display:flex;align-items:center;gap:.5rem}
+.listing-location svg{width:12px;height:12px;color:var(--accent)}
+.listing-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.3rem,2vw,1.7rem);line-height:1.25;margin-bottom:1rem}
+.listing-meta{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.2rem}
+.listing-meta span{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.3rem}
+.listing-meta span svg{width:14px;height:14px;opacity:.5}
+.meta-divider{width:1px;height:12px;background:var(--border);align-self:center}
+.listing-rating{display:flex;align-items:center;gap:.4rem;font-size:.82rem;margin-bottom:1.5rem}
+.listing-rating svg{width:14px;height:14px;color:var(--accent);fill:var(--accent)}
+.listing-rating strong{font-weight:600;color:var(--text)}
+.listing-rating span{color:var(--muted);font-weight:300}
+
+/* AMENITIES */
+.amenities-section{flex:1}
+.amenities-label{font-size:.7rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem}
+.amenities-preview{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem}
+.amenity-tag{padding:.28rem .7rem;background:var(--bg2);font-size:.72rem;color:var(--muted);font-weight:400;
+border:1px solid transparent;transition:all .2s}
+.amenity-tag.highlight{color:var(--text);font-weight:500;background:rgba(180,155,110,.1);border-color:rgba(180,155,110,.2)}
+.amenities-full{display:none;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem;max-height:300px;overflow-y:auto;padding-right:.5rem}
+.amenities-full.open{display:flex}
+.amenities-full::-webkit-scrollbar{width:3px}
+.amenities-full::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.show-amenities{font-size:.75rem;color:var(--accent);font-weight:500;cursor:pointer;transition:color .2s;
+display:inline-flex;align-items:center;gap:.3rem;border:none;background:none;padding:0}
+.show-amenities:hover{color:var(--accent2)}
+.show-amenities svg{width:12px;height:12px;transition:transform .2s}
+.show-amenities.open svg{transform:rotate(180deg)}
+
+/* BOOK BUTTON */
+.listing-actions{margin-top:auto;padding-top:1.5rem}
+.book-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.75rem 1.8rem;background:var(--dark2);color:var(--light);
+font-size:.78rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:all .3s var(--ease);border:none;cursor:pointer}
+.book-btn:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px -8px rgba(180,155,110,.4)}
+.book-btn svg{width:14px;height:14px}
 
 /* PILLARS */
 .pillars{padding:clamp(5rem,10vh,8rem) 0}
@@ -131,16 +176,18 @@ footer{padding:3rem 0;border-top:1px solid var(--border)}
 
 /* RESPONSIVE */
 @media(max-width:900px){
-.prop-grid{grid-template-columns:1fr 1fr}
+.listing-inner{grid-template-columns:1fr!important}
+.listing-card:nth-child(even) .listing-inner{direction:ltr}
+.listing-photo{min-height:280px}
 .pillars-grid{grid-template-columns:1fr}
 .about-grid{grid-template-columns:1fr}
 .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.5rem}
 }
 @media(max-width:600px){
-.prop-grid{grid-template-columns:1fr}
 .nav-links a:not(.nav-cta){display:none}
 .footer-inner{flex-direction:column;gap:1.5rem;text-align:center}
 .footer-links{flex-wrap:wrap;justify-content:center}
+.listing-photo{min-height:220px}
 }
 </style>
 </head>
@@ -176,10 +223,10 @@ footer{padding:3rem 0;border-top:1px solid var(--border)}
 <section class="stats">
 <div class="wrap">
 <div class="stats-grid reveal">
-<div><div class="stat-num">50+</div><div class="stat-label">Properties</div></div>
-<div><div class="stat-num">12</div><div class="stat-label">Destinations</div></div>
+<div><div class="stat-num">6</div><div class="stat-label">Properties</div></div>
+<div><div class="stat-num">3</div><div class="stat-label">Cities</div></div>
 <div><div class="stat-num">4.9</div><div class="stat-label">Guest Rating</div></div>
-<div><div class="stat-num">2K+</div><div class="stat-label">Happy Guests</div></div>
+<div><div class="stat-num">100+</div><div class="stat-label">Happy Guests</div></div>
 </div>
 </div>
 </section>
@@ -192,46 +239,327 @@ footer{padding:3rem 0;border-top:1px solid var(--border)}
 <h2>We believe every stay should feel like coming home &mdash; just a more beautiful one.</h2>
 </div>
 <div>
-<p>Regent curates a portfolio of exceptional short-term rental properties, from sun-drenched coastal villas to sleek city apartments. Each property is hand-selected for its character, comfort, and location.</p>
+<p>Regent curates a portfolio of exceptional short-term rental properties across the Dallas-Fort Worth metroplex, from lakefront designer suites to sprawling entertainment villas. Each property is hand-selected for its character, comfort, and location.</p>
 <p>We handle everything &mdash; professional cleaning, luxury amenities, 24/7 guest support &mdash; so you can simply arrive and exhale.</p>
 </div>
 </div>
 </div>
 </section>
 
+<!-- EXPLORE PROPERTIES -->
 <section class="properties" id="properties">
 <div class="wrap">
 <div class="section-header reveal">
-<div class="section-label">Our Collection</div>
-<div class="section-title">Properties for every occasion</div>
+<div class="section-label">Explore Our Collection</div>
+<div class="section-title">Handpicked properties, unforgettable stays</div>
+<p class="section-subtitle">From lakefront suites to entertainment villas, each Regent property is designed for elevated living.</p>
 </div>
-<div class="prop-grid">
-<div class="prop-card reveal">
-<div class="prop-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="4" y="20" width="40" height="22" rx="1"/><path d="M14 20V10a10 10 0 0 1 20 0v10"/><path d="M4 30h40M16 42v-8h16v8"/></svg></div>
-<h3>Luxury Villas</h3>
-<p>Private estates with pools, gardens, and panoramic views. Space to breathe, room to gather.</p>
-<div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+<div class="listings">
+
+<!-- LISTING 1: Cozy Designer Suite -->
+<div class="listing-card reveal">
+<div class="listing-inner">
+<div class="listing-photo">
+<img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/fd9864bd-5a7f-4a14-997d-ca799df2850f.png?im_w=720" alt="Cozy Designer Suite" loading="lazy">
+<div class="listing-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 4.89</div>
 </div>
-<div class="prop-card reveal">
-<div class="prop-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="6" y="6" width="36" height="36" rx="2"/><path d="M6 18h36M6 30h36M18 6v36M30 6v36"/></svg></div>
-<h3>City Apartments</h3>
-<p>Penthouse suites and designer flats in the heart of the city. Walk to everything worth seeing.</p>
-<div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+<div class="listing-info">
+<div class="listing-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Irving, Texas</div>
+<h3 class="listing-title">Cozy Designer Suite | Gym &amp; Pool | DART Access</h3>
+<div class="listing-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 3 guests</span>
+<div class="meta-divider"></div>
+<span>1 bed</span>
+<div class="meta-divider"></div>
+<span>1 bath</span>
 </div>
-<div class="prop-card reveal">
-<div class="prop-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 40c4-2 8-12 16-12s10 8 16 8 6-4 8-6"/><circle cx="36" cy="12" r="5"/><path d="M4 40h40"/></svg></div>
-<h3>Coastal Retreats</h3>
-<p>Beachfront homes and seaside escapes. Fall asleep to the sound of waves.</p>
-<div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+<div class="listing-rating">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<strong>4.89</strong>
+<span>(9 reviews)</span>
 </div>
-<div class="prop-card reveal">
-<div class="prop-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M24 4L4 28h40L24 4z"/><path d="M16 20L8 36h32l-8-16"/><path d="M4 40h40"/></svg></div>
-<h3>Mountain Lodges</h3>
-<p>Timber-framed retreats surrounded by peaks and pines. Fireplaces, hot tubs, and crisp mountain air.</p>
-<div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+<div class="amenities-section">
+<div class="amenities-label">Key Amenities</div>
+<div class="amenities-preview">
+<span class="amenity-tag highlight">Lake Access</span>
+<span class="amenity-tag highlight">Pool</span>
+<span class="amenity-tag highlight">Gym</span>
+<span class="amenity-tag highlight">Kitchen</span>
+<span class="amenity-tag highlight">Wifi</span>
+<span class="amenity-tag highlight">Free Parking</span>
+<span class="amenity-tag highlight">Self Check-in</span>
+<span class="amenity-tag">Workspace</span>
+</div>
+<div class="amenities-full">
+<span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Children's Playroom</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Mini Fridge</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Single Level</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Lockbox</span>
+</div>
+<button class="show-amenities" onclick="toggleAmenities(this)">
+Show all 69 amenities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+</div>
+<div class="listing-actions">
+<a href="https://www.airbnb.com/rooms/1656911479326581139" target="_blank" rel="noopener" class="book-btn">
+View on Airbnb <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+</a>
 </div>
 </div>
 </div>
+</div>
+
+<!-- LISTING 2: Designer Game Suite -->
+<div class="listing-card reveal">
+<div class="listing-inner">
+<div class="listing-photo">
+<img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/80e3dcf4-ac70-4765-a5c8-f9c08d908cb4.png?im_w=720" alt="Designer Game Suite" loading="lazy">
+<div class="listing-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> New</div>
+</div>
+<div class="listing-info">
+<div class="listing-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Irving, Texas</div>
+<h3 class="listing-title">Designer Game Suite &bull; Resort Amenities &bull; DART Rail</h3>
+<div class="listing-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 3 guests</span>
+<div class="meta-divider"></div>
+<span>1 bed</span>
+<div class="meta-divider"></div>
+<span>1 bath</span>
+</div>
+<div class="listing-rating">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<strong>New</strong>
+<span>(2 reviews)</span>
+</div>
+<div class="amenities-section">
+<div class="amenities-label">Key Amenities</div>
+<div class="amenities-preview">
+<span class="amenity-tag highlight">Lake Access</span>
+<span class="amenity-tag highlight">Pool</span>
+<span class="amenity-tag highlight">Gym</span>
+<span class="amenity-tag highlight">Kitchen</span>
+<span class="amenity-tag highlight">Wifi</span>
+<span class="amenity-tag highlight">Free Parking</span>
+<span class="amenity-tag highlight">Pets Allowed</span>
+<span class="amenity-tag">Workspace</span>
+</div>
+<div class="amenities-full">
+<span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">Ethernet</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Mini Golf</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Security Cameras</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Smart Lock</span><span class="amenity-tag">Long Term Stays</span>
+</div>
+<button class="show-amenities" onclick="toggleAmenities(this)">
+Show all 70 amenities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+</div>
+<div class="listing-actions">
+<a href="https://www.airbnb.com/rooms/1691507762565991335" target="_blank" rel="noopener" class="book-btn">
+View on Airbnb <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- LISTING 3: Gorgeous Luxury Lake View Suite -->
+<div class="listing-card reveal">
+<div class="listing-inner">
+<div class="listing-photo">
+<img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/1a729f61-a2e8-4a71-b77f-c8d0711ee30e.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy">
+<div class="listing-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 4.94 Guest Favorite</div>
+</div>
+<div class="listing-info">
+<div class="listing-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Irving, Texas</div>
+<h3 class="listing-title">Gorgeous Luxury Lake View Suite | Gym &amp; Pool</h3>
+<div class="listing-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 3 guests</span>
+<div class="meta-divider"></div>
+<span>1 bed</span>
+<div class="meta-divider"></div>
+<span>1 bath</span>
+</div>
+<div class="listing-rating">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<strong>4.94</strong>
+<span>(33 reviews) &middot; Guest Favorite</span>
+</div>
+<div class="amenities-section">
+<div class="amenities-label">Key Amenities</div>
+<div class="amenities-preview">
+<span class="amenity-tag highlight">Lake View</span>
+<span class="amenity-tag highlight">Pool</span>
+<span class="amenity-tag highlight">Gym</span>
+<span class="amenity-tag highlight">Kitchen</span>
+<span class="amenity-tag highlight">Wifi</span>
+<span class="amenity-tag highlight">Free Parking</span>
+<span class="amenity-tag highlight">Lake Access</span>
+<span class="amenity-tag">Workspace</span>
+</div>
+<div class="amenities-full">
+<span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Children's Playroom</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Mini Fridge</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Single Level</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Lockbox</span>
+</div>
+<button class="show-amenities" onclick="toggleAmenities(this)">
+Show all 68 amenities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+</div>
+<div class="listing-actions">
+<a href="https://www.airbnb.com/rooms/1579365691674889946" target="_blank" rel="noopener" class="book-btn">
+View on Airbnb <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- LISTING 4: Luxury Executive Living -->
+<div class="listing-card reveal">
+<div class="listing-inner">
+<div class="listing-photo">
+<img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/a818f74a-be97-4f4a-86df-b8198233aefd.png?im_w=720" alt="Luxury Executive Living" loading="lazy">
+<div class="listing-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 4.92</div>
+</div>
+<div class="listing-info">
+<div class="listing-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Richardson, Texas</div>
+<h3 class="listing-title">Luxury Executive Living | DART Rail | Workspace</h3>
+<div class="listing-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 5 guests</span>
+<div class="meta-divider"></div>
+<span>1 bed</span>
+<div class="meta-divider"></div>
+<span>1 bath</span>
+</div>
+<div class="listing-rating">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<strong>4.92</strong>
+<span>(25 reviews)</span>
+</div>
+<div class="amenities-section">
+<div class="amenities-label">Key Amenities</div>
+<div class="amenities-preview">
+<span class="amenity-tag highlight">Pool</span>
+<span class="amenity-tag highlight">Gym</span>
+<span class="amenity-tag highlight">Kitchen</span>
+<span class="amenity-tag highlight">Wifi</span>
+<span class="amenity-tag highlight">Free Parking</span>
+<span class="amenity-tag highlight">EV Charger</span>
+<span class="amenity-tag highlight">Arcade Games</span>
+<span class="amenity-tag">Fire Pit</span>
+</div>
+<div class="amenities-full">
+<span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Cleaning Products</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">Ethernet</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Ping Pong Table</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Indoor Fireplace</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Dedicated Workspace</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Hot Water Kettle</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Furniture</span><span class="amenity-tag">Outdoor Dining Area</span><span class="amenity-tag">Shared BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Smart Lock</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span>
+</div>
+<button class="show-amenities" onclick="toggleAmenities(this)">
+Show all 72 amenities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+</div>
+<div class="listing-actions">
+<a href="https://www.airbnb.com/rooms/1622247533469388804" target="_blank" rel="noopener" class="book-btn">
+View on Airbnb <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- LISTING 5: Regent Villa -->
+<div class="listing-card reveal">
+<div class="listing-inner">
+<div class="listing-photo">
+<img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=720" alt="Regent Villa" loading="lazy">
+<div class="listing-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> New &middot; Villa</div>
+</div>
+<div class="listing-info">
+<div class="listing-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Plano, Texas</div>
+<h3 class="listing-title">Regent Villa | Theatre | Hot Tub | Game Room | BBQ</h3>
+<div class="listing-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 14 guests</span>
+<div class="meta-divider"></div>
+<span>3 bedrooms</span>
+<div class="meta-divider"></div>
+<span>4 beds</span>
+<div class="meta-divider"></div>
+<span>3.5 baths</span>
+</div>
+<div class="listing-rating">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<strong>New Listing</strong>
+<span>&middot; Entire Home</span>
+</div>
+<div class="amenities-section">
+<div class="amenities-label">Key Amenities</div>
+<div class="amenities-preview">
+<span class="amenity-tag highlight">Hot Tub</span>
+<span class="amenity-tag highlight">BBQ Grill</span>
+<span class="amenity-tag highlight">Kitchen</span>
+<span class="amenity-tag highlight">Wifi</span>
+<span class="amenity-tag highlight">Piano</span>
+<span class="amenity-tag highlight">Mini Golf</span>
+<span class="amenity-tag highlight">Sound System</span>
+<span class="amenity-tag">Pets Allowed</span>
+</div>
+<div class="amenities-full">
+<span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Cleaning Products</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Drying Rack</span><span class="amenity-tag">Mosquito Net</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">Ethernet</span><span class="amenity-tag">TV</span><span class="amenity-tag">Books &amp; Reading Material</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Children's Books &amp; Toys</span><span class="amenity-tag">Children's Dinnerware</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">Children's Playroom</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Indoor Fireplace</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Exterior Security Cameras</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Dedicated Workspace</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Private Patio / Balcony</span><span class="amenity-tag">Outdoor Furniture</span><span class="amenity-tag">Outdoor Dining Area</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Cleaning Available</span>
+</div>
+<button class="show-amenities" onclick="toggleAmenities(this)">
+Show all 71 amenities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+</div>
+<div class="listing-actions">
+<a href="https://www.airbnb.com/rooms/1711340298974810369" target="_blank" rel="noopener" class="book-btn">
+View on Airbnb <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- LISTING 6: Stunning Lake Views -->
+<div class="listing-card reveal">
+<div class="listing-inner">
+<div class="listing-photo">
+<img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy">
+<div class="listing-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 4.84</div>
+</div>
+<div class="listing-info">
+<div class="listing-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Irving, Texas</div>
+<h3 class="listing-title">Stunning Lake Views | DART Train | Gym &amp; Pool</h3>
+<div class="listing-meta">
+<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 3 guests</span>
+<div class="meta-divider"></div>
+<span>1 bed</span>
+<div class="meta-divider"></div>
+<span>1 bath</span>
+</div>
+<div class="listing-rating">
+<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<strong>4.84</strong>
+<span>(25 reviews)</span>
+</div>
+<div class="amenities-section">
+<div class="amenities-label">Key Amenities</div>
+<div class="amenities-preview">
+<span class="amenity-tag highlight">Lake View</span>
+<span class="amenity-tag highlight">Waterfront</span>
+<span class="amenity-tag highlight">Pool</span>
+<span class="amenity-tag highlight">Gym</span>
+<span class="amenity-tag highlight">Kitchen</span>
+<span class="amenity-tag highlight">Wifi</span>
+<span class="amenity-tag highlight">Free Parking</span>
+<span class="amenity-tag">Workspace</span>
+</div>
+<div class="amenities-full">
+<span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Cleaning Products</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer (In Unit)</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Drying Rack</span><span class="amenity-tag">Walk-in Closet</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Dedicated Workspace</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Lake Access</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Lockbox</span>
+</div>
+<button class="show-amenities" onclick="toggleAmenities(this)">
+Show all 66 amenities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+</button>
+</div>
+<div class="listing-actions">
+<a href="https://www.airbnb.com/rooms/862596563097784023" target="_blank" rel="noopener" class="book-btn">
+View on Airbnb <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- /listings -->
+</div><!-- /wrap -->
 </section>
 
 <section class="pillars" id="experience">
@@ -293,8 +621,22 @@ window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scr
 // Scroll reveal
 const obs=new IntersectionObserver((entries)=>{
 entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})
-},{threshold:.15,rootMargin:'0px 0px -40px 0px'});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Toggle amenities
+function toggleAmenities(btn){
+const full=btn.previousElementSibling;
+const isOpen=full.classList.toggle('open');
+btn.classList.toggle('open',isOpen);
+btn.childNodes[0].textContent=isOpen?'Show less ':'Show all '+btn.dataset.count+' amenities ';
+}
+// Set counts
+document.querySelectorAll('.show-amenities').forEach(btn=>{
+const text=btn.textContent.trim();
+const match=text.match(/Show all (\d+)/);
+if(match) btn.dataset.count=match[1];
+});
 </script>
 </body>
 </html>
