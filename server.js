@@ -50,6 +50,11 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
+// Route /reward to reward.html
+app.get('/reward', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'reward.html'));
+});
+
 // ── PUBLIC ──
 app.post('/api/submit', upload.single('proof'), (req, res) => {
   try {
@@ -101,7 +106,7 @@ app.get('/api/admin/stats', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n  MAISON Review Portal`);
+  console.log(`\n  Regent Review Portal`);
   console.log(`  Local:  http://localhost:${PORT}`);
   console.log(`  Admin:  http://localhost:${PORT}/admin.html\n`);
 });
