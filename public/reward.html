@@ -4,538 +4,239 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Regent — Claim Your Reward</title>
-<meta name="description" content="Loved your stay at a Regent property? Leave a review, send your proof, and we'll thank you with a $5 gift card.">
+<meta name="description" content="Loved your stay at a Regent property? Leave a review, share your proof, and we'll send you a $5 gift card.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  /* Warm editorial palette — paper, clay, sage */
-  --paper:#F6F1E8;        /* base warm ivory */
-  --paper-2:#FCF9F3;      /* lifted card */
-  --paper-3:#EFE7D8;      /* tonal panel */
-  --line:#E4D9C6;         /* hairline */
-  --line-2:#D8CBB4;
-  --ink:#26211C;          /* espresso text */
-  --ink-2:#6E6359;        /* secondary */
-  --ink-3:#A89C8C;        /* faint */
-  --clay:#B5562F;         /* terracotta accent */
-  --clay-2:#9C451F;       /* deep clay */
-  --clay-soft:#E9D6C8;    /* clay tint bg */
-  --sage:#74815B;         /* olive sage */
-  --sage-soft:#DEE2CF;
-  --gold:#B4894C;         /* stars */
-  --shadow:30 24 16;      /* warm shadow rgb base */
-  --serif:'Fraunces',Georgia,'Times New Roman',serif;
-  --sans:'Hanken Grotesk',system-ui,sans-serif;
-  --ease:cubic-bezier(.22,1,.36,1);
+--bg:#F6F3EE;--bg2:#EDE9E0;--dark:#1E2019;--dark2:#2C3527;
+--text:#1E2019;--muted:#8A8278;--accent:#B49B6E;--accent2:#9A8459;
+--light:#F6F3EE;--border:#DDD7CB;
+--serif:'Cormorant Garamond',Georgia,serif;
+--sans:'Karla',system-ui,sans-serif;
+--ease:cubic-bezier(.22,1,.36,1);
 }
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-weight:400;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(ellipse 70% 55% at 78% -8%,rgba(181,86,47,.07),transparent 60%),radial-gradient(ellipse 60% 50% at 5% 8%,rgba(116,129,91,.06),transparent 55%)}
-img{max-width:100%;display:block}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-weight:400;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
 a{color:inherit;text-decoration:none}
 button{font-family:var(--sans);cursor:pointer;border:none;background:none;color:inherit}
-input,select{font-family:var(--sans);color:var(--ink)}
-::selection{background:var(--clay);color:var(--paper)}
-::-webkit-scrollbar{width:9px}
-::-webkit-scrollbar-track{background:var(--paper)}
-::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px;border:2px solid var(--paper)}
+input,select,textarea{font-family:var(--sans);color:var(--text)}
+::selection{background:var(--accent);color:#fff}
 
-/* subtle paper grain */
-.grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.025;
+background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
 
-.wrap{max-width:1180px;margin:0 auto;padding:0 1.6rem}
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(1.5rem,4vw,3rem)}
 
-/* ── Navigation ── */
-nav{position:sticky;top:0;z-index:100;transition:background .4s var(--ease),box-shadow .4s var(--ease),border-color .4s var(--ease);
-  border-bottom:1px solid transparent}
-nav.scrolled{background:rgba(246,241,232,.82);backdrop-filter:blur(14px);border-color:var(--line);box-shadow:0 1px 0 rgba(255,255,255,.5) inset}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
-.brand{display:flex;align-items:baseline;gap:.5rem;font-family:var(--serif);font-size:1.45rem;font-weight:500;letter-spacing:.02em}
-.brand .mark{width:9px;height:9px;border-radius:50%;background:var(--clay);display:inline-block;transform:translateY(-1px)}
-.nav-links{display:flex;align-items:center;gap:2rem}
-.nav-links a:not(.nav-cta){font-size:.85rem;color:var(--ink-2);letter-spacing:.01em;position:relative;transition:color .25s}
-.nav-links a:not(.nav-cta)::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:1px;background:var(--clay);transition:width .3s var(--ease)}
-.nav-links a:not(.nav-cta):hover{color:var(--ink)}
-.nav-links a:not(.nav-cta):hover::after{width:100%}
-.nav-cta{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--line-2);border-radius:100px;font-size:.8rem;color:var(--ink);transition:all .25s var(--ease)}
-.nav-cta:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.nav-cta svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8}
+/* NAV */
+nav{padding:0 clamp(1.5rem,4vw,3rem);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{font-family:var(--serif);font-size:1.6rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:clamp(1.2rem,3vw,2.4rem)}
+.nav-links a{font-size:.78rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .3s}
+.nav-links a:hover{color:var(--text)}
 
-/* ── Hero / Claim ── */
-.hero{padding:clamp(2.5rem,6vw,5rem) 0 clamp(3rem,7vw,6rem)}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
-.eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--clay-2);margin-bottom:1.4rem}
-.eyebrow::before{content:'';width:26px;height:1px;background:var(--clay)}
-.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,6vw,4.2rem);line-height:1.02;letter-spacing:-.015em;margin-bottom:1.4rem}
-.hero h1 em{font-style:italic;color:var(--clay)}
-.hero-sub{font-size:clamp(1rem,1.3vw,1.12rem);color:var(--ink-2);max-width:33ch;margin-bottom:2rem;line-height:1.65}
-.reward-chip{display:inline-flex;align-items:center;gap:.7rem;padding:.55rem .9rem .55rem .6rem;background:var(--paper-2);border:1px solid var(--line);border-radius:100px;font-size:.86rem;font-weight:500;box-shadow:0 6px 18px -12px rgba(var(--shadow),.5);margin-bottom:2.2rem}
-.reward-chip .gift{width:30px;height:30px;border-radius:50%;background:var(--clay-soft);display:grid;place-items:center}
-.reward-chip .gift svg{width:16px;height:16px;stroke:var(--clay-2);fill:none;stroke-width:1.7}
-.reward-chip b{color:var(--clay-2);font-weight:600}
-.hero-trust{display:flex;align-items:center;gap:.8rem;color:var(--ink-2);font-size:.82rem}
-.stars{display:inline-flex;gap:2px}
-.stars svg{width:16px;height:16px;fill:var(--gold)}
+/* PAGE */
+.page{flex:1;padding:clamp(4rem,8vh,6rem) 0}
+.page-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(3rem,6vw,6rem);align-items:start}
 
-/* ── Claim card ── */
-.claim{position:relative;background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:clamp(1.6rem,2.5vw,2.2rem);
-  box-shadow:0 40px 80px -50px rgba(var(--shadow),.6),0 2px 0 rgba(255,255,255,.7) inset}
-.claim::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;pointer-events:none;
-  background:linear-gradient(160deg,rgba(181,86,47,.35),transparent 35%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.claim-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem}
-.claim-head h2{font-family:var(--serif);font-weight:500;font-size:1.5rem;letter-spacing:-.01em}
-.claim-step-tag{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.claim-note{font-size:.84rem;color:var(--ink-2);margin-bottom:1.5rem}
+/* LEFT */
+.page-left{padding-top:1rem}
+.page-label{font-size:.72rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;
+display:flex;align-items:center;gap:1rem}
+.page-label::before{content:'';width:32px;height:1px;background:var(--accent)}
+.page-left h1{font-family:var(--serif);font-weight:300;font-size:clamp(2.4rem,4.5vw,3.8rem);line-height:1.08;margin-bottom:2rem}
+.page-left h1 em{font-style:italic}
+.page-desc{color:var(--muted);font-weight:300;line-height:1.9;font-size:.95rem;margin-bottom:2.5rem;max-width:36ch}
+.reward-badge{display:inline-flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;background:var(--bg2);border-radius:2px;border:1px solid var(--border)}
+.reward-badge svg{color:var(--accent);flex-shrink:0}
+.reward-badge span{font-size:.85rem;font-weight:400}
+.reward-badge strong{color:var(--accent);font-weight:600}
 
-.field{margin-bottom:1.05rem}
-.field>label{display:block;font-size:.74rem;font-weight:600;letter-spacing:.04em;color:var(--ink-2);margin-bottom:.45rem}
-.field input,.field select{width:100%;padding:.8rem .95rem;background:var(--paper);border:1px solid var(--line-2);border-radius:11px;font-size:.95rem;outline:none;transition:border-color .25s,box-shadow .25s;-webkit-appearance:none;appearance:none}
-.field input::placeholder{color:var(--ink-3)}
-.field input:focus,.field select:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(181,86,47,.12)}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236E6359' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.4rem;cursor:pointer}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+/* FORM */
+.form-card{background:#fff;padding:clamp(2rem,4vw,3rem);border:1px solid var(--border);position:relative}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+.form-header{margin-bottom:2rem}
+.form-header h2{font-family:var(--serif);font-weight:400;font-size:1.6rem;margin-bottom:.3rem}
+.form-header p{font-size:.82rem;color:var(--muted)}
+.form-group{margin-bottom:1.5rem}
+.form-group label{display:block;font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.form-group label .req{color:var(--accent)}
+.form-input{width:100%;padding:.85rem 1rem;border:1px solid var(--border);background:var(--bg);font-size:.9rem;
+transition:border-color .3s,box-shadow .3s;outline:none;border-radius:0;-webkit-appearance:none}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(180,155,110,.1)}
+select.form-input{cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 
-/* upload */
-.upload{position:relative;border:1.5px dashed var(--line-2);border-radius:13px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .25s var(--ease);min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;background:var(--paper)}
-.upload:hover,.upload.drag{border-color:var(--clay);background:rgba(181,86,47,.035)}
-.upload.filled{border-style:solid;border-color:var(--sage);padding:0;overflow:hidden}
-.upload .u-icon{width:40px;height:40px;border-radius:50%;background:var(--paper-3);display:grid;place-items:center}
-.upload .u-icon svg{width:19px;height:19px;stroke:var(--ink-2);fill:none;stroke-width:1.6}
-.upload .u-text{font-size:.86rem;color:var(--ink-2)}
-.upload .u-text b{color:var(--clay-2);font-weight:600}
-.upload .u-hint{font-size:.7rem;color:var(--ink-3)}
-.upload-preview{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:var(--paper-3)}
-.upload-preview.show{display:flex}
-.upload-preview img{max-height:126px;width:auto;object-fit:contain;border-radius:6px}
-.remove-file{position:absolute;top:.5rem;right:.5rem;width:26px;height:26px;border-radius:50%;background:rgba(38,33,28,.78);color:var(--paper);display:grid;place-items:center;font-size:15px;line-height:1;transition:background .2s}
-.remove-file:hover{background:var(--clay-2)}
-input[type=file]{display:none}
+/* FILE UPLOAD */
+.upload-area{border:1.5px dashed var(--border);padding:2rem;text-align:center;cursor:pointer;transition:all .3s var(--ease);background:var(--bg);position:relative}
+.upload-area:hover,.upload-area.drag-over{border-color:var(--accent);background:rgba(180,155,110,.04)}
+.upload-area.has-file{border-style:solid;border-color:var(--accent);background:rgba(180,155,110,.06)}
+.upload-icon{margin-bottom:.8rem;color:var(--muted)}
+.upload-text{font-size:.85rem;color:var(--muted)}
+.upload-text strong{color:var(--accent);font-weight:500}
+.upload-hint{font-size:.72rem;color:var(--muted);margin-top:.4rem;opacity:.7}
+.upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-name{font-size:.82rem;color:var(--text);font-weight:500;margin-top:.5rem}
 
-.submit{width:100%;margin-top:.4rem;padding:.95rem;background:var(--clay);color:var(--paper);border-radius:12px;font-size:.92rem;font-weight:600;letter-spacing:.01em;transition:all .25s var(--ease);position:relative;overflow:hidden}
-.submit:hover:not(:disabled){background:var(--clay-2);transform:translateY(-1px);box-shadow:0 14px 26px -14px rgba(181,86,47,.7)}
-.submit:disabled{opacity:.55;cursor:not-allowed}
-.submit.loading{color:transparent}
-.submit .spin{display:none;position:absolute;inset:0;place-items:center}
-.submit.loading .spin{display:grid}
-.ring{width:20px;height:20px;border:2px solid rgba(246,241,232,.35);border-top-color:var(--paper);border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.fine-print{margin-top:.9rem;text-align:center;font-size:.72rem;color:var(--ink-3)}
+/* SUBMIT */
+.submit-btn{width:100%;padding:1rem;background:var(--dark2);color:var(--light);font-size:.82rem;font-weight:500;
+letter-spacing:.12em;text-transform:uppercase;transition:all .3s var(--ease);margin-top:.5rem;border:none;cursor:pointer}
+.submit-btn:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px -8px rgba(180,155,110,.4)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.form-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:1rem}
 
-/* success */
-.success{display:none;text-align:center;padding:1rem .5rem 1.2rem}
-.success.show{display:block;animation:rise .5s var(--ease)}
-.success .check{width:62px;height:62px;margin:0 auto 1.2rem;border-radius:50%;background:var(--sage);display:grid;place-items:center;animation:pop .5s var(--ease) .15s both}
-.success .check svg{width:28px;height:28px;stroke:var(--paper);fill:none;stroke-width:2.6}
-.success h2{font-family:var(--serif);font-weight:500;font-size:1.7rem;margin-bottom:.5rem}
-.success p{color:var(--ink-2);font-size:.9rem;max-width:34ch;margin:0 auto;line-height:1.6}
-.success p b{color:var(--ink)}
-.success .inbox{margin-top:1.4rem;padding:.85rem 1rem;background:var(--sage-soft);border-radius:11px;font-size:.78rem;color:var(--ink-2)}
-@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* SUCCESS */
+.success-msg{display:none;text-align:center;padding:3rem 2rem}
+.success-msg.show{display:block}
+.success-icon{width:56px;height:56px;border-radius:50%;background:rgba(180,155,110,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+.success-msg h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;margin-bottom:.8rem}
+.success-msg p{color:var(--muted);font-size:.9rem;line-height:1.7}
 
-/* ── How it works ── */
-.how{padding:clamp(3rem,6vw,5rem) 0;border-top:1px solid var(--line)}
-.section-head{text-align:center;margin-bottom:3rem}
-.section-head .eyebrow{justify-content:center}
-.section-head .eyebrow::before{display:none}
-.section-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,3.6vw,2.7rem);letter-spacing:-.01em;line-height:1.1}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
-.step{position:relative;background:var(--paper-2);border:1px solid var(--line);border-radius:16px;padding:1.8rem 1.6rem;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.step:hover{transform:translateY(-4px);box-shadow:0 26px 40px -30px rgba(var(--shadow),.55)}
-.step-num{font-family:var(--serif);font-style:italic;font-size:2.4rem;color:var(--clay);line-height:1;margin-bottom:1rem;opacity:.9}
-.step-ic{position:absolute;top:1.7rem;right:1.6rem;width:34px;height:34px;stroke:var(--ink-3);fill:none;stroke-width:1.5}
-.step h3{font-size:1.05rem;font-weight:600;margin-bottom:.4rem}
-.step p{font-size:.88rem;color:var(--ink-2);line-height:1.6}
+/* FOOTER */
+footer{padding:2rem 0;border-top:1px solid var(--border);margin-top:auto}
+.footer-inner{display:flex;justify-content:space-between;align-items:center}
+.footer-brand{font-family:var(--serif);font-size:1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.footer-copy{font-size:.72rem;color:var(--muted)}
 
-/* ── Collection preview ── */
-.collection{padding:clamp(3rem,6vw,5rem) 0;border-top:1px solid var(--line)}
-.coll-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:2rem;flex-wrap:wrap}
-.coll-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.4vw,2.5rem);letter-spacing:-.01em;line-height:1.05}
-.coll-head p{color:var(--ink-2);font-size:.92rem;max-width:34ch}
-.products{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.product{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper-2);transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
-.product:hover{transform:translateY(-5px);box-shadow:0 30px 45px -32px rgba(var(--shadow),.5)}
-.product-art{aspect-ratio:4/5;display:grid;place-items:center;position:relative;overflow:hidden}
-.product-art svg{width:58%;height:58%;stroke:rgba(38,33,28,.55);fill:none;stroke-width:1.4;transition:transform .5s var(--ease)}
-.product:hover .product-art svg{transform:scale(1.06)}
-.art-a{background:linear-gradient(150deg,#EAddc9,#E3d2bb)}
-.art-b{background:linear-gradient(150deg,#E7DEcf,#DCcfb6)}
-.art-c{background:linear-gradient(150deg,#E2E0cf,#D5d6bd)}
-.art-d{background:linear-gradient(150deg,#ECdcc9,#E6cdb4)}
-.product-meta{padding:.9rem 1rem 1.05rem}
-.product-meta .pname{font-family:var(--serif);font-size:1.12rem;font-weight:500}
-.product-meta .ptype{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-top:.15rem}
-.soon{position:absolute;top:.7rem;right:.7rem;padding:.28rem .6rem;background:rgba(252,249,243,.85);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:100px;font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--clay-2)}
-.notify{margin-top:2rem;display:flex;gap:.7rem;flex-wrap:wrap;max-width:480px}
-.notify input{flex:1;min-width:200px;padding:.8rem 1.1rem;background:var(--paper-2);border:1px solid var(--line-2);border-radius:100px;font-size:.9rem;outline:none;transition:border-color .25s}
-.notify input:focus{border-color:var(--clay)}
-.notify button{padding:.8rem 1.5rem;background:var(--ink);color:var(--paper);border-radius:100px;font-size:.82rem;font-weight:600;white-space:nowrap;transition:background .25s,transform .25s}
-.notify button:hover{background:var(--clay-2);transform:translateY(-1px)}
-.notify.done input{border-color:var(--sage)}
-
-/* ── Footer ── */
-footer{border-top:1px solid var(--line);padding:2.6rem 0;margin-top:1rem}
-.foot-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.foot-brand{font-family:var(--serif);font-size:1.2rem;font-weight:500;letter-spacing:.02em}
-.foot-links{display:flex;gap:1.5rem}
-.foot-links a{font-size:.82rem;color:var(--ink-2);transition:color .25s}
-.foot-links a:hover{color:var(--clay-2)}
-.foot-copy{font-size:.75rem;color:var(--ink-3);width:100%;text-align:center;margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--line)}
-
-/* reveal */
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
-.reveal.in{opacity:1;transform:none}
-
-/* ── Responsive ── */
-@media(max-width:900px){
-  .hero-grid{grid-template-columns:1fr;gap:2.4rem}
-  .hero-sub{max-width:42ch}
-  .products{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:640px){
-  .nav-links{gap:1rem}
-  .nav-links a:not(.nav-cta){display:none}
-  .hero{padding-top:1.5rem}
-  .steps{grid-template-columns:1fr}
-  .field-row{grid-template-columns:1fr}
-  .coll-head{align-items:flex-start}
-}
-@media(prefers-reduced-motion:reduce){
-  *{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
-  .reveal{opacity:1;transform:none}
+@media(max-width:768px){
+.page-grid{grid-template-columns:1fr}
+.form-row{grid-template-columns:1fr}
+.nav-links a:not(:last-child){display:none}
+.footer-inner{flex-direction:column;gap:1rem;text-align:center}
 }
 </style>
 </head>
 <body>
 <div class="grain"></div>
 
-<!-- ── Navigation ── -->
-<nav id="nav">
-  <div class="wrap nav-inner">
-    <a href="#top" class="brand"><span class="mark"></span>Maison</a>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#collection">Collection</a>
-      <a href="/admin.html" class="nav-cta">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Admin
-      </a>
-    </div>
-  </div>
+<nav>
+<div class="nav-inner">
+<a href="/" class="logo">Regent</a>
+<div class="nav-links">
+<a href="/#properties">Properties</a>
+<a href="/#about">About</a>
+<a href="/#experience">Experience</a>
+</div>
+</div>
 </nav>
 
-<!-- ── Hero + Claim ── -->
-<section class="hero" id="top">
-  <div class="wrap hero-grid">
-    <!-- Left: pitch -->
-    <div class="hero-copy">
-      <span class="eyebrow">Maison Rewards</span>
-      <h1>A little <em>thank&nbsp;you</em><br>for your kind words.</h1>
-      <p class="hero-sub">Loved your Maison furniture? Leave a quick 5-star review, share the proof, and we'll send a gift card your way.</p>
-      <div class="reward-chip">
-        <span class="gift">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-        </span>
-        <span>Get a <b>$5 Starbucks gift card</b> within 72 hours</span>
-      </div>
-      <div class="hero-trust">
-        <span class="stars" aria-label="5 out of 5 stars">
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        </span>
-        <span>Trusted by hundreds of happy homes</span>
-      </div>
-    </div>
+<main class="page">
+<div class="wrap">
+<div class="page-grid">
+<div class="page-left">
+<div class="page-label">Guest Rewards</div>
+<h1>A little <em>thank you</em> for your kind words.</h1>
+<p class="page-desc">Loved your Regent stay? Leave a quick review, share the proof, and we'll send a gift card your way.</p>
+<div class="reward-badge">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8V21M3 12h18M7.5 8C7.5 8 7.5 3 12 3s4.5 5 4.5 5"/></svg>
+<span>Get a <strong>$5 gift card</strong> within 72 hours</span>
+</div>
+</div>
 
-    <!-- Right: claim card -->
-    <div class="claim" id="claimCard">
-      <div id="formView">
-        <div class="claim-head">
-          <h2>Claim your reward</h2>
-          <span class="claim-step-tag">2 min</span>
-        </div>
-        <p class="claim-note">Upload your review screenshot and tell us where to send it.</p>
-        <form id="claimForm" enctype="multipart/form-data" novalidate>
-          <div class="field">
-            <label for="proofFile">Review screenshot <span style="color:var(--clay)">*</span></label>
-            <div class="upload" id="upload">
-              <span class="u-icon">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              </span>
-              <span class="u-text">Drag &amp; drop or <b>browse</b> to upload</span>
-              <span class="u-hint">JPG, PNG, WEBP · up to 10MB</span>
-              <div class="upload-preview" id="preview">
-                <img id="previewImg" alt="Your review screenshot">
-                <button type="button" class="remove-file" id="removeFile" aria-label="Remove file">&times;</button>
-              </div>
-              <input type="file" id="proofFile" name="proof" accept="image/*" capture="environment">
-            </div>
-          </div>
-          <div class="field">
-            <label for="email">Email address <span style="color:var(--clay)">*</span></label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label for="name">Your name</label>
-              <input type="text" id="name" name="name" placeholder="First name" autocomplete="given-name">
-            </div>
-            <div class="field">
-              <label for="platform">Where you reviewed</label>
-              <select id="platform" name="platform">
-                <optgroup label="Rental Platforms">
-                  <option value="airbnb">Airbnb</option>
-                  <option value="vrbo">Vrbo</option>
-                  <option value="booking">Booking.com</option>
-                  <option value="expedia">Expedia</option>
-                  <option value="furnished-finder">Furnished Finder</option>
-                  <option value="marriott-homes">Marriott Homes & Villas</option>
-                  <option value="vacasa">Vacasa</option>
-                  <option value="evolve">Evolve</option>
-                  <option value="sonder">Sonder</option>
-                  <option value="plum-guide">Plum Guide</option>
-                  <option value="houfy">Houfy</option>
-                  <option value="agoda">Agoda</option>
-                  <option value="hotels-com">Hotels.com</option>
-                  <option value="tripadvisor">TripAdvisor</option>
-                  <option value="whimstay">Whimstay</option>
-                  <option value="chbo">Corporate Housing (CHBO)</option>
-                </optgroup>
-                <optgroup label="Review Sites">
-                  <option value="google" selected>Google</option>
-                  <option value="yelp">Yelp</option>
-                  <option value="facebook">Facebook</option>
-                </optgroup>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-          <button type="submit" class="submit" id="submitBtn">
-            Send my gift card
-            <span class="spin"><span class="ring"></span></span>
-          </button>
-          <p class="fine-print">We only use your email to send your reward.</p>
-        </form>
-      </div>
+<div class="form-card">
+<div class="form-header">
+<h2>Claim your reward</h2>
+<p>Upload your review screenshot and fill in the details.</p>
+</div>
+<form id="claim-form">
+<div class="form-group">
+<label>Review screenshot <span class="req">*</span></label>
+<div class="upload-area" id="upload-area">
+<div class="upload-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+<div class="upload-text">Drag & drop or <strong>browse</strong></div>
+<div class="upload-hint">JPG, PNG, WEBP &middot; up to 10MB</div>
+<div class="file-name" id="file-name"></div>
+<input type="file" name="screenshot" accept="image/*" id="file-input">
+</div>
+</div>
+<div class="form-group">
+<label>Email address <span class="req">*</span></label>
+<input type="email" name="email" class="form-input" placeholder="you@example.com" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>Your name</label>
+<input type="text" name="name" class="form-input" placeholder="First name">
+</div>
+<div class="form-group">
+<label>Where you reviewed</label>
+<select name="platform" class="form-input">
+<option>Airbnb</option><option>Vrbo</option><option>Booking.com</option><option>Expedia</option>
+<option>Furnished Finder</option><option>Marriott Homes & Villas</option><option>Vacasa</option>
+<option>Evolve</option><option>Sonder</option><option>Plum Guide</option><option>Houfy</option>
+<option>Agoda</option><option>Hotels.com</option><option>TripAdvisor</option><option>Whimstay</option>
+<option>Corporate Housing (CHBO)</option><option>Google</option><option>Yelp</option>
+<option>Facebook</option><option>Other</option>
+</select>
+</div>
+</div>
+<button type="submit" class="submit-btn" id="submit-btn">Send my gift card</button>
+<p class="form-note">We only use your email to send your reward.</p>
+</form>
+<div class="success-msg" id="success-msg">
+<div class="success-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B49B6E" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+<h3>You're all set!</h3>
+<p>Your reward is on its way. Check your email within 72 hours for your $5 gift card.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
 
-      <div class="success" id="successView">
-        <div class="check">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <h2>You're all set!</h2>
-        <p>Thanks for the love. We'll verify your review and email your <b>$5 Starbucks gift card</b> within <b>72 hours</b>.</p>
-        <div class="inbox">Keep an eye on your inbox — and your spam folder, just in case.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── How it works ── -->
-<section class="how" id="how">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Simple as can be</span>
-      <h2>Three steps to your reward</h2>
-    </div>
-    <div class="steps">
-      <div class="step reveal">
-        <div class="step-num">01</div>
-        <svg class="step-ic" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        <h3>Leave a review</h3>
-        <p>Share a 5-star review on Google, Yelp, or Facebook — a sentence or two is plenty.</p>
-      </div>
-      <div class="step reveal" style="transition-delay:.1s">
-        <div class="step-num">02</div>
-        <svg class="step-ic" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <h3>Upload your proof</h3>
-        <p>Snap a screenshot and drop it into the form above with your email — that's it.</p>
-      </div>
-      <div class="step reveal" style="transition-delay:.2s">
-        <div class="step-num">03</div>
-        <svg class="step-ic" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-        <h3>Get rewarded</h3>
-        <p>We verify and email your $5 Starbucks gift card within 72 hours. Enjoy a coffee on us.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Collection preview ── -->
-<section class="collection" id="collection">
-  <div class="wrap">
-    <div class="coll-head reveal">
-      <div>
-        <span class="eyebrow">The Collection</span>
-        <h2>Pieces worth waiting for</h2>
-      </div>
-      <p>Handcrafted furniture designed with intention and built to last generations. Launching soon.</p>
-    </div>
-    <div class="products">
-      <div class="product reveal">
-        <div class="product-art art-a">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20v-6m12 6v-6M5 14h14a0 0 0 0 0 0 0v0a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v0zM6 14V8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v6M6 11h12"/></svg>
-        </div>
-        <span class="soon">Coming soon</span>
-        <div class="product-meta"><div class="pname">The Arc Chair</div><div class="ptype">Seating</div></div>
-      </div>
-      <div class="product reveal" style="transition-delay:.08s">
-        <div class="product-art art-b">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M4 9l1 11M20 9l-1 11M6 9V6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v3"/></svg>
-        </div>
-        <span class="soon">Coming soon</span>
-        <div class="product-meta"><div class="pname">Meridian Table</div><div class="ptype">Dining</div></div>
-      </div>
-      <div class="product reveal" style="transition-delay:.16s">
-        <div class="product-art art-c">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18v-7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7M2 18v-3a2 2 0 0 1 2-2m16 0a2 2 0 0 1 2 2v3M5 18v2m14-2v2M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/></svg>
-        </div>
-        <span class="soon">Coming soon</span>
-        <div class="product-meta"><div class="pname">The Drift Sofa</div><div class="ptype">Living</div></div>
-      </div>
-      <div class="product reveal" style="transition-delay:.24s">
-        <div class="product-art art-d">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V11M8 21h8M9 11h6l-1.5-6h-3L9 11zM10.5 5l1.5-2 1.5 2"/></svg>
-        </div>
-        <span class="soon">Coming soon</span>
-        <div class="product-meta"><div class="pname">Beam Floor Lamp</div><div class="ptype">Lighting</div></div>
-      </div>
-    </div>
-    <form class="notify" id="notifyForm">
-      <input type="email" id="notifyEmail" placeholder="Email me when the collection launches" autocomplete="email">
-      <button type="submit" id="notifyBtn">Notify me</button>
-    </form>
-  </div>
-</section>
-
-<!-- ── Footer ── -->
 <footer>
-  <div class="wrap">
-    <div class="foot-inner">
-      <div class="foot-brand">Maison</div>
-      <div class="foot-links">
-        <a href="#top">Home</a>
-        <a href="#how">How it works</a>
-        <a href="#collection">Collection</a>
-        <a href="/admin.html">Admin</a>
-      </div>
-    </div>
-    <div class="foot-copy">© 2026 Maison Furniture · Crafted for living</div>
-  </div>
+<div class="wrap">
+<div class="footer-inner">
+<div class="footer-brand">Regent</div>
+<div class="footer-copy">&copy; 2025 Regent Capital Ventures LLC</div>
+</div>
+</div>
 </footer>
 
 <script>
-// ── Nav shadow on scroll ──
-const nav = document.getElementById('nav');
-addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20), { passive: true });
+const form=document.getElementById('claim-form');
+const uploadArea=document.getElementById('upload-area');
+const fileInput=document.getElementById('file-input');
+const fileName=document.getElementById('file-name');
+const submitBtn=document.getElementById('submit-btn');
+const successMsg=document.getElementById('success-msg');
 
-// ── Scroll reveals ──
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-// ── Upload ──
-const upload = document.getElementById('upload');
-const fileInput = document.getElementById('proofFile');
-const preview = document.getElementById('preview');
-const previewImg = document.getElementById('previewImg');
-const removeFile = document.getElementById('removeFile');
-
-upload.addEventListener('click', (e) => { if (e.target.closest('.remove-file')) return; fileInput.click(); });
-upload.addEventListener('dragover', (e) => { e.preventDefault(); upload.classList.add('drag'); });
-upload.addEventListener('dragleave', () => upload.classList.remove('drag'));
-upload.addEventListener('drop', (e) => {
-  e.preventDefault(); upload.classList.remove('drag');
-  if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; showPreview(fileInput.files[0]); }
-});
-fileInput.addEventListener('change', () => { if (fileInput.files.length) showPreview(fileInput.files[0]); });
-removeFile.addEventListener('click', (e) => {
-  e.stopPropagation(); fileInput.value = '';
-  preview.classList.remove('show'); upload.classList.remove('filled');
-});
-function showPreview(file) {
-  const reader = new FileReader();
-  reader.onload = (ev) => { previewImg.src = ev.target.result; preview.classList.add('show'); upload.classList.add('filled'); };
-  reader.readAsDataURL(file);
-}
-
-// ── Submit ──
-const form = document.getElementById('claimForm');
-const submitBtn = document.getElementById('submitBtn');
-const formView = document.getElementById('formView');
-const successView = document.getElementById('successView');
-const emailEl = document.getElementById('email');
-
-function flash(el, color) {
-  const prev = el.style.borderColor;
-  el.style.borderColor = color;
-  el.style.animation = 'shake .4s ease';
-  setTimeout(() => { el.style.borderColor = prev; el.style.animation = ''; }, 1400);
-}
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = emailEl.value.trim();
-  if (!fileInput.files.length) { flash(upload, 'var(--clay)'); return; }
-  if (!email || !email.includes('@')) { flash(emailEl, 'var(--clay)'); emailEl.focus(); return; }
-
-  submitBtn.classList.add('loading');
-  submitBtn.disabled = true;
-
-  const fd = new FormData();
-  fd.append('proof', fileInput.files[0]);
-  fd.append('email', email);
-  fd.append('name', document.getElementById('name').value.trim());
-  fd.append('platform', document.getElementById('platform').value);
-
-  try {
-    const res = await fetch('/api/submit', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (data.success) {
-      formView.style.display = 'none';
-      successView.classList.add('show');
-      document.getElementById('claimCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
-      alert(data.error || 'Something went wrong. Please try again.');
-    }
-  } catch (err) {
-    alert('Network error. Please check your connection and try again.');
-  } finally {
-    submitBtn.classList.remove('loading');
-    submitBtn.disabled = false;
+// Upload area interactions
+['dragenter','dragover'].forEach(e=>uploadArea.addEventListener(e,ev=>{ev.preventDefault();uploadArea.classList.add('drag-over')}));
+['dragleave','drop'].forEach(e=>uploadArea.addEventListener(e,ev=>{ev.preventDefault();uploadArea.classList.remove('drag-over')}));
+uploadArea.addEventListener('drop',e=>{if(e.dataTransfer.files.length){fileInput.files=e.dataTransfer.files;showFile()}});
+fileInput.addEventListener('change',showFile);
+function showFile(){
+  if(fileInput.files.length){
+    fileName.textContent=fileInput.files[0].name;
+    uploadArea.classList.add('has-file');
   }
-});
+}
 
-// ── Notify (collection) ──
-const notifyForm = document.getElementById('notifyForm');
-notifyForm.addEventListener('submit', (e) => {
+// Form submit
+form.addEventListener('submit',async e=>{
   e.preventDefault();
-  const input = document.getElementById('notifyEmail');
-  if (!input.value.includes('@')) { flash(input, 'var(--clay)'); return; }
-  notifyForm.classList.add('done');
-  document.getElementById('notifyBtn').textContent = 'You’re on the list ✓';
-  input.value = ''; input.placeholder = 'Thanks! We’ll be in touch at launch.';
-  input.blur();
-});
-
-// ── Shake keyframes ──
-const s = document.createElement('style');
-s.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}';
-document.head.appendChild(s);
-
-// ── Smooth anchor scroll ──
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', (e) => {
-    const t = document.querySelector(a.getAttribute('href'));
-    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  });
+  submitBtn.disabled=true;
+  submitBtn.textContent='Sending...';
+  const fd=new FormData(form);
+  try{
+    const res=await fetch('/api/submit',{method:'POST',body:fd});
+    if(res.ok){
+      form.style.display='none';
+      successMsg.classList.add('show');
+    } else {
+      const data=await res.json().catch(()=>({}));
+      alert(data.error||'Something went wrong. Please try again.');
+      submitBtn.disabled=false;
+      submitBtn.textContent='Send my gift card';
+    }
+  }catch(err){
+    alert('Connection error. Please try again.');
+    submitBtn.disabled=false;
+    submitBtn.textContent='Send my gift card';
+  }
 });
 </script>
 </body>
