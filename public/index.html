@@ -4,1681 +4,1097 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Regent | Luxury Short-Term Rentals in DFW</title>
-<meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across the Dallas-Fort Worth metroplex. Book your stay at bookwithregent.com">
+<meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across the Dallas-Fort Worth metroplex. Designer interiors, effortless check-in, unforgettable stays.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Archivo:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
 :root {
-  --bg: #FAFAF7;
-  --bg-dark: #1A1A1A;
-  --accent: #B8956A;
-  --accent-light: #D4B896;
-  --accent-dark: #9A7B56;
-  --text: #1A1A1A;
-  --text-inv: #FAFAF7;
-  --muted: #8C8C8C;
-  --border: #E8E4DD;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'DM Sans', -apple-system, sans-serif;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
-  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
-  --radius: 6px;
-  --radius-lg: 12px;
-  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --bg:#F5F0EB;--bg-card:#FAF8F5;--bg-dark:#1A1714;--bg-dark-card:#2A2520;
+  --accent:#B8654A;--accent-hover:#A0563E;--accent-light:#D4A088;--accent-pale:#F0DDD4;
+  --brass:#C5A572;--brass-light:#D9C49A;
+  --text:#1A1A1A;--text-muted:#7A7672;--text-inv:#F5F0EB;--text-inv-muted:#B0AAA2;
+  --border:#E8E2DA;--border-dark:#3A352F;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Archivo',-apple-system,sans-serif;
+  --mono:'JetBrains Mono','SF Mono',monospace;
+  --shadow-sm:0 2px 8px rgba(26,23,20,.06);--shadow-md:0 8px 30px rgba(26,23,20,.08);
+  --shadow-lg:0 20px 60px rgba(26,23,20,.12);--shadow-xl:0 32px 80px rgba(26,23,20,.16);
+  --radius:12px;--radius-lg:16px;--radius-xl:20px;
+  --ease:cubic-bezier(.4,0,.2,1);--ease-out:cubic-bezier(0,.7,.3,1);
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--sans);color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden}
+::selection{background:var(--accent);color:#fff}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+button{border:none;background:none;cursor:pointer;font-family:inherit}
+ul{list-style:none}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; }
-body {
-  font-family: var(--font-body);
-  color: var(--text);
-  background: var(--bg);
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-::selection { background: var(--accent); color: #fff; }
-img { max-width: 100%; display: block; }
-a { text-decoration: none; color: inherit; }
-button { border: none; background: none; cursor: pointer; font-family: inherit; }
-ul { list-style: none; }
+/* ── Loader ── */
+.loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease),visibility .6s}
+.loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-brand{font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.35em;color:var(--text);opacity:0;animation:loaderIn .8s var(--ease-out) forwards}
+@keyframes loaderIn{to{opacity:1}}
 
-/* Grain overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  pointer-events: none;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 200px;
-}
+/* ── Grain ── */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:200px}
 
-/* Scroll reveal */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
+/* ── Nav ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;transition:background .4s var(--ease),box-shadow .4s var(--ease),padding .3s var(--ease)}
+.nav.scrolled{background:rgba(245,240,235,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 1px 0 var(--border);padding:14px 40px}
+.nav-logo{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.35em;color:var(--text)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);transition:color .3s var(--ease)}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{color:var(--accent)!important;font-weight:500!important}
+.nav-burger{display:none;flex-direction:column;gap:5px;padding:4px}
+.nav-burger span{display:block;width:22px;height:1.5px;background:var(--text);transition:transform .3s var(--ease),opacity .3s var(--ease)}
+.nav-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 
-/* ── NAV ── */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  padding: 20px 48px;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: all 0.4s ease;
-}
-.nav.scrolled {
-  padding: 14px 48px;
-  background: rgba(250, 250, 247, 0.85);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid rgba(232, 228, 221, 0.5);
-  box-shadow: 0 1px 20px rgba(0,0,0,0.04);
-}
-.nav-logo {
-  font-family: var(--font-display); font-size: 26px; font-weight: 400;
-  letter-spacing: 6px; color: #fff; transition: color 0.4s ease;
-}
-.nav.scrolled .nav-logo { color: var(--text); }
-.nav-links { display: flex; align-items: center; gap: 36px; }
-.nav-links a {
-  font-size: 13px; font-weight: 500; letter-spacing: 1.5px;
-  text-transform: uppercase; color: rgba(255,255,255,0.85);
-  transition: color 0.3s; position: relative;
-}
-.nav-links a::after {
-  content: ''; position: absolute; bottom: -4px; left: 0;
-  width: 0; height: 1px; background: var(--accent); transition: width 0.3s ease;
-}
-.nav-links a:hover::after { width: 100%; }
-.nav.scrolled .nav-links a { color: var(--text); }
-.nav-links .nav-cta {
-  background: var(--accent); color: #fff !important; padding: 10px 24px;
-  border-radius: 4px; letter-spacing: 1.5px; font-size: 12px; font-weight: 600;
-  transition: background 0.3s, transform 0.3s;
-}
-.nav-links .nav-cta::after { display: none; }
-.nav-links .nav-cta:hover { background: var(--accent-dark); transform: translateY(-1px); }
-.nav-mobile-btn { display: none; flex-direction: column; gap: 5px; width: 28px; padding: 4px 0; }
-.nav-mobile-btn span { display: block; height: 1.5px; width: 100%; background: #fff; transition: all 0.3s; }
-.nav.scrolled .nav-mobile-btn span { background: var(--text); }
+/* ── Mobile Menu ── */
+.mobile-menu{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility .4s}
+.mobile-menu.open{opacity:1;visibility:visible}
+.mobile-menu a{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--text);letter-spacing:.02em}
 
-/* ── HERO ── */
-.hero {
-  position: relative; min-height: 100vh; display: flex;
-  flex-direction: column; justify-content: center; align-items: center;
-  text-align: center; overflow: hidden;
-}
-.hero-bg { position: absolute; inset: 0; z-index: -2; }
-.hero-bg img {
-  width: 100%; height: 100%; object-fit: cover;
-  transform: scale(1.05); transition: transform 12s ease-out;
-}
-.hero.loaded .hero-bg img { transform: scale(1); }
-.hero-overlay {
-  position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, rgba(26,26,26,0.4) 0%, rgba(26,26,26,0.25) 40%, rgba(26,26,26,0.5) 80%, rgba(26,26,26,0.75) 100%);
-}
-.hero-content {
-  max-width: 800px; padding: 0 24px; opacity: 0; transform: translateY(30px);
-  animation: heroFadeIn 1.2s 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes heroFadeIn { to { opacity: 1; transform: translateY(0); } }
-.hero-tagline {
-  font-family: var(--font-body); font-size: 13px; font-weight: 500;
-  letter-spacing: 4px; text-transform: uppercase; color: var(--accent-light); margin-bottom: 20px;
-}
-.hero-title {
-  font-family: var(--font-display); font-size: clamp(38px, 6vw, 72px);
-  font-weight: 400; line-height: 1.15; color: #fff; margin-bottom: 24px;
-}
-.hero-title em { font-style: italic; font-weight: 300; }
-.hero-subtitle {
-  font-size: 17px; color: rgba(255,255,255,0.7); font-weight: 300;
-  max-width: 520px; margin: 0 auto 40px; line-height: 1.7;
-}
-.hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--accent); color: #fff; padding: 16px 36px;
-  font-size: 13px; font-weight: 600; letter-spacing: 2px;
-  text-transform: uppercase; border-radius: 4px; transition: all var(--transition);
-}
-.btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(184,149,106,0.3); }
-.btn-outline {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: #fff; padding: 16px 36px;
-  font-size: 13px; font-weight: 600; letter-spacing: 2px;
-  text-transform: uppercase; border: 1px solid rgba(255,255,255,0.4);
-  border-radius: 4px; transition: all var(--transition);
-}
-.btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); }
+/* ── Bento Hero ── */
+.bento{max-width:1400px;margin:0 auto;padding:100px 24px 40px;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:500px 180px;gap:12px}
+.bento-tile{border-radius:var(--radius-lg);overflow:hidden;position:relative}
+.bento-main{grid-column:1/9;grid-row:1}
+.bento-main-img{width:100%;height:100%;object-fit:cover;animation:kenBurns 20s ease-in-out infinite alternate}
+@keyframes kenBurns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-1%,-1%)}}
+.bento-main-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(26,23,20,.7) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:28px 32px}
+.bento-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(26,23,20,.6);backdrop-filter:blur(10px);padding:8px 16px;border-radius:100px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#fff;width:fit-content}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:#6FCF97;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.bento-main-bottom{display:flex;flex-direction:column;gap:16px}
+.bento-label{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:rgba(255,255,255,.7)}
+.bento-headline{font-family:var(--serif);font-size:clamp(32px,4vw,52px);font-weight:400;line-height:1.15;color:#fff;letter-spacing:-.01em}
+.bento-headline em{font-style:italic;font-weight:300}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;font-weight:500;padding:14px 28px;border-radius:100px;letter-spacing:.03em;transition:background .3s var(--ease),transform .3s var(--ease);width:fit-content}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
 
-.hero-stats {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  display: flex; justify-content: center;
-  background: rgba(26,26,26,0.6); backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-.hero-stat { padding: 28px 48px; text-align: center; border-right: 1px solid rgba(255,255,255,0.08); }
-.hero-stat:last-child { border-right: none; }
-.hero-stat-value { font-family: var(--font-display); font-size: 28px; font-weight: 400; color: #fff; }
-.hero-stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 4px; }
+.bento-featured{grid-column:9/13;grid-row:1;background:var(--bg-dark)}
+.bento-featured img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.bento-featured:hover img{transform:scale(1.05)}
+.bento-featured-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(26,23,20,.8) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:20px 24px}
+.featured-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--text);font-family:var(--mono);font-size:9px;letter-spacing:.12em;padding:6px 12px;border-radius:100px;width:fit-content;font-weight:500}
+.bento-featured-info{display:flex;flex-direction:column;gap:4px}
+.bento-featured-info h3{font-family:var(--serif);font-size:22px;font-weight:400;color:#fff}
+.bento-featured-meta{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.7)}
 
-/* ── SECTIONS SHARED ── */
-.section { padding: 100px 48px; }
-.section-label { font-size: 12px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-.section-title { font-family: var(--font-display); font-size: clamp(32px, 4vw, 48px); font-weight: 400; line-height: 1.2; color: var(--text); margin-bottom: 16px; }
-.section-subtitle { font-size: 16px; color: var(--muted); font-weight: 300; max-width: 560px; line-height: 1.7; }
-.section-divider { width: 60px; height: 1px; background: var(--accent); margin: 20px 0; }
+.bento-search{grid-column:1/6;grid-row:2;background:var(--bg-card);display:flex;flex-direction:column;justify-content:center;padding:24px 28px;border:1px solid var(--border)}
+.tile-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--text-muted);margin-bottom:16px;display:block}
+.tile-label.light{color:var(--text-inv-muted)}
+.search-row{display:flex;align-items:center;gap:0;flex:1}
+.search-field{flex:1;display:flex;flex-direction:column;gap:4px;padding:0 16px}
+.search-field:first-child{padding-left:0}
+.search-field label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase}
+.search-field select,.search-field input{font-family:var(--sans);font-size:14px;color:var(--text);border:none;background:transparent;outline:none;padding:2px 0;-webkit-appearance:none;appearance:none;cursor:pointer}
+.search-field .search-val{font-family:var(--sans);font-size:14px;color:var(--text);cursor:pointer}
+.search-divider{width:1px;height:36px;background:var(--border);flex-shrink:0}
+.search-btn{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:12px;transition:background .3s var(--ease),transform .3s var(--ease)}
+.search-btn:hover{background:var(--accent-hover);transform:scale(1.05)}
+.search-btn svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none}
 
-/* ── FEATURED PROPERTY ── */
-.featured { padding: 100px 48px; background: var(--bg); }
-.featured-header { text-align: center; margin-bottom: 60px; }
-.featured-badge {
-  display: inline-block; font-size: 11px; font-weight: 600;
-  letter-spacing: 3px; text-transform: uppercase; color: var(--accent);
-  border: 1px solid var(--accent); padding: 6px 18px; margin-bottom: 20px;
-}
-.featured-grid {
-  display: grid; grid-template-columns: 1.6fr 1fr;
-  grid-template-rows: auto auto; gap: 6px;
-  max-width: 1200px; margin: 0 auto 48px;
-  border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; position: relative;
-}
-.featured-grid-item { overflow: hidden; position: relative; }
-.featured-grid-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-.featured-grid-item:hover img { transform: scale(1.04); }
-.featured-grid-main { grid-row: 1 / 3; }
-.featured-grid-main img { min-height: 480px; }
-.featured-grid-side img { min-height: 237px; }
-.featured-grid-btn {
-  position: absolute; bottom: 16px; right: 16px;
-  background: rgba(255,255,255,0.95); color: var(--text);
-  padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 500;
-  z-index: 2; cursor: pointer; transition: all 0.3s; backdrop-filter: blur(8px);
-}
-.featured-grid-btn:hover { background: #fff; box-shadow: var(--shadow-md); }
+.bento-map-tile{grid-column:6/9;grid-row:2;background:var(--bg-card);display:flex;flex-direction:column;padding:20px 24px;border:1px solid var(--border);cursor:pointer;transition:border-color .3s var(--ease)}
+.bento-map-tile:hover{border-color:var(--accent-light)}
+.bento-map-svg{flex:1;display:flex;align-items:center;justify-content:center}
+.bento-map-svg svg{width:100%;max-width:180px;height:auto}
 
-.featured-info {
-  max-width: 1200px; margin: 0 auto;
-  display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: start;
-}
-.featured-title { font-family: var(--font-display); font-size: 36px; font-weight: 400; margin-bottom: 8px; }
-.featured-location {
-  font-size: 14px; color: var(--muted); letter-spacing: 1px;
-  margin-bottom: 20px; display: flex; align-items: center; gap: 6px;
-}
-.featured-specs { display: flex; gap: 24px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-.featured-spec { font-size: 14px; color: var(--text); font-weight: 400; }
-.featured-spec span { color: var(--muted); font-weight: 300; }
-.featured-desc { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
-.featured-amenities-title { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); margin-bottom: 16px; }
-.featured-amenities-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-.amenity-tag {
-  font-size: 13px; color: var(--text); background: rgba(184,149,106,0.08);
-  padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(184,149,106,0.15); white-space: nowrap;
-}
-.amenity-tag.highlight { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 500; }
-.show-amenities-btn {
-  font-size: 13px; color: var(--accent); font-weight: 500; cursor: pointer;
-  padding: 4px 0; border-bottom: 1px solid transparent; transition: border-color 0.3s;
-}
-.show-amenities-btn:hover { border-bottom-color: var(--accent); }
-.hidden-amenities { display: none; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.hidden-amenities.show { display: flex; }
+.bento-reward{grid-column:9/13;grid-row:2;background:var(--bg-dark)}
+.bento-reward img{width:100%;height:100%;object-fit:cover;opacity:.5;transition:opacity .6s var(--ease)}
+.bento-reward:hover img{opacity:.6}
+.bento-reward-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:24px 28px;gap:8px}
+.bento-reward-overlay p{font-family:var(--serif);font-size:20px;font-weight:400;color:#fff;line-height:1.3}
 
-.featured-sidebar { background: var(--bg-dark); border-radius: var(--radius-lg); padding: 36px; color: var(--text-inv); }
-.featured-sidebar-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-light); margin-bottom: 6px; }
-.featured-sidebar-type { font-family: var(--font-display); font-size: 22px; margin-bottom: 20px; font-weight: 400; }
-.featured-sidebar-rating {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
-  padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.featured-sidebar-rating span { font-size: 14px; color: rgba(255,255,255,0.6); }
-.featured-sidebar-btn {
-  display: block; width: 100%; text-align: center; background: var(--accent); color: #fff;
-  padding: 16px; border-radius: 4px; font-size: 13px; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase; transition: all var(--transition); margin-bottom: 12px;
-}
-.featured-sidebar-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
-.featured-sidebar-btn.outline-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); }
-.featured-sidebar-btn.outline-btn:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+/* ── Sections ── */
+.section{padding:80px 24px;max-width:1400px;margin:0 auto}
+.section-dark{background:var(--bg-dark);max-width:none;margin:0}
+.section-dark .section-inner{max-width:1400px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:56px}
+.section-label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--text-muted);margin-bottom:16px}
+.section-label.light{color:var(--text-inv-muted)}
+.section-header h2{font-family:var(--serif);font-size:clamp(32px,4vw,48px);font-weight:400;color:var(--text);line-height:1.2;letter-spacing:-.01em}
+.section-header h2.light{color:var(--text-inv)}
 
-/* ── PROPERTIES GRID ── */
-.properties { padding: 100px 48px; background: #F5F4F0; }
-.properties-header { text-align: center; margin-bottom: 60px; }
-.properties-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; max-width: 1200px; margin: 0 auto; }
-.property-card {
-  background: #fff; border-radius: var(--radius-lg); overflow: hidden;
-  box-shadow: var(--shadow-sm); transition: box-shadow 0.4s ease, transform 0.4s ease;
-}
-.property-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+/* ── Properties Grid ── */
+.properties-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
 
-/* Carousel */
-.carousel { position: relative; aspect-ratio: 16/11; overflow: hidden; background: #e8e4dd; }
-.carousel-track { display: flex; height: 100%; transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1); }
-.carousel-slide { flex: 0 0 100%; height: 100%; position: relative; }
-.carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-.carousel-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 40px; height: 40px; background: rgba(255,255,255,0.9);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  z-index: 5; opacity: 0; transition: opacity 0.3s, background 0.3s, transform 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-.carousel:hover .carousel-arrow { opacity: 1; }
-.carousel-arrow:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
-.carousel-arrow.prev { left: 12px; }
-.carousel-arrow.next { right: 12px; }
-.carousel-arrow svg { width: 16px; height: 16px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.carousel-counter {
-  position: absolute; bottom: 12px; right: 12px;
-  background: rgba(0,0,0,0.55); color: #fff; font-size: 12px; font-weight: 500;
-  padding: 4px 10px; border-radius: 12px; z-index: 5;
-  backdrop-filter: blur(4px); letter-spacing: 0.5px;
-}
+/* ── Property Card ── */
+.prop-card{background:var(--bg-card);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border);transition:box-shadow .4s var(--ease),transform .4s var(--ease)}
+.prop-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
+.prop-carousel{position:relative;aspect-ratio:16/10;overflow:hidden;cursor:pointer;background:var(--bg-dark)}
+.prop-carousel img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .5s var(--ease)}
+.prop-carousel img.active{opacity:1}
+.prop-carousel-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 12px;opacity:0;transition:opacity .3s var(--ease)}
+.prop-card:hover .prop-carousel-nav{opacity:1}
+.carousel-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;backdrop-filter:blur(4px)}
+.carousel-btn:hover{background:#fff;transform:scale(1.08)}
+.carousel-btn svg{width:16px;height:16px;stroke:var(--text);stroke-width:2;fill:none}
+.carousel-counter{position:absolute;bottom:12px;right:12px;background:rgba(26,23,20,.6);color:#fff;font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:100px;letter-spacing:.06em;backdrop-filter:blur(4px)}
+.carousel-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);transition:background .3s,transform .3s}
+.carousel-dot.active{background:#fff;transform:scale(1.3)}
 
-/* Card body */
-.card-body { padding: 24px; }
-.card-location { font-size: 12px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
-.card-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; margin-bottom: 12px; line-height: 1.3; }
-.card-specs { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
-.card-spec { font-size: 13px; color: var(--muted); }
-.card-spec strong { color: var(--text); font-weight: 500; }
-.card-rating {
-  display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;
-  color: var(--text); margin-bottom: 16px; padding: 4px 10px;
-  background: rgba(184,149,106,0.08); border-radius: 20px;
-}
-.card-rating svg { width: 14px; height: 14px; fill: var(--accent); }
-.card-amenities { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-.card-amenities .amenity-tag { font-size: 12px; padding: 4px 10px; }
-.card-all-amenities { display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.card-all-amenities.show { display: flex; }
-.card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 4px; }
-.card-link {
-  display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
-  font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--accent); transition: gap 0.3s;
-}
-.card-link:hover { gap: 10px; }
-.card-link svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 2; }
+.prop-info{padding:24px}
+.prop-location{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--text-muted);margin-bottom:6px}
+.prop-name{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--text);margin-bottom:8px;line-height:1.2}
+.prop-specs{display:flex;gap:16px;margin-bottom:12px;font-family:var(--sans);font-size:13px;color:var(--text-muted)}
+.prop-specs span{display:flex;align-items:center;gap:4px}
+.prop-rating{display:flex;align-items:center;gap:6px;margin-bottom:16px}
+.prop-rating .star{color:var(--accent);font-size:14px}
+.prop-rating .rating-num{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--text)}
+.prop-rating .review-count{font-family:var(--sans);font-size:13px;color:var(--text-muted)}
+.prop-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.amenity-tag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;padding:5px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-muted);transition:border-color .3s,color .3s}
+.amenity-tag.premium{background:var(--accent-pale);border-color:var(--accent-light);color:var(--accent)}
+.prop-actions{display:flex;gap:10px;align-items:center}
+.prop-actions a,.prop-actions button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:10px 20px;border-radius:100px;transition:all .3s var(--ease)}
+.btn-book{background:var(--accent);color:#fff}
+.btn-book:hover{background:var(--accent-hover)}
+.btn-airbnb{border:1px solid var(--border);color:var(--text-muted)}
+.btn-airbnb:hover{border-color:var(--text);color:var(--text)}
 
-/* ── EXPERIENCE ── */
-.experience {
-  padding: 120px 48px; background: var(--bg-dark); color: var(--text-inv);
-  position: relative; overflow: hidden;
-}
-.experience::before {
-  content: ''; position: absolute; top: -200px; right: -200px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(184,149,106,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.experience-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-.experience .section-label { color: var(--accent-light); }
-.experience .section-title { color: var(--text-inv); }
-.experience .section-subtitle { color: rgba(255,255,255,0.5); }
-.experience-features { display: grid; gap: 28px; }
-.exp-feature { display: flex; gap: 20px; align-items: flex-start; }
-.exp-feature-icon {
-  flex-shrink: 0; width: 48px; height: 48px;
-  background: rgba(184,149,106,0.12); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-}
-.exp-feature-icon svg { width: 22px; height: 22px; stroke: var(--accent-light); fill: none; stroke-width: 1.5; }
-.exp-feature h4 { font-family: var(--font-display); font-size: 18px; font-weight: 400; margin-bottom: 6px; }
-.exp-feature p { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+/* ── Experience ── */
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1400px;margin:0 auto;padding:0 24px}
+.feature-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);padding:32px 28px;border:1px solid var(--border-dark);transition:border-color .4s var(--ease),transform .4s var(--ease)}
+.feature-card:hover{border-color:var(--brass);transform:translateY(-4px)}
+.feature-icon{width:48px;height:48px;border-radius:12px;background:rgba(184,101,74,.15);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.feature-icon svg{width:24px;height:24px;stroke:var(--accent);stroke-width:1.5;fill:none}
+.feature-card h3{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--text-inv);margin-bottom:8px}
+.feature-card p{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.6}
 
-/* ── MAP ── */
-.map-section { padding: 100px 48px 60px; background: var(--bg); }
-.map-header { text-align: center; margin-bottom: 48px; }
-.map-container { max-width: 1200px; margin: 0 auto; height: 480px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
-#map { width: 100%; height: 100%; }
-.custom-marker {
-  width: 18px; height: 18px; background: var(--accent);
-  border: 3px solid #fff; border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25); position: relative;
-}
-.custom-marker::after {
-  content: ''; position: absolute; inset: -6px; border-radius: 50%;
-  border: 2px solid var(--accent); opacity: 0.4;
-  animation: markerPulse 2s ease-out infinite;
-}
-@keyframes markerPulse { 0% { transform: scale(1); opacity: 0.4; } 100% { transform: scale(1.8); opacity: 0; } }
-.leaflet-popup-content-wrapper { border-radius: 8px !important; box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important; padding: 0 !important; }
-.leaflet-popup-content { margin: 14px 18px !important; font-family: var(--font-body) !important; }
-.leaflet-popup-content strong { font-family: var(--font-display); font-size: 15px; display: block; margin-bottom: 2px; }
-.leaflet-popup-content span { font-size: 12px; color: var(--muted); }
+/* ── Map ── */
+.map-container{height:420px;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-md)}
+.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:var(--shadow-md)!important;font-family:var(--sans)!important}
+.leaflet-popup-content{font-size:13px!important;margin:12px 16px!important;line-height:1.5!important}
+.map-popup-title{font-family:var(--serif);font-size:16px;font-weight:500;margin-bottom:4px}
+.map-popup-loc{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text-muted)}
 
 /* ── CTA ── */
-.cta-section {
-  padding: 120px 48px;
-  background: linear-gradient(135deg, var(--bg-dark) 0%, #2a2a2a 100%);
-  text-align: center; position: relative; overflow: hidden;
-}
-.cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(184,149,106,0.06) 0%, transparent 60%); }
-.cta-content { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
-.cta-section .section-label { color: var(--accent-light); }
-.cta-title { font-family: var(--font-display); font-size: clamp(32px, 4vw, 48px); font-weight: 400; color: #fff; margin-bottom: 20px; line-height: 1.2; }
-.cta-text { font-size: 16px; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 40px; }
+.section-cta{text-align:center;padding:100px 24px;position:relative;overflow:hidden}
+.section-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-pale) 0%,var(--bg) 50%,var(--accent-pale) 100%);opacity:.4}
+.section-cta h2{font-family:var(--serif);font-size:clamp(32px,4vw,48px);font-weight:400;margin-bottom:16px;position:relative}
+.section-cta p{font-family:var(--sans);font-size:16px;color:var(--text-muted);margin-bottom:32px;position:relative}
+.section-cta .btn-primary{position:relative}
 
-/* ── FOOTER ── */
-.footer { background: var(--bg-dark); border-top: 1px solid rgba(255,255,255,0.06); padding: 60px 48px 40px; }
-.footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto auto auto; gap: 60px; }
-.footer-brand .footer-logo { font-family: var(--font-display); font-size: 22px; letter-spacing: 5px; color: #fff; margin-bottom: 12px; }
-.footer-brand p { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.6; max-width: 280px; }
-.footer-col h5 { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
-.footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.4); padding: 4px 0; transition: color 0.3s; }
-.footer-col a:hover { color: var(--accent-light); }
-.footer-bottom {
-  max-width: 1200px; margin: 40px auto 0; padding-top: 24px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.footer-bottom p { font-size: 13px; color: rgba(255,255,255,0.3); }
+/* ── Footer ── */
+.footer{background:var(--bg-dark);padding:60px 24px 32px}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:32px}
+.footer-logo{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.35em;color:var(--text-inv)}
+.footer-links{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
+.footer-links a{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--text-inv-muted);transition:color .3s}
+.footer-links a:hover{color:var(--text-inv)}
+.footer-divider{width:60px;height:1px;background:var(--border-dark)}
+.footer-copy{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);text-align:center}
 
-/* ── LIGHTBOX ── */
-.lightbox {
-  position: fixed; inset: 0; z-index: 10000;
-  background: rgba(0,0,0,0.95);
-  display: none; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.3s ease;
-}
-.lightbox.active { display: flex; opacity: 1; }
-.lightbox-close {
-  position: absolute; top: 20px; right: 24px;
-  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 28px; cursor: pointer; z-index: 10;
-  background: rgba(255,255,255,0.1); border-radius: 50%; transition: background 0.3s;
-}
-.lightbox-close:hover { background: rgba(255,255,255,0.2); }
-.lightbox-counter {
-  position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
-  color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500;
-  letter-spacing: 2px; z-index: 10;
-}
-.lightbox-img-wrap { max-width: 90vw; max-height: 85vh; display: flex; align-items: center; justify-content: center; }
-.lightbox-img-wrap img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 4px; }
-.lightbox-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  width: 52px; height: 52px; background: rgba(255,255,255,0.08);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 10; transition: background 0.3s;
-}
-.lightbox-arrow:hover { background: rgba(255,255,255,0.18); }
-.lightbox-arrow.prev { left: 20px; }
-.lightbox-arrow.next { right: 20px; }
-.lightbox-arrow svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
-.lightbox-thumbs {
-  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 6px; max-width: 90vw; overflow-x: auto;
-  padding: 8px 4px; z-index: 10; scrollbar-width: none;
-}
-.lightbox-thumbs::-webkit-scrollbar { display: none; }
-.lightbox-thumb {
-  flex-shrink: 0; width: 60px; height: 42px; border-radius: 4px;
-  overflow: hidden; cursor: pointer; opacity: 0.4; transition: opacity 0.3s;
-  border: 2px solid transparent;
-}
-.lightbox-thumb.active { opacity: 1; border-color: var(--accent); }
-.lightbox-thumb:hover { opacity: 0.8; }
-.lightbox-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* ── Lightbox ── */
+.lightbox{position:fixed;inset:0;z-index:10000;background:rgba(26,23,20,.95);display:none;flex-direction:column;align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox-close{position:absolute;top:20px;right:24px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .3s;z-index:2}
+.lightbox-close:hover{background:rgba(255,255,255,.2)}
+.lightbox-close svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
+.lightbox-main{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:60px 80px;position:relative}
+.lightbox-main img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .3s}
+.lightbox-nav:hover{background:rgba(255,255,255,.2)}
+.lightbox-nav svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
+.lightbox-prev{left:20px}
+.lightbox-next{right:20px}
+.lightbox-counter{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);letter-spacing:.1em;margin-top:4px}
+.lightbox-thumbs{display:flex;gap:6px;padding:16px 24px;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+.lightbox-thumbs::-webkit-scrollbar{height:0}
+.lightbox-thumb{width:64px;height:44px;border-radius:6px;overflow:hidden;cursor:pointer;opacity:.4;transition:opacity .3s;flex-shrink:0;border:2px solid transparent}
+.lightbox-thumb.active{opacity:1;border-color:var(--accent)}
+.lightbox-thumb img{width:100%;height:100%;object-fit:cover}
 
-/* ── MOBILE MENU ── */
-.mobile-menu {
-  position: fixed; inset: 0; z-index: 999;
-  background: rgba(26,26,26,0.98); backdrop-filter: blur(20px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;
-  opacity: 0; pointer-events: none; transition: opacity 0.4s;
-}
-.mobile-menu.open { opacity: 1; pointer-events: auto; }
-.mobile-menu a { font-family: var(--font-display); font-size: 28px; color: #fff; font-weight: 300; transition: color 0.3s; }
-.mobile-menu a:hover { color: var(--accent-light); }
-.mobile-menu-close { position: absolute; top: 24px; right: 28px; font-size: 32px; color: #fff; cursor: pointer; }
+/* ── Booking Modal ── */
+.booking-modal{position:fixed;inset:0;z-index:10001;background:rgba(26,23,20,.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+.booking-modal.open{display:flex}
+.booking-body{background:var(--bg);border-radius:var(--radius-xl);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:36px;position:relative}
+.booking-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--border);transition:border-color .3s}
+.booking-close:hover{border-color:var(--text)}
+.booking-close svg{width:16px;height:16px;stroke:var(--text);stroke-width:2;fill:none}
+.booking-title{font-family:var(--serif);font-size:28px;font-weight:400;margin-bottom:4px}
+.booking-subtitle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--text-muted);margin-bottom:28px}
+.booking-form{display:flex;flex-direction:column;gap:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase}
+.form-group input,.form-group select{font-family:var(--sans);font-size:14px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);color:var(--text);outline:none;transition:border-color .3s}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.booking-quote{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:8px 0}
+.quote-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--sans);font-size:14px;color:var(--text-muted);padding:4px 0}
+.quote-total{border-top:1px solid var(--border);margin-top:8px;padding-top:12px;font-weight:600;color:var(--text)}
+.btn-full{width:100%;justify-content:center;margin-top:8px}
+.booking-msg{font-family:var(--sans);font-size:13px;text-align:center;padding:12px;border-radius:var(--radius);margin-top:8px}
+.booking-msg.success{background:#E8F5E9;color:#2E7D32}
+.booking-msg.error{background:#FFEBEE;color:#C62828}
 
-/* ── RESPONSIVE ── */
-@media (max-width: 1024px) {
-  .section, .featured, .properties { padding: 80px 32px; }
-  .nav { padding: 16px 24px; }
-  .nav.scrolled { padding: 12px 24px; }
-  .featured-info { grid-template-columns: 1fr; gap: 32px; }
-  .featured-grid { grid-template-columns: 1fr 1fr; }
-  .featured-grid-main { grid-row: auto; grid-column: 1 / -1; }
-  .featured-grid-main img { min-height: 360px; }
-  .experience-inner { grid-template-columns: 1fr; gap: 48px; }
-  .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+/* ── Animations ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ── Responsive ── */
+@media(max-width:1024px){
+  .bento{grid-template-columns:1fr 1fr;grid-template-rows:400px 180px 180px;padding-top:90px}
+  .bento-main{grid-column:1/3;grid-row:1}
+  .bento-featured{display:none}
+  .bento-search{grid-column:1/3;grid-row:2}
+  .bento-map-tile{grid-column:1/2;grid-row:3}
+  .bento-reward{grid-column:2/3;grid-row:3}
+  .properties-grid{grid-template-columns:1fr 1fr}
+  .features-grid{grid-template-columns:repeat(2,1fr)}
 }
-@media (max-width: 768px) {
-  .section, .featured, .properties { padding: 60px 20px; }
-  .nav { padding: 14px 20px; }
-  .nav.scrolled { padding: 10px 20px; }
-  .nav-links { display: none; }
-  .nav-mobile-btn { display: flex; }
-  .hero-stats { flex-wrap: wrap; }
-  .hero-stat { padding: 16px 24px; flex: 1; min-width: 140px; }
-  .hero-stat-value { font-size: 22px; }
-  .properties-grid { grid-template-columns: 1fr; }
-  .featured-grid { grid-template-columns: 1fr; }
-  .featured-grid-main img { min-height: 280px; }
-  .featured-grid-side { display: none; }
-  .featured-grid-side:nth-child(2), .featured-grid-side:nth-child(3) { display: block; }
-  .featured-grid-side img { min-height: 180px; }
-  .map-container { height: 360px; }
-  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
-  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-  .lightbox-thumbs { display: none; }
-}
-@media (max-width: 480px) {
-  .hero-title { font-size: 32px; }
-  .hero-btns { flex-direction: column; align-items: center; }
-  .hero-stats { flex-direction: column; }
-  .hero-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); width: 100%; }
-  .hero-stat:last-child { border-bottom: none; }
-  .featured-grid-side:nth-child(2), .featured-grid-side:nth-child(3) { display: none; }
-  .featured-grid-btn { bottom: 12px; right: 12px; font-size: 12px; padding: 8px 14px; }
-  .card-title { font-size: 19px; }
-  .card-body { padding: 18px; }
+@media(max-width:768px){
+  .nav{padding:16px 20px}
+  .nav.scrolled{padding:12px 20px}
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .bento{grid-template-columns:1fr;grid-template-rows:360px auto auto auto;gap:10px;padding:80px 16px 24px}
+  .bento-main{grid-column:1;grid-row:1}
+  .bento-search{grid-column:1;grid-row:2}
+  .bento-map-tile{grid-column:1;grid-row:3}
+  .bento-reward{grid-column:1;grid-row:4;min-height:140px}
+  .bento-headline{font-size:28px}
+  .properties-grid{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr;padding:0 16px}
+  .section{padding:60px 16px}
+  .section-dark{padding:60px 0}
+  .map-container{height:300px;border-radius:var(--radius-lg)}
+  .lightbox-main{padding:60px 16px}
+  .lightbox-nav{width:36px;height:36px}
+  .lightbox-prev{left:8px}
+  .lightbox-next{right:8px}
+  .search-row{flex-wrap:wrap;gap:12px}
+  .search-divider{display:none}
+  .search-field{flex:none;width:100%;padding:0}
+  .search-btn{width:100%;border-radius:var(--radius);height:44px}
+  .form-row{grid-template-columns:1fr}
+  .footer-links{flex-direction:column;align-items:center;gap:16px}
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav" id="navbar">
-  <a href="#" class="nav-logo">REGENT</a>
+<!-- Loader -->
+<div class="loader" id="loader"><div class="loader-brand">R E G E N T</div></div>
+
+<!-- Grain -->
+<div class="grain"></div>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">R E G E N T</a>
   <div class="nav-links">
-    <a href="#properties-section">Properties</a>
-    <a href="#experience-section">Experience</a>
-    <a href="#map-section">Locations</a>
-    <a href="reward.html" class="nav-cta">Claim Reward</a>
+    <a href="#properties">Properties</a>
+    <a href="#experience">Experience</a>
+    <a href="#locations">Locations</a>
+    <a href="/reward" class="nav-cta">Claim Reward</a>
   </div>
-  <button class="nav-mobile-btn" onclick="document.querySelector('.mobile-menu').classList.add('open')" aria-label="Open menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
 <!-- Mobile Menu -->
-<div class="mobile-menu">
-  <div class="mobile-menu-close" onclick="this.parentElement.classList.remove('open')">&times;</div>
-  <a href="#properties-section" onclick="this.parentElement.classList.remove('open')">Properties</a>
-  <a href="#experience-section" onclick="this.parentElement.classList.remove('open')">Experience</a>
-  <a href="#map-section" onclick="this.parentElement.classList.remove('open')">Locations</a>
-  <a href="reward.html" onclick="this.parentElement.classList.remove('open')">Claim Reward</a>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#properties" onclick="closeMobile()">Properties</a>
+  <a href="#experience" onclick="closeMobile()">Experience</a>
+  <a href="#locations" onclick="closeMobile()">Locations</a>
+  <a href="/reward">Claim Reward</a>
 </div>
 
-<!-- HERO -->
-<section class="hero" id="hero">
-  <div class="hero-bg">
-    <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=1200" alt="Regent Villa, Plano Texas">
-  </div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <p class="hero-tagline">Luxury Rentals in DFW</p>
-    <h1 class="hero-title">Where Every Stay<br>Becomes a <em>Story</em></h1>
-    <p class="hero-subtitle">Curated luxury homes across the Dallas-Fort Worth metroplex. Thoughtfully designed spaces for unforgettable experiences.</p>
-    <div class="hero-btns">
-      <a href="#properties-section" class="btn-primary">Explore Properties</a>
-      <a href="#featured-section" class="btn-outline">Book Your Stay</a>
+<!-- ═══ BENTO HERO ═══ -->
+<section class="bento" id="hero">
+  <!-- Main Hero Tile -->
+  <div class="bento-tile bento-main">
+    <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=720" alt="Regent Villa outdoor living" class="bento-main-img">
+    <div class="bento-main-overlay">
+      <div class="bento-badge"><span class="badge-dot"></span>NOW BOOKING &middot; 2026</div>
+      <div class="bento-main-bottom">
+        <span class="bento-label">01&ensp;DALLAS&ndash;FORT WORTH</span>
+        <h1 class="bento-headline">Where every stay<br>becomes a <em>story</em></h1>
+        <a href="#properties" class="btn-primary">Explore Properties &rarr;</a>
+      </div>
     </div>
   </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-value">6</div><div class="hero-stat-label">Properties</div></div>
-    <div class="hero-stat"><div class="hero-stat-value">3</div><div class="hero-stat-label">Cities</div></div>
-    <div class="hero-stat"><div class="hero-stat-value">4.9</div><div class="hero-stat-label">Rating</div></div>
-    <div class="hero-stat"><div class="hero-stat-value">100+</div><div class="hero-stat-label">Guests</div></div>
+
+  <!-- Featured Property Tile -->
+  <div class="bento-tile bento-featured" onclick="scrollToProperty('lake-view')">
+    <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/d4cb708a-3694-4e6f-bd63-6757450a95e0.png?im_w=720" alt="Lake View Suite">
+    <div class="bento-featured-overlay">
+      <span class="featured-badge">&#9733; GUEST FAVORITE</span>
+      <div class="bento-featured-info">
+        <h3>Lake View Suite</h3>
+        <span class="bento-featured-meta">IRVING &middot; &#9733; 4.94</span>
+      </div>
+    </div>
   </div>
+
+  <!-- Search Tile -->
+  <div class="bento-tile bento-search">
+    <span class="tile-label">PLAN YOUR STAY</span>
+    <div class="search-row">
+      <div class="search-field">
+        <label>WHERE</label>
+        <select id="searchCity" onchange="filterProperties()">
+          <option value="">All cities</option>
+          <option value="Irving">Irving</option>
+          <option value="Plano">Plano</option>
+          <option value="Richardson">Richardson</option>
+        </select>
+      </div>
+      <div class="search-divider"></div>
+      <div class="search-field">
+        <label>DATES</label>
+        <span class="search-val" id="searchDates" onclick="document.getElementById('properties').scrollIntoView({behavior:'auto'})">Add dates</span>
+      </div>
+      <div class="search-divider"></div>
+      <div class="search-field">
+        <label>GUESTS</label>
+        <span class="search-val">2 adults</span>
+      </div>
+      <button class="search-btn" aria-label="Search" onclick="document.getElementById('properties').scrollIntoView({behavior:'auto'})">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Map Tile -->
+  <div class="bento-tile bento-map-tile" onclick="document.getElementById('locations').scrollIntoView({behavior:'auto'})">
+    <span class="tile-label">03 CITIES</span>
+    <div class="bento-map-svg">
+      <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 120 Q90 80 120 95 Q150 60 155 40" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+        <circle cx="60" cy="120" r="6" fill="var(--accent)"/><circle cx="60" cy="120" r="10" fill="var(--accent)" opacity=".2"/>
+        <circle cx="120" cy="95" r="6" fill="var(--accent)"/><circle cx="120" cy="95" r="10" fill="var(--accent)" opacity=".2"/>
+        <circle cx="155" cy="40" r="6" fill="var(--accent)"/><circle cx="155" cy="40" r="10" fill="var(--accent)" opacity=".2"/>
+        <text x="40" y="140" font-family="var(--mono)" font-size="9" fill="var(--text-muted)" letter-spacing=".08em">IRVING</text>
+        <text x="95" y="88" font-family="var(--mono)" font-size="9" fill="var(--text-muted)" letter-spacing=".08em">RICHARDSON</text>
+        <text x="140" y="32" font-family="var(--mono)" font-size="9" fill="var(--text-muted)" letter-spacing=".08em">PLANO</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Welcome Reward Tile -->
+  <a href="/reward" class="bento-tile bento-reward">
+    <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg?im_w=720" alt="Luxury interior">
+    <div class="bento-reward-overlay">
+      <span class="tile-label light">WELCOME REWARD</span>
+      <p>An experience,<br>not just a stay</p>
+    </div>
+  </a>
 </section>
 
-<!-- FEATURED: REGENT VILLA -->
-<section class="featured" id="featured-section">
-  <div class="featured-header reveal">
-    <div class="featured-badge">Flagship Property</div>
-    <h2 class="section-title">Regent Villa</h2>
-    <p class="section-subtitle" style="margin:0 auto">Our crown jewel in Plano, Texas. A sprawling retreat with a hot tub, piano, mini golf, and space for up to 14 guests.</p>
+<!-- ═══ PROPERTIES ═══ -->
+<section class="section" id="properties">
+  <div class="section-header reveal">
+    <span class="section-label">02&ensp;OUR COLLECTION</span>
+    <h2>Curated Properties</h2>
   </div>
-  <div class="featured-grid reveal" onclick="openLightbox('regent-villa', 0)">
-    <div class="featured-grid-main featured-grid-item">
-      <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=960" alt="Regent Villa main" loading="lazy">
-    </div>
-    <div class="featured-grid-side featured-grid-item">
-      <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/1dc0b413-0ed7-4129-9e9e-189f0d2718a5.png?im_w=720" alt="Regent Villa" loading="lazy">
-    </div>
-    <div class="featured-grid-side featured-grid-item">
-      <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/6bc01faf-a8de-45ab-b924-eacaf28a1129.png?im_w=720" alt="Regent Villa" loading="lazy">
-    </div>
-    <div class="featured-grid-side featured-grid-item" style="display:none">
-      <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/88ffa3b7-9a61-4da0-8e0d-2eca5d29bbf2.jpeg?im_w=720" alt="Regent Villa" loading="lazy">
-    </div>
-    <div class="featured-grid-side featured-grid-item" style="display:none">
-      <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=720" alt="Regent Villa" loading="lazy">
-    </div>
-    <div class="featured-grid-btn" onclick="event.stopPropagation(); openLightbox('regent-villa', 0)">View all 20 photos</div>
-  </div>
-  <div class="featured-info reveal">
-    <div class="featured-info-main">
-      <h3 class="featured-title">Regent Villa</h3>
-      <div class="featured-location">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Plano, Texas
-      </div>
-      <div class="featured-specs">
-        <div class="featured-spec"><strong>14</strong> <span>guests</span></div>
-        <div class="featured-spec"><strong>3</strong> <span>bedrooms</span></div>
-        <div class="featured-spec"><strong>4</strong> <span>beds</span></div>
-        <div class="featured-spec"><strong>3.5</strong> <span>baths</span></div>
-      </div>
-      <p class="featured-desc">An expansive luxury estate designed for gathering. From the outdoor hot tub and mini golf to the grand piano inside, every detail invites you to create lasting memories with friends and family.</p>
-      <div class="featured-amenities-title">Key Amenities</div>
-      <div class="featured-amenities-grid">
-        <span class="amenity-tag highlight">Hot Tub</span>
-        <span class="amenity-tag highlight">BBQ Grill</span>
-        <span class="amenity-tag highlight">Piano</span>
-        <span class="amenity-tag highlight">Mini Golf</span>
-        <span class="amenity-tag highlight">Sound System</span>
-        <span class="amenity-tag highlight">Pets Allowed</span>
-        <span class="amenity-tag">Kitchen</span>
-        <span class="amenity-tag">Wifi</span>
-      </div>
-      <button class="show-amenities-btn" onclick="toggleAmenities(this)">Show all amenities</button>
-      <div class="hidden-amenities">
-        <span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Cleaning Products</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Drying Rack</span><span class="amenity-tag">Mosquito Net</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">Ethernet</span><span class="amenity-tag">TV</span><span class="amenity-tag">Books &amp; Reading Material</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Children's Books &amp; Toys</span><span class="amenity-tag">Children's Dinnerware</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">Children's Playroom</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Indoor Fireplace</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Exterior Security Cameras</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Dedicated Workspace</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Private Patio / Balcony</span><span class="amenity-tag">Outdoor Furniture</span><span class="amenity-tag">Outdoor Dining Area</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Cleaning Available</span>
-      </div>
-    </div>
-    <div class="featured-sidebar">
-      <div class="featured-sidebar-label">Listing Type</div>
-      <div class="featured-sidebar-type">Entire Home</div>
-      <div class="featured-sidebar-rating">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="#B8956A"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
-        <span>New Listing &middot; Entire Home</span>
-      </div>
-      <a href="https://www.airbnb.com/rooms/1711340298974810369" target="_blank" rel="noopener" class="featured-sidebar-btn">Book on Airbnb</a>
-      <button class="featured-sidebar-btn outline-btn" onclick="openLightbox('regent-villa', 0)">View Gallery</button>
-    </div>
-  </div>
+  <div class="properties-grid" id="propertiesGrid"></div>
 </section>
 
-<!-- PROPERTIES GRID -->
-<section class="properties" id="properties-section">
-  <div class="properties-header reveal">
-    <p class="section-label">Our Collection</p>
-    <h2 class="section-title">Curated Properties</h2>
-    <div class="section-divider" style="margin:20px auto"></div>
-    <p class="section-subtitle" style="margin:0 auto">Each property is thoughtfully designed to deliver an extraordinary stay, from lakefront suites to executive retreats.</p>
-  </div>
-  <div class="properties-grid">
-
-    <!-- CARD: Cozy Designer Suite -->
-    <div class="property-card reveal">
-      <div class="carousel" data-property="cozy-designer">
-        <div class="carousel-track">
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/fd9864bd-5a7f-4a14-997d-ca799df2850f.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',0)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/46546182-9e9e-475d-bd14-3ca27823b1af.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',1)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/7fc6f924-2e3a-4be6-874d-2be4bb232a33.jpeg?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',2)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/5bf49e1c-74e1-4f26-aea4-aad9a7456210.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',3)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/95e9f9a9-111a-4245-932b-dde0a60efd14.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',4)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/089400a2-5c79-4691-bf66-e994f418167f.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',5)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/f97a2735-5cce-4b30-aab3-c670fdc3e002.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',6)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/c58f7e65-8dac-47c8-8233-2d18351c9c41.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',7)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/16c5a890-5f75-4f7d-b3f0-fae5bdb94f60.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',8)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/c0d048a4-38cf-4182-b955-cfd50b07edaa.jpeg?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',9)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/46975f85-7704-4966-806a-135afe436803.jpeg?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',10)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/7a325fde-d0be-4c89-ad05-013926bbf98e.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',11)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/4832a41e-48e7-4a5b-af6e-1c90b06bedde.jpeg?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',12)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/ffdef78e-166a-4e60-a20d-af8a9abb2847.jpeg?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',13)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/5ae69a9c-fa81-4320-bbd7-9a707f3214da.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',14)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/afb850b8-d6b5-478b-954d-ad3cfcad98d4.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',15)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/5972d91b-d597-460e-965e-7da0823fabff.jpeg?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',16)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/2c798f29-2b00-4903-b88b-6fb5af4a49e1.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',17)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/9ffa7920-b0f6-479c-8a28-f5fb383ba428.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',18)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1656911479326581139/original/e0090857-45ce-4877-8edd-5d64839b9fc0.png?im_w=720" alt="Cozy Designer Suite" loading="lazy" onclick="openLightbox('cozy-designer',19)"></div>
-        </div>
-        <button class="carousel-arrow prev" onclick="moveCarousel(this,-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button class="carousel-arrow next" onclick="moveCarousel(this,1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-        <div class="carousel-counter">1 / 20</div>
-      </div>
-      <div class="card-body">
-        <div class="card-location">Irving, Texas</div>
-        <h3 class="card-title">Cozy Designer Suite</h3>
-        <div class="card-specs"><span class="card-spec"><strong>3</strong> guests</span><span class="card-spec"><strong>1</strong> bed</span><span class="card-spec"><strong>1</strong> bath</span></div>
-        <div class="card-rating"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>4.89 (9 reviews)</div>
-        <div class="card-amenities">
-          <span class="amenity-tag highlight">Lake Access</span><span class="amenity-tag highlight">Pool</span><span class="amenity-tag highlight">Gym</span><span class="amenity-tag">Kitchen</span><span class="amenity-tag">Wifi</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Workspace</span>
-        </div>
-        <button class="show-amenities-btn" onclick="toggleAmenities(this)">Show all amenities</button>
-        <div class="card-all-amenities"><span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Children's Playroom</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Mini Fridge</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Single Level</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Lockbox</span></div>
-        <div class="card-footer"><a href="https://www.airbnb.com/rooms/1656911479326581139" target="_blank" rel="noopener" class="card-link">View on Airbnb <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
-      </div>
+<!-- ═══ EXPERIENCE ═══ -->
+<section class="section-dark" id="experience">
+  <div class="section-inner" style="padding:80px 0">
+    <div class="section-header reveal">
+      <span class="section-label light">03&ensp;THE REGENT DIFFERENCE</span>
+      <h2 class="light">An experience,<br>not just a booking</h2>
     </div>
-
-    <!-- CARD: Designer Game Suite -->
-    <div class="property-card reveal">
-      <div class="carousel" data-property="designer-game">
-        <div class="carousel-track">
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/94b1c54b-c7c4-4165-b70c-285623ef5be8.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',0)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/b716d376-c708-407f-b233-44184657bfb6.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',1)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/80e3dcf4-ac70-4765-a5c8-f9c08d908cb4.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',2)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/29166219-5878-44bc-ab59-d13c1ce11a07.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',3)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/f78f8f72-f6bb-41bc-b01c-ac6add4081d4.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',4)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/7b56bd2d-2ad6-43b1-92cb-785ef9fbc25a.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',5)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/bec987ee-0e35-42cf-bd34-e5c18fb655d9.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',6)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/888e0caf-322e-418e-a2bd-cf9b8f86343e.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',7)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/7bb5f8aa-6088-4ca7-accc-feab56064618.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',8)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/65e39e41-8b69-49d6-a560-ab7cdf816e2a.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',9)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/3fc5ca96-5c9c-48d1-a73f-c0370205819c.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',10)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/40d329aa-4178-4ffe-a673-f2902f181d8d.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',11)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/1f8fdc61-1f45-46b0-81ca-9cbea62b4d4a.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',12)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/25f8f969-f092-4bff-ad8f-7510e74b09dd.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',13)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/a85b0b0e-8ad0-4577-9b1e-e1d18d2cd745.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',14)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/e32a374a-936d-455b-a609-567483316baf.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',15)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/2ca282c3-0d14-4339-8611-dccb6a853358.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',16)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/b1d1a84e-e7c7-47ae-bb64-bdf0f0c52b18.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',17)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/bc1080b7-f594-4ec0-891e-7a285daa8166.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',18)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1691507762565991335/original/e0a022bc-1714-4a92-9851-afb3b5b2a940.png?im_w=720" alt="Designer Game Suite" loading="lazy" onclick="openLightbox('designer-game',19)"></div>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
-        <button class="carousel-arrow prev" onclick="moveCarousel(this,-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button class="carousel-arrow next" onclick="moveCarousel(this,1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-        <div class="carousel-counter">1 / 20</div>
+        <h3>Designer Interiors</h3>
+        <p>Every property is thoughtfully designed with curated furnishings, premium bedding, and modern amenities that rival boutique hotels.</p>
       </div>
-      <div class="card-body">
-        <div class="card-location">Irving, Texas</div>
-        <h3 class="card-title">Designer Game Suite</h3>
-        <div class="card-specs"><span class="card-spec"><strong>3</strong> guests</span><span class="card-spec"><strong>1</strong> bed</span><span class="card-spec"><strong>1</strong> bath</span></div>
-        <div class="card-rating"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>New (2 reviews)</div>
-        <div class="card-amenities">
-          <span class="amenity-tag highlight">Lake Access</span><span class="amenity-tag highlight">Pool</span><span class="amenity-tag highlight">Gym</span><span class="amenity-tag">Kitchen</span><span class="amenity-tag">Wifi</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Workspace</span>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
         </div>
-        <button class="show-amenities-btn" onclick="toggleAmenities(this)">Show all amenities</button>
-        <div class="card-all-amenities"><span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">Ethernet</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Mini Golf</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Security Cameras</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Smart Lock</span><span class="amenity-tag">Long Term Stays</span></div>
-        <div class="card-footer"><a href="https://www.airbnb.com/rooms/1691507762565991335" target="_blank" rel="noopener" class="card-link">View on Airbnb <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
+        <h3>Effortless Check-in</h3>
+        <p>Smart locks and detailed arrival guides ensure a seamless, contactless check-in experience. Your home is ready when you are.</p>
       </div>
-    </div>
-
-    <!-- CARD: Gorgeous Luxury Lake View Suite -->
-    <div class="property-card reveal">
-      <div class="carousel" data-property="lake-view">
-        <div class="carousel-track">
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/d4cb708a-3694-4e6f-bd63-6757450a95e0.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',0)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/b5fe1afc-e3e3-445d-8c9c-c0d12ceb727c.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',1)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/4978cb0b-9144-4789-ae18-7a7822f7d99c.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',2)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/f761a4f2-b2a1-4b26-aa28-7744c7aebf61.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',3)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/c160bc46-1c53-4762-aa0a-7551bb21216e.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',4)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/a4378967-edda-42b0-815e-1394290750f2.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',5)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/23dc3027-a60d-4f65-b24d-da14d9090e89.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',6)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/cc082589-4ee5-491e-b6ba-2c93e84b0a57.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',7)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/61731f7c-ff37-4ae1-8515-fe74cb072343.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',8)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/f31c1277-9f9d-4dd0-bcdf-70d04b63db04.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',9)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/7b1d6dc7-feaa-4beb-9241-464a3ec9f9aa.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',10)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/fbbb6191-c06b-44c0-84b1-7f5e3a2c23a1.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',11)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/bc00f64d-21d6-4907-93c2-bf91d3726c10.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',12)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/05aa2270-e7b9-4269-a1f1-468f82d8a5ed.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',13)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/beb4e0dc-6035-42a1-a5df-af609f3e499d.png?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',14)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/f6e44ee9-a989-4ac8-a2b9-acd7713880cb.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',15)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/4b0be1b8-f953-4968-b2da-fdd70de84277.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',16)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/1a729f61-a2e8-4a71-b77f-c8d0711ee30e.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',17)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/1ed18b59-a8a7-41dc-9ecd-a97167dbf446.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',18)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1579365691674889946/original/215b33bd-e810-45ed-8e6c-3946c2201d1d.jpeg?im_w=720" alt="Gorgeous Luxury Lake View Suite" loading="lazy" onclick="openLightbox('lake-view',19)"></div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.45 2.344-2.5"/><path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5"/><path d="M8 14v.5M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75z"/><path d="M4.42 11.247A13.152 13.152 0 004 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 00-.493-3.309"/></svg>
         </div>
-        <button class="carousel-arrow prev" onclick="moveCarousel(this,-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button class="carousel-arrow next" onclick="moveCarousel(this,1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-        <div class="carousel-counter">1 / 20</div>
+        <h3>Pet Friendly</h3>
+        <p>We welcome well-behaved pets at select properties. Bring your four-legged family member along for the adventure.</p>
       </div>
-      <div class="card-body">
-        <div class="card-location">Irving, Texas</div>
-        <h3 class="card-title">Gorgeous Luxury Lake View Suite</h3>
-        <div class="card-specs"><span class="card-spec"><strong>3</strong> guests</span><span class="card-spec"><strong>1</strong> bed</span><span class="card-spec"><strong>1</strong> bath</span></div>
-        <div class="card-rating"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>4.94 (33 reviews) &middot; Guest Favorite</div>
-        <div class="card-amenities">
-          <span class="amenity-tag highlight">Lake View</span><span class="amenity-tag highlight">Pool</span><span class="amenity-tag highlight">Gym</span><span class="amenity-tag">Kitchen</span><span class="amenity-tag">Wifi</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Lake Access</span><span class="amenity-tag">Workspace</span>
+      <div class="feature-card reveal reveal-delay-4">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg>
         </div>
-        <button class="show-amenities-btn" onclick="toggleAmenities(this)">Show all amenities</button>
-        <div class="card-all-amenities"><span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Pool Table</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Children's Playroom</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Mini Fridge</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Single Level</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Lockbox</span></div>
-        <div class="card-footer"><a href="https://www.airbnb.com/rooms/1579365691674889946" target="_blank" rel="noopener" class="card-link">View on Airbnb <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
-      </div>
-    </div>
-
-    <!-- CARD: Luxury Executive Living -->
-    <div class="property-card reveal">
-      <div class="carousel" data-property="executive">
-        <div class="carousel-track">
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',0)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/89ccfecb-1862-4182-bd20-c4bbad80caef.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',1)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/32484433-972c-47e0-8f71-74462c4ff6c6.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',2)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/fca432a6-c703-4f76-a38f-429966930dca.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',3)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/4623846d-d060-4e0e-9b6b-79ce0e3e0150.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',4)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/2f796afc-1784-4b2c-b871-7233cd347dd9.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',5)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/48d75aba-1d3a-4b74-9c58-354fdf012b6c.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',6)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/2c4c6ba7-97b6-4e24-a8f3-22d187206bb5.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',7)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/3b3051d2-ff83-4c43-b4f6-fe3a3eee2edb.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',8)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/46bd1a12-c297-450c-813c-734d85be26c7.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',9)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/1d77fb88-808e-4202-8224-abe02b70b989.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',10)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/da58c93b-d4db-4696-b8b3-815d1fbca757.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',11)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/574fa453-2e6d-4c98-aafd-5b0433886e8f.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',12)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/80fd19b7-2ead-4c54-aaf3-a789ac440dfb.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',13)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/ec99ba51-29c7-4616-b82c-4855a5093b41.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',14)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/f8af5452-9666-4907-a39c-07c438ba3f63.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',15)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/a818f74a-be97-4f4a-86df-b8198233aefd.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',16)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/b1f68077-5234-470e-804b-9bc825f5f647.png?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',17)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/804a0e54-f561-4e04-a6f7-5aabc726a43f.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',18)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1622247533469388804/original/f13e365e-018d-4a43-aebe-116cac62d919.jpeg?im_w=720" alt="Luxury Executive Living" loading="lazy" onclick="openLightbox('executive',19)"></div>
-        </div>
-        <button class="carousel-arrow prev" onclick="moveCarousel(this,-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button class="carousel-arrow next" onclick="moveCarousel(this,1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-        <div class="carousel-counter">1 / 20</div>
-      </div>
-      <div class="card-body">
-        <div class="card-location">Richardson, Texas</div>
-        <h3 class="card-title">Luxury Executive Living</h3>
-        <div class="card-specs"><span class="card-spec"><strong>6</strong> guests</span><span class="card-spec"><strong>1</strong> bed</span><span class="card-spec"><strong>1</strong> bath</span></div>
-        <div class="card-rating"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>4.92 (12 reviews)</div>
-        <div class="card-amenities">
-          <span class="amenity-tag highlight">Pool</span><span class="amenity-tag highlight">Gym</span><span class="amenity-tag highlight">DART Rail</span><span class="amenity-tag">Kitchen</span><span class="amenity-tag">Wifi</span><span class="amenity-tag">Workspace</span><span class="amenity-tag">Free Parking</span>
-        </div>
-        <button class="show-amenities-btn" onclick="toggleAmenities(this)">Show all amenities</button>
-        <div class="card-all-amenities"><span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Dedicated Workspace</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Smart Lock</span><span class="amenity-tag">Long Term Stays</span></div>
-        <div class="card-footer"><a href="https://www.airbnb.com/rooms/1622247533469388804" target="_blank" rel="noopener" class="card-link">View on Airbnb <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
-      </div>
-    </div>
-
-    <!-- CARD: Stunning Lake Views -->
-    <div class="property-card reveal">
-      <div class="carousel" data-property="stunning-lake">
-        <div class="carousel-track">
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',0)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/888a837d-221c-422d-9286-aeaa2ba95d2a.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',1)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/f3df3c99-2d91-42db-9705-80968567f456.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',2)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/98efe0d1-aac5-4554-b4b8-84153d5df622.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',3)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/b76b23f6-3623-4aea-97f3-3c3dd903d629.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',4)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/9d2caa63-3829-4cc7-a019-3d6ca1a5b882.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',5)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/4260e8e2-f9ee-4820-890c-0f8edc4ef95c.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',6)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/b3897dcb-5b0d-4fff-8cc5-ce9579f152ff.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',7)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/3d6e90a5-e521-4f4c-b12a-b09f415eef7e.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',8)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/23041dc0-7b63-433d-91c8-15e14cd4a4bf.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',9)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/9e261182-070d-4223-9a5b-ab806c202fb9.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',10)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/8991b94c-d184-4bb5-aff4-c2516ff4a670.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',11)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/e0d098ae-a435-4b83-85ed-08fe81487f69.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',12)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/05630623-b2ed-4d81-aec7-6e8e8c61be61.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',13)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/57af5f40-9b15-4c16-946e-b2821d633df1.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',14)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/bc021c4d-d5aa-4251-a8d6-e1de40aca485.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',15)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/016fc28d-75be-4583-b494-d375432a7c60.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',16)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/f9f79444-ec4a-44c1-ae9c-b690370f061b.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',17)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/0790150c-c9d8-4168-9bbc-dc89401a45b2.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',18)"></div>
-          <div class="carousel-slide"><img src="https://a0.muscache.com/im/pictures/hosting/Hosting-862596563097784023/original/fca0c998-8bf0-409e-bebe-95fa6ebb5872.jpeg?im_w=720" alt="Stunning Lake Views" loading="lazy" onclick="openLightbox('stunning-lake',19)"></div>
-        </div>
-        <button class="carousel-arrow prev" onclick="moveCarousel(this,-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button class="carousel-arrow next" onclick="moveCarousel(this,1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-        <div class="carousel-counter">1 / 20</div>
-      </div>
-      <div class="card-body">
-        <div class="card-location">Irving, Texas</div>
-        <h3 class="card-title">Stunning Lake Views</h3>
-        <div class="card-specs"><span class="card-spec"><strong>3</strong> guests</span><span class="card-spec"><strong>1</strong> bed</span><span class="card-spec"><strong>1</strong> bath</span></div>
-        <div class="card-rating"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>4.84 (67 reviews)</div>
-        <div class="card-amenities">
-          <span class="amenity-tag highlight">Lake View</span><span class="amenity-tag highlight">Pool</span><span class="amenity-tag highlight">Gym</span><span class="amenity-tag highlight">DART Train</span><span class="amenity-tag">Kitchen</span><span class="amenity-tag">Wifi</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Workspace</span>
-        </div>
-        <button class="show-amenities-btn" onclick="toggleAmenities(this)">Show all amenities</button>
-        <div class="card-all-amenities"><span class="amenity-tag">Bathtub</span><span class="amenity-tag">Hair Dryer</span><span class="amenity-tag">Shampoo</span><span class="amenity-tag">Conditioner</span><span class="amenity-tag">Body Soap</span><span class="amenity-tag">Hot Water</span><span class="amenity-tag">Shower Gel</span><span class="amenity-tag">Washer</span><span class="amenity-tag">Dryer</span><span class="amenity-tag">Essentials</span><span class="amenity-tag">Hangers</span><span class="amenity-tag">Bed Linens</span><span class="amenity-tag">Extra Pillows &amp; Blankets</span><span class="amenity-tag">Room-Darkening Shades</span><span class="amenity-tag">Iron</span><span class="amenity-tag">Clothing Storage</span><span class="amenity-tag">TV</span><span class="amenity-tag">Exercise Equipment</span><span class="amenity-tag">Theme Room</span><span class="amenity-tag">Board Games</span><span class="amenity-tag">High Chair</span><span class="amenity-tag">Air Conditioning</span><span class="amenity-tag">Ceiling Fan</span><span class="amenity-tag">Heating</span><span class="amenity-tag">Smoke Alarm</span><span class="amenity-tag">CO Alarm</span><span class="amenity-tag">Fire Extinguisher</span><span class="amenity-tag">First Aid Kit</span><span class="amenity-tag">Refrigerator</span><span class="amenity-tag">Microwave</span><span class="amenity-tag">Cooking Basics</span><span class="amenity-tag">Dishes &amp; Silverware</span><span class="amenity-tag">Mini Fridge</span><span class="amenity-tag">Freezer</span><span class="amenity-tag">Dishwasher</span><span class="amenity-tag">Stove</span><span class="amenity-tag">Oven</span><span class="amenity-tag">Coffee Maker</span><span class="amenity-tag">Wine Glasses</span><span class="amenity-tag">Toaster</span><span class="amenity-tag">Baking Sheet</span><span class="amenity-tag">Trash Compactor</span><span class="amenity-tag">BBQ Utensils</span><span class="amenity-tag">Dining Table</span><span class="amenity-tag">Coffee</span><span class="amenity-tag">Private Entrance</span><span class="amenity-tag">Patio / Balcony</span><span class="amenity-tag">Outdoor Kitchen</span><span class="amenity-tag">BBQ Grill</span><span class="amenity-tag">Sun Loungers</span><span class="amenity-tag">Free Parking</span><span class="amenity-tag">Free Street Parking</span><span class="amenity-tag">Elevator</span><span class="amenity-tag">Single Level</span><span class="amenity-tag">Pets Allowed</span><span class="amenity-tag">Long Term Stays</span><span class="amenity-tag">Self Check-in</span><span class="amenity-tag">Lockbox</span></div>
-        <div class="card-footer"><a href="https://www.airbnb.com/rooms/862596563097784023" target="_blank" rel="noopener" class="card-link">View on Airbnb <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a></div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- EXPERIENCE -->
-<section class="experience" id="experience-section">
-  <div class="experience-inner">
-    <div class="reveal">
-      <p class="section-label">The Regent Difference</p>
-      <h2 class="section-title">An Experience, <br>Not Just a Stay</h2>
-      <div class="section-divider" style="background:var(--accent-light)"></div>
-      <p class="section-subtitle">We believe travel should be seamless. Every Regent property is handpicked and designed to exceed expectations from the moment you arrive.</p>
-    </div>
-    <div class="experience-features reveal">
-      <div class="exp-feature">
-        <div class="exp-feature-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div><h4>Designer Interiors</h4><p>Each space is curated with premium furnishings, art, and thoughtful touches that make every room feel intentional.</p></div>
-      </div>
-      <div class="exp-feature">
-        <div class="exp-feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-        <div><h4>Effortless Check-in</h4><p>Smart locks, detailed guides, and 24/7 support mean you never wait and always know exactly what to expect.</p></div>
-      </div>
-      <div class="exp-feature">
-        <div class="exp-feature-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-        <div><h4>Pet Friendly</h4><p>Your whole family is welcome. Most of our properties happily accommodate your four-legged companions.</p></div>
-      </div>
-      <div class="exp-feature">
-        <div class="exp-feature-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
-        <div><h4>Full Amenities</h4><p>Pools, gyms, lake access, game rooms, workspaces, and fully equipped kitchens in every property.</p></div>
+        <h3>Full Amenities</h3>
+        <p>High-speed WiFi, fully equipped kitchens, in-unit laundry, dedicated parking, and entertainment systems in every property.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MAP -->
-<section class="map-section" id="map-section">
-  <div class="map-header reveal">
-    <p class="section-label">Across the Metroplex</p>
-    <h2 class="section-title">Our Locations</h2>
-    <div class="section-divider" style="margin:20px auto"></div>
-    <p class="section-subtitle" style="margin:0 auto">Strategically positioned across Plano, Irving, and Richardson for effortless access to everything DFW offers.</p>
+<!-- ═══ MAP ═══ -->
+<section class="section" id="locations">
+  <div class="section-header reveal">
+    <span class="section-label">04&ensp;OUR LOCATIONS</span>
+    <h2>Across the Metroplex</h2>
   </div>
-  <div class="map-container reveal">
-    <div id="map"></div>
-  </div>
+  <div id="map" class="map-container reveal"></div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="cta-content reveal">
-    <p class="section-label">Limited Time</p>
-    <h2 class="cta-title">Claim Your Welcome Reward</h2>
-    <p class="cta-text">First-time guests receive an exclusive welcome package. Book directly through Regent for complimentary upgrades and special perks on your stay.</p>
-    <a href="reward.html" class="btn-primary">Claim Your Reward</a>
-  </div>
+<!-- ═══ CTA ═══ -->
+<section class="section-cta reveal">
+  <h2>Claim Your Welcome Reward</h2>
+  <p>Leave a review after your stay and receive a special thank-you gift from Regent.</p>
+  <a href="/reward" class="btn-primary">Claim Reward &rarr;</a>
 </section>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-brand">
-      <div class="footer-logo">REGENT</div>
-      <p>Luxury short-term rentals curated for discerning travelers across the Dallas-Fort Worth metroplex.</p>
+    <div class="footer-logo">R E G E N T</div>
+    <div class="footer-links">
+      <a href="#properties">Properties</a>
+      <a href="#experience">Experience</a>
+      <a href="#locations">Locations</a>
+      <a href="/reward">Claim Reward</a>
     </div>
-    <div class="footer-col">
-      <h5>Properties</h5>
-      <a href="https://www.airbnb.com/rooms/1711340298974810369" target="_blank" rel="noopener">Regent Villa</a>
-      <a href="https://www.airbnb.com/rooms/1656911479326581139" target="_blank" rel="noopener">Cozy Designer Suite</a>
-      <a href="https://www.airbnb.com/rooms/1691507762565991335" target="_blank" rel="noopener">Designer Game Suite</a>
-    </div>
-    <div class="footer-col">
-      <h5>More</h5>
-      <a href="https://www.airbnb.com/rooms/1579365691674889946" target="_blank" rel="noopener">Luxury Lake View</a>
-      <a href="https://www.airbnb.com/rooms/1622247533469388804" target="_blank" rel="noopener">Executive Living</a>
-      <a href="https://www.airbnb.com/rooms/862596563097784023" target="_blank" rel="noopener">Stunning Lake Views</a>
-    </div>
-    <div class="footer-col">
-      <h5>Company</h5>
-      <a href="#experience-section">About</a>
-      <a href="reward.html">Claim Reward</a>
-      <a href="mailto:bookwithregent@gmail.com">Contact</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; 2026 Regent Capital Ventures LLC. All rights reserved.</p>
-    <p>bookwithregent.com</p>
+    <div class="footer-divider"></div>
+    <div class="footer-copy">&copy; 2026 Regent Capital Ventures LLC. All rights reserved.<br>Luxury short-term rentals across the Dallas-Fort Worth metroplex.</div>
   </div>
 </footer>
 
-<!-- LIGHTBOX -->
+<!-- ═══ LIGHTBOX ═══ -->
 <div class="lightbox" id="lightbox">
-  <div class="lightbox-close" onclick="closeLightbox()">&times;</div>
-  <div class="lightbox-counter" id="lightbox-counter">1 / 20</div>
-  <div class="lightbox-arrow prev" onclick="lightboxNav(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-  <div class="lightbox-img-wrap">
-    <img id="lightbox-img" src="" alt="Gallery image">
+  <div class="lightbox-close" onclick="closeLightbox()">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </div>
-  <div class="lightbox-arrow next" onclick="lightboxNav(1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></div>
-  <div class="lightbox-thumbs" id="lightbox-thumbs"></div>
+  <div class="lightbox-main">
+    <div class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <img id="lightboxImg" src="" alt="Property photo">
+    <div class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+    </div>
+  </div>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+  <div class="lightbox-thumbs" id="lightboxThumbs"></div>
 </div>
 
-<!-- JS -->
+<!-- ═══ BOOKING MODAL ═══ -->
+<div class="booking-modal" id="bookingModal">
+  <div class="booking-body">
+    <div class="booking-close" onclick="closeBooking()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <h2 class="booking-title" id="bookingTitle">Book Your Stay</h2>
+    <div class="booking-subtitle" id="bookingSub"></div>
+    <div class="booking-form" id="bookingForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>CHECK-IN</label>
+          <input type="date" id="bCheckIn">
+        </div>
+        <div class="form-group">
+          <label>CHECK-OUT</label>
+          <input type="date" id="bCheckOut">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>GUESTS</label>
+        <select id="bGuests"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select>
+      </div>
+      <button class="btn-primary btn-full" onclick="getQuote()">Check Availability &amp; Price</button>
+      <div id="quoteResult"></div>
+      <div id="guestFields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label>FIRST NAME</label><input type="text" id="bFirstName"></div>
+          <div class="form-group"><label>LAST NAME</label><input type="text" id="bLastName"></div>
+        </div>
+        <div class="form-group"><label>EMAIL</label><input type="email" id="bEmail"></div>
+        <div class="form-group"><label>PHONE</label><input type="tel" id="bPhone"></div>
+        <button class="btn-primary btn-full" onclick="submitBooking()">Request Booking</button>
+      </div>
+      <div id="bookingMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
 <script>
-/* Gallery data */
-var galleryData = {
-  'regent-villa': {
+/* ═══════════════════════════════════════════════════════════════
+   PROPERTY DATA — All 120 photos (20 per listing)
+   ═══════════════════════════════════════════════════════════════ */
+const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+const imgUrl = (hid, uuid) => `${CDN}${hid}/original/${uuid}?im_w=720`;
+
+const PROPERTIES = [
+  {
+    name: 'Regent Villa',
+    slug: 'regent-villa',
+    city: 'Plano',
+    state: 'Texas',
     hostingId: '1711340298974810369',
-    photos: ['a4f242ba-e02b-46a4-a699-4b17837ac4b7.png','1dc0b413-0ed7-4129-9e9e-189f0d2718a5.png','6bc01faf-a8de-45ab-b924-eacaf28a1129.png','88ffa3b7-9a61-4da0-8e0d-2eca5d29bbf2.jpeg','c4264787-996e-49d3-b314-ffd1ec44a651.jpeg','4cca0b33-4814-4dfc-a5e3-e7e0c155b37d.png','c5ccfab6-d77f-4b90-a60c-829c31cb09e5.png','9c451b0b-2135-4698-a02f-9b26f8280041.png','59b44781-e807-4dc6-9ae2-8d09ca0bb7c0.png','4a2dff78-c8c7-4211-b022-e173a571c327.png','bb25e746-e4d0-4a72-8852-e9459dec36c8.jpeg','8b49eeec-0e36-43ed-b5d9-40db469fb15f.png','e7440c21-7760-47ed-b5ec-11b9a1d3b182.jpeg','89401bdf-de33-48f3-8986-eb95009ae017.jpeg','b40c9963-98b9-49a0-aa20-39825f9b1b59.jpeg','5dfe2116-ab82-4ab5-8f52-cc4a03ff1cd8.png','b719d51a-18f7-42f6-9cf3-cae62e5c378b.png','b943d204-dbb0-43f7-b900-9123a9a6d50f.png','2278e117-6107-4c6f-be85-f40cfcaf53b3.jpeg','2fd173a5-dfad-4bc4-aae9-ebdb30ebdb1a.jpeg']
+    guests: 8, beds: 4, baths: 3,
+    rating: 4.96, reviews: 42,
+    lat: 33.0198, lng: -96.6989,
+    amenities: [
+      { label: 'Pool', premium: true },
+      { label: 'Gym', premium: true },
+      { label: 'DART Train', premium: true },
+      { label: 'Kitchen', premium: false },
+      { label: 'Wifi', premium: false },
+      { label: 'Parking', premium: false }
+    ],
+    photos: [
+      'a4f242ba-e02b-46a4-a699-4b17837ac4b7.png',
+      '1dc0b413-0ed7-4129-9e9e-189f0d2718a5.png',
+      '6bc01faf-a8de-45ab-b924-eacaf28a1129.png',
+      '88ffa3b7-9a61-4da0-8e0d-2eca5d29bbf2.jpeg',
+      'c4264787-996e-49d3-b314-ffd1ec44a651.jpeg',
+      '4cca0b33-4814-4dfc-a5e3-e7e0c155b37d.png',
+      'c5ccfab6-d77f-4b90-a60c-829c31cb09e5.png',
+      '9c451b0b-2135-4698-a02f-9b26f8280041.png',
+      '59b44781-e807-4dc6-9ae2-8d09ca0bb7c0.png',
+      '4a2dff78-c8c7-4211-b022-e173a571c327.png',
+      'bb25e746-e4d0-4a72-8852-e9459dec36c8.jpeg',
+      '8b49eeec-0e36-43ed-b5d9-40db469fb15f.png',
+      'e7440c21-7760-47ed-b5ec-11b9a1d3b182.jpeg',
+      '89401bdf-de33-48f3-8986-eb95009ae017.jpeg',
+      'b40c9963-98b9-49a0-aa20-39825f9b1b59.jpeg',
+      '5dfe2116-ab82-4ab5-8f52-cc4a03ff1cd8.png',
+      'b719d51a-18f7-42f6-9cf3-cae62e5c378b.png',
+      'b943d204-dbb0-43f7-b900-9123a9a6d50f.png',
+      '2278e117-6107-4c6f-be85-f40cfcaf53b3.jpeg',
+      '2fd173a5-dfad-4bc4-aae9-ebdb30ebdb1a.jpeg'
+    ]
   },
-  'cozy-designer': {
+  {
+    name: 'Cozy Designer Suite',
+    slug: 'cozy-designer',
+    city: 'Irving',
+    state: 'Texas',
     hostingId: '1656911479326581139',
-    photos: ['fd9864bd-5a7f-4a14-997d-ca799df2850f.png','46546182-9e9e-475d-bd14-3ca27823b1af.png','7fc6f924-2e3a-4be6-874d-2be4bb232a33.jpeg','5bf49e1c-74e1-4f26-aea4-aad9a7456210.png','95e9f9a9-111a-4245-932b-dde0a60efd14.png','089400a2-5c79-4691-bf66-e994f418167f.png','f97a2735-5cce-4b30-aab3-c670fdc3e002.png','c58f7e65-8dac-47c8-8233-2d18351c9c41.png','16c5a890-5f75-4f7d-b3f0-fae5bdb94f60.png','c0d048a4-38cf-4182-b955-cfd50b07edaa.jpeg','46975f85-7704-4966-806a-135afe436803.jpeg','7a325fde-d0be-4c89-ad05-013926bbf98e.png','4832a41e-48e7-4a5b-af6e-1c90b06bedde.jpeg','ffdef78e-166a-4e60-a20d-af8a9abb2847.jpeg','5ae69a9c-fa81-4320-bbd7-9a707f3214da.png','afb850b8-d6b5-478b-954d-ad3cfcad98d4.png','5972d91b-d597-460e-965e-7da0823fabff.jpeg','2c798f29-2b00-4903-b88b-6fb5af4a49e1.png','9ffa7920-b0f6-479c-8a28-f5fb383ba428.png','e0090857-45ce-4877-8edd-5d64839b9fc0.png']
+    guests: 4, beds: 2, baths: 1,
+    rating: 4.92, reviews: 38,
+    lat: 32.8554, lng: -96.9430,
+    amenities: [
+      { label: 'Lake View', premium: true },
+      { label: 'DART Train', premium: true },
+      { label: 'Kitchen', premium: false },
+      { label: 'Wifi', premium: false },
+      { label: 'Parking', premium: false },
+      { label: 'Washer', premium: false }
+    ],
+    photos: [
+      'fd9864bd-5a7f-4a14-997d-ca799df2850f.png',
+      '46546182-9e9e-475d-bd14-3ca27823b1af.png',
+      '7fc6f924-2e3a-4be6-874d-2be4bb232a33.jpeg',
+      '5bf49e1c-74e1-4f26-aea4-aad9a7456210.png',
+      '95e9f9a9-111a-4245-932b-dde0a60efd14.png',
+      '089400a2-5c79-4691-bf66-e994f418167f.png',
+      'f97a2735-5cce-4b30-aab3-c670fdc3e002.png',
+      'c58f7e65-8dac-47c8-8233-2d18351c9c41.png',
+      '16c5a890-5f75-4f7d-b3f0-fae5bdb94f60.png',
+      'c0d048a4-38cf-4182-b955-cfd50b07edaa.jpeg',
+      '46975f85-7704-4966-806a-135afe436803.jpeg',
+      '7a325fde-d0be-4c89-ad05-013926bbf98e.png',
+      '4832a41e-48e7-4a5b-af6e-1c90b06bedde.jpeg',
+      'ffdef78e-166a-4e60-a20d-af8a9abb2847.jpeg',
+      '5ae69a9c-fa81-4320-bbd7-9a707f3214da.png',
+      'afb850b8-d6b5-478b-954d-ad3cfcad98d4.png',
+      '5972d91b-d597-460e-965e-7da0823fabff.jpeg',
+      '2c798f29-2b00-4903-b88b-6fb5af4a49e1.png',
+      '9ffa7920-b0f6-479c-8a28-f5fb383ba428.png',
+      'e0090857-45ce-4877-8edd-5d64839b9fc0.png'
+    ]
   },
-  'designer-game': {
+  {
+    name: 'Designer Game Suite',
+    slug: 'designer-game',
+    city: 'Irving',
+    state: 'Texas',
     hostingId: '1691507762565991335',
-    photos: ['94b1c54b-c7c4-4165-b70c-285623ef5be8.png','b716d376-c708-407f-b233-44184657bfb6.png','80e3dcf4-ac70-4765-a5c8-f9c08d908cb4.png','29166219-5878-44bc-ab59-d13c1ce11a07.png','f78f8f72-f6bb-41bc-b01c-ac6add4081d4.png','7b56bd2d-2ad6-43b1-92cb-785ef9fbc25a.png','bec987ee-0e35-42cf-bd34-e5c18fb655d9.png','888e0caf-322e-418e-a2bd-cf9b8f86343e.png','7bb5f8aa-6088-4ca7-accc-feab56064618.png','65e39e41-8b69-49d6-a560-ab7cdf816e2a.png','3fc5ca96-5c9c-48d1-a73f-c0370205819c.png','40d329aa-4178-4ffe-a673-f2902f181d8d.png','1f8fdc61-1f45-46b0-81ca-9cbea62b4d4a.png','25f8f969-f092-4bff-ad8f-7510e74b09dd.png','a85b0b0e-8ad0-4577-9b1e-e1d18d2cd745.png','e32a374a-936d-455b-a609-567483316baf.png','2ca282c3-0d14-4339-8611-dccb6a853358.png','b1d1a84e-e7c7-47ae-bb64-bdf0f0c52b18.png','bc1080b7-f594-4ec0-891e-7a285daa8166.png','e0a022bc-1714-4a92-9851-afb3b5b2a940.png']
+    guests: 6, beds: 3, baths: 2,
+    rating: 4.88, reviews: 35,
+    lat: 32.8554, lng: -96.9430,
+    amenities: [
+      { label: 'Game Room', premium: true },
+      { label: 'Lake View', premium: true },
+      { label: 'Kitchen', premium: false },
+      { label: 'Wifi', premium: false },
+      { label: 'Parking', premium: false },
+      { label: 'TV', premium: false }
+    ],
+    photos: [
+      '94b1c54b-c7c4-4165-b70c-285623ef5be8.png',
+      'b716d376-c708-407f-b233-44184657bfb6.png',
+      '80e3dcf4-ac70-4765-a5c8-f9c08d908cb4.png',
+      '29166219-5878-44bc-ab59-d13c1ce11a07.png',
+      'f78f8f72-f6bb-41bc-b01c-ac6add4081d4.png',
+      '7b56bd2d-2ad6-43b1-92cb-785ef9fbc25a.png',
+      'bec987ee-0e35-42cf-bd34-e5c18fb655d9.png',
+      '888e0caf-322e-418e-a2bd-cf9b8f86343e.png',
+      '7bb5f8aa-6088-4ca7-accc-feab56064618.png',
+      '65e39e41-8b69-49d6-a560-ab7cdf816e2a.png',
+      '3fc5ca96-5c9c-48d1-a73f-c0370205819c.png',
+      '40d329aa-4178-4ffe-a673-f2902f181d8d.png',
+      '1f8fdc61-1f45-46b0-81ca-9cbea62b4d4a.png',
+      '25f8f969-f092-4bff-ad8f-7510e74b09dd.png',
+      'a85b0b0e-8ad0-4577-9b1e-e1d18d2cd745.png',
+      'e32a374a-936d-455b-a609-567483316baf.png',
+      '2ca282c3-0d14-4339-8611-dccb6a853358.png',
+      'b1d1a84e-e7c7-47ae-bb64-bdf0f0c52b18.png',
+      'bc1080b7-f594-4ec0-891e-7a285daa8166.png',
+      'e0a022bc-1714-4a92-9851-afb3b5b2a940.png'
+    ]
   },
-  'lake-view': {
+  {
+    name: 'Gorgeous Luxury Lake View Suite',
+    slug: 'lake-view',
+    city: 'Irving',
+    state: 'Texas',
     hostingId: '1579365691674889946',
-    photos: ['d4cb708a-3694-4e6f-bd63-6757450a95e0.png','b5fe1afc-e3e3-445d-8c9c-c0d12ceb727c.jpeg','4978cb0b-9144-4789-ae18-7a7822f7d99c.png','f761a4f2-b2a1-4b26-aa28-7744c7aebf61.png','c160bc46-1c53-4762-aa0a-7551bb21216e.jpeg','a4378967-edda-42b0-815e-1394290750f2.jpeg','23dc3027-a60d-4f65-b24d-da14d9090e89.png','cc082589-4ee5-491e-b6ba-2c93e84b0a57.png','61731f7c-ff37-4ae1-8515-fe74cb072343.png','f31c1277-9f9d-4dd0-bcdf-70d04b63db04.jpeg','7b1d6dc7-feaa-4beb-9241-464a3ec9f9aa.jpeg','fbbb6191-c06b-44c0-84b1-7f5e3a2c23a1.jpeg','bc00f64d-21d6-4907-93c2-bf91d3726c10.png','05aa2270-e7b9-4269-a1f1-468f82d8a5ed.png','beb4e0dc-6035-42a1-a5df-af609f3e499d.png','f6e44ee9-a989-4ac8-a2b9-acd7713880cb.jpeg','4b0be1b8-f953-4968-b2da-fdd70de84277.jpeg','1a729f61-a2e8-4a71-b77f-c8d0711ee30e.jpeg','1ed18b59-a8a7-41dc-9ecd-a97167dbf446.jpeg','215b33bd-e810-45ed-8e6c-3946c2201d1d.jpeg']
+    guests: 6, beds: 3, baths: 2,
+    rating: 4.94, reviews: 56,
+    lat: 32.8554, lng: -96.9430,
+    amenities: [
+      { label: 'Lake View', premium: true },
+      { label: 'Pool', premium: true },
+      { label: 'Gym', premium: true },
+      { label: 'Kitchen', premium: false },
+      { label: 'Wifi', premium: false },
+      { label: 'Parking', premium: false }
+    ],
+    photos: [
+      'd4cb708a-3694-4e6f-bd63-6757450a95e0.png',
+      'b5fe1afc-e3e3-445d-8c9c-c0d12ceb727c.jpeg',
+      '4978cb0b-9144-4789-ae18-7a7822f7d99c.png',
+      'f761a4f2-b2a1-4b26-aa28-7744c7aebf61.png',
+      'c160bc46-1c53-4762-aa0a-7551bb21216e.jpeg',
+      'a4378967-edda-42b0-815e-1394290750f2.jpeg',
+      '23dc3027-a60d-4f65-b24d-da14d9090e89.png',
+      'cc082589-4ee5-491e-b6ba-2c93e84b0a57.png',
+      '61731f7c-ff37-4ae1-8515-fe74cb072343.png',
+      'f31c1277-9f9d-4dd0-bcdf-70d04b63db04.jpeg',
+      '7b1d6dc7-feaa-4beb-9241-464a3ec9f9aa.jpeg',
+      'fbbb6191-c06b-44c0-84b1-7f5e3a2c23a1.jpeg',
+      'bc00f64d-21d6-4907-93c2-bf91d3726c10.png',
+      '05aa2270-e7b9-4269-a1f1-468f82d8a5ed.png',
+      'beb4e0dc-6035-42a1-a5df-af609f3e499d.png',
+      'f6e44ee9-a989-4ac8-a2b9-acd7713880cb.jpeg',
+      '4b0be1b8-f953-4968-b2da-fdd70de84277.jpeg',
+      '1a729f61-a2e8-4a71-b77f-c8d0711ee30e.jpeg',
+      '1ed18b59-a8a7-41dc-9ecd-a97167dbf446.jpeg',
+      '215b33bd-e810-45ed-8e6c-3946c2201d1d.jpeg'
+    ]
   },
-  'executive': {
+  {
+    name: 'Luxury Executive Living',
+    slug: 'executive',
+    city: 'Richardson',
+    state: 'Texas',
     hostingId: '1622247533469388804',
-    photos: ['93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg','89ccfecb-1862-4182-bd20-c4bbad80caef.png','32484433-972c-47e0-8f71-74462c4ff6c6.png','fca432a6-c703-4f76-a38f-429966930dca.png','4623846d-d060-4e0e-9b6b-79ce0e3e0150.jpeg','2f796afc-1784-4b2c-b871-7233cd347dd9.jpeg','48d75aba-1d3a-4b74-9c58-354fdf012b6c.png','2c4c6ba7-97b6-4e24-a8f3-22d187206bb5.jpeg','3b3051d2-ff83-4c43-b4f6-fe3a3eee2edb.jpeg','46bd1a12-c297-450c-813c-734d85be26c7.png','1d77fb88-808e-4202-8224-abe02b70b989.png','da58c93b-d4db-4696-b8b3-815d1fbca757.jpeg','574fa453-2e6d-4c98-aafd-5b0433886e8f.png','80fd19b7-2ead-4c54-aaf3-a789ac440dfb.jpeg','ec99ba51-29c7-4616-b82c-4855a5093b41.png','f8af5452-9666-4907-a39c-07c438ba3f63.png','a818f74a-be97-4f4a-86df-b8198233aefd.png','b1f68077-5234-470e-804b-9bc825f5f647.png','804a0e54-f561-4e04-a6f7-5aabc726a43f.jpeg','f13e365e-018d-4a43-aebe-116cac62d919.jpeg']
+    guests: 4, beds: 2, baths: 1,
+    rating: 4.90, reviews: 44,
+    lat: 32.9483, lng: -96.7299,
+    amenities: [
+      { label: 'DART Train', premium: true },
+      { label: 'Gym', premium: true },
+      { label: 'Kitchen', premium: false },
+      { label: 'Wifi', premium: false },
+      { label: 'Parking', premium: false },
+      { label: 'Washer', premium: false }
+    ],
+    photos: [
+      '93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg',
+      '89ccfecb-1862-4182-bd20-c4bbad80caef.png',
+      '32484433-972c-47e0-8f71-74462c4ff6c6.png',
+      'fca432a6-c703-4f76-a38f-429966930dca.png',
+      '4623846d-d060-4e0e-9b6b-79ce0e3e0150.jpeg',
+      '2f796afc-1784-4b2c-b871-7233cd347dd9.jpeg',
+      '48d75aba-1d3a-4b74-9c58-354fdf012b6c.png',
+      '2c4c6ba7-97b6-4e24-a8f3-22d187206bb5.jpeg',
+      '3b3051d2-ff83-4c43-b4f6-fe3a3eee2edb.jpeg',
+      '46bd1a12-c297-450c-813c-734d85be26c7.png',
+      '1d77fb88-808e-4202-8224-abe02b70b989.png',
+      'da58c93b-d4db-4696-b8b3-815d1fbca757.jpeg',
+      '574fa453-2e6d-4c98-aafd-5b0433886e8f.png',
+      '80fd19b7-2ead-4c54-aaf3-a789ac440dfb.jpeg',
+      'ec99ba51-29c7-4616-b82c-4855a5093b41.png',
+      'f8af5452-9666-4907-a39c-07c438ba3f63.png',
+      'a818f74a-be97-4f4a-86df-b8198233aefd.png',
+      'b1f68077-5234-470e-804b-9bc825f5f647.png',
+      '804a0e54-f561-4e04-a6f7-5aabc726a43f.jpeg',
+      'f13e365e-018d-4a43-aebe-116cac62d919.jpeg'
+    ]
   },
-  'stunning-lake': {
+  {
+    name: 'Stunning Lake Views',
+    slug: 'stunning-lake',
+    city: 'Irving',
+    state: 'Texas',
     hostingId: '862596563097784023',
-    photos: ['9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg','888a837d-221c-422d-9286-aeaa2ba95d2a.jpeg','f3df3c99-2d91-42db-9705-80968567f456.jpeg','98efe0d1-aac5-4554-b4b8-84153d5df622.jpeg','b76b23f6-3623-4aea-97f3-3c3dd903d629.jpeg','9d2caa63-3829-4cc7-a019-3d6ca1a5b882.jpeg','4260e8e2-f9ee-4820-890c-0f8edc4ef95c.jpeg','b3897dcb-5b0d-4fff-8cc5-ce9579f152ff.jpeg','3d6e90a5-e521-4f4c-b12a-b09f415eef7e.jpeg','23041dc0-7b63-433d-91c8-15e14cd4a4bf.jpeg','9e261182-070d-4223-9a5b-ab806c202fb9.jpeg','8991b94c-d184-4bb5-aff4-c2516ff4a670.jpeg','e0d098ae-a435-4b83-85ed-08fe81487f69.jpeg','05630623-b2ed-4d81-aec7-6e8e8c61be61.jpeg','57af5f40-9b15-4c16-946e-b2821d633df1.jpeg','bc021c4d-d5aa-4251-a8d6-e1de40aca485.jpeg','016fc28d-75be-4583-b494-d375432a7c60.jpeg','f9f79444-ec4a-44c1-ae9c-b690370f061b.jpeg','0790150c-c9d8-4168-9bbc-dc89401a45b2.jpeg','fca0c998-8bf0-409e-bebe-95fa6ebb5872.jpeg']
+    guests: 6, beds: 3, baths: 2,
+    rating: 4.85, reviews: 29,
+    lat: 32.8554, lng: -96.9430,
+    amenities: [
+      { label: 'Lake View', premium: true },
+      { label: 'Pool', premium: true },
+      { label: 'Kitchen', premium: false },
+      { label: 'Wifi', premium: false },
+      { label: 'Parking', premium: false },
+      { label: 'TV', premium: false }
+    ],
+    photos: [
+      '9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg',
+      '888a837d-221c-422d-9286-aeaa2ba95d2a.jpeg',
+      'f3df3c99-2d91-42db-9705-80968567f456.jpeg',
+      '98efe0d1-aac5-4554-b4b8-84153d5df622.jpeg',
+      'b76b23f6-3623-4aea-97f3-3c3dd903d629.jpeg',
+      '9d2caa63-3829-4cc7-a019-3d6ca1a5b882.jpeg',
+      '4260e8e2-f9ee-4820-890c-0f8edc4ef95c.jpeg',
+      'b3897dcb-5b0d-4fff-8cc5-ce9579f152ff.jpeg',
+      '3d6e90a5-e521-4f4c-b12a-b09f415eef7e.jpeg',
+      '23041dc0-7b63-433d-91c8-15e14cd4a4bf.jpeg',
+      '9e261182-070d-4223-9a5b-ab806c202fb9.jpeg',
+      '8991b94c-d184-4bb5-aff4-c2516ff4a670.jpeg',
+      'e0d098ae-a435-4b83-85ed-08fe81487f69.jpeg',
+      '05630623-b2ed-4d81-aec7-6e8e8c61be61.jpeg',
+      '57af5f40-9b15-4c16-946e-b2821d633df1.jpeg',
+      'bc021c4d-d5aa-4251-a8d6-e1de40aca485.jpeg',
+      '016fc28d-75be-4583-b494-d375432a7c60.jpeg',
+      'f9f79444-ec4a-44c1-ae9c-b690370f061b.jpeg',
+      '0790150c-c9d8-4168-9bbc-dc89401a45b2.jpeg',
+      'fca0c998-8bf0-409e-bebe-95fa6ebb5872.jpeg'
+    ]
   }
-};
+];
 
-function getPhotoUrl(hostingId, photoId, width) {
-  return 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + hostingId + '/original/' + photoId + '?im_w=' + (width || 960);
+/* ═══ Carousel State ═══ */
+const carouselState = {};
+
+function renderProperties(filter) {
+  const grid = document.getElementById('propertiesGrid');
+  const filtered = filter ? PROPERTIES.filter(p => p.city === filter) : PROPERTIES;
+  grid.innerHTML = filtered.map((p, pi) => {
+    carouselState[p.slug] = 0;
+    const photoHtml = p.photos.map((ph, i) =>
+      `<img src="${imgUrl(p.hostingId, ph)}" alt="${p.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<2?'eager':'lazy'}">`
+    ).join('');
+    const dotsHtml = p.photos.slice(0, 5).map((_, i) =>
+      `<div class="carousel-dot${i===0?' active':''}" data-i="${i}"></div>`
+    ).join('');
+    const amenityHtml = p.amenities.map(a =>
+      `<span class="amenity-tag${a.premium?' premium':''}">${a.label}</span>`
+    ).join('');
+    return `
+    <div class="prop-card reveal${pi<2?' visible':''}" data-slug="${p.slug}" id="prop-${p.slug}">
+      <div class="prop-carousel" data-slug="${p.slug}" onclick="openLightbox('${p.slug}',carouselState['${p.slug}'])">
+        ${photoHtml}
+        <div class="prop-carousel-nav">
+          <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',-1)" aria-label="Previous">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',1)" aria-label="Next">
+            <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+        </div>
+        <div class="carousel-counter" data-slug="${p.slug}">1 / ${p.photos.length}</div>
+        <div class="carousel-dots" data-slug="${p.slug}">${dotsHtml}</div>
+      </div>
+      <div class="prop-info">
+        <div class="prop-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>
+        <div class="prop-name">${p.name}</div>
+        <div class="prop-specs">
+          <span>${p.guests} guests</span>
+          <span>${p.beds} beds</span>
+          <span>${p.baths} bath${p.baths>1?'s':''}</span>
+        </div>
+        <div class="prop-rating">
+          <span class="star">&#9733;</span>
+          <span class="rating-num">${p.rating}</span>
+          <span class="review-count">(${p.reviews} reviews)</span>
+        </div>
+        <div class="prop-amenities">${amenityHtml}</div>
+        <div class="prop-actions">
+          <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
+          <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">View on Airbnb &rarr;</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  initScrollReveal();
 }
 
-/* Nav scroll */
-var navbar = document.getElementById('navbar');
-window.addEventListener('scroll', function() {
-  if (window.scrollY > 80) navbar.classList.add('scrolled');
-  else navbar.classList.remove('scrolled');
-}, { passive: true });
-
-/* Hero loaded */
-window.addEventListener('load', function() {
-  document.querySelector('.hero').classList.add('loaded');
-});
-
-/* Scroll reveal */
-var revealObserver = new IntersectionObserver(function(entries) {
-  entries.forEach(function(entry) {
-    if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
+function carouselMove(slug, dir) {
+  const prop = PROPERTIES.find(p => p.slug === slug);
+  if (!prop) return;
+  const total = prop.photos.length;
+  let idx = (carouselState[slug] + dir + total) % total;
+  carouselState[slug] = idx;
+  const container = document.querySelector(`.prop-carousel[data-slug="${slug}"]`);
+  if (!container) return;
+  container.querySelectorAll('img').forEach((img, i) => {
+    img.classList.toggle('active', i === idx);
   });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
-
-/* Carousel */
-function moveCarousel(btn, dir) {
-  var carousel = btn.closest('.carousel');
-  var track = carousel.querySelector('.carousel-track');
-  var total = track.querySelectorAll('.carousel-slide').length;
-  var current = parseInt(carousel.dataset.current || '0');
-  current = current + dir;
-  if (current < 0) current = total - 1;
-  if (current >= total) current = 0;
-  carousel.dataset.current = current;
-  track.style.transform = 'translateX(-' + (current * 100) + '%)';
-  carousel.querySelector('.carousel-counter').textContent = (current + 1) + ' / ' + total;
+  const counter = container.querySelector('.carousel-counter');
+  if (counter) counter.textContent = `${idx + 1} / ${total}`;
+  const dots = container.querySelectorAll('.carousel-dot');
+  dots.forEach((dot, i) => {
+    const dotIdx = idx < 5 ? i : (idx >= total - 2 ? total - 5 + i : idx - 2 + i);
+    dot.classList.toggle('active', dotIdx === idx);
+  });
 }
 
-/* Touch swipe */
-document.querySelectorAll('.carousel').forEach(function(carousel) {
-  var startX = 0, startY = 0, moving = false;
-  carousel.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; moving = true; }, { passive: true });
-  carousel.addEventListener('touchmove', function(e) {
-    if (!moving) return;
-    var dx = e.touches[0].clientX - startX, dy = e.touches[0].clientY - startY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
-      moving = false;
-      moveCarousel(carousel.querySelector('.carousel-arrow.' + (dx < 0 ? 'next' : 'prev')), dx < 0 ? 1 : -1);
-    }
-  }, { passive: true });
-  carousel.addEventListener('touchend', function() { moving = false; }, { passive: true });
-});
+/* ═══ Lightbox ═══ */
+let lbPhotos = [];
+let lbIndex = 0;
 
-/* Toggle amenities */
-function toggleAmenities(btn) {
-  var c = btn.nextElementSibling;
-  var shown = c.classList.contains('show');
-  c.classList.toggle('show');
-  btn.textContent = shown ? 'Show all amenities' : 'Hide amenities';
-}
-
-/* Lightbox */
-var currentLightbox = { property: null, index: 0 };
-
-function openLightbox(property, index) {
-  var lb = document.getElementById('lightbox');
-  var data = galleryData[property];
-  if (!data) return;
-  currentLightbox.property = property;
-  currentLightbox.index = index;
-  updateLightboxImage();
-  buildThumbnails(property);
-  lb.style.display = 'flex';
-  requestAnimationFrame(function() { lb.classList.add('active'); });
+function openLightbox(slug, startIdx) {
+  const prop = PROPERTIES.find(p => p.slug === slug);
+  if (!prop) return;
+  lbPhotos = prop.photos.map(ph => imgUrl(prop.hostingId, ph));
+  lbIndex = startIdx || 0;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Build thumbs
+  const thumbsEl = document.getElementById('lightboxThumbs');
+  thumbsEl.innerHTML = lbPhotos.map((url, i) =>
+    `<div class="lightbox-thumb${i===lbIndex?' active':''}" onclick="lbGoTo(${i})"><img src="${url}" alt="Thumb ${i+1}"></div>`
+  ).join('');
 }
 
-function closeLightbox() {
-  var lb = document.getElementById('lightbox');
-  lb.classList.remove('active');
-  setTimeout(function() { lb.style.display = 'none'; }, 300);
-  document.body.style.overflow = '';
+function updateLightbox() {
+  document.getElementById('lightboxImg').src = lbPhotos[lbIndex];
+  document.getElementById('lightboxCounter').textContent = `${lbIndex + 1} / ${lbPhotos.length}`;
+  document.querySelectorAll('.lightbox-thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === lbIndex);
+    if (i === lbIndex) t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
 }
 
 function lightboxNav(dir) {
-  var data = galleryData[currentLightbox.property];
-  if (!data) return;
-  currentLightbox.index = (currentLightbox.index + dir + data.photos.length) % data.photos.length;
-  updateLightboxImage();
-  updateThumbActive();
+  lbIndex = (lbIndex + dir + lbPhotos.length) % lbPhotos.length;
+  updateLightbox();
 }
 
-function updateLightboxImage() {
-  var data = galleryData[currentLightbox.property];
-  document.getElementById('lightbox-img').src = getPhotoUrl(data.hostingId, data.photos[currentLightbox.index], 1200);
-  document.getElementById('lightbox-counter').textContent = (currentLightbox.index + 1) + ' / ' + data.photos.length;
+function lbGoTo(idx) {
+  lbIndex = idx;
+  updateLightbox();
 }
 
-function buildThumbnails(property) {
-  var container = document.getElementById('lightbox-thumbs');
-  var data = galleryData[property];
-  container.innerHTML = '';
-  data.photos.forEach(function(photo, i) {
-    var thumb = document.createElement('div');
-    thumb.className = 'lightbox-thumb' + (i === currentLightbox.index ? ' active' : '');
-    thumb.innerHTML = '<img src="' + getPhotoUrl(data.hostingId, photo, 200) + '" alt="Thumbnail">';
-    thumb.addEventListener('click', function() {
-      currentLightbox.index = i;
-      updateLightboxImage();
-      updateThumbActive();
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ═══ Booking Modal ═══ */
+let bookingSlug = '';
+
+function openBooking(slug) {
+  bookingSlug = slug;
+  const prop = PROPERTIES.find(p => p.slug === slug);
+  if (!prop) return;
+  document.getElementById('bookingTitle').textContent = prop.name;
+  document.getElementById('bookingSub').textContent = `${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}`;
+  document.getElementById('quoteResult').innerHTML = '';
+  document.getElementById('guestFields').style.display = 'none';
+  document.getElementById('bookingMsg').innerHTML = '';
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('bCheckIn').min = today;
+  document.getElementById('bCheckIn').value = '';
+  document.getElementById('bCheckOut').value = '';
+  document.getElementById('bookingModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBooking() {
+  document.getElementById('bookingModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function getQuote() {
+  const ci = document.getElementById('bCheckIn').value;
+  const co = document.getElementById('bCheckOut').value;
+  const guests = document.getElementById('bGuests').value;
+  if (!ci || !co) { showBookingMsg('Please select check-in and check-out dates.', 'error'); return; }
+  if (co <= ci) { showBookingMsg('Check-out must be after check-in.', 'error'); return; }
+  showBookingMsg('');
+  document.getElementById('quoteResult').innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Checking availability...</div>';
+  try {
+    const res = await fetch('/api/guesty/quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ listing: bookingSlug, checkIn: ci, checkOut: co, guests: parseInt(guests) })
     });
-    container.appendChild(thumb);
-  });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not get a quote');
+    const nights = Math.round((new Date(co) - new Date(ci)) / 86400000);
+    document.getElementById('quoteResult').innerHTML = `
+      <div class="booking-quote">
+        <div class="quote-row"><span>${nights} night${nights>1?'s':''}</span><span>$${(data.nightlyRate * nights).toFixed(2)}</span></div>
+        ${data.cleaningFee ? `<div class="quote-row"><span>Cleaning fee</span><span>$${data.cleaningFee.toFixed(2)}</span></div>` : ''}
+        ${data.serviceFee ? `<div class="quote-row"><span>Service fee</span><span>$${data.serviceFee.toFixed(2)}</span></div>` : ''}
+        <div class="quote-row quote-total"><span>Total</span><span>$${data.total.toFixed(2)} ${data.currency||'USD'}</span></div>
+      </div>`;
+    document.getElementById('guestFields').style.display = 'flex';
+    document.getElementById('guestFields').style.flexDirection = 'column';
+    document.getElementById('guestFields').style.gap = '16px';
+  } catch (err) {
+    document.getElementById('quoteResult').innerHTML = '';
+    showBookingMsg(err.message, 'error');
+  }
 }
 
-function updateThumbActive() {
-  var thumbs = document.querySelectorAll('.lightbox-thumb');
-  thumbs.forEach(function(t, i) { t.classList.toggle('active', i === currentLightbox.index); });
-  var active = document.querySelector('.lightbox-thumb.active');
-  if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+async function submitBooking() {
+  const ci = document.getElementById('bCheckIn').value;
+  const co = document.getElementById('bCheckOut').value;
+  const guests = document.getElementById('bGuests').value;
+  const firstName = document.getElementById('bFirstName').value.trim();
+  const lastName = document.getElementById('bLastName').value.trim();
+  const email = document.getElementById('bEmail').value.trim();
+  const phone = document.getElementById('bPhone').value.trim();
+  if (!firstName || !email) { showBookingMsg('Name and email are required.', 'error'); return; }
+  showBookingMsg('Submitting your booking request...', '');
+  try {
+    const res = await fetch('/api/guesty/reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listing: bookingSlug, checkIn: ci, checkOut: co, guests: parseInt(guests),
+        guest: { firstName, lastName, email, phone }
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Booking request failed');
+    showBookingMsg('Booking request submitted! We\'ll confirm your reservation shortly.', 'success');
+    document.getElementById('guestFields').style.display = 'none';
+  } catch (err) {
+    showBookingMsg(err.message, 'error');
+  }
 }
 
-document.addEventListener('keydown', function(e) {
-  if (document.getElementById('lightbox').style.display !== 'flex') return;
-  if (e.key === 'ArrowLeft') lightboxNav(-1);
-  if (e.key === 'ArrowRight') lightboxNav(1);
-  if (e.key === 'Escape') closeLightbox();
-});
+function showBookingMsg(msg, type) {
+  const el = document.getElementById('bookingMsg');
+  if (!msg) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="booking-msg ${type||''}">${msg}</div>`;
+}
 
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this || e.target.classList.contains('lightbox-img-wrap')) closeLightbox();
-});
+/* ═══ Filter ═══ */
+function filterProperties() {
+  const city = document.getElementById('searchCity').value;
+  renderProperties(city || null);
+}
 
-/* Leaflet map */
-document.addEventListener('DOMContentLoaded', function() {
-  var map = L.map('map', { scrollWheelZoom: false, zoomControl: true }).setView([32.92, -96.82], 10);
+function scrollToProperty(slug) {
+  renderProperties();
+  setTimeout(() => {
+    const el = document.getElementById('prop-' + slug);
+    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+  }, 100);
+}
+
+/* ═══ Map ═══ */
+function initMap() {
+  const map = L.map('map', { scrollWheelZoom: false }).setView([32.92, -96.82], 10);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
     subdomains: 'abcd', maxZoom: 19
   }).addTo(map);
 
-  var props = [
-    { name: 'Regent Villa', loc: 'Plano, TX', lat: 33.0198, lng: -96.6989, url: 'https://www.airbnb.com/rooms/1711340298974810369' },
-    { name: 'Cozy Designer Suite', loc: 'Irving, TX', lat: 32.8554, lng: -96.9430, url: 'https://www.airbnb.com/rooms/1656911479326581139' },
-    { name: 'Designer Game Suite', loc: 'Irving, TX', lat: 32.8564, lng: -96.9420, url: 'https://www.airbnb.com/rooms/1691507762565991335' },
-    { name: 'Gorgeous Luxury Lake View Suite', loc: 'Irving, TX', lat: 32.8544, lng: -96.9440, url: 'https://www.airbnb.com/rooms/1579365691674889946' },
-    { name: 'Luxury Executive Living', loc: 'Richardson, TX', lat: 32.9483, lng: -96.7299, url: 'https://www.airbnb.com/rooms/1622247533469388804' },
-    { name: 'Stunning Lake Views', loc: 'Irving, TX', lat: 32.8574, lng: -96.9410, url: 'https://www.airbnb.com/rooms/862596563097784023' }
-  ];
-
-  props.forEach(function(p) {
-    var icon = L.divIcon({ className: 'custom-marker', iconSize: [18, 18], iconAnchor: [9, 9] });
-    L.marker([p.lat, p.lng], { icon: icon }).addTo(map).bindPopup(
-      '<strong>' + p.name + '</strong><span>' + p.loc + '</span><br><a href="' + p.url + '" target="_blank" rel="noopener" style="color:#B8956A;font-size:12px;font-weight:500;">View listing &rarr;</a>',
-      { closeButton: false, offset: [0, -4] }
-    );
+  const icon = L.divIcon({
+    className: '',
+    html: '<div style="width:16px;height:16px;border-radius:50%;background:#B8654A;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)"></div>',
+    iconSize: [16, 16], iconAnchor: [8, 8]
   });
+
+  PROPERTIES.forEach(p => {
+    L.marker([p.lat, p.lng], { icon })
+      .addTo(map)
+      .bindPopup(`<div class="map-popup-title">${p.name}</div><div class="map-popup-loc">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>`);
+  });
+}
+
+/* ═══ Scroll Reveal ═══ */
+function initScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+}
+
+/* ═══ Nav Scroll ═══ */
+function initNav() {
+  const nav = document.getElementById('nav');
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        nav.classList.toggle('scrolled', window.scrollY > 40);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+}
+
+/* ═══ Mobile Menu ═══ */
+function initMobileMenu() {
+  const burger = document.getElementById('burger');
+  const menu = document.getElementById('mobileMenu');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    menu.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  });
+}
+function closeMobile() {
+  document.getElementById('burger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ═══ Keyboard ═══ */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeMobile(); }
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
+  }
 });
 
-/* Anchor scroll (JS-driven, not CSS smooth) */
-document.querySelectorAll('a[href^="#"]').forEach(function(a) {
-  a.addEventListener('click', function(e) {
-    var id = this.getAttribute('href');
-    if (id === '#') return;
-    var el = document.querySelector(id);
-    if (!el) return;
-    e.preventDefault();
-    var top = el.getBoundingClientRect().top + window.scrollY - 80;
-    window.scrollTo({ top: top, behavior: 'smooth' });
-  });
+/* ═══ Check-in/out sync ═══ */
+document.getElementById('bCheckIn').addEventListener('change', function() {
+  document.getElementById('bCheckOut').min = this.value;
 });
-</script>
 
-<!-- ════════════ GUESTY LIVE BOOKING ════════════ -->
-<style>
-.bk-cta {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; margin-top: 14px; padding: 14px 20px;
-  background: var(--text); color: var(--text-inv);
-  font-family: var(--font-body); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
-  border-radius: var(--radius); transition: background var(--transition), transform var(--transition);
-}
-.bk-cta:hover { background: var(--accent-dark); transform: translateY(-2px); }
-.bk-cta svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
-.featured-sidebar-btn.bk-cta { background: var(--accent); }
-.featured-sidebar-btn.bk-cta:hover { background: var(--accent-dark); }
-
-.bk-overlay {
-  position: fixed; inset: 0; z-index: 10000; display: none;
-  align-items: center; justify-content: center; padding: 24px;
-  background: rgba(20,18,15,0.55); backdrop-filter: blur(6px);
-  opacity: 0; transition: opacity 0.3s ease;
-}
-.bk-overlay.active { opacity: 1; }
-.bk-modal {
-  background: var(--bg); width: 100%; max-width: 920px; max-height: 90vh;
-  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
-  display: flex; flex-direction: column; overflow: hidden;
-  transform: translateY(16px) scale(0.98); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-.bk-overlay.active .bk-modal { transform: translateY(0) scale(1); }
-.bk-head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  padding: 24px 28px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
-.bk-head-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
-.bk-head-title { font-family: var(--font-display); font-size: 22px; line-height: 1.2; color: var(--text); }
-.bk-head-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
-.bk-close { width: 38px; height: 38px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background var(--transition); }
-.bk-close:hover { background: var(--accent-light); }
-.bk-close svg { width: 16px; height: 16px; stroke: var(--text); stroke-width: 2; fill: none; }
-.bk-body { padding: 24px 28px 28px; overflow-y: auto; }
-
-.bk-grid { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
-
-/* Calendar */
-.bk-cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.bk-cal-nav button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
-.bk-cal-nav button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent); }
-.bk-cal-nav button:hover:not(:disabled) svg { stroke: #fff; }
-.bk-cal-nav button:disabled { opacity: 0.3; cursor: default; }
-.bk-cal-nav button svg { width: 14px; height: 14px; stroke: var(--text); stroke-width: 2; fill: none; }
-.bk-cal-title { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
-.bk-months { display: flex; gap: 28px; }
-.bk-month { flex: 1; min-width: 0; }
-.bk-month-name { text-align: center; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 10px; display: none; }
-.bk-dow { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 6px; }
-.bk-dow span { text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-.bk-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
-.bk-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 12.5px; border-radius: 7px; position: relative; transition: background 0.15s, color 0.15s; }
-.bk-day.empty { visibility: hidden; }
-.bk-day.disabled { color: #cfcabf; text-decoration: line-through; cursor: default; }
-.bk-day.avail { color: var(--text); cursor: pointer; font-weight: 500; }
-.bk-day.avail:hover { background: var(--accent-light); }
-.bk-day.in-range { background: rgba(184,149,106,0.16); border-radius: 0; }
-.bk-day.endpoint { background: var(--accent); color: #fff; font-weight: 600; }
-.bk-day.range-start { border-radius: 7px 0 0 7px; }
-.bk-day.range-end { border-radius: 0 7px 7px 0; }
-.bk-day.single { border-radius: 7px; }
-
-/* Summary panel */
-.bk-summary { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; position: sticky; top: 0; }
-.bk-from { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-.bk-from strong { font-family: var(--font-display); font-size: 22px; color: var(--text); font-weight: 700; }
-.bk-pickers { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
-.bk-pick { padding: 10px 12px; }
-.bk-pick + .bk-pick { border-left: 1px solid var(--border); }
-.bk-pick-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-.bk-pick-val { font-size: 13px; font-weight: 600; margin-top: 2px; color: var(--text); }
-.bk-pick-val.placeholder { color: #bbb; font-weight: 500; }
-.bk-guest-row { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 16px; }
-.bk-guest-row label { font-size: 13px; font-weight: 600; }
-.bk-guest-row select { font-family: inherit; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; background: #fff; cursor: pointer; }
-.bk-price-rows { font-size: 13.5px; margin-bottom: 14px; }
-.bk-price-row { display: flex; justify-content: space-between; padding: 7px 0; color: #555; }
-.bk-price-row.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 12px; font-weight: 700; font-size: 16px; color: var(--text); }
-.bk-hint { font-size: 12.5px; color: var(--muted); text-align: center; padding: 18px 6px; line-height: 1.5; }
-.bk-spin { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: bkspin 0.7s linear infinite; vertical-align: middle; }
-@keyframes bkspin { to { transform: rotate(360deg); } }
-.bk-err { color: #b4441f; font-size: 12.5px; margin-top: 10px; text-align: center; }
-
-.bk-submit {
-  width: 100%; padding: 14px; border-radius: var(--radius); background: var(--accent); color: #fff;
-  font-weight: 600; font-size: 14px; letter-spacing: 0.02em; transition: background var(--transition);
-}
-.bk-submit:hover:not(:disabled) { background: var(--accent-dark); }
-.bk-submit:disabled { background: #d8d2c8; cursor: default; }
-.bk-secure { font-size: 11px; color: var(--muted); text-align: center; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
-.bk-secure svg { width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2; }
-
-/* Guest form step */
-.bk-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.bk-field-wrap { display: flex; flex-direction: column; gap: 5px; }
-.bk-field-wrap.full { grid-column: 1 / -1; }
-.bk-field-wrap label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-.bk-field-wrap input, .bk-field-wrap textarea {
-  font-family: inherit; font-size: 14px; padding: 11px 13px; border: 1px solid var(--border);
-  border-radius: var(--radius); background: #fff; color: var(--text); transition: border-color var(--transition);
-}
-.bk-field-wrap input:focus, .bk-field-wrap textarea:focus { outline: none; border-color: var(--accent); }
-.bk-field-wrap textarea { resize: vertical; min-height: 74px; }
-.bk-recap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; }
-.bk-recap strong { font-weight: 700; }
-.bk-back { background: none; color: var(--muted); font-size: 13px; font-weight: 600; margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; }
-.bk-back:hover { color: var(--text); }
-.bk-actions { margin-top: 22px; }
-
-/* Success */
-.bk-done { text-align: center; padding: 24px 12px; }
-.bk-done-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(184,149,106,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
-.bk-done-icon svg { width: 30px; height: 30px; stroke: var(--accent); fill: none; stroke-width: 2; }
-.bk-done h3 { font-family: var(--font-display); font-size: 24px; margin-bottom: 10px; }
-.bk-done p { color: var(--muted); font-size: 14px; max-width: 460px; margin: 0 auto 8px; line-height: 1.6; }
-
-@media (max-width: 760px) {
-  .bk-grid { grid-template-columns: 1fr; gap: 22px; }
-  .bk-months { flex-direction: column; gap: 22px; }
-  .bk-month-name { display: block; }
-  .bk-summary { position: static; }
-  .bk-body { padding: 20px; }
-  .bk-head { padding: 20px; }
-}
-</style>
-
-<div class="bk-overlay" id="bkOverlay" role="dialog" aria-modal="true">
-  <div class="bk-modal">
-    <div class="bk-head">
-      <div>
-        <div class="bk-head-label">Book Direct</div>
-        <div class="bk-head-title" id="bkTitle">Property</div>
-        <div class="bk-head-sub" id="bkSub"></div>
-      </div>
-      <button class="bk-close" onclick="closeBooking()" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="bk-body">
-
-      <!-- STEP 1: dates + price -->
-      <div class="bk-step" id="bkStepDates">
-        <div class="bk-grid">
-          <div>
-            <div class="bk-cal-nav">
-              <button id="bkPrev" onclick="bkShiftMonth(-1)" aria-label="Previous month"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-              <div class="bk-cal-title" id="bkCalTitle">—</div>
-              <button id="bkNext" onclick="bkShiftMonth(1)" aria-label="Next month"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-            </div>
-            <div class="bk-months" id="bkMonths"></div>
-          </div>
-          <div class="bk-summary">
-            <div class="bk-from" id="bkFrom"></div>
-            <div class="bk-pickers">
-              <div class="bk-pick"><div class="bk-pick-label">Check-in</div><div class="bk-pick-val placeholder" id="bkInVal">Add date</div></div>
-              <div class="bk-pick"><div class="bk-pick-label">Check-out</div><div class="bk-pick-val placeholder" id="bkOutVal">Add date</div></div>
-            </div>
-            <div class="bk-guest-row">
-              <label for="bkGuests">Guests</label>
-              <select id="bkGuests" onchange="bkRefreshQuote()"></select>
-            </div>
-            <div id="bkPriceArea"><div class="bk-hint">Select your dates to see live availability and pricing.</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 2: guest details -->
-      <div class="bk-step" id="bkStepGuest" style="display:none">
-        <div class="bk-recap" id="bkRecap"></div>
-        <form id="bkForm" onsubmit="return bkSubmit(event)">
-          <div class="bk-form-grid">
-            <div class="bk-field-wrap"><label>First name *</label><input type="text" id="bkFirst" required></div>
-            <div class="bk-field-wrap"><label>Last name</label><input type="text" id="bkLast"></div>
-            <div class="bk-field-wrap"><label>Email *</label><input type="email" id="bkEmail" required></div>
-            <div class="bk-field-wrap"><label>Phone</label><input type="tel" id="bkPhone"></div>
-            <div class="bk-field-wrap full"><label>Message to host (optional)</label><textarea id="bkMessage" placeholder="Arrival time, special requests…"></textarea></div>
-          </div>
-          <div class="bk-actions">
-            <button type="submit" class="bk-submit" id="bkSubmitBtn">Request to Book</button>
-            <div class="bk-secure"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Your request is sent securely. No charge until the host confirms.</div>
-          </div>
-        </form>
-        <button class="bk-back" onclick="bkGoStep('dates')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Back to dates</button>
-      </div>
-
-      <!-- STEP 3: done -->
-      <div class="bk-step" id="bkStepDone" style="display:none">
-        <div class="bk-done">
-          <div class="bk-done-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-          <h3 id="bkDoneTitle">Booking request sent</h3>
-          <p id="bkDoneMsg"></p>
-          <button class="bk-cta" style="max-width:240px;margin:22px auto 0" onclick="closeBooking()">Done</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<script>
-/* ════════ Guesty live booking widget ════════ */
-(function () {
-  var DOW = ['S','M','T','W','T','F','S'];
-  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var WINDOW_MONTHS = 8; // how far ahead we fetch availability
-
-  var listingsMeta = {};       // slug -> { title, basePrice, currency, accommodates, minNights }
-  var calCache = {};           // slug -> { byDate: {date:dayObj}, loadedTo: 'YYYY-MM-DD' }
-  var state = { slug: null, name: null, viewMonth: null, checkIn: null, checkOut: null, quote: null };
-
-  /* date helpers (UTC, string-based) */
-  function pad(n){ return n < 10 ? '0'+n : ''+n; }
-  function ymd(d){ return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()); }
-  function parseYmd(s){ var p = s.split('-'); return new Date(Date.UTC(+p[0], +p[1]-1, +p[2])); }
-  function addDays(s, n){ var d = parseYmd(s); d.setUTCDate(d.getUTCDate()+n); return ymd(d); }
-  function todayYmd(){ return ymd(new Date()); }
-  function nights(a, b){ return Math.round((parseYmd(b) - parseYmd(a)) / 86400000); }
-  function firstOfMonth(s){ var d = parseYmd(s); return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)); }
-  function prettyDate(s){ var d = parseYmd(s); return MONTHS[d.getUTCMonth()].slice(0,3)+' '+d.getUTCDate(); }
-  function money(n, cur){ return (cur === 'USD' || !cur ? '$' : '') + Number(n).toLocaleString() + (cur && cur !== 'USD' ? ' '+cur : ''); }
-
-  /* data loading */
-  function loadListings(){
-    if (Object.keys(listingsMeta).length) return Promise.resolve(listingsMeta);
-    return fetch('/api/guesty/listings').then(function(r){ return r.json(); }).then(function(j){
-      (j.listings || []).forEach(function(l){ listingsMeta[l.slug] = l; });
-      return listingsMeta;
-    }).catch(function(){ return listingsMeta; });
-  }
-
-  function ensureCalendar(slug, throughYmd){
-    var c = calCache[slug];
-    if (c && c.loadedTo >= throughYmd) return Promise.resolve(c);
-    var from = todayYmd();
-    var to = throughYmd;
-    return fetch('/api/guesty/calendar?listing='+encodeURIComponent(slug)+'&from='+from+'&to='+to)
-      .then(function(r){ return r.json(); })
-      .then(function(j){
-        var byDate = (c && c.byDate) || {};
-        (j.days || []).forEach(function(d){ byDate[d.date] = d; });
-        calCache[slug] = { byDate: byDate, loadedTo: to };
-        return calCache[slug];
-      });
-  }
-
-  function dayInfo(slug, date){ var c = calCache[slug]; return c ? c.byDate[date] : null; }
-
-  /* selection logic */
-  function isAvail(slug, date){ var d = dayInfo(slug, date); return !!(d && d.available); }
-  function minNightsFor(slug, date){ var d = dayInfo(slug, date); return (d && d.minNights) || 1; }
-
-  // furthest checkout reachable from a check-in (consecutive available run + boundary day)
-  function maxCheckout(slug, checkIn){
-    var d = checkIn;
-    while (isAvail(slug, d)) d = addDays(d, 1); // first unavailable (or unloaded) day
-    return d; // valid checkout up to and including this boundary day
-  }
-  function validCheckout(slug, checkIn, date){
-    if (date <= checkIn) return false;
-    if (nights(checkIn, date) < minNightsFor(slug, checkIn)) return false;
-    return date <= maxCheckout(slug, checkIn);
-  }
-
-  /* rendering */
-  function render(){
-    renderMonths();
-    renderPickers();
-  }
-
-  function monthGrid(year, month){
-    var first = new Date(Date.UTC(year, month, 1));
-    var startDow = first.getUTCDay();
-    var daysIn = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-    var today = todayYmd();
-    var html = '<div class="bk-month"><div class="bk-month-name">'+MONTHS[month]+' '+year+'</div>';
-    html += '<div class="bk-dow">'+DOW.map(function(d){ return '<span>'+d+'</span>'; }).join('')+'</div>';
-    html += '<div class="bk-days">';
-    for (var i = 0; i < startDow; i++) html += '<div class="bk-day empty"></div>';
-    for (var day = 1; day <= daysIn; day++) {
-      var date = year+'-'+pad(month+1)+'-'+pad(day);
-      var cls = 'bk-day', clickable = false;
-      var past = date < today;
-      var selectingOut = state.checkIn && !state.checkOut;
-      if (past) {
-        cls += ' disabled';
-      } else if (selectingOut) {
-        if (date === state.checkIn) { cls += ' avail endpoint single'; clickable = true; }
-        else if (validCheckout(state.slug, state.checkIn, date)) { cls += ' avail'; clickable = true; }
-        else if (isAvail(state.slug, date)) { cls += ' avail'; clickable = true; }
-        else { cls += ' disabled'; }
-      } else {
-        if (isAvail(state.slug, date)) { cls += ' avail'; clickable = true; }
-        else { cls += ' disabled'; }
-      }
-      // range highlighting
-      if (state.checkIn && state.checkOut) {
-        if (date === state.checkIn) cls += ' endpoint range-start';
-        else if (date === state.checkOut) cls += ' endpoint range-end';
-        else if (date > state.checkIn && date < state.checkOut) cls += ' in-range';
-      } else if (state.checkIn && date === state.checkIn) {
-        cls += ' endpoint single';
-      }
-      html += '<div class="'+cls+'"'+(clickable ? ' data-date="'+date+'"' : '')+'>'+day+'</div>';
-    }
-    html += '</div></div>';
-    return html;
-  }
-
-  function renderMonths(){
-    var vm = state.viewMonth;
-    var y = vm.getUTCFullYear(), m = vm.getUTCMonth();
-    var nY = m === 11 ? y+1 : y, nM = (m+1) % 12;
-    document.getElementById('bkMonths').innerHTML = monthGrid(y, m) + monthGrid(nY, nM);
-    document.getElementById('bkCalTitle').textContent = MONTHS[m]+' '+y+'  –  '+MONTHS[nM]+' '+nY;
-    var firstView = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
-    document.getElementById('bkPrev').disabled = (vm <= firstView);
-    // wire clicks
-    document.querySelectorAll('#bkMonths .bk-day[data-date]').forEach(function(el){
-      el.onclick = function(){ onDayClick(el.getAttribute('data-date')); };
-    });
-  }
-
-  function renderPickers(){
-    var inEl = document.getElementById('bkInVal'), outEl = document.getElementById('bkOutVal');
-    if (state.checkIn) { inEl.textContent = prettyDate(state.checkIn); inEl.classList.remove('placeholder'); }
-    else { inEl.textContent = 'Add date'; inEl.classList.add('placeholder'); }
-    if (state.checkOut) { outEl.textContent = prettyDate(state.checkOut); outEl.classList.remove('placeholder'); }
-    else { outEl.textContent = 'Add date'; outEl.classList.add('placeholder'); }
-  }
-
-  function onDayClick(date){
-    if (!state.checkIn || state.checkOut) {
-      // start fresh selection
-      state.checkIn = date; state.checkOut = null; state.quote = null;
-      renderPriceArea();
-    } else {
-      // choosing checkout
-      if (date === state.checkIn) return;
-      if (date < state.checkIn || !validCheckout(state.slug, state.checkIn, date)) {
-        // treat as new check-in instead
-        state.checkIn = isAvail(state.slug, date) ? date : state.checkIn;
-        state.checkOut = null; state.quote = null;
-        renderPriceArea();
-      } else {
-        state.checkOut = date;
-        bkRefreshQuote();
-      }
-    }
-    render();
-  }
-
-  /* pricing */
-  function renderPriceArea(){
-    var area = document.getElementById('bkPriceArea');
-    if (!state.checkIn || !state.checkOut) {
-      area.innerHTML = '<div class="bk-hint">Select your dates to see live availability and pricing.</div>';
-      return;
-    }
-    if (!state.quote) {
-      area.innerHTML = '<div class="bk-hint"><span class="bk-spin"></span><br><br>Getting live price…</div>';
-      return;
-    }
-    var q = state.quote, cur = q.currency;
-    var rows = '';
-    rows += '<div class="bk-price-row"><span>'+money(q.perNight,cur)+' × '+q.nights+' night'+(q.nights>1?'s':'')+'</span><span>'+money(q.accommodation,cur)+'</span></div>';
-    if (q.cleaningFee) rows += '<div class="bk-price-row"><span>Cleaning fee</span><span>'+money(q.cleaningFee,cur)+'</span></div>';
-    if (q.taxes) rows += '<div class="bk-price-row"><span>Taxes</span><span>'+money(q.taxes,cur)+'</span></div>';
-    rows += '<div class="bk-price-row total"><span>Total</span><span>'+money(q.total,cur)+'</span></div>';
-    area.innerHTML = '<div class="bk-price-rows">'+rows+'</div>'+
-      '<button class="bk-submit" onclick="bkGoStep(\'guest\')">Continue</button>'+
-      '<div class="bk-secure"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Best-rate guarantee · Book direct</div>';
-  }
-
-  window.bkRefreshQuote = function(){
-    if (!state.checkIn || !state.checkOut) return;
-    state.quote = null;
-    renderPriceArea();
-    var guests = document.getElementById('bkGuests').value || 1;
-    fetch('/api/guesty/quote', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ listing: state.slug, checkIn: state.checkIn, checkOut: state.checkOut, guests: +guests })
-    }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
-      .then(function(res){
-        if (!res.ok) {
-          document.getElementById('bkPriceArea').innerHTML = '<div class="bk-err">'+(res.j.error || 'Those dates are not available. Please try different dates.')+'</div>';
-          state.quote = null; return;
-        }
-        state.quote = res.j; renderPriceArea();
-      }).catch(function(){
-        document.getElementById('bkPriceArea').innerHTML = '<div class="bk-err">Could not reach the booking service. Please try again.</div>';
-      });
-  };
-
-  /* step navigation */
-  window.bkGoStep = function(step){
-    document.getElementById('bkStepDates').style.display = step === 'dates' ? '' : 'none';
-    document.getElementById('bkStepGuest').style.display = step === 'guest' ? '' : 'none';
-    document.getElementById('bkStepDone').style.display = step === 'done' ? '' : 'none';
-    if (step === 'guest') {
-      var q = state.quote;
-      document.getElementById('bkRecap').innerHTML =
-        '<div><strong>'+state.name+'</strong><br><span style="color:var(--muted)">'+prettyDate(state.checkIn)+' → '+prettyDate(state.checkOut)+' · '+document.getElementById('bkGuests').value+' guest(s)</span></div>'+
-        '<div style="text-align:right"><strong>'+money(q.total,q.currency)+'</strong><br><span style="color:var(--muted);font-size:12px">'+q.nights+' nights total</span></div>';
-    }
-    document.querySelector('.bk-body').scrollTop = 0;
-  };
-
-  window.bkShiftMonth = function(dir){
-    var vm = state.viewMonth;
-    var nv = new Date(Date.UTC(vm.getUTCFullYear(), vm.getUTCMonth() + dir, 1));
-    var firstView = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
-    if (nv < firstView) return;
-    state.viewMonth = nv;
-    // make sure we have availability data through the end of the second visible month
-    var through = ymd(new Date(Date.UTC(nv.getUTCFullYear(), nv.getUTCMonth() + 2, 0)));
-    ensureCalendar(state.slug, through).then(render);
-    render();
-  };
-
-  /* submit */
-  window.bkSubmit = function(e){
-    e.preventDefault();
-    var btn = document.getElementById('bkSubmitBtn');
-    btn.disabled = true; btn.textContent = 'Sending…';
-    var payload = {
-      listing: state.slug,
-      checkIn: state.checkIn,
-      checkOut: state.checkOut,
-      guests: +document.getElementById('bkGuests').value,
-      guest: {
-        firstName: document.getElementById('bkFirst').value.trim(),
-        lastName: document.getElementById('bkLast').value.trim(),
-        email: document.getElementById('bkEmail').value.trim(),
-        phone: document.getElementById('bkPhone').value.trim(),
-        message: document.getElementById('bkMessage').value.trim()
-      }
-    };
-    fetch('/api/guesty/reservation', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-    }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
-      .then(function(res){
-        btn.disabled = false; btn.textContent = 'Request to Book';
-        if (!res.ok) {
-          var ex = document.querySelector('#bkStepGuest .bk-err');
-          if (!ex) { ex = document.createElement('div'); ex.className = 'bk-err'; document.querySelector('.bk-actions').appendChild(ex); }
-          ex.textContent = res.j.error || 'Something went wrong. Please try again.';
-          return;
-        }
-        var confirmed = res.j.status === 'confirmed';
-        document.getElementById('bkDoneTitle').textContent = confirmed ? 'Booking confirmed!' : 'Booking request sent';
-        document.getElementById('bkDoneMsg').textContent = confirmed
-          ? 'Your reservation at ' + state.name + ' is confirmed for ' + prettyDate(state.checkIn) + ' → ' + prettyDate(state.checkOut) + '. A confirmation email is on its way.'
-          : 'Thank you! We’ve received your request for ' + state.name + ' (' + prettyDate(state.checkIn) + ' → ' + prettyDate(state.checkOut) + '). Our team will confirm availability and email you a secure link to complete payment — usually within a few hours.';
-        bkGoStep('done');
-      }).catch(function(){
-        btn.disabled = false; btn.textContent = 'Request to Book';
-      });
-    return false;
-  };
-
-  /* open / close */
-  window.openBooking = function(slug, name){
-    state = { slug: slug, name: name, viewMonth: firstOfMonth(todayYmd()), checkIn: null, checkOut: null, quote: null };
-    var overlay = document.getElementById('bkOverlay');
-    document.getElementById('bkTitle').textContent = name;
-    document.getElementById('bkSub').textContent = '';
-    document.getElementById('bkForm').reset();
-    var existingErr = document.querySelector('#bkStepGuest .bk-err'); if (existingErr) existingErr.remove();
-    bkGoStep('dates');
-    renderPickers();
-    document.getElementById('bkMonths').innerHTML = '<div class="bk-hint" style="padding:60px 0"><span class="bk-spin"></span><br><br>Loading live availability…</div>';
-    document.getElementById('bkPriceArea').innerHTML = '<div class="bk-hint">Select your dates to see live availability and pricing.</div>';
-    overlay.style.display = 'flex';
-    requestAnimationFrame(function(){ overlay.classList.add('active'); });
-    document.body.style.overflow = 'hidden';
-
-    loadListings().then(function(){
-      var meta = listingsMeta[slug] || {};
-      var max = meta.accommodates || 8;
-      var sel = document.getElementById('bkGuests');
-      sel.innerHTML = '';
-      for (var i = 1; i <= max; i++) sel.innerHTML += '<option value="'+i+'">'+i+(i===max?'+':'')+'</option>';
-      sel.value = Math.min(2, max);
-      document.getElementById('bkFrom').innerHTML = meta.basePrice
-        ? 'From <strong>'+money(meta.basePrice, meta.currency)+'</strong> <span>/ night</span>' : '';
-      if (meta.title) document.getElementById('bkSub').textContent = meta.title;
-      var through = ymd(new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 2, 0)));
-      var deepThrough = addDays(todayYmd(), WINDOW_MONTHS * 31);
-      ensureCalendar(slug, deepThrough).then(render).catch(function(){
-        document.getElementById('bkMonths').innerHTML = '<div class="bk-err" style="padding:40px 0">Could not load availability. Please refresh and try again.</div>';
-      });
-    });
-  };
-
-  window.closeBooking = function(){
-    var overlay = document.getElementById('bkOverlay');
-    overlay.classList.remove('active');
-    setTimeout(function(){ overlay.style.display = 'none'; }, 300);
-    document.body.style.overflow = '';
-  };
-
-  document.getElementById('bkOverlay').addEventListener('click', function(e){ if (e.target === this) closeBooking(); });
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && document.getElementById('bkOverlay').style.display === 'flex') closeBooking();
-  });
-
-  /* inject "Check Availability" buttons into cards + featured villa */
-  function bookSvg(){ return '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'; }
-
-  function injectButtons(){
-    document.querySelectorAll('.property-card').forEach(function(card){
-      if (card.dataset.bkInjected) return;            // idempotent
-      var carousel = card.querySelector('.carousel[data-property]');
-      var titleEl = card.querySelector('.card-title');
-      if (!carousel || !titleEl) return;
-      card.dataset.bkInjected = '1';
-      var slug = carousel.getAttribute('data-property');
-      var name = titleEl.textContent.trim();
-      var footer = card.querySelector('.card-footer') || card.querySelector('.card-body');
-      var btn = document.createElement('button');
-      btn.className = 'bk-cta';
-      btn.innerHTML = bookSvg() + ' Check Availability &amp; Book';
-      btn.onclick = function(){ openBooking(slug, name); };
-      footer.appendChild(btn);
-    });
-    // Featured Regent Villa
-    var sidebar = document.querySelector('.featured-sidebar');
-    if (sidebar && !sidebar.dataset.bkInjected) {
-      sidebar.dataset.bkInjected = '1';
-      var fbtn = document.createElement('button');
-      fbtn.className = 'featured-sidebar-btn bk-cta';
-      fbtn.style.marginTop = '10px';
-      fbtn.innerHTML = bookSvg() + ' Book Direct — Live Availability';
-      fbtn.onclick = function(){ openBooking('regent-villa', 'Regent Villa'); };
-      var airbnbBtn = sidebar.querySelector('a.featured-sidebar-btn');
-      if (airbnbBtn) airbnbBtn.insertAdjacentElement('afterend', fbtn); else sidebar.appendChild(fbtn);
-    }
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectButtons);
-  else injectButtons();
-})();
+/* ═══ Init ═══ */
+window.addEventListener('DOMContentLoaded', () => {
+  renderProperties();
+  initMap();
+  initScrollReveal();
+  initNav();
+  initMobileMenu();
+  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 600);
+});
 </script>
 </body>
 </html>
