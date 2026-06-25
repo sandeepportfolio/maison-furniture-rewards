@@ -1133,5 +1133,552 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a) {
   });
 });
 </script>
+
+<!-- ════════════ GUESTY LIVE BOOKING ════════════ -->
+<style>
+.bk-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 14px; padding: 14px 20px;
+  background: var(--text); color: var(--text-inv);
+  font-family: var(--font-body); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+  border-radius: var(--radius); transition: background var(--transition), transform var(--transition);
+}
+.bk-cta:hover { background: var(--accent-dark); transform: translateY(-2px); }
+.bk-cta svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+.featured-sidebar-btn.bk-cta { background: var(--accent); }
+.featured-sidebar-btn.bk-cta:hover { background: var(--accent-dark); }
+
+.bk-overlay {
+  position: fixed; inset: 0; z-index: 10000; display: none;
+  align-items: center; justify-content: center; padding: 24px;
+  background: rgba(20,18,15,0.55); backdrop-filter: blur(6px);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.bk-overlay.active { opacity: 1; }
+.bk-modal {
+  background: var(--bg); width: 100%; max-width: 920px; max-height: 90vh;
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: translateY(16px) scale(0.98); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.bk-overlay.active .bk-modal { transform: translateY(0) scale(1); }
+.bk-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 24px 28px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.bk-head-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+.bk-head-title { font-family: var(--font-display); font-size: 22px; line-height: 1.2; color: var(--text); }
+.bk-head-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.bk-close { width: 38px; height: 38px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background var(--transition); }
+.bk-close:hover { background: var(--accent-light); }
+.bk-close svg { width: 16px; height: 16px; stroke: var(--text); stroke-width: 2; fill: none; }
+.bk-body { padding: 24px 28px 28px; overflow-y: auto; }
+
+.bk-grid { display: grid; grid-template-columns: 1fr 320px; gap: 32px; align-items: start; }
+
+/* Calendar */
+.bk-cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.bk-cal-nav button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
+.bk-cal-nav button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent); }
+.bk-cal-nav button:hover:not(:disabled) svg { stroke: #fff; }
+.bk-cal-nav button:disabled { opacity: 0.3; cursor: default; }
+.bk-cal-nav button svg { width: 14px; height: 14px; stroke: var(--text); stroke-width: 2; fill: none; }
+.bk-cal-title { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+.bk-months { display: flex; gap: 28px; }
+.bk-month { flex: 1; min-width: 0; }
+.bk-month-name { text-align: center; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 10px; display: none; }
+.bk-dow { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 6px; }
+.bk-dow span { text-align: center; font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.bk-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.bk-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 12.5px; border-radius: 7px; position: relative; transition: background 0.15s, color 0.15s; }
+.bk-day.empty { visibility: hidden; }
+.bk-day.disabled { color: #cfcabf; text-decoration: line-through; cursor: default; }
+.bk-day.avail { color: var(--text); cursor: pointer; font-weight: 500; }
+.bk-day.avail:hover { background: var(--accent-light); }
+.bk-day.in-range { background: rgba(184,149,106,0.16); border-radius: 0; }
+.bk-day.endpoint { background: var(--accent); color: #fff; font-weight: 600; }
+.bk-day.range-start { border-radius: 7px 0 0 7px; }
+.bk-day.range-end { border-radius: 0 7px 7px 0; }
+.bk-day.single { border-radius: 7px; }
+
+/* Summary panel */
+.bk-summary { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; position: sticky; top: 0; }
+.bk-from { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.bk-from strong { font-family: var(--font-display); font-size: 22px; color: var(--text); font-weight: 700; }
+.bk-pickers { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+.bk-pick { padding: 10px 12px; }
+.bk-pick + .bk-pick { border-left: 1px solid var(--border); }
+.bk-pick-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.bk-pick-val { font-size: 13px; font-weight: 600; margin-top: 2px; color: var(--text); }
+.bk-pick-val.placeholder { color: #bbb; font-weight: 500; }
+.bk-guest-row { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 16px; }
+.bk-guest-row label { font-size: 13px; font-weight: 600; }
+.bk-guest-row select { font-family: inherit; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; background: #fff; cursor: pointer; }
+.bk-price-rows { font-size: 13.5px; margin-bottom: 14px; }
+.bk-price-row { display: flex; justify-content: space-between; padding: 7px 0; color: #555; }
+.bk-price-row.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 12px; font-weight: 700; font-size: 16px; color: var(--text); }
+.bk-hint { font-size: 12.5px; color: var(--muted); text-align: center; padding: 18px 6px; line-height: 1.5; }
+.bk-spin { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: bkspin 0.7s linear infinite; vertical-align: middle; }
+@keyframes bkspin { to { transform: rotate(360deg); } }
+.bk-err { color: #b4441f; font-size: 12.5px; margin-top: 10px; text-align: center; }
+
+.bk-submit {
+  width: 100%; padding: 14px; border-radius: var(--radius); background: var(--accent); color: #fff;
+  font-weight: 600; font-size: 14px; letter-spacing: 0.02em; transition: background var(--transition);
+}
+.bk-submit:hover:not(:disabled) { background: var(--accent-dark); }
+.bk-submit:disabled { background: #d8d2c8; cursor: default; }
+.bk-secure { font-size: 11px; color: var(--muted); text-align: center; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+.bk-secure svg { width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2; }
+
+/* Guest form step */
+.bk-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.bk-field-wrap { display: flex; flex-direction: column; gap: 5px; }
+.bk-field-wrap.full { grid-column: 1 / -1; }
+.bk-field-wrap label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.bk-field-wrap input, .bk-field-wrap textarea {
+  font-family: inherit; font-size: 14px; padding: 11px 13px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: #fff; color: var(--text); transition: border-color var(--transition);
+}
+.bk-field-wrap input:focus, .bk-field-wrap textarea:focus { outline: none; border-color: var(--accent); }
+.bk-field-wrap textarea { resize: vertical; min-height: 74px; }
+.bk-recap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; }
+.bk-recap strong { font-weight: 700; }
+.bk-back { background: none; color: var(--muted); font-size: 13px; font-weight: 600; margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.bk-back:hover { color: var(--text); }
+.bk-actions { margin-top: 22px; }
+
+/* Success */
+.bk-done { text-align: center; padding: 24px 12px; }
+.bk-done-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(184,149,106,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+.bk-done-icon svg { width: 30px; height: 30px; stroke: var(--accent); fill: none; stroke-width: 2; }
+.bk-done h3 { font-family: var(--font-display); font-size: 24px; margin-bottom: 10px; }
+.bk-done p { color: var(--muted); font-size: 14px; max-width: 460px; margin: 0 auto 8px; line-height: 1.6; }
+
+@media (max-width: 760px) {
+  .bk-grid { grid-template-columns: 1fr; gap: 22px; }
+  .bk-months { flex-direction: column; gap: 22px; }
+  .bk-month-name { display: block; }
+  .bk-summary { position: static; }
+  .bk-body { padding: 20px; }
+  .bk-head { padding: 20px; }
+}
+</style>
+
+<div class="bk-overlay" id="bkOverlay" role="dialog" aria-modal="true">
+  <div class="bk-modal">
+    <div class="bk-head">
+      <div>
+        <div class="bk-head-label">Book Direct</div>
+        <div class="bk-head-title" id="bkTitle">Property</div>
+        <div class="bk-head-sub" id="bkSub"></div>
+      </div>
+      <button class="bk-close" onclick="closeBooking()" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="bk-body">
+
+      <!-- STEP 1: dates + price -->
+      <div class="bk-step" id="bkStepDates">
+        <div class="bk-grid">
+          <div>
+            <div class="bk-cal-nav">
+              <button id="bkPrev" onclick="bkShiftMonth(-1)" aria-label="Previous month"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <div class="bk-cal-title" id="bkCalTitle">—</div>
+              <button id="bkNext" onclick="bkShiftMonth(1)" aria-label="Next month"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+            </div>
+            <div class="bk-months" id="bkMonths"></div>
+          </div>
+          <div class="bk-summary">
+            <div class="bk-from" id="bkFrom"></div>
+            <div class="bk-pickers">
+              <div class="bk-pick"><div class="bk-pick-label">Check-in</div><div class="bk-pick-val placeholder" id="bkInVal">Add date</div></div>
+              <div class="bk-pick"><div class="bk-pick-label">Check-out</div><div class="bk-pick-val placeholder" id="bkOutVal">Add date</div></div>
+            </div>
+            <div class="bk-guest-row">
+              <label for="bkGuests">Guests</label>
+              <select id="bkGuests" onchange="bkRefreshQuote()"></select>
+            </div>
+            <div id="bkPriceArea"><div class="bk-hint">Select your dates to see live availability and pricing.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: guest details -->
+      <div class="bk-step" id="bkStepGuest" style="display:none">
+        <div class="bk-recap" id="bkRecap"></div>
+        <form id="bkForm" onsubmit="return bkSubmit(event)">
+          <div class="bk-form-grid">
+            <div class="bk-field-wrap"><label>First name *</label><input type="text" id="bkFirst" required></div>
+            <div class="bk-field-wrap"><label>Last name</label><input type="text" id="bkLast"></div>
+            <div class="bk-field-wrap"><label>Email *</label><input type="email" id="bkEmail" required></div>
+            <div class="bk-field-wrap"><label>Phone</label><input type="tel" id="bkPhone"></div>
+            <div class="bk-field-wrap full"><label>Message to host (optional)</label><textarea id="bkMessage" placeholder="Arrival time, special requests…"></textarea></div>
+          </div>
+          <div class="bk-actions">
+            <button type="submit" class="bk-submit" id="bkSubmitBtn">Request to Book</button>
+            <div class="bk-secure"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Your request is sent securely. No charge until the host confirms.</div>
+          </div>
+        </form>
+        <button class="bk-back" onclick="bkGoStep('dates')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Back to dates</button>
+      </div>
+
+      <!-- STEP 3: done -->
+      <div class="bk-step" id="bkStepDone" style="display:none">
+        <div class="bk-done">
+          <div class="bk-done-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <h3 id="bkDoneTitle">Booking request sent</h3>
+          <p id="bkDoneMsg"></p>
+          <button class="bk-cta" style="max-width:240px;margin:22px auto 0" onclick="closeBooking()">Done</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════ Guesty live booking widget ════════ */
+(function () {
+  var DOW = ['S','M','T','W','T','F','S'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var WINDOW_MONTHS = 8; // how far ahead we fetch availability
+
+  var listingsMeta = {};       // slug -> { title, basePrice, currency, accommodates, minNights }
+  var calCache = {};           // slug -> { byDate: {date:dayObj}, loadedTo: 'YYYY-MM-DD' }
+  var state = { slug: null, name: null, viewMonth: null, checkIn: null, checkOut: null, quote: null };
+
+  /* date helpers (UTC, string-based) */
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+  function ymd(d){ return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate()); }
+  function parseYmd(s){ var p = s.split('-'); return new Date(Date.UTC(+p[0], +p[1]-1, +p[2])); }
+  function addDays(s, n){ var d = parseYmd(s); d.setUTCDate(d.getUTCDate()+n); return ymd(d); }
+  function todayYmd(){ return ymd(new Date()); }
+  function nights(a, b){ return Math.round((parseYmd(b) - parseYmd(a)) / 86400000); }
+  function firstOfMonth(s){ var d = parseYmd(s); return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)); }
+  function prettyDate(s){ var d = parseYmd(s); return MONTHS[d.getUTCMonth()].slice(0,3)+' '+d.getUTCDate(); }
+  function money(n, cur){ return (cur === 'USD' || !cur ? '$' : '') + Number(n).toLocaleString() + (cur && cur !== 'USD' ? ' '+cur : ''); }
+
+  /* data loading */
+  function loadListings(){
+    if (Object.keys(listingsMeta).length) return Promise.resolve(listingsMeta);
+    return fetch('/api/guesty/listings').then(function(r){ return r.json(); }).then(function(j){
+      (j.listings || []).forEach(function(l){ listingsMeta[l.slug] = l; });
+      return listingsMeta;
+    }).catch(function(){ return listingsMeta; });
+  }
+
+  function ensureCalendar(slug, throughYmd){
+    var c = calCache[slug];
+    if (c && c.loadedTo >= throughYmd) return Promise.resolve(c);
+    var from = todayYmd();
+    var to = throughYmd;
+    return fetch('/api/guesty/calendar?listing='+encodeURIComponent(slug)+'&from='+from+'&to='+to)
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var byDate = (c && c.byDate) || {};
+        (j.days || []).forEach(function(d){ byDate[d.date] = d; });
+        calCache[slug] = { byDate: byDate, loadedTo: to };
+        return calCache[slug];
+      });
+  }
+
+  function dayInfo(slug, date){ var c = calCache[slug]; return c ? c.byDate[date] : null; }
+
+  /* selection logic */
+  function isAvail(slug, date){ var d = dayInfo(slug, date); return !!(d && d.available); }
+  function minNightsFor(slug, date){ var d = dayInfo(slug, date); return (d && d.minNights) || 1; }
+
+  // furthest checkout reachable from a check-in (consecutive available run + boundary day)
+  function maxCheckout(slug, checkIn){
+    var d = checkIn;
+    while (isAvail(slug, d)) d = addDays(d, 1); // first unavailable (or unloaded) day
+    return d; // valid checkout up to and including this boundary day
+  }
+  function validCheckout(slug, checkIn, date){
+    if (date <= checkIn) return false;
+    if (nights(checkIn, date) < minNightsFor(slug, checkIn)) return false;
+    return date <= maxCheckout(slug, checkIn);
+  }
+
+  /* rendering */
+  function render(){
+    renderMonths();
+    renderPickers();
+  }
+
+  function monthGrid(year, month){
+    var first = new Date(Date.UTC(year, month, 1));
+    var startDow = first.getUTCDay();
+    var daysIn = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    var today = todayYmd();
+    var html = '<div class="bk-month"><div class="bk-month-name">'+MONTHS[month]+' '+year+'</div>';
+    html += '<div class="bk-dow">'+DOW.map(function(d){ return '<span>'+d+'</span>'; }).join('')+'</div>';
+    html += '<div class="bk-days">';
+    for (var i = 0; i < startDow; i++) html += '<div class="bk-day empty"></div>';
+    for (var day = 1; day <= daysIn; day++) {
+      var date = year+'-'+pad(month+1)+'-'+pad(day);
+      var cls = 'bk-day', clickable = false;
+      var past = date < today;
+      var selectingOut = state.checkIn && !state.checkOut;
+      if (past) {
+        cls += ' disabled';
+      } else if (selectingOut) {
+        if (date === state.checkIn) { cls += ' avail endpoint single'; clickable = true; }
+        else if (validCheckout(state.slug, state.checkIn, date)) { cls += ' avail'; clickable = true; }
+        else if (isAvail(state.slug, date)) { cls += ' avail'; clickable = true; }
+        else { cls += ' disabled'; }
+      } else {
+        if (isAvail(state.slug, date)) { cls += ' avail'; clickable = true; }
+        else { cls += ' disabled'; }
+      }
+      // range highlighting
+      if (state.checkIn && state.checkOut) {
+        if (date === state.checkIn) cls += ' endpoint range-start';
+        else if (date === state.checkOut) cls += ' endpoint range-end';
+        else if (date > state.checkIn && date < state.checkOut) cls += ' in-range';
+      } else if (state.checkIn && date === state.checkIn) {
+        cls += ' endpoint single';
+      }
+      html += '<div class="'+cls+'"'+(clickable ? ' data-date="'+date+'"' : '')+'>'+day+'</div>';
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderMonths(){
+    var vm = state.viewMonth;
+    var y = vm.getUTCFullYear(), m = vm.getUTCMonth();
+    var nY = m === 11 ? y+1 : y, nM = (m+1) % 12;
+    document.getElementById('bkMonths').innerHTML = monthGrid(y, m) + monthGrid(nY, nM);
+    document.getElementById('bkCalTitle').textContent = MONTHS[m]+' '+y+'  –  '+MONTHS[nM]+' '+nY;
+    var firstView = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
+    document.getElementById('bkPrev').disabled = (vm <= firstView);
+    // wire clicks
+    document.querySelectorAll('#bkMonths .bk-day[data-date]').forEach(function(el){
+      el.onclick = function(){ onDayClick(el.getAttribute('data-date')); };
+    });
+  }
+
+  function renderPickers(){
+    var inEl = document.getElementById('bkInVal'), outEl = document.getElementById('bkOutVal');
+    if (state.checkIn) { inEl.textContent = prettyDate(state.checkIn); inEl.classList.remove('placeholder'); }
+    else { inEl.textContent = 'Add date'; inEl.classList.add('placeholder'); }
+    if (state.checkOut) { outEl.textContent = prettyDate(state.checkOut); outEl.classList.remove('placeholder'); }
+    else { outEl.textContent = 'Add date'; outEl.classList.add('placeholder'); }
+  }
+
+  function onDayClick(date){
+    if (!state.checkIn || state.checkOut) {
+      // start fresh selection
+      state.checkIn = date; state.checkOut = null; state.quote = null;
+      renderPriceArea();
+    } else {
+      // choosing checkout
+      if (date === state.checkIn) return;
+      if (date < state.checkIn || !validCheckout(state.slug, state.checkIn, date)) {
+        // treat as new check-in instead
+        state.checkIn = isAvail(state.slug, date) ? date : state.checkIn;
+        state.checkOut = null; state.quote = null;
+        renderPriceArea();
+      } else {
+        state.checkOut = date;
+        bkRefreshQuote();
+      }
+    }
+    render();
+  }
+
+  /* pricing */
+  function renderPriceArea(){
+    var area = document.getElementById('bkPriceArea');
+    if (!state.checkIn || !state.checkOut) {
+      area.innerHTML = '<div class="bk-hint">Select your dates to see live availability and pricing.</div>';
+      return;
+    }
+    if (!state.quote) {
+      area.innerHTML = '<div class="bk-hint"><span class="bk-spin"></span><br><br>Getting live price…</div>';
+      return;
+    }
+    var q = state.quote, cur = q.currency;
+    var rows = '';
+    rows += '<div class="bk-price-row"><span>'+money(q.perNight,cur)+' × '+q.nights+' night'+(q.nights>1?'s':'')+'</span><span>'+money(q.accommodation,cur)+'</span></div>';
+    if (q.cleaningFee) rows += '<div class="bk-price-row"><span>Cleaning fee</span><span>'+money(q.cleaningFee,cur)+'</span></div>';
+    if (q.taxes) rows += '<div class="bk-price-row"><span>Taxes</span><span>'+money(q.taxes,cur)+'</span></div>';
+    rows += '<div class="bk-price-row total"><span>Total</span><span>'+money(q.total,cur)+'</span></div>';
+    area.innerHTML = '<div class="bk-price-rows">'+rows+'</div>'+
+      '<button class="bk-submit" onclick="bkGoStep(\'guest\')">Continue</button>'+
+      '<div class="bk-secure"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Best-rate guarantee · Book direct</div>';
+  }
+
+  window.bkRefreshQuote = function(){
+    if (!state.checkIn || !state.checkOut) return;
+    state.quote = null;
+    renderPriceArea();
+    var guests = document.getElementById('bkGuests').value || 1;
+    fetch('/api/guesty/quote', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ listing: state.slug, checkIn: state.checkIn, checkOut: state.checkOut, guests: +guests })
+    }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+      .then(function(res){
+        if (!res.ok) {
+          document.getElementById('bkPriceArea').innerHTML = '<div class="bk-err">'+(res.j.error || 'Those dates are not available. Please try different dates.')+'</div>';
+          state.quote = null; return;
+        }
+        state.quote = res.j; renderPriceArea();
+      }).catch(function(){
+        document.getElementById('bkPriceArea').innerHTML = '<div class="bk-err">Could not reach the booking service. Please try again.</div>';
+      });
+  };
+
+  /* step navigation */
+  window.bkGoStep = function(step){
+    document.getElementById('bkStepDates').style.display = step === 'dates' ? '' : 'none';
+    document.getElementById('bkStepGuest').style.display = step === 'guest' ? '' : 'none';
+    document.getElementById('bkStepDone').style.display = step === 'done' ? '' : 'none';
+    if (step === 'guest') {
+      var q = state.quote;
+      document.getElementById('bkRecap').innerHTML =
+        '<div><strong>'+state.name+'</strong><br><span style="color:var(--muted)">'+prettyDate(state.checkIn)+' → '+prettyDate(state.checkOut)+' · '+document.getElementById('bkGuests').value+' guest(s)</span></div>'+
+        '<div style="text-align:right"><strong>'+money(q.total,q.currency)+'</strong><br><span style="color:var(--muted);font-size:12px">'+q.nights+' nights total</span></div>';
+    }
+    document.querySelector('.bk-body').scrollTop = 0;
+  };
+
+  window.bkShiftMonth = function(dir){
+    var vm = state.viewMonth;
+    var nv = new Date(Date.UTC(vm.getUTCFullYear(), vm.getUTCMonth() + dir, 1));
+    var firstView = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
+    if (nv < firstView) return;
+    state.viewMonth = nv;
+    // make sure we have availability data through the end of the second visible month
+    var through = ymd(new Date(Date.UTC(nv.getUTCFullYear(), nv.getUTCMonth() + 2, 0)));
+    ensureCalendar(state.slug, through).then(render);
+    render();
+  };
+
+  /* submit */
+  window.bkSubmit = function(e){
+    e.preventDefault();
+    var btn = document.getElementById('bkSubmitBtn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    var payload = {
+      listing: state.slug,
+      checkIn: state.checkIn,
+      checkOut: state.checkOut,
+      guests: +document.getElementById('bkGuests').value,
+      guest: {
+        firstName: document.getElementById('bkFirst').value.trim(),
+        lastName: document.getElementById('bkLast').value.trim(),
+        email: document.getElementById('bkEmail').value.trim(),
+        phone: document.getElementById('bkPhone').value.trim(),
+        message: document.getElementById('bkMessage').value.trim()
+      }
+    };
+    fetch('/api/guesty/reservation', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+      .then(function(res){
+        btn.disabled = false; btn.textContent = 'Request to Book';
+        if (!res.ok) {
+          var ex = document.querySelector('#bkStepGuest .bk-err');
+          if (!ex) { ex = document.createElement('div'); ex.className = 'bk-err'; document.querySelector('.bk-actions').appendChild(ex); }
+          ex.textContent = res.j.error || 'Something went wrong. Please try again.';
+          return;
+        }
+        var confirmed = res.j.status === 'confirmed';
+        document.getElementById('bkDoneTitle').textContent = confirmed ? 'Booking confirmed!' : 'Booking request sent';
+        document.getElementById('bkDoneMsg').textContent = confirmed
+          ? 'Your reservation at ' + state.name + ' is confirmed for ' + prettyDate(state.checkIn) + ' → ' + prettyDate(state.checkOut) + '. A confirmation email is on its way.'
+          : 'Thank you! We’ve received your request for ' + state.name + ' (' + prettyDate(state.checkIn) + ' → ' + prettyDate(state.checkOut) + '). Our team will confirm availability and email you a secure link to complete payment — usually within a few hours.';
+        bkGoStep('done');
+      }).catch(function(){
+        btn.disabled = false; btn.textContent = 'Request to Book';
+      });
+    return false;
+  };
+
+  /* open / close */
+  window.openBooking = function(slug, name){
+    state = { slug: slug, name: name, viewMonth: firstOfMonth(todayYmd()), checkIn: null, checkOut: null, quote: null };
+    var overlay = document.getElementById('bkOverlay');
+    document.getElementById('bkTitle').textContent = name;
+    document.getElementById('bkSub').textContent = '';
+    document.getElementById('bkForm').reset();
+    var existingErr = document.querySelector('#bkStepGuest .bk-err'); if (existingErr) existingErr.remove();
+    bkGoStep('dates');
+    renderPickers();
+    document.getElementById('bkMonths').innerHTML = '<div class="bk-hint" style="padding:60px 0"><span class="bk-spin"></span><br><br>Loading live availability…</div>';
+    document.getElementById('bkPriceArea').innerHTML = '<div class="bk-hint">Select your dates to see live availability and pricing.</div>';
+    overlay.style.display = 'flex';
+    requestAnimationFrame(function(){ overlay.classList.add('active'); });
+    document.body.style.overflow = 'hidden';
+
+    loadListings().then(function(){
+      var meta = listingsMeta[slug] || {};
+      var max = meta.accommodates || 8;
+      var sel = document.getElementById('bkGuests');
+      sel.innerHTML = '';
+      for (var i = 1; i <= max; i++) sel.innerHTML += '<option value="'+i+'">'+i+(i===max?'+':'')+'</option>';
+      sel.value = Math.min(2, max);
+      document.getElementById('bkFrom').innerHTML = meta.basePrice
+        ? 'From <strong>'+money(meta.basePrice, meta.currency)+'</strong> <span>/ night</span>' : '';
+      if (meta.title) document.getElementById('bkSub').textContent = meta.title;
+      var through = ymd(new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 2, 0)));
+      var deepThrough = addDays(todayYmd(), WINDOW_MONTHS * 31);
+      ensureCalendar(slug, deepThrough).then(render).catch(function(){
+        document.getElementById('bkMonths').innerHTML = '<div class="bk-err" style="padding:40px 0">Could not load availability. Please refresh and try again.</div>';
+      });
+    });
+  };
+
+  window.closeBooking = function(){
+    var overlay = document.getElementById('bkOverlay');
+    overlay.classList.remove('active');
+    setTimeout(function(){ overlay.style.display = 'none'; }, 300);
+    document.body.style.overflow = '';
+  };
+
+  document.getElementById('bkOverlay').addEventListener('click', function(e){ if (e.target === this) closeBooking(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && document.getElementById('bkOverlay').style.display === 'flex') closeBooking();
+  });
+
+  /* inject "Check Availability" buttons into cards + featured villa */
+  function bookSvg(){ return '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'; }
+
+  function injectButtons(){
+    document.querySelectorAll('.property-card').forEach(function(card){
+      if (card.dataset.bkInjected) return;            // idempotent
+      var carousel = card.querySelector('.carousel[data-property]');
+      var titleEl = card.querySelector('.card-title');
+      if (!carousel || !titleEl) return;
+      card.dataset.bkInjected = '1';
+      var slug = carousel.getAttribute('data-property');
+      var name = titleEl.textContent.trim();
+      var footer = card.querySelector('.card-footer') || card.querySelector('.card-body');
+      var btn = document.createElement('button');
+      btn.className = 'bk-cta';
+      btn.innerHTML = bookSvg() + ' Check Availability &amp; Book';
+      btn.onclick = function(){ openBooking(slug, name); };
+      footer.appendChild(btn);
+    });
+    // Featured Regent Villa
+    var sidebar = document.querySelector('.featured-sidebar');
+    if (sidebar && !sidebar.dataset.bkInjected) {
+      sidebar.dataset.bkInjected = '1';
+      var fbtn = document.createElement('button');
+      fbtn.className = 'featured-sidebar-btn bk-cta';
+      fbtn.style.marginTop = '10px';
+      fbtn.innerHTML = bookSvg() + ' Book Direct — Live Availability';
+      fbtn.onclick = function(){ openBooking('regent-villa', 'Regent Villa'); };
+      var airbnbBtn = sidebar.querySelector('a.featured-sidebar-btn');
+      if (airbnbBtn) airbnbBtn.insertAdjacentElement('afterend', fbtn); else sidebar.appendChild(fbtn);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectButtons);
+  else injectButtons();
+})();
+</script>
 </body>
 </html>

@@ -5,6 +5,24 @@ const crypto = require('crypto');
 const fs = require('fs');
 const Database = require('better-sqlite3');
 
+// ── Load .env locally (Render sets these in the dashboard) ──
+// Minimal loader so we don't add a dependency. Existing env vars win, so
+// Render's dashboard values always take precedence over any committed file.
+(function loadDotEnv() {
+  try {
+    const envPath = path.join(__dirname, '.env');
+    if (!fs.existsSync(envPath)) return;
+    for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+      if (m && process.env[m[1]] === undefined) {
+        process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
+      }
+    }
+  } catch (_) { /* ignore */ }
+})();
+
+const guesty = require('./guesty');
+
 const app = express();
 const PORT = process.env.PORT || 3456;
 // Ensure directories
@@ -24,6 +42,29 @@ db.exec(`
     notes TEXT DEFAULT '',
     created_at TEXT DEFAULT (datetime('now')),
     processed_at TEXT
+  )
+`);
+
+// Booking requests captured from the Guesty-powered booking flow.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS booking_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_id TEXT NOT NULL,
+    listing_name TEXT DEFAULT '',
+    guest_name TEXT DEFAULT '',
+    guest_email TEXT NOT NULL,
+    guest_phone TEXT DEFAULT '',
+    check_in TEXT NOT NULL,
+    check_out TEXT NOT NULL,
+    guests INTEGER DEFAULT 1,
+    nights INTEGER DEFAULT 0,
+    total REAL,
+    currency TEXT DEFAULT 'USD',
+    quote_id TEXT,
+    guesty_reservation_id TEXT,
+    status TEXT DEFAULT 'requested' CHECK(status IN ('requested','confirmed','failed','cancelled')),
+    message TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
   )
 `);
 
@@ -71,7 +112,158 @@ app.post('/api/submit', upload.single('proof'), (req, res) => {
   }
 });
 
+// ── GUESTY (live availability + booking) ──
+
+// Validation helpers
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+function isValidDate(s) {
+  if (!DATE_RE.test(s)) return false;
+  const d = new Date(s + 'T00:00:00Z');
+  return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+}
+function todayUTC() { return new Date().toISOString().slice(0, 10); }
+
+// List the bookable properties (live data from Guesty, cached).
+app.get('/api/guesty/listings', async (req, res) => {
+  try {
+    res.json({ listings: await guesty.getListings() });
+  } catch (err) {
+    console.error('Guesty listings error:', err.status || '', err.message);
+    res.status(502).json({ error: 'Could not load listings' });
+  }
+});
+
+// Availability calendar for one listing.
+//   GET /api/guesty/calendar?listing=<slug|id>&from=YYYY-MM-DD&to=YYYY-MM-DD
+app.get('/api/guesty/calendar', async (req, res) => {
+  try {
+    const listingId = guesty.resolveListingId(req.query.listing);
+    if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
+
+    const from = req.query.from || todayUTC();
+    let to = req.query.to;
+    if (!to) {
+      const d = new Date(from + 'T00:00:00Z');
+      d.setUTCDate(d.getUTCDate() + 90);
+      to = d.toISOString().slice(0, 10);
+    }
+    if (!isValidDate(from) || !isValidDate(to) || to <= from) {
+      return res.status(400).json({ error: 'Invalid date range' });
+    }
+    // Cap the window to one year to keep responses small.
+    if (guesty.countNights(from, to) > 366) {
+      return res.status(400).json({ error: 'Date range too large (max 366 days)' });
+    }
+
+    const days = await guesty.getCalendar(listingId, from, to);
+    res.json({ listingId, from, to, days });
+  } catch (err) {
+    console.error('Guesty calendar error:', err.status || '', err.message);
+    res.status(502).json({ error: 'Could not load availability' });
+  }
+});
+
+// Live price quote for a stay.
+//   POST { listing, checkIn, checkOut, guests }
+app.post('/api/guesty/quote', async (req, res) => {
+  try {
+    const { listing, checkIn, checkOut } = req.body || {};
+    const guests = Math.max(1, parseInt(req.body?.guests, 10) || 1);
+    const listingId = guesty.resolveListingId(listing);
+    if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
+    if (!isValidDate(checkIn) || !isValidDate(checkOut)) {
+      return res.status(400).json({ error: 'Invalid dates' });
+    }
+    if (checkOut <= checkIn) return res.status(400).json({ error: 'Check-out must be after check-in' });
+    if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
+
+    const { summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+    if (!summary.total) return res.status(409).json({ error: 'No price available for those dates' });
+    res.json(summary);
+  } catch (err) {
+    const detail = err.body?.error?.message || err.body?.message;
+    console.error('Guesty quote error:', err.status || '', err.message);
+    // Surface Guesty's user-facing validation (e.g. min-nights) when present.
+    if (err.status === 400 && detail) return res.status(400).json({ error: detail });
+    res.status(502).json({ error: 'Could not get a price for those dates' });
+  }
+});
+
+// Booking request. Re-quotes server-side for integrity, records the request,
+// and completes an instant reservation when a Guesty payment token (ccToken)
+// is supplied. Without a token the request is captured for the host to confirm.
+//   POST { listing, checkIn, checkOut, guests, guest:{firstName,lastName,email,phone}, ccToken? }
+app.post('/api/guesty/reservation', async (req, res) => {
+  try {
+    const { listing, checkIn, checkOut, guest, ccToken } = req.body || {};
+    const guests = Math.max(1, parseInt(req.body?.guests, 10) || 1);
+    const listingId = guesty.resolveListingId(listing);
+    if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
+    if (!isValidDate(checkIn) || !isValidDate(checkOut) || checkOut <= checkIn) {
+      return res.status(400).json({ error: 'Invalid dates' });
+    }
+    if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
+
+    const g = guest || {};
+    const email = (g.email || '').trim().toLowerCase();
+    const firstName = (g.firstName || '').trim();
+    const lastName = (g.lastName || '').trim();
+    if (!email.includes('@')) return res.status(400).json({ error: 'A valid email is required' });
+    if (!firstName) return res.status(400).json({ error: 'First name is required' });
+
+    const meta = Object.values(guesty.LISTINGS).find(l => l.id === listingId);
+
+    // Always re-quote server-side — never trust a price from the client.
+    const { summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+
+    const row = db.prepare(`
+      INSERT INTO booking_requests
+        (listing_id, listing_name, guest_name, guest_email, guest_phone,
+         check_in, check_out, guests, nights, total, currency, quote_id, status, message)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `).run(
+      listingId, meta ? meta.name : '', `${firstName} ${lastName}`.trim(), email, (g.phone || '').trim(),
+      checkIn, checkOut, guests, summary.nights, summary.total, summary.currency,
+      summary.quoteId, 'requested', (g.message || '').trim()
+    );
+    const requestId = row.lastInsertRowid;
+
+    // If a payment token is present, complete an instant reservation in Guesty.
+    if (ccToken) {
+      try {
+        const reservation = await guesty.createInstantReservation({
+          quoteId: summary.quoteId,
+          ratePlanId: summary.ratePlanId,
+          guest: { firstName, lastName, email, phone: (g.phone || '').trim() },
+          ccToken,
+        });
+        const resId = reservation._id || reservation.reservationId;
+        db.prepare("UPDATE booking_requests SET status='confirmed', guesty_reservation_id=? WHERE id=?")
+          .run(resId || null, requestId);
+        return res.json({ success: true, status: 'confirmed', requestId, reservationId: resId, quote: summary });
+      } catch (resErr) {
+        console.error('Guesty reservation error:', resErr.status || '', resErr.message);
+        db.prepare("UPDATE booking_requests SET status='failed' WHERE id=?").run(requestId);
+        const detail = resErr.body?.error?.message || resErr.body?.message;
+        return res.status(502).json({ error: detail || 'Payment could not be processed', requestId });
+      }
+    }
+
+    // No payment token: this is a request-to-book the host will confirm.
+    res.json({ success: true, status: 'requested', requestId, quote: summary });
+  } catch (err) {
+    const detail = err.body?.error?.message || err.body?.message;
+    console.error('Guesty booking error:', err.status || '', err.message);
+    if (err.status === 400 && detail) return res.status(400).json({ error: detail });
+    res.status(502).json({ error: 'Could not complete the booking request' });
+  }
+});
+
 // ── ADMIN (public, no auth) ──
+app.get('/api/admin/booking-requests', (req, res) => {
+  res.json(db.prepare('SELECT * FROM booking_requests ORDER BY created_at DESC').all());
+});
+
 app.get('/api/admin/submissions', (req, res) => {
   const { status } = req.query;
   let q = 'SELECT * FROM submissions';

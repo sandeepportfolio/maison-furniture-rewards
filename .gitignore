@@ -3,3 +3,6 @@ db/
 uploads/
 *.log
 .DS_Store
+.env
+.env.local
+.claude/
