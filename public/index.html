@@ -329,7 +329,7 @@ ul{list-style:none}
       <span class="featured-badge">&#9733; GUEST FAVORITE</span>
       <div class="bento-featured-info">
         <h3>Lake View Suite</h3>
-        <span class="bento-featured-meta">IRVING &middot; &#9733; 4.94</span>
+        <span class="bento-featured-meta">IRVING &middot; &#9733; 4.95</span>
       </div>
     </div>
   </div>
@@ -524,16 +524,16 @@ const PROPERTIES = [
     city: 'Plano',
     state: 'Texas',
     hostingId: '1711340298974810369',
-    guests: 8, beds: 4, baths: 3,
-    rating: 4.96, reviews: 42,
+    guests: 14, beds: 4, baths: 3.5,
+    rating: 0, reviews: 0,
     lat: 33.0198, lng: -96.6989,
     amenities: [
-      { label: 'Pool', premium: true },
-      { label: 'Gym', premium: true },
-      { label: 'DART Train', premium: true },
+      { label: 'Hot Tub', premium: true },
+      { label: 'Theatre', premium: true },
+      { label: 'Game Room', premium: true },
       { label: 'Kitchen', premium: false },
       { label: 'Wifi', premium: false },
-      { label: 'Parking', premium: false }
+      { label: 'Free Parking', premium: false }
     ],
     photos: [
       'a4f242ba-e02b-46a4-a699-4b17837ac4b7.png',
@@ -564,16 +564,16 @@ const PROPERTIES = [
     city: 'Irving',
     state: 'Texas',
     hostingId: '1656911479326581139',
-    guests: 4, beds: 2, baths: 1,
-    rating: 4.92, reviews: 38,
+    guests: 3, beds: 1, baths: 1,
+    rating: 4.89, reviews: 9,
     lat: 32.8554, lng: -96.9430,
     amenities: [
-      { label: 'Lake View', premium: true },
+      { label: 'Pool', premium: true },
+      { label: 'Gym', premium: true },
       { label: 'DART Train', premium: true },
       { label: 'Kitchen', premium: false },
       { label: 'Wifi', premium: false },
-      { label: 'Parking', premium: false },
-      { label: 'Washer', premium: false }
+      { label: 'Free Parking', premium: false }
     ],
     photos: [
       'fd9864bd-5a7f-4a14-997d-ca799df2850f.png',
@@ -604,16 +604,16 @@ const PROPERTIES = [
     city: 'Irving',
     state: 'Texas',
     hostingId: '1691507762565991335',
-    guests: 6, beds: 3, baths: 2,
-    rating: 4.88, reviews: 35,
+    guests: 3, beds: 1, baths: 1,
+    rating: 5.0, reviews: 2,
     lat: 32.8554, lng: -96.9430,
     amenities: [
-      { label: 'Game Room', premium: true },
-      { label: 'Lake View', premium: true },
+      { label: 'Pool', premium: true },
+      { label: 'DART Train', premium: true },
+      { label: 'Lake Access', premium: true },
       { label: 'Kitchen', premium: false },
       { label: 'Wifi', premium: false },
-      { label: 'Parking', premium: false },
-      { label: 'TV', premium: false }
+      { label: 'Free Parking', premium: false }
     ],
     photos: [
       '94b1c54b-c7c4-4165-b70c-285623ef5be8.png',
@@ -644,8 +644,8 @@ const PROPERTIES = [
     city: 'Irving',
     state: 'Texas',
     hostingId: '1579365691674889946',
-    guests: 6, beds: 3, baths: 2,
-    rating: 4.94, reviews: 56,
+    guests: 3, beds: 1, baths: 1,
+    rating: 4.95, reviews: 38,
     lat: 32.8554, lng: -96.9430,
     amenities: [
       { label: 'Lake View', premium: true },
@@ -653,7 +653,7 @@ const PROPERTIES = [
       { label: 'Gym', premium: true },
       { label: 'Kitchen', premium: false },
       { label: 'Wifi', premium: false },
-      { label: 'Parking', premium: false }
+      { label: 'Free Parking', premium: false }
     ],
     photos: [
       'd4cb708a-3694-4e6f-bd63-6757450a95e0.png',
@@ -684,16 +684,16 @@ const PROPERTIES = [
     city: 'Richardson',
     state: 'Texas',
     hostingId: '1622247533469388804',
-    guests: 4, beds: 2, baths: 1,
-    rating: 4.90, reviews: 44,
+    guests: 5, beds: 1, baths: 1,
+    rating: 4.92, reviews: 26,
     lat: 32.9483, lng: -96.7299,
     amenities: [
       { label: 'DART Train', premium: true },
-      { label: 'Gym', premium: true },
+      { label: 'Pool', premium: true },
+      { label: 'Workspace', premium: true },
       { label: 'Kitchen', premium: false },
       { label: 'Wifi', premium: false },
-      { label: 'Parking', premium: false },
-      { label: 'Washer', premium: false }
+      { label: 'Free Parking', premium: false }
     ],
     photos: [
       '93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg',
@@ -724,16 +724,16 @@ const PROPERTIES = [
     city: 'Irving',
     state: 'Texas',
     hostingId: '862596563097784023',
-    guests: 6, beds: 3, baths: 2,
-    rating: 4.85, reviews: 29,
+    guests: 3, beds: 1, baths: 1,
+    rating: 4.84, reviews: 25,
     lat: 32.8554, lng: -96.9430,
     amenities: [
       { label: 'Lake View', premium: true },
+      { label: 'DART Train', premium: true },
       { label: 'Pool', premium: true },
       { label: 'Kitchen', premium: false },
       { label: 'Wifi', premium: false },
-      { label: 'Parking', premium: false },
-      { label: 'TV', premium: false }
+      { label: 'Free Parking', premium: false }
     ],
     photos: [
       '9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg',
@@ -796,14 +796,15 @@ function renderProperties(filter) {
         <div class="prop-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>
         <div class="prop-name">${p.name}</div>
         <div class="prop-specs">
-          <span>${p.guests} guests</span>
-          <span>${p.beds} beds</span>
+          <span>${p.guests} guest${p.guests>1?'s':''}</span>
+          <span>${p.beds} bed${p.beds>1?'s':''}</span>
           <span>${p.baths} bath${p.baths>1?'s':''}</span>
         </div>
         <div class="prop-rating">
-          <span class="star">&#9733;</span>
+          ${p.rating > 0 ? `<span class="star">&#9733;</span>
           <span class="rating-num">${p.rating}</span>
-          <span class="review-count">(${p.reviews} reviews)</span>
+          <span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` : `<span class="star">&#9733;</span>
+          <span class="rating-num">New</span>`}
         </div>
         <div class="prop-amenities">${amenityHtml}</div>
         <div class="prop-actions">
