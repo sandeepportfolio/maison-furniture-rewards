@@ -183,7 +183,7 @@ async function getCalendar(listingId, from, to) {
   const days = await guestyFetch(
     `/availability-pricing/api/calendar/listings/${listingId}?startDate=${encodeURIComponent(from)}&endDate=${encodeURIComponent(to)}`
   );
-  const arr = Array.isArray(days) ? days : (days.data || days.results || days.days || []);
+  const arr = Array.isArray(days) ? days : (days.data?.days || days.data || days.results || days.days || []);
   return arr.map(d => ({
     date: d.date,
     status: d.status,                 // 'available' | 'unavailable' | 'booked' | ...
@@ -196,62 +196,70 @@ async function getCalendar(listingId, from, to) {
   }));
 }
 
-/** Create a price quote. Returns the raw quote plus a normalized summary. */
+/**
+ * Create a price quote by summing nightly rates from the calendar.
+ * The Guesty Open API /quotes endpoint requires a higher-tier plan, so we
+ * calculate pricing locally from the live calendar data instead.
+ */
 async function createQuote({ listingId, checkIn, checkOut, guests }) {
-  const quote = await guestyFetch('/quotes', {
-    method: 'POST',
-    body: {
-      listingId,
-      checkInDateLocalized: checkIn,
-      checkOutDateLocalized: checkOut,
-      guestsCount: guests,
-      source: 'website',
-    },
-  });
-
-  // Open API quote response: extract pricing from rates or money object
-  const plan = quote.rates?.ratePlans?.[0];
-  const money = plan?.ratePlan?.money || plan?.money || quote.rates?.money || {};
   const nights = countNights(checkIn, checkOut);
+  if (nights < 1) throw Object.assign(new Error('Invalid date range'), { status: 400 });
+
+  const calendar = await getCalendar(listingId, checkIn, checkOut);
+  // We need exactly `nights` stay-night entries (check-out date is departure, not a stay night)
+  const stayDays = calendar.slice(0, nights);
+
+  // Verify every stay night is available
+  const unavailable = stayDays.filter(d => !d.available);
+  if (unavailable.length) {
+    const err = new Error('Some dates are not available');
+    err.status = 409;
+    err.body = { unavailableDates: unavailable.map(d => d.date) };
+    throw err;
+  }
+
+  // Check minimum nights
+  const maxMinNights = Math.max(...stayDays.map(d => d.minNights || 1));
+  if (nights < maxMinNights) {
+    const err = new Error(`Minimum stay is ${maxMinNights} nights`);
+    err.status = 400;
+    throw err;
+  }
+
+  const accommodation = stayDays.reduce((sum, d) => sum + (d.price || 0), 0);
+  const currency = stayDays[0]?.currency || 'USD';
+  const perNight = nights ? Math.round(accommodation / nights) : 0;
+
+  // Generate a local quote ID for tracking
+  const quoteId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
   return {
-    quote,
+    quote: { _id: quoteId, local: true },
     summary: {
-      quoteId: quote._id,
-      ratePlanId: plan?.ratePlan?._id || plan?._id,
-      currency: money.currency || 'USD',
+      quoteId,
+      ratePlanId: null,
+      currency,
       nights,
-      accommodation: money.fareAccommodationAdjusted ?? money.fareAccommodation ?? null,
-      cleaningFee: money.fareCleaning ?? 0,
-      taxes: money.totalTaxes ?? 0,
-      total: money.hostPayout ?? money.subTotalPrice ?? null,
-      perNight: nights ? Math.round((money.fareAccommodation ?? 0) / nights) : null,
-      invoiceItems: money.invoiceItems || [],
-      expiresAt: quote.expiresAt,
+      accommodation,
+      cleaningFee: 0,
+      taxes: 0,
+      total: accommodation,
+      perNight,
+      invoiceItems: [],
+      expiresAt: new Date(Date.now() + 30 * 60_000).toISOString(), // 30 min
     },
   };
 }
 
 /**
- * Create a reservation from an existing quote via the Open API v3 flow.
- * Without a ccToken the reservation is created as 'inquiry' status for the
- * host to confirm. With a ccToken it can be set to 'confirmed'.
+ * Placeholder — instant reservations require a Guesty plan with
+ * /reservations-v3 access. For now all bookings go through the
+ * local request-to-book flow (captured in SQLite, host confirms in Guesty).
  */
-async function createInstantReservation({ quoteId, ratePlanId, guest, ccToken }) {
-  return guestyFetch('/reservations-v3/quote', {
-    method: 'POST',
-    body: {
-      quoteId,
-      status: ccToken ? 'confirmed' : 'inquiry',
-      ...(ratePlanId ? { ratePlanId } : {}),
-      guest: {
-        firstName: guest.firstName,
-        lastName: guest.lastName,
-        email: guest.email,
-        phone: guest.phone,
-      },
-    },
-  });
+async function createInstantReservation(/* { quoteId, ratePlanId, guest, ccToken } */) {
+  const err = new Error('Instant reservations are not available — booking requests are captured for host confirmation');
+  err.status = 501;
+  throw err;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
