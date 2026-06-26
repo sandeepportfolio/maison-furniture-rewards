@@ -1,7 +1,7 @@
 /**
- * Guesty Booking Engine API client.
+ * Guesty Open API client.
  *
- * Uses the OAuth2 client_credentials grant against booking.guesty.com.
+ * Uses the OAuth2 client_credentials grant against open-api.guesty.com.
  * Credentials are read from environment variables ONLY:
  *   GUESTY_CLIENT_ID, GUESTY_CLIENT_SECRET
  * They are never logged or returned to clients.
@@ -10,9 +10,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const TOKEN_URL = 'https://booking.guesty.com/oauth2/token';
-const API_BASE = 'https://booking.guesty.com/api';
-const SCOPE = 'booking_engine:api';
+const TOKEN_URL = 'https://open-api.guesty.com/oauth2/token';
+const API_BASE = 'https://open-api.guesty.com/v1';
+const SCOPE = 'open-api';
 
 // Persist the token across process restarts so frequent cold starts (e.g. on
 // Render's free tier) don't re-hit Guesty's token endpoint and trip its rate
@@ -181,9 +181,9 @@ async function getListings() {
 /** Availability calendar for one listing between two dates (YYYY-MM-DD). */
 async function getCalendar(listingId, from, to) {
   const days = await guestyFetch(
-    `/listings/${listingId}/calendar?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+    `/availability-pricing/api/calendar/listings/${listingId}?startDate=${encodeURIComponent(from)}&endDate=${encodeURIComponent(to)}`
   );
-  const arr = Array.isArray(days) ? days : (days.data || days.results || []);
+  const arr = Array.isArray(days) ? days : (days.data || days.results || days.days || []);
   return arr.map(d => ({
     date: d.date,
     status: d.status,                 // 'available' | 'unavailable' | 'booked' | ...
@@ -198,25 +198,27 @@ async function getCalendar(listingId, from, to) {
 
 /** Create a price quote. Returns the raw quote plus a normalized summary. */
 async function createQuote({ listingId, checkIn, checkOut, guests }) {
-  const quote = await guestyFetch('/reservations/quotes', {
+  const quote = await guestyFetch('/quotes', {
     method: 'POST',
     body: {
       listingId,
       checkInDateLocalized: checkIn,
       checkOutDateLocalized: checkOut,
       guestsCount: guests,
+      source: 'website',
     },
   });
 
+  // Open API quote response: extract pricing from rates or money object
   const plan = quote.rates?.ratePlans?.[0];
-  const money = plan?.ratePlan?.money || plan?.money || {};
+  const money = plan?.ratePlan?.money || plan?.money || quote.rates?.money || {};
   const nights = countNights(checkIn, checkOut);
 
   return {
     quote,
     summary: {
       quoteId: quote._id,
-      ratePlanId: plan?.ratePlan?._id,
+      ratePlanId: plan?.ratePlan?._id || plan?._id,
       currency: money.currency || 'USD',
       nights,
       accommodation: money.fareAccommodationAdjusted ?? money.fareAccommodation ?? null,
@@ -231,14 +233,24 @@ async function createQuote({ listingId, checkIn, checkOut, guests }) {
 }
 
 /**
- * Attempt an instant reservation against an existing quote.
- * Requires a payment token (ccToken) issued by Guesty's payment provider.
- * Without a ccToken this will throw — the caller falls back to lead capture.
+ * Create a reservation from an existing quote via the Open API v3 flow.
+ * Without a ccToken the reservation is created as 'inquiry' status for the
+ * host to confirm. With a ccToken it can be set to 'confirmed'.
  */
 async function createInstantReservation({ quoteId, ratePlanId, guest, ccToken }) {
-  return guestyFetch(`/reservations/quotes/${quoteId}/instant`, {
+  return guestyFetch('/reservations-v3/quote', {
     method: 'POST',
-    body: { ratePlanId, guest, ccToken },
+    body: {
+      quoteId,
+      status: ccToken ? 'confirmed' : 'inquiry',
+      ...(ratePlanId ? { ratePlanId } : {}),
+      guest: {
+        firstName: guest.firstName,
+        lastName: guest.lastName,
+        email: guest.email,
+        phone: guest.phone,
+      },
+    },
   });
 }
 
