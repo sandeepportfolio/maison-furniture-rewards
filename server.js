@@ -68,6 +68,22 @@ db.exec(`
   )
 `);
 
+// Messages / contact form submissions.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT DEFAULT '',
+    email TEXT NOT NULL,
+    phone TEXT DEFAULT '',
+    property TEXT DEFAULT '',
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'unread' CHECK(status IN ('unread','read','replied','archived')),
+    reply TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now')),
+    replied_at TEXT
+  )
+`);
+
 // Multer
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -259,8 +275,107 @@ app.post('/api/guesty/reservation', async (req, res) => {
   }
 });
 
+// ── MESSAGES / CONTACT ──
+
+// Public: submit a contact / message form.
+app.post('/api/messages', (req, res) => {
+  try {
+    const { name, email, phone, property, message } = req.body || {};
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'A valid email is required' });
+    }
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+    const stmt = db.prepare(
+      'INSERT INTO messages (name, email, phone, property, message) VALUES (?, ?, ?, ?, ?)'
+    );
+    const r = stmt.run(
+      (name || '').trim(),
+      email.trim().toLowerCase(),
+      (phone || '').trim(),
+      (property || '').trim(),
+      message.trim()
+    );
+    res.json({ success: true, id: r.lastInsertRowid });
+  } catch (err) {
+    console.error('Message submit error:', err);
+    res.status(500).json({ error: 'Failed to save message' });
+  }
+});
+
+// Admin: list messages, optionally filtered by ?status=
+app.get('/api/admin/messages', (req, res) => {
+  try {
+    const { status } = req.query;
+    let q = 'SELECT * FROM messages';
+    const p = [];
+    if (status && ['unread', 'read', 'replied', 'archived'].includes(status)) {
+      q += ' WHERE status = ?';
+      p.push(status);
+    }
+    q += ' ORDER BY created_at DESC';
+    res.json(db.prepare(q).all(...p));
+  } catch (err) {
+    console.error('Messages list error:', err);
+    res.status(500).json({ error: 'Failed to load messages' });
+  }
+});
+
+// Admin: update a message's status and/or reply.
+app.patch('/api/admin/messages/:id', (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id || isNaN(id)) return res.status(400).json({ error: 'Invalid message id' });
+
+    const existing = db.prepare('SELECT * FROM messages WHERE id = ?').get(id);
+    if (!existing) return res.status(404).json({ error: 'Message not found' });
+
+    const { status, reply } = req.body || {};
+    const validStatuses = ['unread', 'read', 'replied', 'archived'];
+
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+    if (!status && reply === undefined) {
+      return res.status(400).json({ error: 'Provide status and/or reply to update' });
+    }
+
+    const updates = [];
+    const params = [];
+
+    if (status) {
+      updates.push('status = ?');
+      params.push(status);
+    }
+    if (reply !== undefined) {
+      updates.push('reply = ?');
+      params.push(reply);
+      updates.push("replied_at = datetime('now')");
+      // Auto-set status to 'replied' when a reply is added (unless explicitly set otherwise).
+      if (!status && reply.trim()) {
+        updates.push("status = 'replied'");
+      }
+    }
+
+    params.push(id);
+    db.prepare(`UPDATE messages SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+
+    const updated = db.prepare('SELECT * FROM messages WHERE id = ?').get(id);
+    res.json({ success: true, message: updated });
+  } catch (err) {
+    console.error('Message update error:', err);
+    res.status(500).json({ error: 'Failed to update message' });
+  }
+});
+
 // ── ADMIN (public, no auth) ──
 app.get('/api/admin/booking-requests', (req, res) => {
+  res.json(db.prepare('SELECT * FROM booking_requests ORDER BY created_at DESC').all());
+});
+
+// Alias so the bookings list is also available at /api/admin/bookings.
+app.get('/api/admin/bookings', (req, res) => {
   res.json(db.prepare('SELECT * FROM booking_requests ORDER BY created_at DESC').all());
 });
 

@@ -333,6 +333,150 @@ ul{list-style:none}
   .cal-bar{flex-direction:column}
   .cal-bar-div{width:100%;height:1px}
 }
+
+/* ── Stats Counter Section ── */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:900px;margin:0 auto 60px;position:relative}
+.stats-bar::before{content:'';position:absolute;top:50%;left:10%;right:10%;height:1px;background:var(--border-dark);opacity:.3}
+.stat-item{text-align:center;padding:24px 16px;position:relative;z-index:1}
+.stat-number{font-family:var(--serif);font-size:clamp(36px,5vw,56px);font-weight:300;color:var(--text-inv);line-height:1;margin-bottom:6px;display:flex;align-items:baseline;justify-content:center;gap:2px}
+.stat-number .stat-val{display:inline}
+.stat-number .stat-suffix{font-size:clamp(20px,2.5vw,28px);color:var(--accent-light)}
+.stat-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--text-inv-muted);text-transform:uppercase}
+
+/* ── Premium Features Grid ── */
+.premium-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1400px;margin:0 auto;padding:0 24px}
+.prem-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);padding:28px 24px;border:1px solid var(--border-dark);position:relative;overflow:hidden;opacity:0;transform:translateY(40px) scale(.95);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out),border-color .4s var(--ease)}
+.prem-card.revealed{opacity:1;transform:translateY(0) scale(1)}
+.prem-card:hover{border-color:var(--brass)}
+.prem-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .4s}
+.prem-card:hover::before{opacity:1}
+.prem-icon{width:40px;height:40px;border-radius:10px;background:rgba(184,101,74,.12);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.prem-icon svg{width:20px;height:20px;stroke:var(--accent);stroke-width:1.5;fill:none}
+.prem-card h4{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--text-inv);margin-bottom:6px}
+.prem-card p{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);line-height:1.5}
+
+/* ── Amenity Marquee ── */
+.amenity-marquee{overflow:hidden;padding:40px 0;position:relative}
+.amenity-marquee::before,.amenity-marquee::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2}
+.amenity-marquee::before{left:0;background:linear-gradient(90deg,var(--bg-dark),transparent)}
+.amenity-marquee::after{right:0;background:linear-gradient(90deg,transparent,var(--bg-dark))}
+.marquee-track{display:flex;gap:32px;animation:marqueeScroll 35s linear infinite;width:max-content}
+.marquee-item{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--text-inv-muted);white-space:nowrap;display:flex;align-items:center;gap:10px}
+.marquee-item::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent-light);flex-shrink:0}
+@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── Enhanced Story ── */
+.story-metric{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--bg-dark-card);border-radius:var(--radius);border:1px solid var(--border-dark);transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.story-metric:hover{border-color:var(--accent);transform:translateX(4px)}
+.story-metric-icon{width:44px;height:44px;border-radius:12px;background:rgba(184,101,74,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.story-metric-icon svg{width:22px;height:22px;stroke:var(--accent-light);stroke-width:1.5;fill:none}
+.story-metric-text{display:flex;flex-direction:column;gap:2px}
+.story-metric-text strong{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--text-inv)}
+.story-metric-text span{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);line-height:1.4}
+
+/* ── Property Detail Modal ── */
+.detail-modal{position:fixed;inset:0;z-index:10002;background:rgba(26,23,20,.7);backdrop-filter:blur(10px);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+.detail-modal.open{display:flex}
+.detail-body{background:var(--bg);border-radius:var(--radius-xl);max-width:900px;width:100%;margin:40px auto;position:relative;overflow:hidden}
+.detail-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;border:1px solid var(--border);transition:transform .2s}
+.detail-close:hover{transform:scale(1.1)}
+.detail-close svg{width:18px;height:18px;stroke:var(--text);stroke-width:2;fill:none}
+.detail-gallery{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg-dark)}
+.detail-gallery img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .4s var(--ease)}
+.detail-gallery img.active{opacity:1}
+.detail-gallery-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,transform .2s;backdrop-filter:blur(4px)}
+.detail-gallery-nav:hover{background:#fff;transform:translateY(-50%) scale(1.08)}
+.detail-gallery-nav svg{width:18px;height:18px;stroke:var(--text);stroke-width:2;fill:none}
+.detail-gallery-prev{left:16px}
+.detail-gallery-next{right:16px}
+.detail-gallery-counter{position:absolute;bottom:16px;right:16px;background:rgba(26,23,20,.6);color:#fff;font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:100px;backdrop-filter:blur(4px)}
+.detail-thumbs{display:flex;gap:6px;padding:12px 24px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bg-card)}
+.detail-thumbs::-webkit-scrollbar{height:0}
+.detail-thumb{width:72px;height:48px;border-radius:8px;overflow:hidden;cursor:pointer;opacity:.4;transition:opacity .3s;flex-shrink:0;border:2px solid transparent}
+.detail-thumb.active{opacity:1;border-color:var(--accent)}
+.detail-thumb img{width:100%;height:100%;object-fit:cover}
+.detail-content{padding:32px}
+.detail-header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+.detail-header-left h2{font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:400;margin-bottom:4px}
+.detail-header-left .detail-loc{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--text-muted)}
+.detail-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.detail-rating{display:flex;align-items:center;gap:6px}
+.detail-rating .star{color:var(--accent);font-size:18px}
+.detail-rating .rating-num{font-family:var(--sans);font-size:18px;font-weight:600}
+.detail-rating .review-count{font-family:var(--sans);font-size:13px;color:var(--text-muted)}
+.detail-specs{display:flex;gap:20px;font-family:var(--sans);font-size:14px;color:var(--text-muted)}
+.detail-specs span{display:flex;align-items:center;gap:5px}
+.detail-desc{margin-bottom:32px}
+.detail-desc h3{font-family:var(--serif);font-size:22px;font-weight:500;margin-bottom:12px}
+.detail-desc p{font-family:var(--sans);font-size:14px;color:var(--text-muted);line-height:1.8;margin-bottom:8px}
+.detail-amenities{margin-bottom:32px}
+.detail-amenities h3{font-family:var(--serif);font-size:22px;font-weight:500;margin-bottom:16px}
+.amenity-category{margin-bottom:20px}
+.amenity-category h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.amenity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.amenity-item{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:13px;color:var(--text);padding:6px 0}
+.amenity-item svg{width:16px;height:16px;stroke:var(--accent);stroke-width:1.5;fill:none;flex-shrink:0}
+.detail-actions{display:flex;gap:12px;padding-top:24px;border-top:1px solid var(--border)}
+.detail-actions button,.detail-actions a{font-family:var(--mono);font-size:12px;letter-spacing:.06em;padding:14px 28px;border-radius:100px;transition:all .3s var(--ease);cursor:pointer}
+.detail-actions .btn-book{background:var(--accent);color:#fff;border:none}
+.detail-actions .btn-book:hover{background:var(--accent-hover)}
+.detail-actions .btn-contact{border:1px solid var(--border);color:var(--text);background:transparent}
+.detail-actions .btn-contact:hover{border-color:var(--text)}
+.detail-new-badge{display:inline-flex;align-items:center;gap:4px;background:var(--accent-pale);color:var(--accent);font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:4px 10px;border-radius:100px;font-weight:500}
+
+/* ── Contact Modal ── */
+.contact-modal{position:fixed;inset:0;z-index:10003;background:rgba(26,23,20,.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+.contact-modal.open{display:flex}
+.contact-body{background:var(--bg);border-radius:var(--radius-xl);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:36px;position:relative}
+.contact-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--border);transition:border-color .3s}
+.contact-close:hover{border-color:var(--text)}
+.contact-close svg{width:16px;height:16px;stroke:var(--text);stroke-width:2;fill:none}
+.contact-title{font-family:var(--serif);font-size:28px;font-weight:400;margin-bottom:4px}
+.contact-subtitle{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--text-muted);margin-bottom:28px}
+.contact-form{display:flex;flex-direction:column;gap:16px}
+.contact-form .form-group textarea{font-family:var(--sans);font-size:14px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);color:var(--text);outline:none;transition:border-color .3s;resize:vertical;min-height:120px}
+.contact-form .form-group textarea:focus{border-color:var(--accent)}
+.contact-msg{font-family:var(--sans);font-size:13px;text-align:center;padding:12px;border-radius:var(--radius);margin-top:8px}
+.contact-msg.success{background:#E8F5E9;color:#2E7D32}
+.contact-msg.error{background:#FFEBEE;color:#C62828}
+
+/* ── New Badge on Cards ── */
+.prop-new-badge{display:inline-flex;align-items:center;gap:4px;background:var(--accent-pale);color:var(--accent);font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:4px 10px;border-radius:100px;font-weight:500}
+
+/* ── View Details Button ── */
+.btn-details{border:1px solid var(--border);color:var(--text-muted);background:transparent;cursor:pointer}
+.btn-details:hover{border-color:var(--text);color:var(--text)}
+
+/* ── Enhanced Animations ── */
+.reveal-scale{opacity:0;transform:scale(.9);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-diagonal{opacity:0;transform:translate(-20px,30px) rotate(-1deg);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+.reveal-diagonal.visible{opacity:1;transform:translate(0,0) rotate(0)}
+
+@media(max-width:1024px){
+  .stats-bar{grid-template-columns:repeat(2,1fr);gap:20px}
+  .premium-grid{grid-template-columns:repeat(2,1fr)}
+  .amenity-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .stats-bar{grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px}
+  .stat-number{font-size:32px}
+  .premium-grid{grid-template-columns:1fr;padding:0 16px}
+  .detail-body{margin:16px auto;border-radius:var(--radius-lg)}
+  .detail-content{padding:20px}
+  .detail-header{flex-direction:column}
+  .detail-header-right{align-items:flex-start}
+  .detail-specs{flex-wrap:wrap}
+  .amenity-grid{grid-template-columns:1fr 1fr}
+  .detail-actions{flex-direction:column}
+  .detail-actions button,.detail-actions a{width:100%;text-align:center;justify-content:center}
+  .contact-body{padding:24px}
+  .story-details{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -350,6 +494,7 @@ ul{list-style:none}
     <a href="#properties">Properties</a>
     <a href="#experience">Experience</a>
     <a href="#story">Our Story</a>
+    <a href="javascript:void(0)" onclick="openContact()">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
   </div>
   <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -360,6 +505,7 @@ ul{list-style:none}
   <a href="#properties" onclick="closeMobile()">Properties</a>
   <a href="#experience" onclick="closeMobile()">Experience</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
+  <a href="javascript:void(0)" onclick="closeMobile();openContact()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
 </div>
 
@@ -442,34 +588,86 @@ ul{list-style:none}
       <span class="section-label light">03&ensp;THE REGENT DIFFERENCE</span>
       <h2 class="light">An experience,<br>not just a booking</h2>
     </div>
-    <div class="features-grid">
-      <div class="feature-card reveal reveal-delay-1">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        </div>
-        <h3>Designer Interiors</h3>
-        <p>Every property is thoughtfully designed with curated furnishings, premium bedding, and modern amenities that rival boutique hotels.</p>
+    <!-- Animated Stats -->
+    <div class="stats-bar reveal">
+      <div class="stat-item">
+        <div class="stat-number"><span class="stat-val" data-target="6">0</span></div>
+        <div class="stat-label">Properties</div>
       </div>
-      <div class="feature-card reveal reveal-delay-2">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        </div>
-        <h3>Effortless Check-in</h3>
-        <p>Smart locks and detailed arrival guides ensure a seamless, contactless check-in experience. Your home is ready when you are.</p>
+      <div class="stat-item">
+        <div class="stat-number"><span class="stat-val" data-target="4.9" data-decimals="1">0</span><span class="stat-suffix">&#9733;</span></div>
+        <div class="stat-label">Avg Rating</div>
       </div>
-      <div class="feature-card reveal reveal-delay-3">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.45 2.344-2.5"/><path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5"/><path d="M8 14v.5M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75z"/><path d="M4.42 11.247A13.152 13.152 0 004 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 00-.493-3.309"/></svg>
-        </div>
-        <h3>Pet Friendly</h3>
-        <p>We welcome well-behaved pets at select properties. Bring your four-legged family member along for the adventure.</p>
+      <div class="stat-item">
+        <div class="stat-number"><span class="stat-val" data-target="79">0</span><span class="stat-suffix">+</span></div>
+        <div class="stat-label">Reviews</div>
       </div>
-      <div class="feature-card reveal reveal-delay-4">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg>
-        </div>
-        <h3>Full Amenities</h3>
-        <p>High-speed WiFi, fully equipped kitchens, in-unit laundry, dedicated parking, and entertainment systems in every property.</p>
+      <div class="stat-item">
+        <div class="stat-number"><span class="stat-val" data-target="70">0</span><span class="stat-suffix">+</span></div>
+        <div class="stat-label">Amenities Per Stay</div>
+      </div>
+    </div>
+    <!-- Premium Features -->
+    <div class="premium-grid">
+      <div class="prem-card" data-delay="0">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg></div>
+        <h4>Resort-Style Pool &amp; Gym</h4>
+        <p>24/7 access to state-of-the-art fitness centers, resort pools, and sky lounges.</p>
+      </div>
+      <div class="prem-card" data-delay="80">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg></div>
+        <h4>Chef-Ready Kitchens</h4>
+        <p>Fully stocked with premium cookware, dishes, spices, and a complimentary coffee bar.</p>
+      </div>
+      <div class="prem-card" data-delay="160">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h4>Smart TVs Up to 85"</h4>
+        <p>Large-screen entertainment in every room. Sign into your own streaming apps.</p>
+      </div>
+      <div class="prem-card" data-delay="240">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+        <h4>In-Unit Washer &amp; Dryer</h4>
+        <p>Full-size with detergent, dryer sheets, and all laundry supplies provided.</p>
+      </div>
+      <div class="prem-card" data-delay="320">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <h4>DART Rail Access</h4>
+        <p>Steps to the train. DFW Airport, Downtown Dallas, Deep Ellum -- no car needed.</p>
+      </div>
+      <div class="prem-card" data-delay="400">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0012 0c0-3-2-7-6-11z"/></svg></div>
+        <h4>Deep Cleaning Standards</h4>
+        <p>Professional deep cleaning exceeding luxury hotel standards after every single stay.</p>
+      </div>
+      <div class="prem-card" data-delay="480">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <h4>Premium Bath Products</h4>
+        <p>Plush towels, quality toiletries, vanity mirrors, and first-aid kits in every suite.</p>
+      </div>
+      <div class="prem-card" data-delay="560">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+        <h4>Dedicated Workspace</h4>
+        <p>27" monitor, blazing fast WiFi up to 1GB fiber, and ergonomic setup for remote work.</p>
+      </div>
+      <div class="prem-card" data-delay="640">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+        <h4>EV Charging Stations</h4>
+        <p>Electric vehicle charging available at select properties. Drive green, stay luxury.</p>
+      </div>
+      <div class="prem-card" data-delay="720">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div>
+        <h4>Scented Candles &amp; Ambiance</h4>
+        <p>Warm lighting, designer candles, and thoughtful touches that make it feel like home.</p>
+      </div>
+      <div class="prem-card" data-delay="800">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+        <h4>Complimentary Coffee Bar</h4>
+        <p>Keurig machines, premium pods, creamers, sweeteners, and all the fixings.</p>
+      </div>
+      <div class="prem-card" data-delay="880">
+        <div class="prem-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg></div>
+        <h4>Games &amp; Entertainment</h4>
+        <p>Board games, mini golf, basketball hoops, pool tables, arcades, and more.</p>
       </div>
     </div>
   </div>
@@ -477,11 +675,41 @@ ul{list-style:none}
 
 <!-- ═══ OUR STORY ═══ -->
 <section class="story-section" id="story">
+  <!-- Amenity Marquee -->
+  <div class="amenity-marquee">
+    <div class="marquee-track">
+      <span class="marquee-item">RESORT-STYLE POOL</span>
+      <span class="marquee-item">24/7 GYM ACCESS</span>
+      <span class="marquee-item">CHEF-READY KITCHEN</span>
+      <span class="marquee-item">IN-UNIT WASHER &amp; DRYER</span>
+      <span class="marquee-item">SMART TVs UP TO 85"</span>
+      <span class="marquee-item">DART RAIL ACCESS</span>
+      <span class="marquee-item">DEEP CLEANING STANDARDS</span>
+      <span class="marquee-item">PREMIUM BATH PRODUCTS</span>
+      <span class="marquee-item">EV CHARGING</span>
+      <span class="marquee-item">27" MONITOR WORKSTATION</span>
+      <span class="marquee-item">COMPLIMENTARY COFFEE BAR</span>
+      <span class="marquee-item">SCENTED CANDLES</span>
+      <span class="marquee-item">RESORT-STYLE POOL</span>
+      <span class="marquee-item">24/7 GYM ACCESS</span>
+      <span class="marquee-item">CHEF-READY KITCHEN</span>
+      <span class="marquee-item">IN-UNIT WASHER &amp; DRYER</span>
+      <span class="marquee-item">SMART TVs UP TO 85"</span>
+      <span class="marquee-item">DART RAIL ACCESS</span>
+      <span class="marquee-item">DEEP CLEANING STANDARDS</span>
+      <span class="marquee-item">PREMIUM BATH PRODUCTS</span>
+      <span class="marquee-item">EV CHARGING</span>
+      <span class="marquee-item">27" MONITOR WORKSTATION</span>
+      <span class="marquee-item">COMPLIMENTARY COFFEE BAR</span>
+      <span class="marquee-item">SCENTED CANDLES</span>
+    </div>
+  </div>
   <div class="story-inner">
-    <div class="story-visual reveal">
+    <div class="story-visual reveal-scale">
       <svg class="story-svg" viewBox="0 0 380 460" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M40 460 L40 160 Q40 30 190 30 Q340 30 340 160 L340 460" stroke="#B8654A" stroke-width="1.5" opacity=".25"/>
         <path d="M65 460 L65 175 Q65 60 190 60 Q315 60 315 175 L315 460" stroke="#D4A088" stroke-width="1" opacity=".18"/>
+        <path d="M90 460 L90 190 Q90 90 190 90 Q290 90 290 190 L290 460" stroke="#B8654A" stroke-width=".8" opacity=".12"/>
         <rect x="165" y="310" width="50" height="90" rx="3" stroke="#D4A088" stroke-width="1.2" opacity=".5"/>
         <rect x="172" y="295" width="36" height="15" rx="2" stroke="#D4A088" stroke-width="1" opacity=".4"/>
         <line x1="190" y1="295" x2="190" y2="265" stroke="#D4A088" stroke-width="1.2" opacity=".5"/>
@@ -502,30 +730,44 @@ ul{list-style:none}
         <circle cx="120" cy="160" r="1" fill="#D4A088" opacity=".15"/>
         <circle cx="190" cy="80" r="2.5" fill="#D4A088" opacity=".15"/>
         <circle cx="300" cy="180" r="1" fill="#D4A088" opacity=".1"/>
+        <circle cx="140" cy="220" r="1.5" fill="#D4A088" opacity=".12"/>
+        <circle cx="240" cy="200" r="2" fill="#D4A088" opacity=".1"/>
         <line x1="30" y1="460" x2="350" y2="460" stroke="#D4A088" stroke-width=".5" opacity=".15"/>
       </svg>
     </div>
-    <div class="story-content reveal">
+    <div class="story-content reveal-right">
       <span class="section-label light">04&ensp;OUR STORY</span>
-      <h2>Two friends.<br><em>One simple idea.</em></h2>
-      <p>We kept running into the same problem. Beautiful listing photos, but thin towels, barely-there Wi-Fi, and one TV from 2012 in the living room. So we started doing it differently.</p>
-      <p>Regent is a small network of homes where every detail is actually considered &mdash; because we'd never list a place we wouldn't book ourselves.</p>
+      <h2>Two friends, tired of<br><em>paying more for less.</em></h2>
+      <p>We kept booking beautiful Airbnbs that looked amazing in photos -- then showed up to thin towels, barely-there WiFi, a TV from 2012, and a kitchen with exactly two forks. We knew we could do better.</p>
+      <p>So we built Regent. Every property is fitted with premium finishings and stocked with tremendous care -- because we believe luxury shouldn't come with an absurd price tag. Resort-style amenities, chef-ready kitchens, and deep cleaning that exceeds luxury hotel standards after <strong>every single stay</strong>.</p>
       <div class="story-details">
-        <div class="story-detail">
-          <svg viewBox="0 0 24 24"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0012 0c0-3-2-7-6-11z"/></svg>
-          <span>Scented candles in every room</span>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M12 2L5 12a7 7 0 1014 0L12 2z"/></svg></div>
+          <div class="story-metric-text"><strong>Stand-Up &amp; Vanity Mirrors</strong><span>Full-body mirrors throughout, because details matter</span></div>
         </div>
-        <div class="story-detail">
-          <svg viewBox="0 0 24 24"><path d="M12 2L5 12a7 7 0 1014 0L12 2z"/></svg>
-          <span>Premium bath &amp; body products</span>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg></div>
+          <div class="story-metric-text"><strong>Resort-Style Amenities</strong><span>Gym, pool, sky lounge, game room -- all included free</span></div>
         </div>
-        <div class="story-detail">
-          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          <span>Smart TVs in every room</span>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg></div>
+          <div class="story-metric-text"><strong>Chef-Ready Kitchen</strong><span>Every utensil, spice, and supply you could need</span></div>
         </div>
-        <div class="story-detail">
-          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
-          <span>Games for rainy evenings</span>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="story-metric-text"><strong>Deep Cleaning Standards</strong><span>Exceeding luxury hotel protocols after every stay</span></div>
+        </div>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0012 0c0-3-2-7-6-11z"/></svg></div>
+          <div class="story-metric-text"><strong>Plush Towels &amp; Throws</strong><span>Ample premium linens and cozy blankets in every room</span></div>
+        </div>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+          <div class="story-metric-text"><strong>In-Unit Washer &amp; Dryer</strong><span>Detergent, dryer sheets, and all supplies included</span></div>
+        </div>
+        <div class="story-metric">
+          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="story-metric-text"><strong>Premier Concierge Service</strong><span>100% response rate, usually within an hour</span></div>
         </div>
       </div>
     </div>
@@ -547,12 +789,58 @@ ul{list-style:none}
       <a href="#properties">Properties</a>
       <a href="#experience">Experience</a>
       <a href="#story">Our Story</a>
+      <a href="javascript:void(0)" onclick="openContact()">Contact</a>
       <a href="#properties">Book Now</a>
     </div>
     <div class="footer-divider"></div>
     <div class="footer-copy">&copy; 2026 Regent Capital Ventures LLC. All rights reserved.<br>Luxury short-term rentals across the Dallas-Fort Worth metroplex.</div>
   </div>
 </footer>
+
+<!-- ═══ PROPERTY DETAIL MODAL ═══ -->
+<div class="detail-modal" id="detailModal">
+  <div class="detail-body">
+    <div class="detail-close" onclick="closeDetail()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="detail-gallery" id="detailGallery"></div>
+    <div class="detail-thumbs" id="detailThumbs"></div>
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+</div>
+
+<!-- ═══ CONTACT MODAL ═══ -->
+<div class="contact-modal" id="contactModal">
+  <div class="contact-body">
+    <div class="contact-close" onclick="closeContact()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <h2 class="contact-title">Contact Your Host</h2>
+    <div class="contact-subtitle">WE RESPOND WITHIN AN HOUR</div>
+    <div class="contact-form">
+      <div class="form-row">
+        <div class="form-group"><label>NAME</label><input type="text" id="cName"></div>
+        <div class="form-group"><label>EMAIL</label><input type="email" id="cEmail"></div>
+      </div>
+      <div class="form-group"><label>PHONE</label><input type="tel" id="cPhone"></div>
+      <div class="form-group">
+        <label>PROPERTY</label>
+        <select id="cProperty">
+          <option value="">Select a property</option>
+          <option value="regent-villa">Regent Villa</option>
+          <option value="cozy-designer">Cozy Designer Suite</option>
+          <option value="designer-game">Designer Game Suite</option>
+          <option value="lake-view">Gorgeous Luxury Lake View Suite</option>
+          <option value="executive">Luxury Executive Living</option>
+          <option value="stunning-lake">Stunning Lake Views</option>
+        </select>
+      </div>
+      <div class="form-group"><label>MESSAGE</label><textarea id="cMessage" placeholder="Tell us about your trip or ask any questions..."></textarea></div>
+      <button class="btn-primary btn-full" onclick="submitContact()">Send Message</button>
+      <div id="contactMsg"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ LIGHTBOX ═══ -->
 <div class="lightbox" id="lightbox">
@@ -656,16 +944,18 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1711340298974810369',
     guests: 14, beds: 4, baths: 3.5,
-    rating: 0, reviews: 0,
+    rating: null, reviews: 0,
     lat: 33.0198, lng: -96.6989,
     amenities: [
       { label: 'Hot Tub', premium: true },
-      { label: 'Theatre', premium: true },
+      { label: '85" TV', premium: true },
       { label: 'Game Room', premium: true },
-      { label: 'Kitchen', premium: false },
-      { label: 'Wifi', premium: false },
-      { label: 'Free Parking', premium: false }
+      { label: 'BBQ', premium: false },
+      { label: 'Piano', premium: true },
+      { label: 'Mini Golf', premium: false }
     ],
+    description: 'Luxury Plano vacation rental in a prime location, perfect for families, groups, and weekend getaways. Sleeps up to 14 guests with 4 beds plus couch space. Enjoy a private hot tub, 85-inch TV, foosball, indoor basketball, mini fridge, piano, mini golf in the master, and 6 TVs total. An entertainment-filled home base near shopping, dining, events, and Plano/Dallas attractions.',
+    fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Body soap','Hot water','Shower gel'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['Ethernet','TV (6 total)','Piano','Sound system','Books','Theme room','Mini golf'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Hot water kettle','Coffee maker','Wine glasses','Toaster','Baking sheet','Rice maker','BBQ utensils','Dining table','Coffee'],Outdoor:['Private patio','Outdoor furniture','Outdoor dining area','Outdoor kitchen','BBQ grill'],'Parking & Facilities':['Free parking','Street parking','Private hot tub'],Family:['Children\'s books & toys','Children\'s dinnerware','Board games','Children\'s playroom']},
     photos: [
       'a4f242ba-e02b-46a4-a699-4b17837ac4b7.png',
       '1dc0b413-0ed7-4129-9e9e-189f0d2718a5.png',
@@ -699,13 +989,15 @@ const PROPERTIES = [
     rating: 4.89, reviews: 9,
     lat: 32.8554, lng: -96.9430,
     amenities: [
-      { label: 'Pool', premium: true },
+      { label: 'Soaking Tub', premium: true },
+      { label: '65" TV', premium: true },
+      { label: 'DART Rail', premium: true },
+      { label: 'Lake Trails', premium: false },
       { label: 'Gym', premium: true },
-      { label: 'DART Train', premium: true },
-      { label: 'Kitchen', premium: false },
-      { label: 'Wifi', premium: false },
-      { label: 'Free Parking', premium: false }
+      { label: 'Pool', premium: true }
     ],
+    description: 'Steps from Toyota Music Factory, Water Street dining, and the Lake Carolyn trails. 10-foot ceilings, a fully stocked kitchen with a big prep island, deep soaking tub, and a living room you\'ll actually want to hang out in. DART rail is a 5-minute walk for easy access to DFW Airport and Downtown Dallas. Resort-style pool, 24/7 gym, covered parking. We handle all the supplies -- just show up.',
+    fullAmenities: {Bathroom:['Bathtub','Deep soaking tub','Hair dryer','Cleaning products','Conditioner','Body soap','Bidet','Shower gel'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['Ethernet','65" Smart TV','Exercise equipment','Pool table','Theme room'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Coffee maker','Wine glasses','Toaster','Baking sheet','Dining table','Coffee'],Outdoor:['Patio or balcony','Outdoor furniture','Outdoor dining area','Shared BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','Gated community'],'Location':['Lake access','Private entrance','Steps to DART rail','Toyota Music Factory nearby']},
     photos: [
       'fd9864bd-5a7f-4a14-997d-ca799df2850f.png',
       '46546182-9e9e-475d-bd14-3ca27823b1af.png',
@@ -736,16 +1028,18 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1691507762565991335',
     guests: 3, beds: 1, baths: 1,
-    rating: 5.0, reviews: 2,
+    rating: null, reviews: 1,
     lat: 32.8554, lng: -96.9430,
     amenities: [
-      { label: 'Pool', premium: true },
-      { label: 'DART Train', premium: true },
-      { label: 'Lake Access', premium: true },
-      { label: 'Kitchen', premium: false },
-      { label: 'Wifi', premium: false },
-      { label: 'Free Parking', premium: false }
+      { label: 'Sky Lounge', premium: true },
+      { label: 'Mini Golf', premium: true },
+      { label: 'Marble Finishes', premium: true },
+      { label: 'EV Charging', premium: false },
+      { label: 'Coffee Bar', premium: false },
+      { label: 'DART Rail', premium: true }
     ],
+    description: 'Designer one-bedroom in the heart of Las Colinas -- full marble finishes, soft candlelight, and the DART rail just steps from your door. Cozy up under layered comforters, brew from a fully stocked coffee bar, fire up the 65" TV, or break out the board games, mini golf, and a mini hoop. Cook in a chef-grade kitchen. Walk to Toyota Music Factory, Lake Carolyn, and Alamo Drafthouse. DFW Airport is 10 minutes by train.',
+    fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Dove body soap','Shower gel'],'Bedroom & Laundry':['Washer','Dryer','Essentials (eco-friendly)','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['Ethernet','65" Smart TV','Second TV in bedroom','Exercise equipment','Pool table','Theme room','Mini golf','Mini basketball hoop'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Electric stove','Oven','Keurig coffee machine','Wine glasses','Toaster','Baking sheet','Dining table','Coffee'],Outdoor:['Private patio or balcony','Outdoor furniture','Outdoor dining area','BBQ grill','Sun loungers'],'Parking & Facilities':['Free covered parking','Pool','Elevator','Gym','Gated community','EV charging stations'],Building:['Sky Lounge with skyline views','24/7 fitness center & yoga studio','Resort-style pool','On-site putting green','Clubhouse & game room'],'Location':['3-min walk to DART station','Lake Carolyn access','Alamo Drafthouse nearby','Toyota Music Factory']},
     photos: [
       '94b1c54b-c7c4-4165-b70c-285623ef5be8.png',
       'b716d376-c708-407f-b233-44184657bfb6.png',
@@ -776,16 +1070,18 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1579365691674889946',
     guests: 3, beds: 1, baths: 1,
-    rating: 4.95, reviews: 38,
+    rating: 4.92, reviews: 25,
     lat: 32.8554, lng: -96.9430,
     amenities: [
       { label: 'Lake View', premium: true },
-      { label: 'Pool', premium: true },
-      { label: 'Gym', premium: true },
-      { label: 'Kitchen', premium: false },
-      { label: 'Wifi', premium: false },
-      { label: 'Free Parking', premium: false }
+      { label: '27" Monitor', premium: true },
+      { label: 'Wine Cooler', premium: true },
+      { label: '500Mbps WiFi', premium: false },
+      { label: 'Punching Bag', premium: false },
+      { label: 'Pool', premium: true }
     ],
+    description: 'Wake up to tranquil lake views in an ultra-high luxury yet irresistibly cozy 600 sq ft suite in Las Colinas. Designer interiors, refined finishes, and plush comfort. 65" Smart TV, dedicated workspace with 27" monitor, 500 Mbps fiber Wi-Fi. Steps to DART Orange Line, dining, gondola rides, trails, and more. Resort amenities: 24/7 gym, pool, billiards, game room, and conference spaces with lake views.',
+    fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Conditioner','Body soap','Shower gel'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Walk-in closet'],Entertainment:['65" Smart TV','Exercise equipment','Pool table','Theme room','UFC punching bag','Game bin','Wine cooler'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" mounted monitor','500 Mbps fiber WiFi'],Outdoor:['Private balcony','Outdoor kitchen','BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center & conference rooms'],'Location':['Waterfront','Lake access','Private entrance','Steps to DART Orange Line']},
     photos: [
       'd4cb708a-3694-4e6f-bd63-6757450a95e0.png',
       'b5fe1afc-e3e3-445d-8c9c-c0d12ceb727c.jpeg',
@@ -816,16 +1112,18 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1622247533469388804',
     guests: 5, beds: 1, baths: 1,
-    rating: 4.92, reviews: 26,
+    rating: 4.95, reviews: 21,
     lat: 32.9483, lng: -96.7299,
     amenities: [
-      { label: 'DART Train', premium: true },
-      { label: 'Pool', premium: true },
-      { label: 'Workspace', premium: true },
-      { label: 'Kitchen', premium: false },
-      { label: 'Wifi', premium: false },
-      { label: 'Free Parking', premium: false }
+      { label: '75" TV', premium: true },
+      { label: 'EV Charger', premium: true },
+      { label: 'Sky Lounge', premium: true },
+      { label: 'Arcade Room', premium: false },
+      { label: 'Fire Pit', premium: false },
+      { label: 'DART Rail', premium: true }
     ],
+    description: 'Soaring high ceilings with light pouring in. Fully stocked coffee station, private oversized patio, and a 3-minute walk to DART Station to go anywhere without needing your car. 75" Smart TV, dedicated desk with 27" monitor. Resort pool, 24/7 gym, sky lounge, arcade room -- all free. Sleeps 5. Everything you need, nothing you don\'t.',
+    fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Shower gel'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Clothing storage','Air mattress available'],Entertainment:['Ethernet','75" Smart TV','Exercise equipment','Ping pong table','Pool table','Arcade games','Theme room'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Hot water kettle','Coffee maker','Wine glasses','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],Outdoor:['Patio or balcony','Fire pit','Outdoor furniture','Outdoor dining area','Shared BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool with tanning ledge','Elevator','EV charger','Gym with spin room'],Building:['Sky lounge with panoramic views','Arcade room & billiards lounge','Co-working spaces','Outdoor firepit & courtyard kitchen','Private pocket park'],'Location':['0.2mi to DART Galatyn Park','CityLine shopping next door','Near UT Dallas','Private entrance']},
     photos: [
       '93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg',
       '89ccfecb-1862-4182-bd20-c4bbad80caef.png',
@@ -856,16 +1154,18 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '862596563097784023',
     guests: 3, beds: 1, baths: 1,
-    rating: 4.84, reviews: 25,
+    rating: 4.83, reviews: 23,
     lat: 32.8554, lng: -96.9430,
     amenities: [
       { label: 'Lake View', premium: true },
-      { label: 'DART Train', premium: true },
+      { label: '1GB Fiber', premium: true },
+      { label: 'Dual TVs', premium: true },
+      { label: 'L-Shaped Couch', premium: false },
       { label: 'Pool', premium: true },
-      { label: 'Kitchen', premium: false },
-      { label: 'Wifi', premium: false },
-      { label: 'Free Parking', premium: false }
+      { label: 'Gym', premium: true }
     ],
+    description: 'Wake up to stunning lake views in this modern designer suite in Las Colinas. Private balcony, 65" Smart TV in living room plus 50" TV in bedroom. Massive L-shaped couch for epic streaming sessions. 1GB Fiber Wi-Fi, dedicated workspace with 27" monitor. Steps to DART Orange Line. 24/7 access to 2-story gym, waterfront pool, game room, and business center with conference rooms.',
+    fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Shower gel'],'Bedroom & Laundry':['Washer','Dryer (in-unit)','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Walk-in closet'],Entertainment:['65" Smart TV (living room)','50" Smart TV (bedroom)','Exercise equipment','Pool table','Board games'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" monitor','1GB Fiber Internet'],Outdoor:['Private balcony','Outdoor furniture','Outdoor dining area','Shared outdoor kitchen','BBQ grill'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center'],'Location':['Waterfront','Lake access','Steps to DART Orange Line','24-hour housekeeping available']},
     photos: [
       '9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg',
       '888a837d-221c-422d-9286-aeaa2ba95d2a.jpeg',
@@ -908,6 +1208,9 @@ function renderProperties(filter) {
     const amenityHtml = p.amenities.map(a =>
       `<span class="amenity-tag${a.premium?' premium':''}">${a.label}</span>`
     ).join('');
+    const ratingHtml = p.rating !== null ?
+      `<span class="star">&#9733;</span><span class="rating-num">${p.rating}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
+      `<span class="prop-new-badge">&#10024; NEW</span>${p.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${p.reviews} review)</span>` : ''}`;
     return `
     <div class="prop-card reveal${pi<2?' visible':''}" data-slug="${p.slug}" id="prop-${p.slug}">
       <div class="prop-carousel" data-slug="${p.slug}" onclick="openLightbox('${p.slug}',carouselState['${p.slug}'])">
@@ -923,7 +1226,7 @@ function renderProperties(filter) {
         <div class="carousel-counter" data-slug="${p.slug}">1 / ${p.photos.length}</div>
         <div class="carousel-dots" data-slug="${p.slug}">${dotsHtml}</div>
       </div>
-      <div class="prop-info">
+      <div class="prop-info" style="cursor:pointer" onclick="openDetail('${p.slug}')">
         <div class="prop-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>
         <div class="prop-name">${p.name}</div>
         <div class="prop-specs">
@@ -931,16 +1234,12 @@ function renderProperties(filter) {
           <span>${p.beds} bed${p.beds>1?'s':''}</span>
           <span>${p.baths} bath${p.baths>1?'s':''}</span>
         </div>
-        <div class="prop-rating">
-          ${p.rating > 0 ? `<span class="star">&#9733;</span>
-          <span class="rating-num">${p.rating}</span>
-          <span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` : `<span class="star">&#9733;</span>
-          <span class="rating-num">New</span>`}
-        </div>
+        <div class="prop-rating">${ratingHtml}</div>
         <div class="prop-amenities">${amenityHtml}</div>
-        <div class="prop-actions">
+        <div class="prop-actions" onclick="event.stopPropagation()">
           <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
-          <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">View on Airbnb &rarr;</a>
+          <button class="btn-details" onclick="openDetail('${p.slug}')">View Details</button>
+          <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">Airbnb &rarr;</a>
         </div>
       </div>
     </div>`;
@@ -1245,7 +1544,7 @@ function initScrollReveal() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal:not(.visible), .reveal-scale:not(.visible), .reveal-left:not(.visible), .reveal-right:not(.visible), .reveal-diagonal:not(.visible)').forEach(el => observer.observe(el));
 }
 
 /* ═══ Nav Scroll ═══ */
@@ -1279,12 +1578,223 @@ function closeMobile() {
   document.body.style.overflow = '';
 }
 
+/* ═══ Property Detail Modal ═══ */
+let detailSlug = '';
+let detailIdx = 0;
+
+function openDetail(slug) {
+  const prop = PROPERTIES.find(p => p.slug === slug);
+  if (!prop) return;
+  detailSlug = slug;
+  detailIdx = 0;
+
+  // Gallery
+  const gallery = document.getElementById('detailGallery');
+  gallery.innerHTML = prop.photos.map((ph, i) =>
+    `<img src="${imgUrl(prop.hostingId, ph)}" alt="${prop.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<3?'eager':'lazy'}">`
+  ).join('') +
+  `<div class="detail-gallery-nav detail-gallery-prev" onclick="detailGalleryMove(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>` +
+  `<div class="detail-gallery-nav detail-gallery-next" onclick="detailGalleryMove(1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></div>` +
+  `<div class="detail-gallery-counter">1 / ${prop.photos.length}</div>`;
+
+  // Thumbs
+  const thumbs = document.getElementById('detailThumbs');
+  thumbs.innerHTML = prop.photos.map((ph, i) =>
+    `<div class="detail-thumb${i===0?' active':''}" onclick="detailThumbClick(${i})"><img src="${imgUrl(prop.hostingId, ph)}" alt="Thumb ${i+1}"></div>`
+  ).join('');
+
+  // Content
+  const content = document.getElementById('detailContent');
+  const ratingHtml = prop.rating !== null ?
+    `<div class="detail-rating"><span class="star">&#9733;</span><span class="rating-num">${prop.rating}</span><span class="review-count">(${prop.reviews} review${prop.reviews!==1?'s':''})</span></div>` :
+    `<div class="detail-rating"><span class="detail-new-badge">&#10024; NEW LISTING</span>${prop.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${prop.reviews} review)</span>` : ''}</div>`;
+
+  let amenitiesHtml = '';
+  if (prop.fullAmenities) {
+    amenitiesHtml = Object.entries(prop.fullAmenities).map(([cat, items]) =>
+      `<div class="amenity-category"><h4>${cat}</h4><div class="amenity-grid">${items.map(item =>
+        `<div class="amenity-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${item}</div>`
+      ).join('')}</div></div>`
+    ).join('');
+  }
+
+  content.innerHTML = `
+    <div class="detail-header">
+      <div class="detail-header-left">
+        <h2>${prop.name}</h2>
+        <div class="detail-loc">${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}</div>
+        <div class="detail-specs" style="margin-top:8px">
+          <span>${prop.guests} guest${prop.guests>1?'s':''}</span>
+          <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
+          <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
+        </div>
+      </div>
+      <div class="detail-header-right">${ratingHtml}</div>
+    </div>
+    <div class="detail-desc">
+      <h3>About This Property</h3>
+      <p>${prop.description || ''}</p>
+    </div>
+    <div class="detail-amenities">
+      <h3>All Amenities</h3>
+      ${amenitiesHtml}
+    </div>
+    <div class="detail-actions">
+      <button class="btn-book" onclick="closeDetail();openBooking('${prop.slug}')">Book This Property</button>
+      <button class="btn-contact" onclick="closeDetail();openContact('${prop.slug}')">Contact Host</button>
+      <a href="https://www.airbnb.com/rooms/${prop.hostingId}" target="_blank" rel="noopener" class="btn-contact">View on Airbnb &rarr;</a>
+    </div>`;
+
+  document.getElementById('detailModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function detailGalleryMove(dir) {
+  const prop = PROPERTIES.find(p => p.slug === detailSlug);
+  if (!prop) return;
+  detailIdx = (detailIdx + dir + prop.photos.length) % prop.photos.length;
+  const gallery = document.getElementById('detailGallery');
+  gallery.querySelectorAll('img').forEach((img, i) => img.classList.toggle('active', i === detailIdx));
+  gallery.querySelector('.detail-gallery-counter').textContent = `${detailIdx + 1} / ${prop.photos.length}`;
+  document.querySelectorAll('.detail-thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === detailIdx);
+    if (i === detailIdx) t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+function detailThumbClick(idx) {
+  detailIdx = idx;
+  const prop = PROPERTIES.find(p => p.slug === detailSlug);
+  if (!prop) return;
+  const gallery = document.getElementById('detailGallery');
+  gallery.querySelectorAll('img').forEach((img, i) => img.classList.toggle('active', i === idx));
+  gallery.querySelector('.detail-gallery-counter').textContent = `${idx + 1} / ${prop.photos.length}`;
+  document.querySelectorAll('.detail-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+}
+
+/* ═══ Contact Modal ═══ */
+function openContact(slug) {
+  if (slug) document.getElementById('cProperty').value = slug;
+  document.getElementById('contactModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeContact() {
+  document.getElementById('contactModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function submitContact() {
+  const name = document.getElementById('cName').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const property = document.getElementById('cProperty').value;
+  const message = document.getElementById('cMessage').value.trim();
+  const msgEl = document.getElementById('contactMsg');
+
+  if (!name || !email || !message) {
+    msgEl.innerHTML = '<div class="contact-msg error">Please fill in name, email, and message.</div>';
+    return;
+  }
+
+  msgEl.innerHTML = '<div class="contact-msg">Sending...</div>';
+
+  try {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, property, message })
+    });
+    if (!res.ok) throw new Error('Failed to send message');
+    msgEl.innerHTML = '<div class="contact-msg success">Message sent! We\'ll get back to you within an hour.</div>';
+    document.getElementById('cName').value = '';
+    document.getElementById('cEmail').value = '';
+    document.getElementById('cPhone').value = '';
+    document.getElementById('cMessage').value = '';
+  } catch (err) {
+    msgEl.innerHTML = '<div class="contact-msg error">Could not send message. Please try again or email us directly.</div>';
+  }
+}
+
+/* ═══ Click Outside to Close (all modals) ═══ */
+function initModalBackdropClose() {
+  // Lightbox
+  document.getElementById('lightbox').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('lightbox') || e.target.classList.contains('lightbox-main')) closeLightbox();
+  });
+  // Booking modal
+  document.getElementById('bookingModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('bookingModal')) closeBooking();
+  });
+  // Detail modal
+  document.getElementById('detailModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('detailModal')) closeDetail();
+  });
+  // Contact modal
+  document.getElementById('contactModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('contactModal')) closeContact();
+  });
+}
+
+/* ═══ Animated Counters ═══ */
+function initCounters() {
+  const counters = document.querySelectorAll('.stat-val');
+  if (!counters.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      counters.forEach(el => {
+        const target = parseFloat(el.dataset.target);
+        const decimals = parseInt(el.dataset.decimals) || 0;
+        const duration = 1800;
+        const start = performance.now();
+        function tick(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = eased * target;
+          el.textContent = decimals > 0 ? current.toFixed(decimals) : Math.floor(current);
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.3 });
+  const statsBar = document.querySelector('.stats-bar');
+  if (statsBar) observer.observe(statsBar);
+}
+
+/* ═══ Premium Card Reveals ═══ */
+function initPremiumReveals() {
+  const cards = document.querySelectorAll('.prem-card');
+  if (!cards.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const delay = parseInt(entry.target.dataset.delay) || 0;
+      setTimeout(() => entry.target.classList.add('revealed'), delay);
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  cards.forEach(card => observer.observe(card));
+}
+
 /* ═══ Keyboard ═══ */
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeMobile(); }
+  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeDetail(); closeContact(); closeMobile(); }
   if (document.getElementById('lightbox').classList.contains('open')) {
     if (e.key === 'ArrowLeft') lightboxNav(-1);
     if (e.key === 'ArrowRight') lightboxNav(1);
+  }
+  if (document.getElementById('detailModal').classList.contains('open')) {
+    if (e.key === 'ArrowLeft') detailGalleryMove(-1);
+    if (e.key === 'ArrowRight') detailGalleryMove(1);
   }
 });
 
@@ -1295,6 +1805,9 @@ window.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initNav();
   initMobileMenu();
+  initModalBackdropClose();
+  initCounters();
+  initPremiumReveals();
   setTimeout(() => document.getElementById('loader').classList.add('hidden'), 600);
 });
 </script>

@@ -17,6 +17,7 @@
   --sage:#5F6E45;--sage-soft:#DEE2CF;
   --gold:#B4894C;--gold-soft:#EFE2C8;
   --red:#B23A2C;--red-soft:#F0D8D2;
+  --blue:#3A6B9F;--blue-soft:#D4E2F0;
   --serif:'Fraunces',Georgia,serif;--sans:'Hanken Grotesk',system-ui,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
 }
@@ -25,7 +26,8 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);min-height
   background-image:radial-gradient(ellipse 60% 45% at 88% -5%,rgba(181,86,47,.06),transparent 60%)}
 a{color:inherit;text-decoration:none}
 button{font-family:var(--sans);cursor:pointer;border:none;background:none;color:inherit}
-input{font-family:var(--sans);color:var(--ink)}
+input,textarea,select{font-family:var(--sans);color:var(--ink)}
+textarea{resize:vertical}
 ::selection{background:var(--clay);color:var(--paper)}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-track{background:var(--paper)}
@@ -53,6 +55,18 @@ main{padding:2rem 0 3rem}
 .page-head h1{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.5vw,2.3rem);letter-spacing:-.01em}
 .page-head p{color:var(--ink-2);font-size:.9rem;margin-top:.2rem}
 
+/* ── Tab navigation ── */
+.tab-nav{display:flex;gap:.3rem;margin-bottom:1.8rem;border-bottom:1px solid var(--line);padding-bottom:0}
+.tab-btn{position:relative;display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.2rem;font-size:.85rem;font-weight:500;color:var(--ink-3);border-radius:10px 10px 0 0;transition:all .25s var(--ease);border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
+.tab-btn:hover{color:var(--ink-2);background:var(--paper-3)}
+.tab-btn.active{color:var(--ink);background:var(--paper-2);border-color:var(--line);font-weight:600}
+.tab-btn.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--paper-2)}
+.tab-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+.tab-btn .tab-badge{font-size:.65rem;padding:.15rem .45rem;border-radius:100px;background:var(--clay-soft);color:var(--clay-2);font-weight:600;min-width:20px;text-align:center}
+.tab-btn.active .tab-badge{background:var(--clay);color:var(--paper)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
 /* ── Stats ── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.8rem}
 .stat{position:relative;padding:1.3rem 1.4rem;background:var(--paper-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
@@ -61,11 +75,19 @@ main{padding:2rem 0 3rem}
 .stat.s-pending::before{background:var(--gold)}
 .stat.s-sent::before{background:var(--sage)}
 .stat.s-rejected::before{background:var(--red)}
+.stat.s-unread::before{background:var(--clay)}
+.stat.s-replied::before{background:var(--sage)}
+.stat.s-confirmed::before{background:var(--sage)}
+.stat.s-requested::before{background:var(--gold)}
 .stat .num{font-family:var(--serif);font-size:2.2rem;font-weight:500;line-height:1}
 .stat .lab{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:.45rem}
 .stat.s-pending .num{color:var(--gold)}
 .stat.s-sent .num{color:var(--sage)}
 .stat.s-rejected .num{color:var(--red)}
+.stat.s-unread .num{color:var(--clay)}
+.stat.s-replied .num{color:var(--sage)}
+.stat.s-confirmed .num{color:var(--sage)}
+.stat.s-requested .num{color:var(--gold)}
 
 /* ── Toolbar (filters + search) ── */
 .toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap}
@@ -103,8 +125,16 @@ tbody tr:hover{background:rgba(239,231,216,.5)}
 .badge.sent{background:var(--sage-soft);color:#4a5836}
 .badge.approved{background:var(--sage-soft);color:#4a5836}
 .badge.rejected{background:var(--red-soft);color:var(--red)}
+.badge.unread{background:var(--clay-soft);color:var(--clay-2)}
+.badge.read{background:var(--blue-soft);color:var(--blue)}
+.badge.replied{background:var(--sage-soft);color:#4a5836}
+.badge.archived{background:var(--paper-3);color:var(--ink-3)}
+.badge.requested{background:var(--gold-soft);color:#8a6a2e}
+.badge.confirmed{background:var(--sage-soft);color:#4a5836}
+.badge.failed{background:var(--red-soft);color:var(--red)}
+.badge.cancelled{background:var(--paper-3);color:var(--ink-3)}
 
-.actions{display:flex;gap:.35rem;justify-content:flex-end}
+.actions{display:flex;gap:.35rem;justify-content:flex-end;flex-wrap:wrap}
 .act{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .7rem;border-radius:8px;font-size:.74rem;font-weight:600;transition:all .2s}
 .act svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
 .act-send{background:var(--sage-soft);color:#4a5836}
@@ -115,6 +145,12 @@ tbody tr:hover{background:rgba(239,231,216,.5)}
 .act-del:hover{background:#e2d6c0;color:var(--ink-2)}
 .act-undo{background:var(--paper-3);color:var(--ink-2)}
 .act-undo:hover{background:#e2d6c0}
+.act-read{background:var(--blue-soft);color:var(--blue)}
+.act-read:hover{background:#c0d4e8}
+.act-archive{background:var(--paper-3);color:var(--ink-3)}
+.act-archive:hover{background:#e2d6c0;color:var(--ink-2)}
+.act-reply{background:var(--clay-soft);color:var(--clay-2)}
+.act-reply:hover{background:#dcc4b0}
 
 .empty{text-align:center;padding:3.5rem 1rem;color:var(--ink-3)}
 .empty svg{width:38px;height:38px;stroke:var(--ink-3);fill:none;stroke-width:1.4;margin-bottom:.8rem;opacity:.7}
@@ -131,6 +167,51 @@ tbody tr:hover{background:rgba(239,231,216,.5)}
 .card-meta{display:flex;gap:.8rem;font-size:.74rem;color:var(--ink-3);margin-bottom:.7rem;flex-wrap:wrap}
 .card-meta .cap{color:var(--ink-2)}
 .card .actions{justify-content:flex-start;flex-wrap:wrap}
+
+/* ── Message items ── */
+.msg-list{display:flex;flex-direction:column;gap:.8rem}
+.msg-item{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.msg-item:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(30,24,16,.35)}
+.msg-item.is-unread{border-left:3px solid var(--clay)}
+.msg-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.6rem}
+.msg-contact{flex:1;min-width:0}
+.msg-name{font-weight:600;font-size:.95rem}
+.msg-detail{font-size:.8rem;color:var(--ink-2);margin-top:.15rem}
+.msg-detail a{color:var(--clay);text-decoration:underline;text-decoration-color:var(--clay-soft)}
+.msg-detail a:hover{text-decoration-color:var(--clay)}
+.msg-property{display:inline-flex;align-items:center;gap:.3rem;margin-top:.35rem;padding:.2rem .6rem;background:var(--paper-3);border-radius:6px;font-size:.74rem;font-weight:500;color:var(--ink-2)}
+.msg-property svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.msg-body{font-size:.88rem;line-height:1.6;color:var(--ink-2);margin:.8rem 0;padding:.8rem 1rem;background:var(--paper);border-radius:10px;border:1px solid var(--line)}
+.msg-footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.msg-time{font-size:.76rem;color:var(--ink-3)}
+.msg-actions{display:flex;gap:.35rem;flex-wrap:wrap}
+
+/* Reply form */
+.reply-form{margin-top:.8rem;display:none}
+.reply-form.open{display:block}
+.reply-textarea{width:100%;min-height:80px;padding:.75rem 1rem;background:var(--paper);border:1px solid var(--line-2);border-radius:10px;font-size:.85rem;line-height:1.5;outline:none;transition:border-color .25s,box-shadow .25s}
+.reply-textarea:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(181,86,47,.1)}
+.reply-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem}
+.reply-send{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;background:var(--clay);color:var(--paper);border-radius:8px;font-size:.78rem;font-weight:600;transition:background .2s}
+.reply-send:hover{background:var(--clay-2)}
+.reply-send svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.reply-cancel{padding:.45rem .7rem;border-radius:8px;font-size:.78rem;font-weight:500;color:var(--ink-3);transition:color .2s}
+.reply-cancel:hover{color:var(--ink)}
+
+/* ── Booking items ── */
+.booking-list{display:flex;flex-direction:column;gap:.8rem}
+.booking-item{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;display:grid;grid-template-columns:1fr auto;gap:1rem;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.booking-item:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(30,24,16,.35)}
+.booking-guest{min-width:0}
+.booking-guest-name{font-weight:600;font-size:.95rem;margin-bottom:.15rem}
+.booking-guest-contact{font-size:.8rem;color:var(--ink-2)}
+.booking-guest-contact a{color:var(--clay);text-decoration:underline;text-decoration-color:var(--clay-soft)}
+.booking-details{display:flex;flex-wrap:wrap;gap:.5rem .8rem;margin-top:.7rem}
+.booking-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;background:var(--paper-3);border-radius:6px;font-size:.74rem;font-weight:500;color:var(--ink-2)}
+.booking-tag svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.booking-tag.price{background:var(--gold-soft);color:#8a6a2e;font-weight:600}
+.booking-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;justify-content:space-between}
+.booking-time{font-size:.76rem;color:var(--ink-3);text-align:right}
 
 /* ── Image modal ── */
 .modal{display:none;position:fixed;inset:0;background:rgba(30,24,16,.82);z-index:200;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(3px)}
@@ -153,6 +234,10 @@ tbody tr:hover{background:rgba(239,231,216,.5)}
   .cards{display:flex}
   .toolbar{flex-direction:column;align-items:stretch}
   .search{flex:1}
+  .tab-nav{overflow-x:auto;gap:.15rem}
+  .tab-btn{font-size:.78rem;padding:.6rem .8rem;white-space:nowrap}
+  .booking-item{grid-template-columns:1fr}
+  .booking-right{flex-direction:row;align-items:center;justify-content:flex-start}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 </style>
@@ -179,45 +264,130 @@ tbody tr:hover{background:rgba(239,231,216,.5)}
 <main>
   <div class="wrap">
     <div class="page-head">
-      <h1>Review submissions</h1>
-      <p>Verify proof, send rewards, and keep things tidy.</p>
+      <h1>Administration</h1>
+      <p>Manage rewards, messages, and bookings.</p>
     </div>
 
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat"><div class="num" id="sTotal">—</div><div class="lab">Total</div></div>
-      <div class="stat s-pending"><div class="num" id="sPending">—</div><div class="lab">Pending</div></div>
-      <div class="stat s-sent"><div class="num" id="sSent">—</div><div class="lab">Sent</div></div>
-      <div class="stat s-rejected"><div class="num" id="sRejected">—</div><div class="lab">Rejected</div></div>
+    <!-- Tab navigation -->
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-tab="rewards">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21M3 12h18M7.5 8V6.5a4.5 4.5 0 0 1 9 0V8"/></svg>
+        Gift Card Rewards
+      </button>
+      <button class="tab-btn" data-tab="messages">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+        <span class="tab-badge" id="msgBadge" style="display:none">0</span>
+      </button>
+      <button class="tab-btn" data-tab="bookings">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Bookings
+        <span class="tab-badge" id="bookingBadge" style="display:none">0</span>
+      </button>
     </div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="filters" id="filters">
-        <button class="fbtn active" data-f="all">All <span class="count" id="cAll">0</span></button>
-        <button class="fbtn" data-f="pending">Pending <span class="count" id="cPending">0</span></button>
-        <button class="fbtn" data-f="approved">Approved <span class="count" id="cApproved">0</span></button>
-        <button class="fbtn" data-f="sent">Sent <span class="count" id="cSent">0</span></button>
-        <button class="fbtn" data-f="rejected">Rejected <span class="count" id="cRejected">0</span></button>
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TAB: Gift Card Rewards                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="tab-panel active" id="panel-rewards">
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat"><div class="num" id="sTotal">—</div><div class="lab">Total</div></div>
+        <div class="stat s-pending"><div class="num" id="sPending">—</div><div class="lab">Pending</div></div>
+        <div class="stat s-sent"><div class="num" id="sSent">—</div><div class="lab">Sent</div></div>
+        <div class="stat s-rejected"><div class="num" id="sRejected">—</div><div class="lab">Rejected</div></div>
       </div>
-      <div class="search">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="searchInput" placeholder="Search name or email…">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="filters" id="filters">
+          <button class="fbtn active" data-f="all">All <span class="count" id="cAll">0</span></button>
+          <button class="fbtn" data-f="pending">Pending <span class="count" id="cPending">0</span></button>
+          <button class="fbtn" data-f="approved">Approved <span class="count" id="cApproved">0</span></button>
+          <button class="fbtn" data-f="sent">Sent <span class="count" id="cSent">0</span></button>
+          <button class="fbtn" data-f="rejected">Rejected <span class="count" id="cRejected">0</span></button>
+        </div>
+        <div class="search">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="searchInput" placeholder="Search name or email...">
+        </div>
       </div>
+
+      <!-- Desktop table -->
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Proof</th><th>Name</th><th>Email</th><th>Platform</th><th>Submitted</th><th>Status</th><th style="text-align:right">Actions</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="cards" id="cards"></div>
     </div>
 
-    <!-- Desktop table -->
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Proof</th><th>Name</th><th>Email</th><th>Platform</th><th>Submitted</th><th>Status</th><th style="text-align:right">Actions</th>
-        </tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TAB: Messages                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-messages">
+      <!-- Stats -->
+      <div class="stats" id="msgStats">
+        <div class="stat"><div class="num" id="mTotal">—</div><div class="lab">Total</div></div>
+        <div class="stat s-unread"><div class="num" id="mUnread">—</div><div class="lab">Unread</div></div>
+        <div class="stat s-replied"><div class="num" id="mReplied">—</div><div class="lab">Replied</div></div>
+        <div class="stat"><div class="num" id="mArchived">—</div><div class="lab">Archived</div></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="filters" id="msgFilters">
+          <button class="fbtn active" data-mf="all">All</button>
+          <button class="fbtn" data-mf="unread">Unread</button>
+          <button class="fbtn" data-mf="read">Read</button>
+          <button class="fbtn" data-mf="replied">Replied</button>
+          <button class="fbtn" data-mf="archived">Archived</button>
+        </div>
+        <div class="search">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="msgSearchInput" placeholder="Search messages...">
+        </div>
+      </div>
+
+      <!-- Message list -->
+      <div class="msg-list" id="msgList"></div>
     </div>
 
-    <!-- Mobile cards -->
-    <div class="cards" id="cards"></div>
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TAB: Bookings                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-bookings">
+      <!-- Stats -->
+      <div class="stats" id="bookingStats" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat"><div class="num" id="bTotal">—</div><div class="lab">Total</div></div>
+        <div class="stat s-requested"><div class="num" id="bRequested">—</div><div class="lab">Requested</div></div>
+        <div class="stat s-confirmed"><div class="num" id="bConfirmed">—</div><div class="lab">Confirmed</div></div>
+        <div class="stat s-rejected"><div class="num" id="bCancelled">—</div><div class="lab">Cancelled / Failed</div></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="filters" id="bookingFilters">
+          <button class="fbtn active" data-bf="all">All</button>
+          <button class="fbtn" data-bf="requested">Requested</button>
+          <button class="fbtn" data-bf="confirmed">Confirmed</button>
+          <button class="fbtn" data-bf="failed">Failed</button>
+          <button class="fbtn" data-bf="cancelled">Cancelled</button>
+        </div>
+        <div class="search">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="bookingSearchInput" placeholder="Search bookings...">
+        </div>
+      </div>
+
+      <!-- Booking list -->
+      <div class="booking-list" id="bookingList"></div>
+    </div>
   </div>
 </main>
 
@@ -231,15 +401,69 @@ tbody tr:hover{background:rgba(239,231,216,.5)}
 <div class="toast" id="toast"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span id="toastMsg"></span></div>
 
 <script>
+/* ── Shared utilities ── */
+const $ = (id) => document.getElementById(id);
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s.replace(' ', 'T') + (s.includes('Z') || s.includes('+') ? '' : 'Z'));
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+function fmtDateShort(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+async function api(path, opts = {}) {
+  const r = await fetch(path, opts);
+  return r.json();
+}
+let toastTimer;
+function showToast(msg) {
+  $('toastMsg').textContent = msg;
+  const t = $('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function openModal(src) { $('modalImg').src = src; $('modal').classList.add('show'); }
+function closeModal() { $('modal').classList.remove('show'); }
+$('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function emptyHtml(msg) {
+  return `<div class="empty"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p>${msg}</p></div>`;
+}
+
+/* ── Tab switching ── */
+let activeTab = 'rewards';
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    if (tab === activeTab) return;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    $('panel-' + tab).classList.add('active');
+    activeTab = tab;
+    if (tab === 'messages') loadMessages();
+    else if (tab === 'bookings') loadBookings();
+    else if (tab === 'rewards') loadData();
+  });
+});
+
+/* ══════════════════════════════════════════════════
+   GIFT CARD REWARDS (existing functionality)
+   ══════════════════════════════════════════════════ */
 let currentFilter = 'all';
-let allRows = [];          // cache of current filter's rows for search
+let allRows = [];
 let searchTerm = '';
 
-const $ = (id) => document.getElementById(id);
-
-document.querySelectorAll('.fbtn').forEach(btn => {
+document.querySelectorAll('#filters .fbtn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#filters .fbtn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentFilter = btn.dataset.f;
     loadData();
@@ -247,12 +471,11 @@ document.querySelectorAll('.fbtn').forEach(btn => {
 });
 
 $('searchInput').addEventListener('input', (e) => { searchTerm = e.target.value.trim().toLowerCase(); render(); });
-$('refreshBtn').addEventListener('click', loadData);
-
-async function api(path, opts = {}) {
-  const r = await fetch(path, opts);
-  return r.json();
-}
+$('refreshBtn').addEventListener('click', () => {
+  if (activeTab === 'rewards') loadData();
+  else if (activeTab === 'messages') loadMessages();
+  else if (activeTab === 'bookings') loadBookings();
+});
 
 async function loadData() {
   const btn = $('refreshBtn');
@@ -298,9 +521,9 @@ function render() {
 
   if (!rows.length) {
     const msg = searchTerm ? 'No matches for your search' : 'No submissions yet';
-    const emptyHtml = `<div class="empty"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p>${msg}</p></div>`;
-    tbody.innerHTML = `<tr><td colspan="7" style="padding:0">${emptyHtml}</td></tr>`;
-    cards.innerHTML = emptyHtml;
+    const eh = emptyHtml(msg);
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:0">${eh}</td></tr>`;
+    cards.innerHTML = eh;
     return;
   }
 
@@ -312,7 +535,7 @@ function render() {
       <td class="cap">${esc(s.platform)}</td>
       <td class="cell-date">${fmtDate(s.created_at)}</td>
       <td><span class="badge ${s.status}">${s.status}</span></td>
-      <td>${actions(s)}</td>
+      <td>${rewardActions(s)}</td>
     </tr>`).join('');
 
   cards.innerHTML = rows.map(s => `
@@ -325,7 +548,7 @@ function render() {
         </div>
         <div class="card-email">${esc(s.email)}</div>
         <div class="card-meta"><span class="cap">${esc(s.platform)}</span><span>${fmtDate(s.created_at)}</span></div>
-        ${actions(s)}
+        ${rewardActions(s)}
       </div>
     </div>`).join('');
 }
@@ -338,7 +561,7 @@ function thumb(s) {
   return `<div class="no-thumb">N/A</div>`;
 }
 
-function actions(s) {
+function rewardActions(s) {
   const send = `<button class="act act-send" onclick="updateStatus(${s.id},'sent')" title="Mark gift card sent"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Send</button>`;
   const reject = `<button class="act act-reject" onclick="updateStatus(${s.id},'rejected')" title="Reject"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject</button>`;
   const undo = `<button class="act act-undo" onclick="updateStatus(${s.id},'pending')" title="Move back to pending"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Undo</button>`;
@@ -366,28 +589,302 @@ async function deleteSub(id) {
   loadData();
 }
 
-function openModal(src) { $('modalImg').src = src; $('modal').classList.add('show'); }
-function closeModal() { $('modal').classList.remove('show'); }
-$('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+/* ══════════════════════════════════════════════════
+   MESSAGES
+   ══════════════════════════════════════════════════ */
+let allMessages = [];
+let msgFilter = 'all';
+let msgSearch = '';
 
-let toastTimer;
-function showToast(msg) {
-  $('toastMsg').textContent = msg;
-  const t = $('toast');
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+document.querySelectorAll('#msgFilters .fbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#msgFilters .fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    msgFilter = btn.dataset.mf;
+    renderMessages();
+  });
+});
+
+$('msgSearchInput').addEventListener('input', (e) => { msgSearch = e.target.value.trim().toLowerCase(); renderMessages(); });
+
+async function loadMessages() {
+  const btn = $('refreshBtn');
+  btn.classList.add('spin');
+  try {
+    const data = await api('/api/admin/messages');
+    allMessages = Array.isArray(data) ? data : (data.messages || []);
+    updateMsgStats();
+    renderMessages();
+  } catch (e) {
+    showToast('Could not load messages');
+  } finally {
+    btn.classList.remove('spin');
+  }
 }
 
-function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-function fmtDate(s) {
-  if (!s) return '—';
-  const d = new Date(s.replace(' ', 'T') + 'Z');
-  if (isNaN(d)) return s;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+function updateMsgStats() {
+  const total = allMessages.length;
+  const unread = allMessages.filter(m => m.status === 'unread').length;
+  const replied = allMessages.filter(m => m.status === 'replied').length;
+  const archived = allMessages.filter(m => m.status === 'archived').length;
+  $('mTotal').textContent = total;
+  $('mUnread').textContent = unread;
+  $('mReplied').textContent = replied;
+  $('mArchived').textContent = archived;
+
+  const badge = $('msgBadge');
+  if (unread > 0) {
+    badge.textContent = unread;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
+function filteredMessages() {
+  let msgs = allMessages;
+  if (msgFilter !== 'all') {
+    msgs = msgs.filter(m => m.status === msgFilter);
+  }
+  if (msgSearch) {
+    msgs = msgs.filter(m =>
+      (m.name || '').toLowerCase().includes(msgSearch) ||
+      (m.email || '').toLowerCase().includes(msgSearch) ||
+      (m.message || '').toLowerCase().includes(msgSearch) ||
+      (m.property || '').toLowerCase().includes(msgSearch)
+    );
+  }
+  return msgs;
+}
+
+function renderMessages() {
+  const msgs = filteredMessages();
+  const list = $('msgList');
+
+  if (!msgs.length) {
+    list.innerHTML = emptyHtml(msgSearch ? 'No messages match your search' : 'No messages yet');
+    return;
+  }
+
+  list.innerHTML = msgs.map(m => {
+    const isUnread = m.status === 'unread';
+    return `
+    <div class="msg-item${isUnread ? ' is-unread' : ''}" id="msg-${m.id}">
+      <div class="msg-header">
+        <div class="msg-contact">
+          <div class="msg-name">${esc(m.name) || 'Guest'}</div>
+          <div class="msg-detail">
+            <a href="mailto:${esc(m.email)}">${esc(m.email)}</a>
+            ${m.phone ? ` &middot; ${esc(m.phone)}` : ''}
+          </div>
+          ${m.property ? `<div class="msg-property"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${esc(m.property)}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <span class="badge ${m.status}">${m.status}</span>
+        </div>
+      </div>
+      <div class="msg-body">${esc(m.message)}</div>
+      <div class="msg-footer">
+        <span class="msg-time">${fmtDate(m.created_at || m.timestamp)}</span>
+        <div class="msg-actions">
+          ${isUnread ? `<button class="act act-read" onclick="markMsgRead(${m.id})" title="Mark as read"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Mark read</button>` : ''}
+          <button class="act act-reply" onclick="toggleReply(${m.id})" title="Reply"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>Reply</button>
+          ${m.status !== 'archived' ? `<button class="act act-archive" onclick="archiveMsg(${m.id})" title="Archive"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archive</button>` : `<button class="act act-undo" onclick="unarchiveMsg(${m.id})" title="Unarchive"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Unarchive</button>`}
+        </div>
+      </div>
+      <div class="reply-form" id="reply-${m.id}">
+        <textarea class="reply-textarea" id="replyText-${m.id}" placeholder="Type your reply..."></textarea>
+        <div class="reply-actions">
+          <button class="reply-cancel" onclick="toggleReply(${m.id})">Cancel</button>
+          <button class="reply-send" onclick="sendReply(${m.id})">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send reply
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleReply(id) {
+  const form = $('reply-' + id);
+  if (form) form.classList.toggle('open');
+}
+
+async function markMsgRead(id) {
+  try {
+    await api('/api/admin/messages/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'read' })
+    });
+    showToast('Marked as read');
+    loadMessages();
+  } catch (e) {
+    showToast('Failed to update message');
+  }
+}
+
+async function archiveMsg(id) {
+  try {
+    await api('/api/admin/messages/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'archived' })
+    });
+    showToast('Message archived');
+    loadMessages();
+  } catch (e) {
+    showToast('Failed to archive message');
+  }
+}
+
+async function unarchiveMsg(id) {
+  try {
+    await api('/api/admin/messages/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'read' })
+    });
+    showToast('Message unarchived');
+    loadMessages();
+  } catch (e) {
+    showToast('Failed to unarchive message');
+  }
+}
+
+async function sendReply(id) {
+  const text = $('replyText-' + id);
+  if (!text || !text.value.trim()) {
+    showToast('Please enter a reply');
+    return;
+  }
+  try {
+    await api('/api/admin/messages/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'replied', reply: text.value.trim() })
+    });
+    showToast('Reply sent');
+    loadMessages();
+  } catch (e) {
+    showToast('Failed to send reply');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   BOOKINGS
+   ══════════════════════════════════════════════════ */
+let allBookings = [];
+let bookingFilter = 'all';
+let bookingSearch = '';
+
+document.querySelectorAll('#bookingFilters .fbtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#bookingFilters .fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    bookingFilter = btn.dataset.bf;
+    renderBookings();
+  });
+});
+
+$('bookingSearchInput').addEventListener('input', (e) => { bookingSearch = e.target.value.trim().toLowerCase(); renderBookings(); });
+
+async function loadBookings() {
+  const btn = $('refreshBtn');
+  btn.classList.add('spin');
+  try {
+    const data = await api('/api/admin/bookings');
+    allBookings = Array.isArray(data) ? data : (data.bookings || []);
+    updateBookingStats();
+    renderBookings();
+  } catch (e) {
+    showToast('Could not load bookings');
+  } finally {
+    btn.classList.remove('spin');
+  }
+}
+
+function updateBookingStats() {
+  const total = allBookings.length;
+  const requested = allBookings.filter(b => b.status === 'requested').length;
+  const confirmed = allBookings.filter(b => b.status === 'confirmed').length;
+  const cancelledFailed = allBookings.filter(b => b.status === 'cancelled' || b.status === 'failed').length;
+  $('bTotal').textContent = total;
+  $('bRequested').textContent = requested;
+  $('bConfirmed').textContent = confirmed;
+  $('bCancelled').textContent = cancelledFailed;
+
+  const badge = $('bookingBadge');
+  if (requested > 0) {
+    badge.textContent = requested;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function filteredBookings() {
+  let bookings = allBookings;
+  if (bookingFilter !== 'all') {
+    bookings = bookings.filter(b => b.status === bookingFilter);
+  }
+  if (bookingSearch) {
+    bookings = bookings.filter(b =>
+      (b.name || b.guest_name || '').toLowerCase().includes(bookingSearch) ||
+      (b.email || b.guest_email || '').toLowerCase().includes(bookingSearch) ||
+      (b.property || b.property_name || '').toLowerCase().includes(bookingSearch)
+    );
+  }
+  return bookings;
+}
+
+function renderBookings() {
+  const bookings = filteredBookings();
+  const list = $('bookingList');
+
+  if (!bookings.length) {
+    list.innerHTML = emptyHtml(bookingSearch ? 'No bookings match your search' : 'No bookings yet');
+    return;
+  }
+
+  list.innerHTML = bookings.map(b => {
+    const name = b.name || b.guest_name || 'Guest';
+    const email = b.email || b.guest_email || '';
+    const phone = b.phone || b.guest_phone || '';
+    const property = b.property || b.property_name || '';
+    const checkin = b.check_in || b.checkin_date || '';
+    const checkout = b.check_out || b.checkout_date || '';
+    const nights = b.nights || '';
+    const totalPrice = b.total_price || b.total || '';
+    const currency = b.currency || 'EUR';
+    const status = b.status || 'requested';
+    const timestamp = b.created_at || b.timestamp || '';
+
+    return `
+    <div class="booking-item">
+      <div class="booking-guest">
+        <div class="booking-guest-name">${esc(name)}</div>
+        <div class="booking-guest-contact">
+          <a href="mailto:${esc(email)}">${esc(email)}</a>
+          ${phone ? ` &middot; ${esc(phone)}` : ''}
+        </div>
+        <div class="booking-details">
+          ${property ? `<span class="booking-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${esc(property)}</span>` : ''}
+          ${checkin ? `<span class="booking-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${fmtDateShort(checkin)} — ${fmtDateShort(checkout)}</span>` : ''}
+          ${nights ? `<span class="booking-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>${nights} night${nights > 1 ? 's' : ''}</span>` : ''}
+          ${totalPrice ? `<span class="booking-tag price">${Number(totalPrice).toLocaleString('en', { minimumFractionDigits: 2 })} ${esc(currency)}</span>` : ''}
+        </div>
+      </div>
+      <div class="booking-right">
+        <span class="badge ${status}">${status}</span>
+        <span class="booking-time">${fmtDate(timestamp)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Initialize ── */
 loadData();
 </script>
 </body>
