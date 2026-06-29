@@ -122,6 +122,16 @@ ul{list-style:none}
 /* ── Properties Grid ── */
 .properties-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
 
+/* ── Category Section Headers ── */
+.category-divider{grid-column:1/-1;padding:48px 0 8px;display:flex;flex-direction:column;gap:8px}
+.category-divider:first-child{padding-top:0}
+.category-divider-label{display:flex;align-items:center;gap:16px}
+.category-divider-label h3{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);white-space:nowrap;font-variant:small-caps}
+.category-divider-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--accent-light),transparent)}
+.category-divider-desc{font-family:var(--sans);font-size:13px;color:var(--text-muted);line-height:1.5;max-width:480px}
+.prop-card.villa-card{grid-column:1/-1}
+.prop-card.villa-card .prop-carousel{aspect-ratio:21/9}
+
 /* ── Property Card (Luxury Redesign) ── */
 .prop-card{background:var(--bg-card);border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border);transition:box-shadow .6s var(--ease),transform .6s var(--ease),border-color .4s var(--ease);opacity:0;transform:translateY(50px) scale(.97);position:relative}
 .prop-card.visible{opacity:1;transform:translateY(0) scale(1)}
@@ -360,6 +370,8 @@ ul{list-style:none}
   .bento-map-tile{grid-column:1;grid-row:3}
   .bento-headline{font-size:28px}
   .properties-grid{grid-template-columns:1fr}
+  .prop-card.villa-card .prop-carousel{aspect-ratio:4/3}
+  .category-divider{padding:32px 0 4px}
   .features-grid{grid-template-columns:1fr;padding:0 16px}
   .section{padding:60px 16px}
   .section-dark{padding:60px 0}
@@ -487,14 +499,27 @@ ul{list-style:none}
 .detail-amenities{margin-bottom:40px}
 .detail-amenities h3{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:24px;position:relative;padding-bottom:12px}
 .detail-amenities h3::after{content:'';position:absolute;bottom:0;left:0;width:40px;height:2px;background:var(--accent)}
-.amenity-category{margin-bottom:24px;background:var(--bg-card);border-radius:var(--radius);padding:20px 24px;border:1px solid var(--border);transition:border-color .3s var(--ease)}
-.amenity-category:hover{border-color:var(--accent-light)}
-.amenity-category h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.amenity-category h4::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
-.amenity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.amenity-item{display:flex;align-items:center;gap:10px;font-family:var(--sans);font-size:13px;color:var(--text);padding:8px 4px;border-radius:6px;transition:background .2s}
-.amenity-item:hover{background:var(--accent-pale)}
-.amenity-item svg{width:16px;height:16px;stroke:var(--accent);stroke-width:1.5;fill:none;flex-shrink:0}
+/* ── Amenity Highlight Cards ── */
+.amenity-highlights{display:flex;gap:14px;margin-bottom:32px;flex-wrap:wrap}
+.amenity-highlight-card{flex:1;min-width:140px;max-width:200px;background:linear-gradient(135deg,var(--bg-card) 0%,var(--accent-pale) 100%);border-radius:var(--radius);padding:18px 16px;border:1px solid var(--accent-light);display:flex;flex-direction:column;gap:8px;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.amenity-highlight-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.amenity-highlight-icon{width:36px;height:36px;border-radius:10px;background:rgba(184,101,74,.12);display:flex;align-items:center;justify-content:center}
+.amenity-highlight-icon svg{width:18px;height:18px;stroke:var(--accent);stroke-width:1.5;fill:none}
+.amenity-highlight-name{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);line-height:1.2}
+.amenity-highlight-desc{font-family:var(--sans);font-size:11px;color:var(--text-muted);line-height:1.4}
+
+/* ── Amenity Category Cards (Redesigned) ── */
+.amenity-categories-wrap{display:flex;flex-direction:column;gap:16px}
+.amenity-category{background:var(--bg-card);border-radius:var(--radius);padding:20px 24px;border:1px solid var(--border);transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.amenity-category:nth-child(even){background:linear-gradient(135deg,var(--bg-card) 60%,rgba(240,221,212,.18))}
+.amenity-category:hover{border-color:var(--accent-light);box-shadow:var(--shadow-sm)}
+.amenity-category-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.amenity-category-header svg{width:18px;height:18px;stroke:var(--accent);stroke-width:1.5;fill:none;flex-shrink:0}
+.amenity-category-header h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;flex:1}
+.amenity-category-count{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:.06em;background:var(--bg);padding:3px 8px;border-radius:100px;border:1px solid var(--border)}
+.amenity-pills{display:flex;flex-wrap:wrap;gap:8px}
+.amenity-pill{font-family:var(--sans);font-size:12px;color:var(--text);padding:6px 14px;border-radius:100px;background:var(--bg);border:1px solid var(--border);transition:all .25s var(--ease);cursor:default}
+.amenity-pill:hover{background:var(--accent);color:#fff;border-color:var(--accent);transform:translateY(-1px)}
 
 /* Action buttons */
 .detail-actions{display:flex;gap:12px;padding-top:32px;border-top:1px solid var(--border);margin-top:8px}
@@ -543,7 +568,7 @@ ul{list-style:none}
 @media(max-width:1024px){
   .stats-bar{grid-template-columns:repeat(2,1fr);gap:20px}
   .premium-grid{grid-template-columns:repeat(2,1fr)}
-  .amenity-grid{grid-template-columns:repeat(2,1fr)}
+  .amenity-highlight-card{min-width:120px}
   .detail-content{padding:36px}
   .detail-body{max-width:100%}
 }
@@ -566,8 +591,11 @@ ul{list-style:none}
   .detail-specs{flex-wrap:wrap;gap:4px}
   .detail-specs span{padding:4px 10px 4px 0;border-right:none;font-size:13px}
   .detail-desc h3,.detail-amenities h3{font-size:22px}
-  .amenity-grid{grid-template-columns:1fr 1fr}
+  .amenity-highlights{gap:10px}
+  .amenity-highlight-card{min-width:100%;max-width:100%}
   .amenity-category{padding:16px}
+  .amenity-pills{gap:6px}
+  .amenity-pill{font-size:11px;padding:5px 12px}
   .detail-actions{flex-direction:column;gap:10px}
   .detail-actions button,.detail-actions a{width:100%;text-align:center;justify-content:center;padding:14px 24px}
   .detail-thumb{width:64px;height:44px}
@@ -1037,6 +1065,7 @@ const PROPERTIES = [
   {
     name: 'Regent Villa',
     slug: 'regent-villa',
+    category: 'villa',
     city: 'Plano',
     state: 'Texas',
     hostingId: '1711340298974810369',
@@ -1079,6 +1108,7 @@ const PROPERTIES = [
   {
     name: 'Cozy Designer Suite',
     slug: 'cozy-designer',
+    category: 'suite',
     city: 'Irving',
     state: 'Texas',
     hostingId: '1656911479326581139',
@@ -1121,6 +1151,7 @@ const PROPERTIES = [
   {
     name: 'Designer Game Suite',
     slug: 'designer-game',
+    category: 'suite',
     city: 'Irving',
     state: 'Texas',
     hostingId: '1691507762565991335',
@@ -1163,6 +1194,7 @@ const PROPERTIES = [
   {
     name: 'Gorgeous Luxury Lake View Suite',
     slug: 'lake-view',
+    category: 'suite',
     city: 'Irving',
     state: 'Texas',
     hostingId: '1579365691674889946',
@@ -1205,6 +1237,7 @@ const PROPERTIES = [
   {
     name: 'Luxury Executive Living',
     slug: 'executive',
+    category: 'suite',
     city: 'Richardson',
     state: 'Texas',
     hostingId: '1622247533469388804',
@@ -1247,6 +1280,7 @@ const PROPERTIES = [
   {
     name: 'Stunning Lake Views',
     slug: 'stunning-lake',
+    category: 'suite',
     city: 'Irving',
     state: 'Texas',
     hostingId: '862596563097784023',
@@ -1291,62 +1325,76 @@ const PROPERTIES = [
 /* ═══ Carousel State ═══ */
 const carouselState = {};
 
+function renderPropertyCard(p) {
+  carouselState[p.slug] = 0;
+  const photoHtml = p.photos.map((ph, i) =>
+    `<img src="${imgUrl(p.hostingId, ph)}" alt="${p.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<2?'eager':'lazy'}">`
+  ).join('');
+  const dotsHtml = p.photos.slice(0, 7).map((_, i) =>
+    `<div class="carousel-dot${i===0?' active':''}" data-i="${i}"></div>`
+  ).join('');
+  const amenityHtml = p.amenities.map(a =>
+    `<span class="amenity-tag${a.premium?' premium':''}">${a.label}</span>`
+  ).join('');
+  const ratingHtml = p.rating !== null ?
+    `<span class="star">&#9733;</span><span class="rating-num">${p.rating}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
+    `<span class="prop-new-badge">&#10024; NEW</span>${p.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${p.reviews} review)</span>` : ''}`;
+  const villaClass = p.category === 'villa' ? ' villa-card' : '';
+  return `
+  <div class="prop-card${villaClass}" data-slug="${p.slug}" id="prop-${p.slug}">
+    <div class="prop-carousel" data-slug="${p.slug}" onclick="openLightbox('${p.slug}',carouselState['${p.slug}'])">
+      ${photoHtml}
+      <div class="prop-carousel-overlay">
+        <span class="prop-carousel-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</span>
+      </div>
+      <div class="prop-carousel-nav">
+        <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',-1)" aria-label="Previous">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',1)" aria-label="Next">
+          <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+      </div>
+      <div class="carousel-counter" data-slug="${p.slug}">1 / ${p.photos.length}</div>
+      <div class="carousel-dots" data-slug="${p.slug}">${dotsHtml}</div>
+    </div>
+    <div class="prop-info" style="cursor:pointer" onclick="openDetail('${p.slug}')">
+      <div class="prop-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>
+      <div class="prop-header-row">
+        <div class="prop-name">${p.name}</div>
+      </div>
+      <div class="prop-specs">
+        <span>${p.guests} guest${p.guests>1?'s':''}</span>
+        <span>${p.beds} bed${p.beds>1?'s':''}</span>
+        <span>${p.baths} bath${p.baths>1?'s':''}</span>
+      </div>
+      <div class="prop-rating">${ratingHtml}</div>
+      <div class="prop-amenities">${amenityHtml}</div>
+      <div class="prop-divider"></div>
+      <div class="prop-actions" onclick="event.stopPropagation()">
+        <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
+        <button class="btn-details" onclick="openDetail('${p.slug}')">View Details</button>
+        <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">Airbnb &rarr;</a>
+      </div>
+    </div>
+  </div>`;
+}
+
 function renderProperties(filter) {
   const grid = document.getElementById('propertiesGrid');
   const filtered = filter ? PROPERTIES.filter(p => p.city === filter) : PROPERTIES;
-  grid.innerHTML = filtered.map((p, pi) => {
-    carouselState[p.slug] = 0;
-    const photoHtml = p.photos.map((ph, i) =>
-      `<img src="${imgUrl(p.hostingId, ph)}" alt="${p.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<2?'eager':'lazy'}">`
-    ).join('');
-    const dotsHtml = p.photos.slice(0, 7).map((_, i) =>
-      `<div class="carousel-dot${i===0?' active':''}" data-i="${i}"></div>`
-    ).join('');
-    const amenityHtml = p.amenities.map(a =>
-      `<span class="amenity-tag${a.premium?' premium':''}">${a.label}</span>`
-    ).join('');
-    const ratingHtml = p.rating !== null ?
-      `<span class="star">&#9733;</span><span class="rating-num">${p.rating}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
-      `<span class="prop-new-badge">&#10024; NEW</span>${p.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${p.reviews} review)</span>` : ''}`;
-    return `
-    <div class="prop-card" data-slug="${p.slug}" id="prop-${p.slug}">
-      <div class="prop-carousel" data-slug="${p.slug}" onclick="openLightbox('${p.slug}',carouselState['${p.slug}'])">
-        ${photoHtml}
-        <div class="prop-carousel-overlay">
-          <span class="prop-carousel-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</span>
-        </div>
-        <div class="prop-carousel-nav">
-          <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',-1)" aria-label="Previous">
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',1)" aria-label="Next">
-            <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-          </button>
-        </div>
-        <div class="carousel-counter" data-slug="${p.slug}">1 / ${p.photos.length}</div>
-        <div class="carousel-dots" data-slug="${p.slug}">${dotsHtml}</div>
-      </div>
-      <div class="prop-info" style="cursor:pointer" onclick="openDetail('${p.slug}')">
-        <div class="prop-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>
-        <div class="prop-header-row">
-          <div class="prop-name">${p.name}</div>
-        </div>
-        <div class="prop-specs">
-          <span>${p.guests} guest${p.guests>1?'s':''}</span>
-          <span>${p.beds} bed${p.beds>1?'s':''}</span>
-          <span>${p.baths} bath${p.baths>1?'s':''}</span>
-        </div>
-        <div class="prop-rating">${ratingHtml}</div>
-        <div class="prop-amenities">${amenityHtml}</div>
-        <div class="prop-divider"></div>
-        <div class="prop-actions" onclick="event.stopPropagation()">
-          <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
-          <button class="btn-details" onclick="openDetail('${p.slug}')">View Details</button>
-          <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">Airbnb &rarr;</a>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  const villas = filtered.filter(p => p.category === 'villa');
+  const suites = filtered.filter(p => p.category === 'suite');
+  let html = '';
+  if (villas.length > 0) {
+    html += `<div class="category-divider"><div class="category-divider-label"><h3>Signature Villas</h3></div><p class="category-divider-desc">Expansive estates for families and groups, with private entertainment and luxury amenities throughout.</p></div>`;
+    html += villas.map(p => renderPropertyCard(p)).join('');
+  }
+  if (suites.length > 0) {
+    html += `<div class="category-divider"><div class="category-divider-label"><h3>Executive Suites</h3></div><p class="category-divider-desc">Refined one-bedroom residences with designer interiors, resort amenities, and effortless city access.</p></div>`;
+    html += suites.map(p => renderPropertyCard(p)).join('');
+  }
+  grid.innerHTML = html;
   initPropertyReveal();
   initScrollReveal();
 }
@@ -1734,16 +1782,102 @@ function openDetail(slug) {
     `<div class="detail-rating"><span class="star">&#9733;</span><span class="rating-num">${prop.rating}</span><span class="review-count">(${prop.reviews} review${prop.reviews!==1?'s':''})</span></div>` :
     `<div class="detail-rating"><span class="detail-new-badge">&#10024; NEW LISTING</span>${prop.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${prop.reviews} review)</span>` : ''}</div>`;
 
+  // Amenity highlight cards (top premium amenities from prop.amenities)
+  const highlightIcons = {
+    'Hot Tub': '<svg viewBox="0 0 24 24"><path d="M2 16s0 4 4 4h12c4 0 4-4 4-4"/><path d="M6 12v-2a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/><path d="M14 12v-2a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/><line x1="2" y1="16" x2="22" y2="16"/></svg>',
+    '85" TV': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'Game Room': '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="4" y1="12" x2="8" y2="12"/><circle cx="16" cy="10" r="1"/><circle cx="19" cy="12" r="1"/></svg>',
+    'Piano': '<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="1"/><line x1="6" y1="4" x2="6" y2="14"/><line x1="10" y1="4" x2="10" y2="14"/><line x1="14" y1="4" x2="14" y2="14"/><line x1="18" y1="4" x2="18" y2="14"/><line x1="2" y1="14" x2="22" y2="14"/></svg>',
+    'Soaking Tub': '<svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1"/></svg>',
+    '65" TV': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'DART Rail': '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="16" rx="2"/><line x1="4" y1="11" x2="20" y2="11"/><line x1="12" y1="3" x2="12" y2="11"/><circle cx="8" cy="15" r="1"/><circle cx="16" cy="15" r="1"/><line x1="6" y1="19" x2="4" y2="21"/><line x1="18" y1="19" x2="20" y2="21"/></svg>',
+    'Pool': '<svg viewBox="0 0 24 24"><path d="M2 16c.6.5 1.2 1 2.5 1C7 17 7 15 9.5 15c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 20c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><line x1="9" y1="6" x2="9" y2="15"/><line x1="15" y1="4" x2="15" y2="15"/><line x1="9" y1="8" x2="15" y2="6"/></svg>',
+    'Gym': '<svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="8" width="4" height="8" rx="1"/><rect x="18" y="8" width="4" height="8" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>',
+    'Sky Lounge': '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/></svg>',
+    'Mini Golf': '<svg viewBox="0 0 24 24"><circle cx="16" cy="18" r="2"/><path d="M12 18h-8"/><path d="M6 4v10"/><path d="M6 4h6"/></svg>',
+    'Lake View': '<svg viewBox="0 0 24 24"><path d="M2 20c2-2 4-4 6-2s4 0 6-2 4 0 6 2"/><path d="M7 8l5-6 5 6"/><line x1="12" y1="2" x2="12" y2="14"/></svg>',
+    '27" Monitor': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'Wine Cooler': '<svg viewBox="0 0 24 24"><path d="M8 2h8l-2 7h-4z"/><path d="M10 9v1a4 4 0 0 0 4 4"/><path d="M14 9v1a4 4 0 0 1-4 4"/><line x1="12" y1="14" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>',
+    '75" TV': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'EV Charger': '<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    '1GB Fiber': '<svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>',
+    'Dual TVs': '<svg viewBox="0 0 24 24"><rect x="1" y="4" width="10" height="8" rx="1"/><rect x="13" y="4" width="10" height="8" rx="1"/><line x1="6" y1="16" x2="6" y2="14"/><line x1="18" y1="16" x2="18" y2="14"/></svg>',
+    'Marble Finishes': '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M5 8c3 0 4 4 8 4s5-4 8-4"/><path d="M5 16c3 0 4-3 7-3s5 3 9 3"/></svg>',
+    'EV Charging': '<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    'Coffee Bar': '<svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
+    '500Mbps WiFi': '<svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>',
+    'Punching Bag': '<svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="5"/><ellipse cx="12" cy="12" rx="5" ry="7"/></svg>',
+    'Fire Pit': '<svg viewBox="0 0 24 24"><path d="M12 2c-4 4-6 8-2 12 1 1 2 1 2 0 0-2 3-3 3-6 0 0 3 3 1 8"/><ellipse cx="12" cy="20" rx="7" ry="3"/></svg>',
+    'Arcade Room': '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="8" r="3"/><line x1="9" y1="15" x2="9" y2="17"/><line x1="12" y1="15" x2="12" y2="17"/><line x1="15" y1="15" x2="15" y2="17"/></svg>',
+    'L-Shaped Couch': '<svg viewBox="0 0 24 24"><path d="M3 10v6a2 2 0 0 0 2 2h6v-4H5v-4z"/><path d="M11 14h8a2 2 0 0 0 2-2v-2H11z"/></svg>',
+    'BBQ': '<svg viewBox="0 0 24 24"><line x1="4" y1="3" x2="4" y2="6"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="12" y1="3" x2="12" y2="6"/><rect x="2" y="8" width="14" height="6" rx="2"/><line x1="5" y1="14" x2="4" y2="20"/><line x1="13" y1="14" x2="14" y2="20"/></svg>',
+    'Mini Golf': '<svg viewBox="0 0 24 24"><circle cx="16" cy="18" r="2"/><path d="M12 18h-8"/><path d="M6 4v10"/><path d="M6 4h6"/></svg>'
+  };
+  const defaultIcon = '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+  const highlightDescs = {
+    'Hot Tub': 'Private outdoor spa',
+    '85" TV': 'Cinema-grade display',
+    'Game Room': 'Full entertainment zone',
+    'Piano': 'Acoustic baby grand',
+    'Soaking Tub': 'Deep relaxation tub',
+    '65" TV': 'Smart entertainment',
+    'DART Rail': 'Steps to transit',
+    'Pool': 'Resort-style swimming',
+    'Gym': '24/7 fitness center',
+    'Sky Lounge': 'Panoramic skyline views',
+    'Mini Golf': 'In-home putting green',
+    'Lake View': 'Waterfront panorama',
+    '27" Monitor': 'Productivity workspace',
+    'Wine Cooler': 'Temperature-controlled wines',
+    '75" TV': 'Massive smart display',
+    'EV Charger': 'Level 2 EV charging',
+    '1GB Fiber': 'Ultra-fast internet',
+    'Dual TVs': 'Multi-room streaming',
+    'Marble Finishes': 'Premium stone details',
+    'EV Charging': 'Level 2 EV charging',
+    'Coffee Bar': 'Fully stocked barista station',
+    '500Mbps WiFi': 'High-speed internet',
+    'Punching Bag': 'In-unit training bag',
+    'Fire Pit': 'Outdoor fire lounge',
+    'Arcade Room': 'Retro gaming arcade',
+    'L-Shaped Couch': 'Oversized comfort seating',
+    'BBQ': 'Outdoor grilling station'
+  };
+  const premiumAmenities = prop.amenities.filter(a => a.premium).slice(0, 4);
+  const highlightsHtml = premiumAmenities.map(a =>
+    `<div class="amenity-highlight-card">
+      <div class="amenity-highlight-icon">${highlightIcons[a.label] || defaultIcon}</div>
+      <div class="amenity-highlight-name">${a.label}</div>
+      <div class="amenity-highlight-desc">${highlightDescs[a.label] || 'Premium feature'}</div>
+    </div>`
+  ).join('');
+
+  // Category icons for the redesigned amenity list
+  const categoryIcons = {
+    'Bathroom': '<svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1"/></svg>',
+    'Bedroom & Laundry': '<svg viewBox="0 0 24 24"><path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"/><path d="M21 7H3l2-4h14z"/><path d="M7 11h4"/><path d="M13 11h4"/></svg>',
+    'Entertainment': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'Kitchen & Dining': '<svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
+    'Outdoor': '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><path d="M21 8l-5 5-5-5"/><line x1="16" y1="3" x2="16" y2="13"/></svg>',
+    'Parking & Facilities': '<svg viewBox="0 0 24 24"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>',
+    'Family': '<svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="10" r="2"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M21 21v-1a3 3 0 0 0-3-3h-1"/></svg>',
+    'Location': '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    'Work & Tech': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'Building': '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>',
+    'Scenic Views': '<svg viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>'
+  };
+  const defaultCatIcon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+
   // Count total amenities
   let totalAmenities = 0;
   let amenitiesHtml = '';
   if (prop.fullAmenities) {
     Object.values(prop.fullAmenities).forEach(items => totalAmenities += items.length);
-    amenitiesHtml = Object.entries(prop.fullAmenities).map(([cat, items]) =>
-      `<div class="amenity-category"><h4>${cat}</h4><div class="amenity-grid">${items.map(item =>
-        `<div class="amenity-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${item}</div>`
+    amenitiesHtml = `<div class="amenity-categories-wrap">` + Object.entries(prop.fullAmenities).map(([cat, items]) =>
+      `<div class="amenity-category"><div class="amenity-category-header">${categoryIcons[cat] || defaultCatIcon}<h4>${cat}</h4><span class="amenity-category-count">${items.length}</span></div><div class="amenity-pills">${items.map(item =>
+        `<span class="amenity-pill">${item}</span>`
       ).join('')}</div></div>`
-    ).join('');
+    ).join('') + `</div>`;
   }
 
   content.innerHTML = `
@@ -1770,6 +1904,7 @@ function openDetail(slug) {
     <div class="detail-section">
       <div class="detail-amenities">
         <h3>All Amenities${totalAmenities > 0 ? ` <span style="font-family:var(--mono);font-size:12px;font-weight:400;color:var(--text-muted);letter-spacing:.08em;margin-left:8px">(${totalAmenities})</span>` : ''}</h3>
+        <div class="amenity-highlights">${highlightsHtml}</div>
         ${amenitiesHtml}
       </div>
     </div>
