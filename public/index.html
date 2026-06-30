@@ -413,38 +413,23 @@ ul{list-style:none}
 .stat-number .stat-suffix{font-size:clamp(24px,2.5vw,32px);color:var(--accent-light)}
 .stat-label{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--text-inv-muted);text-transform:uppercase;overflow-wrap:break-word;word-break:break-word}
 
-/* ── Premium Features Carousel ── */
-.premium-carousel-wrapper{position:relative;max-width:1400px;margin:0 auto;padding:0 24px}
-.premium-carousel{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:8px 0 40px;scroll-behavior:smooth}
-.premium-carousel::-webkit-scrollbar{height:0;display:none}
-.prem-card{flex:0 0 calc(33.333% - 14px);min-width:320px;scroll-snap-align:start;background:rgba(255,255,255,.03);border-radius:var(--radius-xl);padding:40px 36px;border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;opacity:0;transform:translateY(30px) scale(.97);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out),border-color .4s var(--ease),background .4s var(--ease),box-shadow .4s var(--ease)}
-.prem-card.revealed{opacity:1;transform:translateY(0) scale(1)}
-.prem-card:hover{border-color:rgba(199,107,66,.4);background:rgba(255,255,255,.06);box-shadow:0 8px 40px rgba(199,107,66,.08),0 0 0 1px rgba(199,107,66,.1)}
-.prem-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.3),transparent);opacity:0;transition:opacity .4s var(--ease)}
-.prem-card:hover::before{opacity:1}
-.prem-card::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at center,rgba(199,107,66,.04) 0%,transparent 60%);opacity:0;transition:opacity .5s var(--ease);pointer-events:none}
-.prem-card:hover::after{opacity:1}
-.prem-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,rgba(199,107,66,.1),rgba(199,107,66,.05));border:1px solid rgba(199,107,66,.15);display:flex;align-items:center;justify-content:center;margin-bottom:24px;transition:background .4s var(--ease),border-color .4s var(--ease),transform .4s var(--ease)}
-.prem-card:hover .prem-icon{background:linear-gradient(135deg,rgba(199,107,66,.2),rgba(199,107,66,.08));border-color:rgba(199,107,66,.3);transform:scale(1.05)}
-.prem-icon svg{width:24px;height:24px;stroke:var(--accent-light);stroke-width:1.5;fill:none}
-.prem-card h4{font-family:var(--sans);font-size:18px;font-weight:600;color:var(--text-inv);margin-bottom:10px;letter-spacing:-.01em;overflow-wrap:break-word}
-.prem-card p{font-family:var(--sans);font-size:14px;color:var(--text-inv-muted);line-height:1.7;overflow-wrap:break-word}
-
-/* Carousel Navigation Arrows */
-.carousel-nav{position:absolute;top:50%;transform:translateY(-70%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s var(--ease);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:5;opacity:0;pointer-events:none}
-.carousel-nav.visible{opacity:1;pointer-events:auto}
-.carousel-nav:hover{background:rgba(255,255,255,.15);border-color:rgba(199,107,66,.4);transform:translateY(-70%) scale(1.08)}
-.carousel-nav svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
-.carousel-prev{left:-8px}
-.carousel-next{right:-8px}
-
-/* Carousel Progress Bar */
-.carousel-progress{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:0 24px}
-.carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .4s var(--ease);cursor:pointer}
-.carousel-dot.active{background:var(--accent-light);width:28px;border-radius:4px}
-.carousel-dot:hover{background:rgba(255,255,255,.3)}
-.carousel-progress-bar{display:none;max-width:200px;width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.08);margin:12px auto 0;overflow:hidden}
-.carousel-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent-light));transition:width .3s var(--ease);width:0}
+/* ── Experience Feature Grid ── */
+.experience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1200px;margin:0 auto;background:rgba(255,255,255,.06);border-radius:var(--radius-xl);overflow:hidden;padding:0 24px}
+.experience-grid-inner{display:contents}
+.exp-card{background:var(--bg-dark);padding:52px 40px;position:relative;overflow:hidden;cursor:default;opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out),background .5s var(--ease)}
+.exp-card.revealed{opacity:1;transform:translateY(0)}
+.exp-card:hover{background:#1a1a1a}
+.exp-num{font-family:var(--serif);font-size:56px;font-weight:400;color:rgba(199,107,66,.12);line-height:1;margin-bottom:24px;transition:color .5s var(--ease);letter-spacing:-.03em}
+.exp-card:hover .exp-num{color:rgba(199,107,66,.28)}
+.exp-icon{width:44px;height:44px;border-radius:12px;background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.12);display:flex;align-items:center;justify-content:center;margin-bottom:20px;transition:background .4s var(--ease),border-color .4s var(--ease),transform .4s var(--ease)}
+.exp-card:hover .exp-icon{background:rgba(199,107,66,.15);border-color:rgba(199,107,66,.25);transform:scale(1.08)}
+.exp-icon svg{width:20px;height:20px;stroke:var(--accent-light);stroke-width:1.5;fill:none}
+.exp-title{font-family:var(--sans);font-size:17px;font-weight:600;color:var(--text-inv);margin-bottom:8px;letter-spacing:-.01em}
+.exp-desc{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.65}
+.exp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,rgba(199,107,66,.25) 50%,transparent 90%);opacity:0;transition:opacity .5s var(--ease)}
+.exp-card:hover::before{opacity:1}
+.exp-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(199,107,66,.04) 0%,transparent 70%);opacity:0;transition:opacity .5s var(--ease);pointer-events:none}
+.exp-card:hover::after{opacity:1}
 
 /* ── Amenity Marquee ── */
 .amenity-marquee{overflow:hidden;padding:40px 0;position:relative}
@@ -602,7 +587,7 @@ ul{list-style:none}
 
 @media(max-width:1024px){
   .stats-bar{grid-template-columns:repeat(2,1fr);gap:20px}
-  .prem-card{flex:0 0 calc(50% - 10px);min-width:280px}
+  .experience-grid{grid-template-columns:repeat(2,1fr)}
   .amenity-highlight-card{min-width:120px}
   .detail-content{padding:36px}
   .detail-body{max-width:100%}
@@ -612,13 +597,10 @@ ul{list-style:none}
   .stats-bar::-webkit-scrollbar{display:none;height:0}
   .stat-item{flex:0 0 auto;min-width:140px;scroll-snap-align:start;padding:24px 20px}
   .stat-number{font-size:32px}
-  .prem-card{flex:0 0 calc(85vw - 32px);min-width:0;padding:36px 28px}
-  .premium-carousel-wrapper{padding:0 20px}
-  .premium-carousel{gap:16px;scroll-padding-left:0}
-  .carousel-nav{display:none}
-  .carousel-progress-bar{display:block}
-  .carousel-dot{width:6px;height:6px}
-  .carousel-dot.active{width:22px}
+  .experience-grid{grid-template-columns:repeat(2,1fr);padding:0 20px}
+  .exp-card{padding:36px 28px}
+  .exp-num{font-size:40px;margin-bottom:16px}
+  .exp-desc{display:none}
   .prop-info{padding:20px}
   .prop-name{font-size:22px}
   .prop-carousel{aspect-ratio:4/3}
@@ -663,11 +645,12 @@ ul{list-style:none}
   .story-metric-text span{font-size:10px}
   .bento-headline{font-size:24px}
   .section-header h2{font-size:28px}
-  .prem-card{flex:0 0 calc(90vw - 24px);padding:32px 24px}
-  .prem-card h4{font-size:16px}
-  .prem-card p{font-size:13px}
-  .prem-icon{width:48px;height:48px;border-radius:12px}
-  .prem-icon svg{width:22px;height:22px}
+  .experience-grid{grid-template-columns:1fr;padding:0 16px;gap:0;border-radius:var(--radius-lg)}
+  .exp-card{padding:28px 24px}
+  .exp-num{font-size:32px;margin-bottom:12px}
+  .exp-icon{width:36px;height:36px;border-radius:10px;margin-bottom:14px}
+  .exp-icon svg{width:18px;height:18px}
+  .exp-title{font-size:15px}
   .stats-bar{padding:0 16px}
   .stat-item{min-width:120px;padding:20px 16px}
   .marquee-item{font-size:10px}
@@ -804,81 +787,44 @@ ul{list-style:none}
         <div class="stat-label">Amenities Per Stay</div>
       </div>
     </div>
-    <!-- Premium Features Carousel -->
-    <div class="premium-carousel-wrapper">
-      <div class="premium-carousel" id="premiumCarousel">
-        <div class="prem-card" data-delay="0">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg></div>
-          <h4>Resort-Style Pool &amp; Gym</h4>
-          <p>24/7 access to state-of-the-art fitness centers, resort pools, and sky lounges.</p>
-        </div>
-        <div class="prem-card" data-delay="80">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg></div>
-          <h4>Chef-Ready Kitchens</h4>
-          <p>Fully stocked with premium cookware, dishes, spices, and a complimentary coffee bar.</p>
-        </div>
-        <div class="prem-card" data-delay="160">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-          <h4>Smart TVs Up to 85"</h4>
-          <p>Large-screen entertainment in every room. Sign into your own streaming apps.</p>
-        </div>
-        <div class="prem-card" data-delay="240">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
-          <h4>In-Unit Washer &amp; Dryer</h4>
-          <p>Full-size with detergent, dryer sheets, and all laundry supplies provided.</p>
-        </div>
-        <div class="prem-card" data-delay="320">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <h4>DART Rail Access</h4>
-          <p>Steps to the train. DFW Airport, Downtown Dallas, Deep Ellum -- no car needed.</p>
-        </div>
-        <div class="prem-card" data-delay="400">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0012 0c0-3-2-7-6-11z"/></svg></div>
-          <h4>Deep Cleaning Standards</h4>
-          <p>Professional deep cleaning exceeding luxury hotel standards after every single stay.</p>
-        </div>
-        <div class="prem-card" data-delay="480">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <h4>Premium Bath Products</h4>
-          <p>Plush towels, quality toiletries, vanity mirrors, and first-aid kits in every suite.</p>
-        </div>
-        <div class="prem-card" data-delay="560">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
-          <h4>Dedicated Workspace</h4>
-          <p>27" monitor, blazing fast WiFi up to 1GB fiber, and ergonomic setup for remote work.</p>
-        </div>
-        <div class="prem-card" data-delay="640">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-          <h4>EV Charging Stations</h4>
-          <p>Electric vehicle charging available at select properties. Drive green, stay luxury.</p>
-        </div>
-        <div class="prem-card" data-delay="720">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div>
-          <h4>Scented Candles &amp; Ambiance</h4>
-          <p>Warm lighting, designer candles, and thoughtful touches that make it feel like home.</p>
-        </div>
-        <div class="prem-card" data-delay="800">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-          <h4>Complimentary Coffee Bar</h4>
-          <p>Keurig machines, premium pods, creamers, sweeteners, and all the fixings.</p>
-        </div>
-        <div class="prem-card" data-delay="880">
-          <div class="prem-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg></div>
-          <h4>Games &amp; Entertainment</h4>
-          <p>Board games, mini golf, basketball hoops, pool tables, arcades, and more.</p>
-        </div>
+    <!-- Feature Grid -->
+    <div class="experience-grid" id="experienceGrid">
+      <div class="exp-card" data-delay="0">
+        <div class="exp-num">01</div>
+        <div class="exp-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg></div>
+        <div class="exp-title">Resort-Style Pool &amp; Gym</div>
+        <div class="exp-desc">24/7 fitness centers, resort pools, and sky lounges at every property.</div>
       </div>
-      <!-- Navigation Arrows -->
-      <button class="carousel-nav carousel-prev" id="carouselPrev" aria-label="Previous features">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="carousel-nav carousel-next visible" id="carouselNext" aria-label="Next features">
-        <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
-      </button>
-      <!-- Progress Dots -->
-      <div class="carousel-progress" id="carouselProgress"></div>
-      <!-- Mobile Progress Bar -->
-      <div class="carousel-progress-bar"><div class="carousel-progress-fill" id="carouselFill"></div></div>
+      <div class="exp-card" data-delay="80">
+        <div class="exp-num">02</div>
+        <div class="exp-icon"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg></div>
+        <div class="exp-title">Chef-Ready Kitchens</div>
+        <div class="exp-desc">Premium cookware, spices, complimentary coffee bar with Keurig &amp; pods.</div>
+      </div>
+      <div class="exp-card" data-delay="160">
+        <div class="exp-num">03</div>
+        <div class="exp-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="exp-title">Smart TVs Up to 85"</div>
+        <div class="exp-desc">Large-screen entertainment in every room. Sign into your streaming apps.</div>
+      </div>
+      <div class="exp-card" data-delay="240">
+        <div class="exp-num">04</div>
+        <div class="exp-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+        <div class="exp-title">Dedicated Workspace</div>
+        <div class="exp-desc">27" monitor, 1GB fiber WiFi, and ergonomic setup for remote work.</div>
+      </div>
+      <div class="exp-card" data-delay="320">
+        <div class="exp-num">05</div>
+        <div class="exp-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg></div>
+        <div class="exp-title">Games &amp; Entertainment</div>
+        <div class="exp-desc">Pool tables, arcade machines, basketball hoops, board games, and more.</div>
+      </div>
+      <div class="exp-card" data-delay="400">
+        <div class="exp-num">06</div>
+        <div class="exp-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+        <div class="exp-title">EV Charging &amp; DART Rail</div>
+        <div class="exp-desc">Electric vehicle charging on-site. Steps from DART — no car needed.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -2175,90 +2121,19 @@ function initCounters() {
   if (statsBar) observer.observe(statsBar);
 }
 
-/* ═══ Premium Carousel + Card Reveals ═══ */
+/* ═══ Experience Grid Reveals ═══ */
 function initPremiumReveals() {
-  const carousel = document.getElementById('premiumCarousel');
-  const cards = document.querySelectorAll('.prem-card');
-  const prevBtn = document.getElementById('carouselPrev');
-  const nextBtn = document.getElementById('carouselNext');
-  const progressContainer = document.getElementById('carouselProgress');
-  const progressFill = document.getElementById('carouselFill');
-  if (!carousel || !cards.length) return;
-
-  /* -- Card reveal via IntersectionObserver -- */
+  const cards = document.querySelectorAll('.exp-card');
+  if (!cards.length) return;
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
       const delay = parseInt(entry.target.dataset.delay) || 0;
-      setTimeout(() => entry.target.classList.add('revealed'), Math.min(delay, 300));
+      setTimeout(() => entry.target.classList.add('revealed'), delay);
       revealObserver.unobserve(entry.target);
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -20px 0px' });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
   cards.forEach(card => revealObserver.observe(card));
-
-  /* -- Determine visible group count -- */
-  function getGroupCount() {
-    const w = window.innerWidth;
-    if (w <= 768) return 1;
-    if (w <= 1024) return 2;
-    return 3;
-  }
-
-  /* -- Build progress dots -- */
-  function buildDots() {
-    const perGroup = getGroupCount();
-    const totalGroups = Math.ceil(cards.length / perGroup);
-    progressContainer.innerHTML = '';
-    for (let i = 0; i < totalGroups; i++) {
-      const dot = document.createElement('button');
-      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', 'Go to group ' + (i + 1));
-      dot.addEventListener('click', () => {
-        const target = cards[i * perGroup];
-        if (target) {
-          carousel.scrollTo({ left: target.offsetLeft - carousel.offsetLeft, behavior: 'smooth' });
-        }
-      });
-      progressContainer.appendChild(dot);
-    }
-  }
-  buildDots();
-  window.addEventListener('resize', buildDots);
-
-  /* -- Update progress on scroll -- */
-  function updateProgress() {
-    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-    if (maxScroll <= 0) return;
-    const ratio = carousel.scrollLeft / maxScroll;
-
-    /* Update fill bar (mobile) */
-    if (progressFill) {
-      progressFill.style.width = (ratio * 100) + '%';
-    }
-
-    /* Update dots */
-    const dots = progressContainer.querySelectorAll('.carousel-dot');
-    if (!dots.length) return;
-    const activeIndex = Math.round(ratio * (dots.length - 1));
-    dots.forEach((d, i) => d.classList.toggle('active', i === activeIndex));
-
-    /* Update nav arrow visibility */
-    if (prevBtn) prevBtn.classList.toggle('visible', carousel.scrollLeft > 10);
-    if (nextBtn) nextBtn.classList.toggle('visible', carousel.scrollLeft < maxScroll - 10);
-  }
-
-  carousel.addEventListener('scroll', updateProgress, { passive: true });
-  updateProgress();
-
-  /* -- Arrow click handlers -- */
-  function scrollByCards(dir) {
-    const cardEl = cards[0];
-    const gap = parseInt(getComputedStyle(carousel).gap) || 20;
-    const scrollAmount = (cardEl.offsetWidth + gap) * dir;
-    carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  }
-  if (prevBtn) prevBtn.addEventListener('click', () => scrollByCards(-1));
-  if (nextBtn) nextBtn.addEventListener('click', () => scrollByCards(1));
 }
 
 /* ═══ Keyboard ═══ */
