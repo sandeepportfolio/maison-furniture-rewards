@@ -1430,7 +1430,7 @@ function renderPropertyCard(p) {
   const badgeText = isVilla ? 'Villa' : 'Suite';
   return `
   <div class="prop-card${villaClass}" data-slug="${p.slug}" id="prop-${p.slug}" onclick="handleCardClick(event,'${p.slug}')">
-    <div class="prop-carousel" data-slug="${p.slug}" onclick="event.stopPropagation();openLightbox('${p.slug}',carouselState['${p.slug}'])">
+    <div class="prop-carousel" data-slug="${p.slug}">
       ${photoHtml}
       <div class="prop-type-badge ${badgeClass}">${badgeText}</div>
       <div class="prop-carousel-overlay">
@@ -1870,7 +1870,7 @@ function handleCardClick(e, slug) {
   // Don't intercept clicks on interactive children (buttons, links, carousel)
   const target = e.target;
   if (target.closest('.btn-book') || target.closest('.btn-airbnb') || target.closest('.btn-details') ||
-      target.closest('.carousel-btn') || target.closest('.prop-carousel') || target.closest('.prop-actions') ||
+      target.closest('.carousel-btn') || target.closest('.prop-actions') ||
       target.closest('a[href]')) {
     return;
   }
@@ -2252,10 +2252,9 @@ function initPremiumReveals() {
 
   /* -- Arrow click handlers -- */
   function scrollByCards(dir) {
-    const perGroup = getGroupCount();
     const cardEl = cards[0];
     const gap = parseInt(getComputedStyle(carousel).gap) || 20;
-    const scrollAmount = (cardEl.offsetWidth + gap) * perGroup * dir;
+    const scrollAmount = (cardEl.offsetWidth + gap) * dir;
     carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }
   if (prevBtn) prevBtn.addEventListener('click', () => scrollByCards(-1));
