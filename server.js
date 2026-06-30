@@ -107,6 +107,9 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
+// Health check endpoint (also used for keep-alive pings)
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+
 // Route /reward to reward.html
 app.get('/reward', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'reward.html'));
@@ -416,4 +419,14 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Regent Review Portal`);
   console.log(`  Local:  http://localhost:${PORT}`);
   console.log(`  Admin:  http://localhost:${PORT}/admin.html\n`);
+
+  // Keep-alive: ping own /health endpoint every 13 minutes to prevent Render free-tier sleep
+  if (process.env.RENDER_EXTERNAL_URL) {
+    const pingUrl = `${process.env.RENDER_EXTERNAL_URL}/health`;
+    setInterval(() => {
+      const mod = pingUrl.startsWith('https') ? require('https') : require('http');
+      mod.get(pingUrl, () => {}).on('error', () => {});
+    }, 13 * 60 * 1000);
+    console.log(`  Keep-alive: pinging ${pingUrl} every 13 min`);
+  }
 });

@@ -33,12 +33,6 @@ a{text-decoration:none;color:inherit}
 button{border:none;background:none;cursor:pointer;font-family:inherit}
 ul{list-style:none}
 
-/* ── Loader ── */
-.loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease),visibility .6s}
-.loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.loader-brand{font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.35em;color:var(--text);opacity:0;animation:loaderIn .8s var(--ease-out) forwards}
-@keyframes loaderIn{to{opacity:1}}
-
 /* ── Grain ── */
 .grain{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.035;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -120,30 +114,41 @@ ul{list-style:none}
 .section-header h2.light{color:var(--text-inv)}
 
 /* ── Properties Grid ── */
-.properties-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
+.properties-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.properties-grid.fading{opacity:0;transform:translateY(12px)}
 
-/* ── Category Section Headers ── */
-.category-divider{grid-column:1/-1;padding:48px 0 8px;display:flex;flex-direction:column;gap:8px}
-.category-divider:first-child{padding-top:0}
-.category-divider-label{display:flex;align-items:center;gap:16px}
-.category-divider-label h3{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);white-space:nowrap;font-variant:small-caps}
-.category-divider-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--accent-light),transparent)}
-.category-divider-desc{font-family:var(--sans);font-size:13px;color:var(--text-muted);line-height:1.5;max-width:480px}
-.prop-card.villa-card{grid-column:1/-1}
-.prop-card.villa-card .prop-carousel{aspect-ratio:21/9}
+/* ── Filter Tabs ── */
+.prop-filters{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:52px;padding:5px;background:var(--bg-card);border-radius:100px;border:1px solid var(--border);width:fit-content;margin-left:auto;margin-right:auto;box-shadow:var(--shadow-sm)}
+.prop-filter-btn{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:11px 26px;border-radius:100px;border:none;color:var(--text-muted);background:transparent;cursor:pointer;transition:all .35s var(--ease);font-weight:500;white-space:nowrap}
+.prop-filter-btn.active{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(184,101,74,.3)}
+.prop-filter-btn:hover:not(.active){color:var(--accent)}
 
-/* ── Property Card (Luxury Redesign) ── */
-.prop-card{background:var(--bg-card);border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border);transition:box-shadow .6s var(--ease),transform .6s var(--ease),border-color .4s var(--ease);opacity:0;transform:translateY(50px) scale(.97);position:relative}
+/* ── Property Type Badge ── */
+.prop-type-badge{position:absolute;top:16px;left:16px;z-index:3;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:6px 14px;border-radius:100px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:7px;pointer-events:none}
+.prop-type-badge.villa-badge{background:rgba(197,165,114,.22);color:var(--brass-light);border:1px solid rgba(197,165,114,.35)}
+.prop-type-badge.suite-badge{background:rgba(255,255,255,.16);color:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.22)}
+.prop-type-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse 2s ease-in-out infinite}
+
+/* ── Villa Horizontal Layout ── */
+.prop-card.villa-card{grid-column:1/-1;display:grid;grid-template-columns:55% 1fr}
+.prop-card.villa-card .prop-carousel{aspect-ratio:unset;height:100%;min-height:420px}
+.prop-card.villa-card .prop-info{display:flex;flex-direction:column;justify-content:center;padding:44px 40px}
+.prop-card.villa-card .prop-name{font-size:32px}
+.prop-card.villa-card .prop-actions{margin-top:auto;padding-top:8px}
+
+/* ── Property Card (2026 Redesign) ── */
+.prop-card{background:var(--bg-card);border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--border);transition:box-shadow .5s var(--ease),transform .5s var(--ease),border-color .4s var(--ease);opacity:0;transform:translateY(40px) scale(.96);position:relative}
 .prop-card.visible{opacity:1;transform:translateY(0) scale(1)}
-.prop-card:hover{box-shadow:var(--shadow-xl);transform:translateY(-6px) scale(1.005);border-color:var(--accent-light)}
+.prop-card:hover{box-shadow:0 0 0 1.5px var(--accent),0 24px 64px rgba(26,23,20,.13);transform:translateY(-8px) scale(1.006);border-color:transparent}
 
 /* Card stagger delays */
 .prop-card:nth-child(1){transition-delay:0s}
-.prop-card:nth-child(2){transition-delay:.12s}
-.prop-card:nth-child(3){transition-delay:.08s}
-.prop-card:nth-child(4){transition-delay:.2s}
-.prop-card:nth-child(5){transition-delay:.12s}
-.prop-card:nth-child(6){transition-delay:.24s}
+.prop-card:nth-child(2){transition-delay:.08s}
+.prop-card:nth-child(3){transition-delay:.16s}
+.prop-card:nth-child(4){transition-delay:.24s}
+.prop-card:nth-child(5){transition-delay:.32s}
+.prop-card:nth-child(6){transition-delay:.40s}
+.prop-card:nth-child(7){transition-delay:.48s}
 
 /* Immersive Carousel */
 .prop-carousel{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:pointer;background:var(--bg-dark)}
@@ -180,11 +185,10 @@ ul{list-style:none}
 .prop-name{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--text);line-height:1.2;letter-spacing:-.01em;flex:1}
 .prop-location{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase}
 
-/* Specs with separators */
-.prop-specs{display:flex;gap:0;margin-bottom:14px;font-family:var(--sans);font-size:13px;color:var(--text-muted)}
-.prop-specs span{display:flex;align-items:center;gap:5px;padding:0 12px;border-right:1px solid var(--border)}
-.prop-specs span:first-child{padding-left:0}
-.prop-specs span:last-child{border-right:none}
+/* Spec Pills */
+.prop-specs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.prop-specs span{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:5px 12px;border-radius:100px;background:var(--bg);border:1px solid var(--border);color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;transition:border-color .3s var(--ease)}
+.prop-card:hover .prop-specs span{border-color:var(--accent-light)}
 
 /* Rating */
 .prop-rating{display:flex;align-items:center;gap:6px;margin-bottom:16px}
@@ -354,6 +358,10 @@ ul{list-style:none}
   .bento-search{grid-column:1/3;grid-row:2}
   .bento-map-tile{grid-column:1/3;grid-row:3}
   .properties-grid{grid-template-columns:1fr 1fr}
+  .prop-card.villa-card{display:grid;grid-template-columns:1fr}
+  .prop-card.villa-card .prop-carousel{aspect-ratio:16/9;min-height:unset;height:auto}
+  .prop-card.villa-card .prop-info{padding:28px}
+  .prop-card.villa-card .prop-name{font-size:26px}
   .features-grid{grid-template-columns:repeat(2,1fr)}
   .story-inner{grid-template-columns:1fr;gap:40px;padding:80px 24px}
   .story-visual{order:2}
@@ -369,9 +377,10 @@ ul{list-style:none}
   .bento-search{grid-column:1;grid-row:2}
   .bento-map-tile{grid-column:1;grid-row:3}
   .bento-headline{font-size:28px}
-  .properties-grid{grid-template-columns:1fr}
+  .properties-grid{grid-template-columns:1fr;gap:20px}
   .prop-card.villa-card .prop-carousel{aspect-ratio:4/3}
-  .category-divider{padding:32px 0 4px}
+  .prop-filters{padding:4px;gap:2px;border-radius:var(--radius);width:100%}
+  .prop-filter-btn{padding:10px 14px;font-size:9px;letter-spacing:.08em;flex:1;text-align:center}
   .features-grid{grid-template-columns:1fr;padding:0 16px}
   .section{padding:60px 16px}
   .section-dark{padding:60px 0}
@@ -576,11 +585,10 @@ ul{list-style:none}
   .stats-bar{grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px}
   .stat-number{font-size:32px}
   .premium-grid{grid-template-columns:1fr;padding:0 16px}
-  .properties-grid{gap:20px}
   .prop-info{padding:20px}
   .prop-name{font-size:22px}
   .prop-carousel{aspect-ratio:4/3}
-  .prop-specs span{padding:0 8px;font-size:12px}
+  .prop-specs span{padding:4px 10px;font-size:9px}
   .detail-modal{padding:0}
   .detail-body{margin:0;border-radius:0;min-height:100vh}
   .detail-close{top:12px;right:12px;width:40px;height:40px}
@@ -605,9 +613,6 @@ ul{list-style:none}
 </style>
 </head>
 <body>
-
-<!-- Loader -->
-<div class="loader" id="loader"><div class="loader-brand">R E G E N T</div></div>
 
 <!-- Grain -->
 <div class="grain"></div>
@@ -702,6 +707,11 @@ ul{list-style:none}
   <div class="section-header reveal">
     <span class="section-label">02&ensp;OUR COLLECTION</span>
     <h2>Curated Properties</h2>
+  </div>
+  <div class="prop-filters reveal" id="propFilters">
+    <button class="prop-filter-btn active" data-filter="all" onclick="setPropertyFilter('all')">All Properties</button>
+    <button class="prop-filter-btn" data-filter="villa" onclick="setPropertyFilter('villa')">Villas</button>
+    <button class="prop-filter-btn" data-filter="suite" onclick="setPropertyFilter('suite')">Executive Suites</button>
   </div>
   <div class="properties-grid" id="propertiesGrid"></div>
 </section>
@@ -1333,17 +1343,21 @@ function renderPropertyCard(p) {
   const dotsHtml = p.photos.slice(0, 7).map((_, i) =>
     `<div class="carousel-dot${i===0?' active':''}" data-i="${i}"></div>`
   ).join('');
-  const amenityHtml = p.amenities.map(a =>
+  const amenityHtml = p.amenities.slice(0, 4).map(a =>
     `<span class="amenity-tag${a.premium?' premium':''}">${a.label}</span>`
   ).join('');
   const ratingHtml = p.rating !== null ?
     `<span class="star">&#9733;</span><span class="rating-num">${p.rating}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
     `<span class="prop-new-badge">&#10024; NEW</span>${p.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${p.reviews} review)</span>` : ''}`;
-  const villaClass = p.category === 'villa' ? ' villa-card' : '';
+  const isVilla = p.category === 'villa';
+  const villaClass = isVilla ? ' villa-card' : '';
+  const badgeClass = isVilla ? 'villa-badge' : 'suite-badge';
+  const badgeText = isVilla ? 'Villa' : 'Suite';
   return `
   <div class="prop-card${villaClass}" data-slug="${p.slug}" id="prop-${p.slug}">
     <div class="prop-carousel" data-slug="${p.slug}" onclick="openLightbox('${p.slug}',carouselState['${p.slug}'])">
       ${photoHtml}
+      <div class="prop-type-badge ${badgeClass}">${badgeText}</div>
       <div class="prop-carousel-overlay">
         <span class="prop-carousel-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</span>
       </div>
@@ -1380,23 +1394,42 @@ function renderPropertyCard(p) {
   </div>`;
 }
 
-function renderProperties(filter) {
+let currentCategoryFilter = 'all';
+let renderTimeout = null;
+
+function setPropertyFilter(filter) {
+  currentCategoryFilter = filter;
+  document.querySelectorAll('.prop-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+  // Preserve any active city filter
+  const cityEl = document.getElementById('searchCity');
+  renderProperties(cityEl ? cityEl.value || null : null);
+}
+
+function renderProperties(cityFilter) {
   const grid = document.getElementById('propertiesGrid');
-  const filtered = filter ? PROPERTIES.filter(p => p.city === filter) : PROPERTIES;
-  const villas = filtered.filter(p => p.category === 'villa');
-  const suites = filtered.filter(p => p.category === 'suite');
-  let html = '';
-  if (villas.length > 0) {
-    html += `<div class="category-divider"><div class="category-divider-label"><h3>Signature Villas</h3></div><p class="category-divider-desc">Expansive estates for families and groups, with private entertainment and luxury amenities throughout.</p></div>`;
-    html += villas.map(p => renderPropertyCard(p)).join('');
-  }
-  if (suites.length > 0) {
-    html += `<div class="category-divider"><div class="category-divider-label"><h3>Executive Suites</h3></div><p class="category-divider-desc">Refined one-bedroom residences with designer interiors, resort amenities, and effortless city access.</p></div>`;
-    html += suites.map(p => renderPropertyCard(p)).join('');
-  }
-  grid.innerHTML = html;
-  initPropertyReveal();
-  initScrollReveal();
+  let props = PROPERTIES;
+  if (cityFilter) props = props.filter(p => p.city === cityFilter);
+  if (currentCategoryFilter === 'villa') props = props.filter(p => p.category === 'villa');
+  else if (currentCategoryFilter === 'suite') props = props.filter(p => p.category === 'suite');
+  // Always show villas first
+  const villas = props.filter(p => p.category === 'villa');
+  const suites = props.filter(p => p.category === 'suite');
+  const ordered = [...villas, ...suites];
+  // Guard against double-render race
+  if (renderTimeout) clearTimeout(renderTimeout);
+  // Smooth transition
+  grid.classList.add('fading');
+  renderTimeout = setTimeout(() => {
+    renderTimeout = null;
+    grid.innerHTML = ordered.map(p => renderPropertyCard(p)).join('');
+    initPropertyReveal();
+    initScrollReveal();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => grid.classList.remove('fading'));
+    });
+  }, 350);
 }
 
 function carouselMove(slug, dir) {
@@ -1666,7 +1699,13 @@ function filterProperties() {
 }
 
 function scrollToProperty(slug) {
-  renderProperties();
+  // Reset filters to show all properties when scrolling to a specific one
+  currentCategoryFilter = 'all';
+  document.querySelectorAll('.prop-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === 'all');
+  });
+  const cityEl = document.getElementById('searchCity');
+  renderProperties(cityEl ? cityEl.value || null : null);
   setTimeout(() => {
     const el = document.getElementById('prop-' + slug);
     if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
@@ -2088,7 +2127,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initModalBackdropClose();
   initCounters();
   initPremiumReveals();
-  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 600);
 });
 </script>
 </body>
