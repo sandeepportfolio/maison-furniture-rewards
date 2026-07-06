@@ -389,6 +389,100 @@ ul{list-style:none}
 .reveal-delay-3{transition-delay:.3s}
 .reveal-delay-4{transition-delay:.4s}
 
+/* ── Explore Section ── */
+.explore-section{background:var(--bg-dark);position:relative;overflow:hidden}
+.explore-hero{position:relative;height:420px;display:flex;align-items:flex-end;overflow:hidden}
+.explore-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0d0d0d 0%,#1a1520 30%,#1e1418 60%,#0d0d0d 100%);z-index:0}
+.explore-hero-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 40%,rgba(199,107,66,.12) 0%,transparent 70%);z-index:1}
+.explore-hero-bg::after{content:'';position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,var(--bg-dark),transparent);z-index:2}
+.explore-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(199,107,66,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(199,107,66,.04) 1px,transparent 1px);background-size:60px 60px;opacity:.6;z-index:1;animation:exploreGridDrift 30s linear infinite}
+@keyframes exploreGridDrift{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
+.explore-hero-content{position:relative;z-index:3;padding:0 48px 60px;max-width:1400px;margin:0 auto;width:100%}
+.explore-hero-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:16px;display:block}
+.explore-hero-title{font-family:var(--serif);font-size:clamp(40px,5vw,64px);color:var(--text-inv);line-height:1.1;letter-spacing:-.02em;margin-bottom:16px}
+.explore-hero-title em{font-style:italic;color:var(--accent-light)}
+.explore-hero-sub{font-family:var(--sans);font-size:17px;color:var(--text-inv-muted);max-width:520px;line-height:1.7}
+
+.explore-inner{max-width:1400px;margin:0 auto;padding:60px 48px 100px}
+
+/* Property Selector */
+.explore-prop-selector{display:flex;align-items:center;gap:10px;margin-bottom:48px;flex-wrap:wrap}
+.explore-prop-pill{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:10px 20px;border-radius:100px;border:1px solid var(--border-dark);color:var(--text-inv-muted);cursor:pointer;transition:all .4s var(--ease);background:transparent;white-space:nowrap}
+.explore-prop-pill:hover{border-color:var(--accent);color:var(--accent-light)}
+.explore-prop-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* Category Tabs */
+.explore-categories{display:flex;align-items:center;gap:6px;margin-bottom:40px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.explore-categories::-webkit-scrollbar{display:none}
+.explore-cat-tab{font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 22px;border-radius:100px;color:var(--text-inv-muted);cursor:pointer;transition:all .35s var(--ease);background:transparent;border:1px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.explore-cat-tab svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.explore-cat-tab:hover{color:var(--text-inv);border-color:var(--border-dark)}
+.explore-cat-tab.active{background:rgba(199,107,66,.15);border-color:var(--accent);color:var(--accent-light)}
+
+/* Attraction Grid */
+.explore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:64px}
+.explore-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);overflow:hidden;position:relative;cursor:pointer;transition:transform .5s var(--ease),box-shadow .5s var(--ease);opacity:0;transform:translateY(30px);border:1px solid rgba(255,255,255,.04)}
+.explore-card.visible{opacity:1;transform:translateY(0)}
+.explore-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.explore-card-img{position:relative;height:200px;overflow:hidden}
+.explore-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+.explore-card:hover .explore-card-img img{transform:scale(1.08)}
+.explore-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(17,17,17,.6) 100%)}
+.explore-card-dist{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;background:rgba(17,17,17,.7);backdrop-filter:blur(8px);color:#fff;padding:6px 12px;border-radius:100px;z-index:2;display:flex;align-items:center;gap:5px}
+.explore-card-dist svg{width:10px;height:10px;stroke:var(--accent-light);fill:none;stroke-width:2}
+.explore-card-cat-badge{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;background:var(--accent);color:#fff;padding:5px 12px;border-radius:100px;z-index:2;text-transform:uppercase}
+.explore-card-body{padding:20px}
+.explore-card-name{font-family:var(--serif);font-size:22px;color:var(--text-inv);margin-bottom:8px;line-height:1.25}
+.explore-card-desc{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.explore-card-meta{display:flex;align-items:center;gap:16px}
+.explore-card-rating{font-family:var(--mono);font-size:11px;color:var(--brass-light);display:flex;align-items:center;gap:4px}
+.explore-card-rating svg{width:12px;height:12px;fill:var(--brass);stroke:none}
+.explore-card-tag{font-family:var(--mono);font-size:10px;color:var(--text-inv-muted);letter-spacing:.06em}
+.explore-card-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(199,107,66,.85) 0%,rgba(181,90,51,.9) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s var(--ease);z-index:3;padding:24px}
+.explore-card:hover .explore-card-overlay{opacity:1}
+.explore-card-overlay-text{font-family:var(--serif);font-size:20px;color:#fff;margin-bottom:8px;text-align:center}
+.explore-card-overlay-cta{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px}
+.explore-card-overlay-cta svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
+
+/* Explore Map */
+.explore-map-container{margin-bottom:64px}
+.explore-map-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.explore-map-title{font-family:var(--serif);font-size:28px;color:var(--text-inv)}
+.explore-map-subtitle{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
+.explore-map-wrap{border-radius:var(--radius-xl);overflow:hidden;height:420px;border:1px solid var(--border-dark);position:relative}
+#exploreMap{height:100%;width:100%;z-index:1}
+#exploreMap .leaflet-popup-content-wrapper{background:var(--bg-dark-card);color:var(--text-inv);border:1px solid var(--border-dark);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+#exploreMap .leaflet-popup-tip{background:var(--bg-dark-card)}
+#exploreMap .leaflet-popup-content{font-family:var(--sans);font-size:13px;margin:12px 16px}
+#exploreMap .leaflet-popup-content b{font-family:var(--serif);font-size:16px;display:block;margin-bottom:4px}
+
+/* Events Section */
+.explore-events{margin-bottom:20px}
+.explore-events-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.explore-events-title{font-family:var(--serif);font-size:32px;color:var(--text-inv);display:flex;align-items:center;gap:14px}
+.explore-events-title .pulse-dot{width:8px;height:8px;border-radius:50%;background:#6FCF97;animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+.explore-events-sub{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
+.explore-events-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.explore-event-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);overflow:hidden;display:flex;border:1px solid rgba(255,255,255,.04);transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .4s var(--ease);cursor:pointer;opacity:0;transform:translateY(20px)}
+.explore-event-card.visible{opacity:1;transform:translateY(0)}
+.explore-event-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.4);border-color:rgba(199,107,66,.2)}
+.event-date-block{min-width:80px;background:linear-gradient(135deg,var(--accent),var(--accent-hover));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;gap:2px;flex-shrink:0}
+.event-date-month{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.8);text-transform:uppercase}
+.event-date-day{font-family:var(--serif);font-size:32px;color:#fff;line-height:1}
+.event-date-dow{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.6)}
+.event-info{padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:6px;overflow:hidden;flex:1}
+.event-name{font-family:var(--serif);font-size:18px;color:var(--text-inv);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.event-detail{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.event-detail span{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.event-detail svg{width:12px;height:12px;stroke:var(--accent-light);fill:none;stroke-width:2}
+.event-countdown{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--brass-light);margin-top:2px;display:flex;align-items:center;gap:6px}
+.event-countdown svg{width:10px;height:10px;stroke:var(--brass);fill:none;stroke-width:2}
+.event-price{font-family:var(--mono);font-size:11px;color:var(--accent-light);padding:4px 10px;background:rgba(199,107,66,.1);border-radius:100px;align-self:flex-start;margin-top:4px;white-space:nowrap}
+
+/* Explore no-results */
+.explore-empty{text-align:center;padding:80px 24px;grid-column:1/-1}
+.explore-empty p{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted)}
+
 /* ── Responsive ── */
 @media(max-width:1024px){
   .bento{grid-template-columns:1fr 1fr;grid-template-rows:400px 180px;padding-top:90px}
@@ -405,6 +499,9 @@ ul{list-style:none}
   .story-inner{grid-template-columns:1fr;gap:40px;padding:80px 24px}
   .story-visual{order:2}
   .story-svg{max-width:280px}
+  .explore-grid{grid-template-columns:repeat(2,1fr)}
+  .explore-events-grid{grid-template-columns:repeat(2,1fr)}
+  .explore-hero{height:360px}
 }
 @media(max-width:768px){
   .nav{padding:18px 20px}
@@ -664,6 +761,21 @@ ul{list-style:none}
   .legal-close{top:16px;right:16px;width:40px;height:40px}
   .legal-title{margin-bottom:6px}
   .legal-updated{margin-bottom:36px}
+  .explore-hero{height:300px}
+  .explore-hero-content{padding:0 20px 40px}
+  .explore-inner{padding:40px 20px 80px}
+  .explore-grid{grid-template-columns:1fr}
+  .explore-events-grid{grid-template-columns:1fr}
+  .explore-map-wrap{height:320px}
+  .explore-prop-selector{gap:8px}
+  .explore-prop-pill{padding:8px 14px;font-size:10px}
+  .explore-categories{gap:4px}
+  .explore-cat-tab{padding:8px 16px;font-size:12px}
+  .explore-event-card{flex-direction:row}
+  .event-date-block{min-width:70px;padding:16px 12px}
+  .event-date-day{font-size:26px}
+  .event-name{font-size:15px;white-space:normal;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+  .event-info{padding:12px 16px;gap:4px}
 }
 @media(max-width:480px){
   .stat-item{padding:20px 12px}
@@ -693,6 +805,16 @@ ul{list-style:none}
   .stats-bar{padding:0 16px}
   .stat-item{min-width:120px;padding:20px 16px}
   .marquee-item{font-size:10px}
+  .explore-hero{height:260px}
+  .explore-hero-sub{font-size:14px}
+  .explore-card-img{height:160px}
+  .explore-card-name{font-size:18px}
+  .explore-map-wrap{height:260px}
+  .explore-events-title{font-size:24px}
+  .explore-map-title{font-size:22px}
+  .event-date-block{min-width:60px;padding:12px 10px}
+  .event-date-day{font-size:22px}
+  .event-date-month{font-size:9px}
 }
 </style>
 </head>
@@ -707,6 +829,7 @@ ul{list-style:none}
   <div class="nav-links">
     <a href="#properties">Properties</a>
     <a href="#experience">Experience</a>
+    <a href="#explore">Explore</a>
     <a href="#story">Our Story</a>
     <a href="javascript:void(0)" onclick="openContact()">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
@@ -718,6 +841,7 @@ ul{list-style:none}
 <div class="mobile-menu" id="mobileMenu">
   <a href="#properties" onclick="closeMobile()">Properties</a>
   <a href="#experience" onclick="closeMobile()">Experience</a>
+  <a href="#explore" onclick="closeMobile()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="javascript:void(0)" onclick="closeMobile();openContact()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
@@ -969,6 +1093,82 @@ ul{list-style:none}
   </div>
 </section>
 
+<!-- ═══ EXPLORE THE AREA ═══ -->
+<section class="explore-section" id="explore">
+  <!-- Hero -->
+  <div class="explore-hero">
+    <div class="explore-hero-bg"></div>
+    <div class="explore-hero-grid"></div>
+    <div class="explore-hero-content">
+      <span class="explore-hero-label">05&ensp;EXPLORE THE AREA</span>
+      <h2 class="explore-hero-title">Discover <em>what&rsquo;s nearby</em></h2>
+      <p class="explore-hero-sub">World-class dining, entertainment, and outdoor adventures — all minutes from your door.</p>
+    </div>
+  </div>
+
+  <div class="explore-inner">
+    <!-- Property Selector -->
+    <div class="explore-prop-selector" id="explorePropSelector"></div>
+
+    <!-- Category Tabs -->
+    <div class="explore-categories" id="exploreCatTabs">
+      <button class="explore-cat-tab active" data-cat="all" onclick="filterExplore('all')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg>
+        All
+      </button>
+      <button class="explore-cat-tab" data-cat="dining" onclick="filterExplore('dining')">
+        <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+        Dining &amp; Nightlife
+      </button>
+      <button class="explore-cat-tab" data-cat="outdoor" onclick="filterExplore('outdoor')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Outdoor &amp; Nature
+      </button>
+      <button class="explore-cat-tab" data-cat="shopping" onclick="filterExplore('shopping')">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Shopping &amp; Entertainment
+      </button>
+      <button class="explore-cat-tab" data-cat="arts" onclick="filterExplore('arts')">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Arts &amp; Culture
+      </button>
+      <button class="explore-cat-tab" data-cat="family" onclick="filterExplore('family')">
+        <svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/></svg>
+        Family Fun
+      </button>
+      <button class="explore-cat-tab" data-cat="sports" onclick="filterExplore('sports')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 000 20 14.5 14.5 0 000-20"/><path d="M2 12h20"/></svg>
+        Sports &amp; Recreation
+      </button>
+    </div>
+
+    <!-- Attractions Grid -->
+    <div class="explore-grid" id="exploreGrid"></div>
+
+    <!-- Interactive Map -->
+    <div class="explore-map-container">
+      <div class="explore-map-header">
+        <div>
+          <h3 class="explore-map-title">Explore the Neighborhood</h3>
+          <p class="explore-map-subtitle">Click markers to discover more &middot; Select a property to see distances</p>
+        </div>
+      </div>
+      <div class="explore-map-wrap">
+        <div id="exploreMap"></div>
+      </div>
+    </div>
+
+    <!-- Events -->
+    <div class="explore-events" id="exploreEvents">
+      <div class="explore-events-header">
+        <h3 class="explore-events-title"><span class="pulse-dot"></span> Happening Nearby</h3>
+        <span class="explore-events-sub">Live events, concerts &amp; more near your stay</span>
+      </div>
+      <div class="explore-events-grid" id="exploreEventsGrid"></div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ CTA ═══ -->
 <section class="section-cta reveal">
   <h2>Your Next Escape Awaits</h2>
@@ -983,6 +1183,7 @@ ul{list-style:none}
     <div class="footer-links">
       <a href="#properties">Properties</a>
       <a href="#experience">Experience</a>
+      <a href="#explore">Explore</a>
       <a href="#story">Our Story</a>
       <a href="javascript:void(0)" onclick="openContact()">Contact</a>
       <a href="#properties">Book Now</a>
@@ -2418,6 +2619,299 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+/* ═══ EXPLORE THE AREA ═══ */
+
+const ATTRACTIONS = [
+  // ── PLANO ──
+  { name:'Legacy West', desc:'Open-air luxury destination with dining, boutique shops, and a vibrant town-center atmosphere.', cat:'shopping', lat:33.0754, lng:-96.7003, rating:4.7, img:'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Shops at Legacy', desc:'Premier mixed-use district with upscale retail, craft cocktail lounges, and rooftop dining.', cat:'shopping', lat:33.0727, lng:-96.6971, rating:4.6, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Arbor Hills Nature Preserve', desc:'160-acre wooded preserve with paved trails, observation tower, and sunset views over rolling hills.', cat:'outdoor', lat:33.0526, lng:-96.8256, rating:4.8, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Toyota Stadium', desc:'20,500-seat venue hosting FC Dallas matches, major concerts, and international sporting events.', cat:'sports', lat:33.1543, lng:-96.8352, rating:4.5, img:'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Medieval Times', desc:'Immersive dinner-theater experience with jousting knights, falconry, and a royal four-course feast.', cat:'family', lat:32.9074, lng:-96.7685, rating:4.4, img:'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Topgolf Dallas', desc:'High-tech driving range with climate-controlled hitting bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:33.0270, lng:-96.7040, rating:4.6, img:'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Oak Point Park & Nature Preserve', desc:'800 acres of trails, wetlands, and open meadows perfect for hiking, biking, and birding.', cat:'outdoor', lat:33.0460, lng:-96.6775, rating:4.7, img:'https://images.unsplash.com/photo-1500829243541-74b677fecc30?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Haggard Park & Interurban Museum', desc:'Historic downtown Plano park with the restored 1908 interurban railway car and fountains.', cat:'arts', lat:33.0169, lng:-96.6989, rating:4.3, img:'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Urban Rio', desc:'Cantina-style dining with craft margaritas, rooftop patio, and live music on weekends.', cat:'dining', lat:33.0705, lng:-96.6991, rating:4.5, img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Go Ape Zip Line & Treetop Adventure', desc:'Aerial treetop course with zip lines, rope bridges, and Tarzan swings through mature forest.', cat:'family', lat:33.0440, lng:-96.6780, rating:4.5, img:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=400&fit=crop', area:'plano' },
+
+  // ── IRVING / LAS COLINAS ──
+  { name:'Toyota Music Factory', desc:'World-class entertainment complex with indoor/outdoor concert venues, restaurants, and nightlife.', cat:'dining', lat:32.8779, lng:-96.9430, rating:4.7, img:'https://images.unsplash.com/photo-1501386761578-eac5c94b0571?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Las Colinas Urban Center', desc:'Walkable master-planned neighborhood with canals, galleries, upscale dining, and boutique hotels.', cat:'shopping', lat:32.8680, lng:-96.9405, rating:4.5, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Mandalay Canal Walk', desc:'Venetian-inspired waterway with gondola rides, waterside dining, and illuminated evening strolls.', cat:'outdoor', lat:32.8700, lng:-96.9450, rating:4.6, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Irving Arts Center', desc:'Contemporary arts campus featuring rotating exhibitions, sculpture garden, and performing arts theater.', cat:'arts', lat:32.8507, lng:-96.9507, rating:4.4, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Lake Carolyn', desc:'Scenic urban lake with miles of paved trails, kayak rentals, and stunning skyline reflections.', cat:'outdoor', lat:32.8733, lng:-96.9400, rating:4.6, img:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Mustangs of Las Colinas', desc:'Iconic bronze sculpture of nine wild mustangs galloping through a granite stream — the world\'s largest equestrian sculpture.', cat:'arts', lat:32.8780, lng:-96.9429, rating:4.8, img:'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Alamo Drafthouse Cinema', desc:'Dine-in theater with craft beer, gourmet food, and a strict no-talking policy for the ultimate movie experience.', cat:'shopping', lat:32.8687, lng:-96.9445, rating:4.7, img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Water Street', desc:'Vibrant waterfront dining district with patios overlooking the canal and live entertainment nightly.', cat:'dining', lat:32.8756, lng:-96.9420, rating:4.5, img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop', area:'irving' },
+  { name:'National Scouting Museum', desc:'Interactive museum celebrating scouting history with Norman Rockwell art collection and outdoor challenges.', cat:'family', lat:32.8600, lng:-96.9431, rating:4.3, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Campión Trail', desc:'22-mile multi-use trail following the Elm Fork Trinity River — perfect for cycling, running, and nature walks.', cat:'sports', lat:32.8580, lng:-96.9580, rating:4.6, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Whistle Britches', desc:'Southern-style fried chicken, scratch-made biscuits, and Texas craft beers in a rustic-chic setting.', cat:'dining', lat:32.8662, lng:-96.9385, rating:4.6, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Globe Life Field', desc:'Home of the Texas Rangers — a state-of-the-art retractable-roof stadium with world-class game-day dining.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'https://images.unsplash.com/photo-1569077571-1d701c4a2f32?w=600&h=400&fit=crop', area:'irving' }
+];
+
+let exploreSelectedProp = null;
+let exploreSelectedCat = 'all';
+let exploreMapInstance = null;
+let exploreMarkers = [];
+
+// Haversine distance in miles
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 3959;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function initExplorePropSelector() {
+  const c = document.getElementById('explorePropSelector');
+  if (!c) return;
+  c.innerHTML = PROPERTIES.map((p, i) => {
+    const cls = i === 0 ? 'explore-prop-pill active' : 'explore-prop-pill';
+    return `<button class="${cls}" data-slug="${p.slug}" onclick="selectExploreProp('${p.slug}')">${p.name}</button>`;
+  }).join('');
+  exploreSelectedProp = PROPERTIES[0];
+}
+
+function selectExploreProp(slug) {
+  exploreSelectedProp = PROPERTIES.find(p => p.slug === slug) || PROPERTIES[0];
+  document.querySelectorAll('.explore-prop-pill').forEach(b => b.classList.toggle('active', b.dataset.slug === slug));
+  renderExploreGrid();
+  updateExploreMap();
+  fetchEvents();
+}
+
+function filterExplore(cat) {
+  exploreSelectedCat = cat;
+  document.querySelectorAll('.explore-cat-tab').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  renderExploreGrid();
+  updateExploreMap();
+}
+
+function renderExploreGrid() {
+  const grid = document.getElementById('exploreGrid');
+  if (!grid) return;
+  const prop = exploreSelectedProp || PROPERTIES[0];
+
+  let items = ATTRACTIONS.map(a => ({
+    ...a,
+    distance: haversine(prop.lat, prop.lng, a.lat, a.lng)
+  })).sort((a, b) => a.distance - b.distance);
+
+  if (exploreSelectedCat !== 'all') {
+    items = items.filter(a => a.cat === exploreSelectedCat);
+  }
+
+  if (items.length === 0) {
+    grid.innerHTML = '<div class="explore-empty"><p>No attractions found in this category. Try selecting a different filter.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = items.map((a, i) => `
+    <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="if('${a.url || ''}')window.open('https://www.google.com/maps/search/${encodeURIComponent(a.name)}','_blank')">
+      <div class="explore-card-img">
+        <img src="${a.img}" alt="${a.name}" loading="lazy">
+        <span class="explore-card-dist">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${a.distance.toFixed(1)} mi
+        </span>
+        <span class="explore-card-cat-badge">${a.cat}</span>
+      </div>
+      <div class="explore-card-body">
+        <div class="explore-card-name">${a.name}</div>
+        <div class="explore-card-desc">${a.desc}</div>
+        <div class="explore-card-meta">
+          <span class="explore-card-rating">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${a.rating}
+          </span>
+          <span class="explore-card-tag">${a.area === 'plano' ? 'PLANO' : 'IRVING'}</span>
+        </div>
+      </div>
+      <div class="explore-card-overlay">
+        <div class="explore-card-overlay-text">${a.name}</div>
+        <div class="explore-card-overlay-cta">
+          VIEW ON MAP
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Trigger staggered reveal animation
+  requestAnimationFrame(() => {
+    grid.querySelectorAll('.explore-card').forEach((card, i) => {
+      setTimeout(() => card.classList.add('visible'), i * 60);
+    });
+  });
+}
+
+function initExploreMap() {
+  const el = document.getElementById('exploreMap');
+  if (!el || typeof L === 'undefined') return;
+
+  exploreMapInstance = L.map('exploreMap', {
+    center: [32.92, -96.82],
+    zoom: 10,
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  L.control.zoom({ position: 'topright' }).addTo(exploreMapInstance);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 18,
+    subdomains: 'abcd'
+  }).addTo(exploreMapInstance);
+
+  updateExploreMap();
+}
+
+function updateExploreMap() {
+  if (!exploreMapInstance) return;
+  const prop = exploreSelectedProp || PROPERTIES[0];
+
+  // Clear existing markers
+  exploreMarkers.forEach(m => exploreMapInstance.removeLayer(m));
+  exploreMarkers = [];
+
+  // Property marker (special)
+  const propIcon = L.divIcon({
+    html: `<div style="width:32px;height:32px;background:var(--accent);border:3px solid #fff;border-radius:50%;box-shadow:0 4px 12px rgba(199,107,66,.5);display:flex;align-items:center;justify-content:center">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>`,
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+  });
+
+  const propMarker = L.marker([prop.lat, prop.lng], { icon: propIcon })
+    .addTo(exploreMapInstance)
+    .bindPopup(`<b>${prop.name}</b><br>${prop.city}, ${prop.state}<br><span style="font-family:var(--mono);font-size:10px;color:var(--accent)">YOUR STAY</span>`);
+  exploreMarkers.push(propMarker);
+
+  // Attraction markers
+  let filteredAttractions = ATTRACTIONS;
+  if (exploreSelectedCat !== 'all') {
+    filteredAttractions = ATTRACTIONS.filter(a => a.cat === exploreSelectedCat);
+  }
+
+  const catColors = { dining:'#E74C3C', outdoor:'#27AE60', shopping:'#9B59B6', arts:'#F39C12', family:'#3498DB', sports:'#1ABC9C' };
+
+  filteredAttractions.forEach(a => {
+    const dist = haversine(prop.lat, prop.lng, a.lat, a.lng);
+    const color = catColors[a.cat] || '#C76B42';
+
+    const icon = L.divIcon({
+      html: `<div style="width:22px;height:22px;background:${color};border:2px solid rgba(255,255,255,.7);border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
+      className: '',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11]
+    });
+
+    const m = L.marker([a.lat, a.lng], { icon })
+      .addTo(exploreMapInstance)
+      .bindPopup(`<b>${a.name}</b><br>${a.desc.slice(0, 80)}…<br><span style="font-family:var(--mono);font-size:10px;color:var(--accent)">${dist.toFixed(1)} mi from ${prop.name}</span>`);
+    exploreMarkers.push(m);
+  });
+
+  // Fit bounds
+  const allCoords = [[prop.lat, prop.lng], ...filteredAttractions.map(a => [a.lat, a.lng])];
+  if (allCoords.length > 1) {
+    exploreMapInstance.fitBounds(allCoords, { padding: [40, 40], maxZoom: 12 });
+  }
+}
+
+// Events
+async function fetchEvents() {
+  const prop = exploreSelectedProp || PROPERTIES[0];
+  try {
+    const resp = await fetch(`/api/events?lat=${prop.lat}&lng=${prop.lng}&radius=25`);
+    const data = await resp.json();
+    renderEvents(data.events || []);
+  } catch (err) {
+    console.error('Events fetch error:', err);
+    renderEvents([]);
+  }
+}
+
+function renderEvents(events) {
+  const grid = document.getElementById('exploreEventsGrid');
+  if (!grid) return;
+
+  if (!events.length) {
+    grid.innerHTML = '<div class="explore-empty" style="grid-column:1/-1"><p>No upcoming events found nearby. Check back soon!</p></div>';
+    return;
+  }
+
+  const now = new Date();
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+  grid.innerHTML = events.slice(0, 8).map((ev, i) => {
+    const d = new Date(ev.date + 'T' + (ev.time || '00:00:00'));
+    const diffMs = d - now;
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+    let countdown = '';
+    if (diffMs > 0) {
+      countdown = diffDays > 0 ? `${diffDays}d ${diffHrs}h` : `${diffHrs}h`;
+    }
+
+    const price = ev.priceRange
+      ? (ev.priceRange.min === 0 ? 'FREE' : `$${ev.priceRange.min}${ev.priceRange.max > ev.priceRange.min ? '–$'+ev.priceRange.max : ''}`)
+      : '';
+
+    return `
+      <a href="${ev.url}" target="_blank" rel="noopener" class="explore-event-card" style="transition-delay:${i * 80}ms;text-decoration:none">
+        <div class="event-date-block">
+          <span class="event-date-month">${months[d.getMonth()]}</span>
+          <span class="event-date-day">${d.getDate()}</span>
+          <span class="event-date-dow">${days[d.getDay()]}</span>
+        </div>
+        <div class="event-info">
+          <div class="event-name">${ev.name}</div>
+          <div class="event-detail">
+            <span><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${ev.venue}</span>
+            <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${ev.time ? new Date('2000-01-01T'+ev.time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : 'TBD'}</span>
+          </div>
+          ${countdown ? `<div class="event-countdown"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Starts in ${countdown}</div>` : ''}
+          ${price ? `<span class="event-price">${price}</span>` : ''}
+        </div>
+      </a>
+    `;
+  }).join('');
+
+  // Trigger staggered reveal
+  requestAnimationFrame(() => {
+    grid.querySelectorAll('.explore-event-card').forEach((card, i) => {
+      setTimeout(() => card.classList.add('visible'), i * 80);
+    });
+  });
+}
+
+function initExploreReveals() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.explore-card, .explore-event-card').forEach(el => observer.observe(el));
+}
+
+function initExplore() {
+  initExplorePropSelector();
+  renderExploreGrid();
+  initExploreMap();
+  fetchEvents();
+  // Delay reveals slightly so cards are rendered
+  setTimeout(initExploreReveals, 200);
+}
+
 /* ═══ Init ═══ */
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
@@ -2429,6 +2923,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initModalBackdropClose();
   initCounters();
   initPremiumReveals();
+  initExplore();
 });
 </script>
 </body>

@@ -415,6 +415,107 @@ app.get('/api/admin/stats', (req, res) => {
   res.json({ total, pending: g('pending'), sent: g('sent'), rejected: g('rejected'), approved: g('approved') });
 });
 
+// ── EVENTS (Ticketmaster Discovery API proxy with 6-hour cache) ──
+
+const eventsCache = new Map(); // key: "lat,lng,radius" → { ts, data }
+const EVENTS_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+
+app.get('/api/events', async (req, res) => {
+  try {
+    const lat = parseFloat(req.query.lat);
+    const lng = parseFloat(req.query.lng);
+    const radius = parseInt(req.query.radius, 10) || 25;
+
+    if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({ error: 'lat and lng are required' });
+    }
+
+    const key = `${lat.toFixed(2)},${lng.toFixed(2)},${radius}`;
+    const cached = eventsCache.get(key);
+    if (cached && Date.now() - cached.ts < EVENTS_CACHE_TTL) {
+      return res.json({ events: cached.data, cached: true });
+    }
+
+    const apiKey = process.env.TICKETMASTER_API_KEY;
+    if (!apiKey) {
+      // No API key configured — return curated sample events
+      return res.json({ events: getSampleEvents(lat, lng), sample: true });
+    }
+
+    const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${apiKey}&latlong=${lat},${lng}&radius=${radius}&unit=miles&size=20&sort=date,asc&startDateTime=${new Date().toISOString().slice(0, 19)}Z`;
+
+    const https = require('https');
+    const data = await new Promise((resolve, reject) => {
+      https.get(url, resp => {
+        let body = '';
+        resp.on('data', chunk => body += chunk);
+        resp.on('end', () => {
+          try {
+            const json = JSON.parse(body);
+            if (json._embedded && json._embedded.events) {
+              const events = json._embedded.events.map(e => ({
+                id: e.id,
+                name: e.name,
+                date: e.dates?.start?.localDate || '',
+                time: e.dates?.start?.localTime || '',
+                venue: e._embedded?.venues?.[0]?.name || '',
+                city: e._embedded?.venues?.[0]?.city?.name || '',
+                category: e.classifications?.[0]?.segment?.name || 'Event',
+                subcategory: e.classifications?.[0]?.genre?.name || '',
+                image: e.images?.find(i => i.ratio === '16_9' && i.width > 500)?.url
+                     || e.images?.[0]?.url || '',
+                url: e.url || '',
+                lat: parseFloat(e._embedded?.venues?.[0]?.location?.latitude) || null,
+                lng: parseFloat(e._embedded?.venues?.[0]?.location?.longitude) || null,
+                priceRange: e.priceRanges?.[0] ? {
+                  min: e.priceRanges[0].min,
+                  max: e.priceRanges[0].max,
+                  currency: e.priceRanges[0].currency
+                } : null
+              }));
+              resolve(events);
+            } else {
+              resolve([]);
+            }
+          } catch (parseErr) {
+            reject(new Error('Failed to parse Ticketmaster response'));
+          }
+        });
+        resp.on('error', reject);
+      }).on('error', reject);
+    });
+
+    eventsCache.set(key, { ts: Date.now(), data });
+    res.json({ events: data, cached: false });
+  } catch (err) {
+    console.error('Events API error:', err.message);
+    // Fallback to sample events on any error
+    const lat = parseFloat(req.query.lat) || 32.85;
+    const lng = parseFloat(req.query.lng) || -96.94;
+    res.json({ events: getSampleEvents(lat, lng), sample: true });
+  }
+});
+
+// Curated sample events for when the API key is missing or API is down
+function getSampleEvents(lat, lng) {
+  const now = new Date();
+  const makeDate = (daysAhead) => {
+    const d = new Date(now);
+    d.setDate(d.getDate() + daysAhead);
+    return d.toISOString().slice(0, 10);
+  };
+  return [
+    { id:'s1', name:'Live at the Pavilion — Summer Concert Series', date:makeDate(3), time:'19:30:00', venue:'Toyota Music Factory', city:'Irving', category:'Music', subcategory:'Pop', image:'', url:'https://www.toyotamusicfactory.com', lat:32.8779, lng:-96.9430, priceRange:{min:25,max:85,currency:'USD'} },
+    { id:'s2', name:'FC Dallas vs. Austin FC', date:makeDate(5), time:'20:00:00', venue:'Toyota Stadium', city:'Frisco', category:'Sports', subcategory:'Soccer', image:'', url:'https://www.fcdallas.com', lat:33.1543, lng:-96.8352, priceRange:{min:30,max:120,currency:'USD'} },
+    { id:'s3', name:'Dallas Mavericks Summer Showcase', date:makeDate(7), time:'19:00:00', venue:'American Airlines Center', city:'Dallas', category:'Sports', subcategory:'Basketball', image:'', url:'https://www.mavs.com', lat:32.7905, lng:-96.8103, priceRange:{min:45,max:200,currency:'USD'} },
+    { id:'s4', name:'DFW Restaurant Week', date:makeDate(10), time:'11:00:00', venue:'Various Locations', city:'Dallas-Fort Worth', category:'Arts & Theatre', subcategory:'Food & Drink', image:'', url:'https://www.dfwrestaurantweek.com', lat:32.78, lng:-96.80, priceRange:{min:25,max:55,currency:'USD'} },
+    { id:'s5', name:'Alamo Drafthouse: Classic Film Festival', date:makeDate(2), time:'19:00:00', venue:'Alamo Drafthouse Las Colinas', city:'Irving', category:'Film', subcategory:'Cinema', image:'', url:'https://drafthouse.com', lat:32.8687, lng:-96.9445, priceRange:{min:15,max:25,currency:'USD'} },
+    { id:'s6', name:'Medieval Times Tournament & Feast', date:makeDate(4), time:'18:00:00', venue:'Medieval Times', city:'Dallas', category:'Arts & Theatre', subcategory:'Performance', image:'', url:'https://www.medievaltimes.com', lat:32.9074, lng:-96.7685, priceRange:{min:40,max:80,currency:'USD'} },
+    { id:'s7', name:'Topgolf Live: DJ Night', date:makeDate(1), time:'20:00:00', venue:'Topgolf Dallas', city:'Dallas', category:'Music', subcategory:'DJ', image:'', url:'https://topgolf.com', lat:33.0270, lng:-96.7040, priceRange:{min:0,max:65,currency:'USD'} },
+    { id:'s8', name:'Dallas Farmers Market Weekend', date:makeDate(6), time:'09:00:00', venue:'Dallas Farmers Market', city:'Dallas', category:'Arts & Theatre', subcategory:'Food & Drink', image:'', url:'https://dallasfarmersmarket.org', lat:32.7822, lng:-96.7965, priceRange:null }
+  ];
+}
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Regent Review Portal`);
   console.log(`  Local:  http://localhost:${PORT}`);
