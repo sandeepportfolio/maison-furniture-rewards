@@ -483,6 +483,13 @@ ul{list-style:none}
 .explore-empty{text-align:center;padding:80px 24px;grid-column:1/-1}
 .explore-empty p{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted)}
 
+/* Explore show more/less — hidden on desktop */
+.explore-show-more-wrap{display:none;text-align:center;margin-top:24px}
+.explore-show-more-btn{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.2);padding:14px 36px;border-radius:100px;cursor:pointer;transition:all .4s var(--ease);display:inline-flex;align-items:center;gap:8px}
+.explore-show-more-btn:hover{background:rgba(199,107,66,.15);border-color:rgba(199,107,66,.35);transform:translateY(-2px)}
+.explore-show-more-btn svg{width:16px;height:16px;stroke:var(--accent-light);stroke-width:2;fill:none;transition:transform .3s var(--ease)}
+.explore-show-more-btn.expanded svg{transform:rotate(180deg)}
+
 /* ── Responsive ── */
 @media(max-width:1024px){
   .bento{grid-template-columns:1fr 1fr;grid-template-rows:400px 180px;padding-top:90px}
@@ -766,6 +773,9 @@ ul{list-style:none}
   .explore-inner{padding:40px 20px 80px}
   .explore-grid{grid-template-columns:1fr}
   .explore-events-grid{grid-template-columns:1fr}
+  .explore-show-more-wrap{display:block}
+  .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
+  .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:320px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
@@ -1144,6 +1154,12 @@ ul{list-style:none}
 
     <!-- Attractions Grid -->
     <div class="explore-grid" id="exploreGrid"></div>
+    <div class="explore-show-more-wrap" id="attractionsShowMore">
+      <button class="explore-show-more-btn" onclick="toggleExploreExpand('attractions')">
+        Show More
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
 
     <!-- Interactive Map -->
     <div class="explore-map-container">
@@ -1165,6 +1181,12 @@ ul{list-style:none}
         <span class="explore-events-sub">Live events, concerts &amp; more near your stay</span>
       </div>
       <div class="explore-events-grid" id="exploreEventsGrid"></div>
+      <div class="explore-show-more-wrap" id="eventsShowMore">
+        <button class="explore-show-more-btn" onclick="toggleExploreExpand('events')">
+          Show More
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -2635,7 +2657,7 @@ const ATTRACTIONS = [
   { name:'Go Ape Zip Line & Treetop Adventure', desc:'Aerial treetop course with zip lines, rope bridges, and Tarzan swings through mature forest.', cat:'family', lat:33.0440, lng:-96.6780, rating:4.5, img:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=400&fit=crop', area:'plano' },
 
   // ── IRVING / LAS COLINAS ──
-  { name:'Toyota Music Factory', desc:'World-class entertainment complex with indoor/outdoor concert venues, restaurants, and nightlife.', cat:'dining', lat:32.8779, lng:-96.9430, rating:4.7, img:'https://images.unsplash.com/photo-1501386761578-eac5c94b0571?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Toyota Music Factory', desc:'World-class entertainment complex with indoor/outdoor concert venues, restaurants, and nightlife.', cat:'dining', lat:32.8779, lng:-96.9430, rating:4.7, img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop', area:'irving' },
   { name:'Las Colinas Urban Center', desc:'Walkable master-planned neighborhood with canals, galleries, upscale dining, and boutique hotels.', cat:'shopping', lat:32.8680, lng:-96.9405, rating:4.5, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'irving' },
   { name:'Mandalay Canal Walk', desc:'Venetian-inspired waterway with gondola rides, waterside dining, and illuminated evening strolls.', cat:'outdoor', lat:32.8700, lng:-96.9450, rating:4.6, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'irving' },
   { name:'Irving Arts Center', desc:'Contemporary arts campus featuring rotating exhibitions, sculpture garden, and performing arts theater.', cat:'arts', lat:32.8507, lng:-96.9507, rating:4.4, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'irving' },
@@ -2646,7 +2668,7 @@ const ATTRACTIONS = [
   { name:'National Scouting Museum', desc:'Interactive museum celebrating scouting history with Norman Rockwell art collection and outdoor challenges.', cat:'family', lat:32.8600, lng:-96.9431, rating:4.3, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'irving' },
   { name:'Campión Trail', desc:'22-mile multi-use trail following the Elm Fork Trinity River — perfect for cycling, running, and nature walks.', cat:'sports', lat:32.8580, lng:-96.9580, rating:4.6, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'irving' },
   { name:'Whistle Britches', desc:'Southern-style fried chicken, scratch-made biscuits, and Texas craft beers in a rustic-chic setting.', cat:'dining', lat:32.8662, lng:-96.9385, rating:4.6, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Globe Life Field', desc:'Home of the Texas Rangers — a state-of-the-art retractable-roof stadium with world-class game-day dining.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'https://images.unsplash.com/photo-1569077571-1d701c4a2f32?w=600&h=400&fit=crop', area:'irving' }
+  { name:'Globe Life Field', desc:'Home of the Texas Rangers — a state-of-the-art retractable-roof stadium with world-class game-day dining.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?w=600&h=400&fit=crop', area:'irving' }
 ];
 
 let exploreSelectedProp = null;
@@ -2710,7 +2732,7 @@ function renderExploreGrid() {
   grid.innerHTML = items.map((a, i) => `
     <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="if('${a.url || ''}')window.open('https://www.google.com/maps/search/${encodeURIComponent(a.name)}','_blank')">
       <div class="explore-card-img">
-        <img src="${a.img}" alt="${a.name}" loading="lazy">
+        <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#1a1a1a 0%,#2d1f1a 50%,#1a1a1a 100%)'">
         <span class="explore-card-dist">
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           ${a.distance.toFixed(1)} mi
@@ -2744,6 +2766,63 @@ function renderExploreGrid() {
       setTimeout(() => card.classList.add('visible'), i * 60);
     });
   });
+
+  // Update show more button visibility & count on mobile
+  const showMoreBtn = document.querySelector('#attractionsShowMore .explore-show-more-btn');
+  if (showMoreBtn && window.innerWidth <= 768) {
+    const hiddenCount = items.length - 4;
+    if (hiddenCount > 0 && !grid.classList.contains('expanded')) {
+      showMoreBtn.innerHTML = `Show More (${hiddenCount}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      document.getElementById('attractionsShowMore').style.display = 'block';
+    } else if (hiddenCount <= 0) {
+      document.getElementById('attractionsShowMore').style.display = 'none';
+    }
+  }
+}
+
+function toggleExploreExpand(section) {
+  if (section === 'attractions') {
+    const grid = document.getElementById('exploreGrid');
+    const btn = document.querySelector('#attractionsShowMore .explore-show-more-btn');
+    const isExpanding = !grid.classList.contains('expanded');
+    grid.classList.toggle('expanded');
+    btn.classList.toggle('expanded');
+    if (isExpanding) {
+      btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+      // Animate newly visible cards
+      grid.querySelectorAll('.explore-card:nth-child(n+5)').forEach((card, i) => {
+        card.classList.remove('visible');
+        requestAnimationFrame(() => {
+          setTimeout(() => card.classList.add('visible'), i * 60);
+        });
+      });
+    } else {
+      const total = grid.querySelectorAll('.explore-card').length;
+      const hidden = total - 4;
+      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  } else if (section === 'events') {
+    const grid = document.getElementById('exploreEventsGrid');
+    const btn = document.querySelector('#eventsShowMore .explore-show-more-btn');
+    const isExpanding = !grid.classList.contains('expanded');
+    grid.classList.toggle('expanded');
+    btn.classList.toggle('expanded');
+    if (isExpanding) {
+      btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+      grid.querySelectorAll('.explore-event-card:nth-child(n+4)').forEach((card, i) => {
+        card.classList.remove('visible');
+        requestAnimationFrame(() => {
+          setTimeout(() => card.classList.add('visible'), i * 80);
+        });
+      });
+    } else {
+      const total = grid.querySelectorAll('.explore-event-card').length;
+      const hidden = total - 3;
+      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      document.getElementById('exploreEvents').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
 
 function initExploreMap() {
@@ -2888,6 +2967,20 @@ function renderEvents(events) {
       setTimeout(() => card.classList.add('visible'), i * 80);
     });
   });
+
+  // Update events show more button on mobile
+  const evShowMore = document.getElementById('eventsShowMore');
+  const evBtn = evShowMore ? evShowMore.querySelector('.explore-show-more-btn') : null;
+  if (evBtn && window.innerWidth <= 768) {
+    const totalEvents = events.slice(0, 8).length;
+    const hiddenCount = totalEvents - 3;
+    if (hiddenCount > 0 && !grid.classList.contains('expanded')) {
+      evBtn.innerHTML = `Show More (${hiddenCount}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      evShowMore.style.display = 'block';
+    } else if (hiddenCount <= 0) {
+      evShowMore.style.display = 'none';
+    }
+  }
 }
 
 function initExploreReveals() {
