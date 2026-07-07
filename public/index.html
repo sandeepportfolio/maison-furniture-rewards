@@ -108,7 +108,7 @@ ul{list-style:none}
 /* ── Sections ── */
 .section{padding:80px 24px;max-width:1400px;margin:0 auto}
 .section-dark{background:var(--bg-dark);max-width:none;margin:0}
-.section-dark .section-inner{max-width:1400px;margin:0 auto}
+.section-dark .section-inner{max-width:1400px;margin:0 auto;padding:80px 0}
 .section-header{text-align:center;margin-bottom:64px}
 .section-label{display:block;font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--text-muted);margin-bottom:20px;text-transform:uppercase}
 .section-label.light{color:var(--text-inv-muted)}
@@ -526,7 +526,7 @@ ul{list-style:none}
   .prop-filter-btn{padding:11px 14px;font-size:12px;letter-spacing:0;flex:1;text-align:center}
   .features-grid{grid-template-columns:1fr;padding:0 16px}
   .section{padding:60px 16px}
-  .section-dark{padding:60px 0}
+  .section-dark .section-inner{padding:60px 0}
   .map-container{height:300px;border-radius:var(--radius-lg)}
   .lightbox-main{padding:60px 16px}
   .lightbox-nav{width:36px;height:36px}
@@ -553,7 +553,7 @@ ul{list-style:none}
 .stat-label{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--text-inv-muted);text-transform:uppercase;overflow-wrap:break-word;word-break:break-word}
 
 /* ── Experience Feature Grid ── */
-.experience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1200px;margin:0 auto;background:rgba(255,255,255,.06);border-radius:var(--radius-xl);overflow:hidden;padding:0 24px}
+.experience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1200px;width:calc(100% - 48px);margin:0 auto;background:rgba(255,255,255,.06);border-radius:var(--radius-xl);overflow:hidden}
 .experience-grid-inner{display:contents}
 .exp-card{background:var(--bg-dark);padding:52px 40px;position:relative;overflow:hidden;cursor:default;opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out),background .5s var(--ease)}
 .exp-card.revealed{opacity:1;transform:translateY(0)}
@@ -736,7 +736,7 @@ ul{list-style:none}
   .stats-bar::-webkit-scrollbar{display:none;height:0}
   .stat-item{flex:0 0 auto;min-width:140px;scroll-snap-align:start;padding:24px 20px}
   .stat-number{font-size:32px}
-  .experience-grid{grid-template-columns:repeat(2,1fr);padding:0 20px}
+  .experience-grid{grid-template-columns:repeat(2,1fr);width:calc(100% - 40px)}
   .exp-card{padding:36px 28px}
   .exp-num{font-size:40px;margin-bottom:16px}
   .exp-desc{display:none}
@@ -806,12 +806,14 @@ ul{list-style:none}
   .story-metric-text span{font-size:10px}
   .bento-headline{font-size:24px}
   .section-header h2{font-size:28px}
-  .experience-grid{grid-template-columns:1fr;padding:0 16px;gap:0;border-radius:var(--radius-lg)}
+  .experience-grid{grid-template-columns:1fr;width:calc(100% - 32px);gap:1px;border-radius:var(--radius-lg)}
   .exp-card{padding:28px 24px}
   .exp-num{font-size:32px;margin-bottom:12px}
   .exp-icon{width:36px;height:36px;border-radius:10px;margin-bottom:14px}
   .exp-icon svg{width:18px;height:18px}
   .exp-title{font-size:15px}
+  .exp-desc{display:block}
+  .section-dark .section-inner{padding:48px 0}
   .stats-bar{padding:0 16px}
   .stat-item{min-width:120px;padding:20px 16px}
   .marquee-item{font-size:10px}
@@ -936,7 +938,7 @@ ul{list-style:none}
 
 <!-- ═══ EXPERIENCE ═══ -->
 <section class="section-dark" id="experience">
-  <div class="section-inner" style="padding:80px 0">
+  <div class="section-inner">
     <div class="section-header reveal">
       <span class="section-label light">03&ensp;THE REGENT DIFFERENCE</span>
       <h2 class="light">An experience,<br>not just a booking</h2>
