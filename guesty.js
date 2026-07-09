@@ -278,4 +278,5 @@ module.exports = {
   createQuote,
   createInstantReservation,
   countNights,
+  __getTokenForDiscovery: getToken, // TEMP: remove after discovering new listing ID
 };
