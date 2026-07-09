@@ -151,6 +151,7 @@ ul{list-style:none}
 .prop-card:nth-child(5){transition-delay:.32s}
 .prop-card:nth-child(6){transition-delay:.40s}
 .prop-card:nth-child(7){transition-delay:.48s}
+.prop-card:nth-child(8){transition-delay:.56s}
 
 /* Immersive Carousel */
 .prop-carousel{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:pointer;background:var(--bg-dark)}
@@ -897,6 +898,7 @@ ul{list-style:none}
           <option value="Irving">Irving</option>
           <option value="Plano">Plano</option>
           <option value="Richardson">Richardson</option>
+          <option value="Dallas">Dallas</option>
         </select>
       </div>
       <div class="search-divider"></div>
@@ -917,7 +919,7 @@ ul{list-style:none}
 
   <!-- Map Preview Tile -->
   <div class="bento-tile bento-map-tile" onclick="document.getElementById('properties').scrollIntoView({behavior:'auto'})">
-    <span class="tile-label">03 CITIES</span>
+    <span class="tile-label">04 CITIES</span>
     <div id="miniMap" class="mini-map"></div>
   </div>
 </section>
@@ -1818,6 +1820,49 @@ const PROPERTIES = [
       '0790150c-c9d8-4168-9bbc-dc89401a45b2.jpeg',
       'fca0c998-8bf0-409e-bebe-95fa6ebb5872.jpeg'
     ]
+  },
+  {
+    name: 'Regent Skyline',
+    slug: 'regent-skyline',
+    category: 'suite',
+    city: 'Dallas',
+    state: 'Texas',
+    hostingId: '1725649500272518567',
+    guests: 5, beds: 1, baths: 1,
+    rating: null, reviews: 0,
+    lat: 32.7830, lng: -96.7935,
+    amenities: [
+      { label: 'Skyline Views', premium: true },
+      { label: 'Valet Parking', premium: true },
+      { label: 'Cinema Room', premium: true },
+      { label: 'Pool', premium: true },
+      { label: 'Exposed Brick', premium: false },
+      { label: '24/7 Gym', premium: false }
+    ],
+    description: 'Experience millionaire-level luxury in a cinematic loft in downtown Dallas. 1910 industrial charm — exposed brick and soaring 10-foot ceilings — meets bespoke modern design. Free valet parking, resort-style pool, private cinema, 24/7 gym, and a fully stocked kitchen. Steps from the Dallas Farmers Market and Deep Ellum. The premier luxury Airbnb in the Butler Brothers Building.',
+    fullAmenities: {Bathroom:['Full bathroom','Hair dryer','Cleaning products','Shampoo','Body soap','Hot water','Shower gel'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Clothing storage','Air mattress'],Entertainment:['Smart TV (living room)','Smart TV (bedroom)','Board games','Premium LED lighting'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Coffee station','Spices','Cookware','Dining table'],Outdoor:['Resort-style courtyard pool','Luxury lounge seating'],'Parking & Facilities':['Free valet parking','Pool','Elevator','24/7 Fitness center','Private cinema & screening room','Karaoke lounge','Game room','Art & music studio','24-hour security'],'Work & Tech':['Dedicated workspace','1GB high-speed internet','USB ports throughout'],Building:['Exposed brick walls','10-foot ceilings','Controlled access','Co-working spaces','Meeting rooms','Entertainment & arcade room'],Location:['Downtown Dallas','Near Farmers Market','Near Deep Ellum','AT&T Discovery District','Butler Brothers Building']},
+    photos: [
+      '8e867888-7159-4313-b7c4-b64ff0fbd07e.png',
+      '1759b3d9-fde8-4d11-b167-3d876b62baa5.jpeg',
+      'f80a9c8f-1ba4-4deb-973f-5a72e88779e5.png',
+      'ffbb21b8-5e89-4658-bcb3-2bc399ee8e8e.png',
+      'c0dd4bae-15b4-4bb8-a057-7c5763c362aa.jpeg',
+      'd8f1e185-1569-455a-b26d-0a07bec2dc22.jpeg',
+      '8f2df525-3bba-4aff-8e93-f563e7e39804.png',
+      '659b04b1-f272-49f3-9236-87c1e4aa5fd7.png',
+      '767b42d3-8e59-477a-a3bf-41c1d23897a8.jpeg',
+      'ab7c2e12-ff35-4286-941a-4fe53e014e43.png',
+      '4fc2242c-fa32-4d81-9905-bd85e686e991.png',
+      'd712c5be-0683-4aa2-a282-75a8db90dc0a.jpeg',
+      '322f943e-fbb0-4e7d-a0b9-1dc4f27628c1.jpeg',
+      '2ccc579a-9b17-4219-896b-b1229cd43380.jpeg',
+      'f58b0127-fa24-409f-97b1-e34c629c3931.png',
+      'be1b6604-3735-45b0-a921-687dd49b7dac.jpeg',
+      '7d9a6051-8212-4b9e-bd5b-3e35f62e2f16.png',
+      'f178ad17-0c7e-414e-bd86-41b38ab788fc.png',
+      '94a6a3a7-4a2d-4824-9b35-c48ead279a28.png',
+      'ccb42a9c-2734-4bec-bbd6-556d2a6ee375.png'
+    ]
   }
 ];
 
@@ -2351,7 +2396,12 @@ function openDetail(slug) {
     'Arcade Room': '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="8" r="3"/><line x1="9" y1="15" x2="9" y2="17"/><line x1="12" y1="15" x2="12" y2="17"/><line x1="15" y1="15" x2="15" y2="17"/></svg>',
     'L-Shaped Couch': '<svg viewBox="0 0 24 24"><path d="M3 10v6a2 2 0 0 0 2 2h6v-4H5v-4z"/><path d="M11 14h8a2 2 0 0 0 2-2v-2H11z"/></svg>',
     'BBQ': '<svg viewBox="0 0 24 24"><line x1="4" y1="3" x2="4" y2="6"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="12" y1="3" x2="12" y2="6"/><rect x="2" y="8" width="14" height="6" rx="2"/><line x1="5" y1="14" x2="4" y2="20"/><line x1="13" y1="14" x2="14" y2="20"/></svg>',
-    'Mini Golf': '<svg viewBox="0 0 24 24"><circle cx="16" cy="18" r="2"/><path d="M12 18h-8"/><path d="M6 4v10"/><path d="M6 4h6"/></svg>'
+    'Mini Golf': '<svg viewBox="0 0 24 24"><circle cx="16" cy="18" r="2"/><path d="M12 18h-8"/><path d="M6 4v10"/><path d="M6 4h6"/></svg>',
+    'Skyline Views': '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l3-3 3 3v14"/><path d="M13 21V9l3-4 3 4v12"/><rect x="7" y="10" width="2" height="2"/><rect x="7" y="14" width="2" height="2"/><rect x="15" y="11" width="2" height="2"/><rect x="15" y="15" width="2" height="2"/></svg>',
+    'Valet Parking': '<svg viewBox="0 0 24 24"><path d="M7 17h10"/><path d="M5 13l1.5-4.5A2 2 0 0 1 8.4 7h7.2a2 2 0 0 1 1.9 1.5L19 13"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M5 13h14v4H5z"/><path d="M12 3v4"/><path d="M10 3h4"/></svg>',
+    'Cinema Room': '<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 8h20"/><path d="M6 4v4"/><path d="M10 4v4"/><path d="M14 4v4"/><path d="M18 4v4"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>',
+    'Exposed Brick': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="1"/><line x1="2" y1="7" x2="22" y2="7"/><line x1="2" y1="11" x2="22" y2="11"/><line x1="2" y1="15" x2="22" y2="15"/><line x1="2" y1="19" x2="22" y2="19"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="12" y1="7" x2="12" y2="11"/><line x1="6" y1="11" x2="6" y2="15"/><line x1="14" y1="11" x2="14" y2="15"/><line x1="10" y1="15" x2="10" y2="19"/><line x1="18" y1="15" x2="18" y2="19"/></svg>',
+    '24/7 Gym': '<svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="8" width="4" height="8" rx="1"/><rect x="18" y="8" width="4" height="8" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'
   };
   const defaultIcon = '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
   const highlightDescs = {
@@ -2381,7 +2431,12 @@ function openDetail(slug) {
     'Fire Pit': 'Outdoor fire lounge',
     'Arcade Room': 'Retro gaming arcade',
     'L-Shaped Couch': 'Oversized comfort seating',
-    'BBQ': 'Outdoor grilling station'
+    'BBQ': 'Outdoor grilling station',
+    'Skyline Views': 'Downtown Dallas panorama',
+    'Valet Parking': 'Complimentary VIP parking',
+    'Cinema Room': 'Private screening room',
+    'Exposed Brick': 'Historic 1910 character',
+    '24/7 Gym': '24/7 fitness center'
   };
   const premiumAmenities = prop.amenities.filter(a => a.premium).slice(0, 4);
   const highlightsHtml = premiumAmenities.map(a =>
