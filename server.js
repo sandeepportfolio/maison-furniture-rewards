@@ -152,23 +152,6 @@ app.get('/api/guesty/listings', async (req, res) => {
   }
 });
 
-// TEMP: list all Guesty listings (for discovering new listing IDs)
-app.get('/api/guesty/discover', async (req, res) => {
-  try {
-    const token = await require('./guesty').__getTokenForDiscovery();
-    const r = await fetch('https://open-api.guesty.com/v1/listings?limit=25', {
-      headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' }
-    });
-    const json = await r.json();
-    const out = (json.results || []).map(l => ({
-      id: l._id, title: l.title, nickname: l.nickname, city: l.address?.city
-    }));
-    res.json({ total: out.length, listings: out });
-  } catch (err) {
-    res.status(502).json({ error: err.message });
-  }
-});
-
 // Availability calendar for one listing.
 //   GET /api/guesty/calendar?listing=<slug|id>&from=YYYY-MM-DD&to=YYYY-MM-DD
 app.get('/api/guesty/calendar', async (req, res) => {

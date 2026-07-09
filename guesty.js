@@ -26,12 +26,13 @@ const TOKEN_FILE = path.join(__dirname, 'db', 'guesty-token.json');
 // abused as an open proxy. Slugs match the `data-property` attributes used
 // by the front-end gallery/cards.
 const LISTINGS = {
-  'regent-villa':  { id: '6a3874d5bcc80700147920ca', name: 'Regent Villa' },
-  'cozy-designer': { id: '6a29dcff12cbdd0015a65a7d', name: 'Cozy Designer Suite' },
-  'lake-view':     { id: '6a29dcfa14fca300148799c2', name: 'Gorgeous Luxury Lake View Suite' },
-  'designer-game': { id: '6a29dc9862094a0012dfda6f', name: 'Designer Game Suite' },
-  'executive':     { id: '6a29dc944052f30019465228', name: 'Luxury Executive Living' },
-  'stunning-lake': { id: '6a29dc8f5f85640014dfe380', name: 'Stunning Lake Views' },
+  'regent-villa':   { id: '6a3874d5bcc80700147920ca', name: 'Regent Villa' },
+  'cozy-designer':  { id: '6a29dcff12cbdd0015a65a7d', name: 'Cozy Designer Suite' },
+  'lake-view':      { id: '6a29dcfa14fca300148799c2', name: 'Gorgeous Luxury Lake View Suite' },
+  'designer-game':  { id: '6a29dc9862094a0012dfda6f', name: 'Designer Game Suite' },
+  'executive':      { id: '6a29dc944052f30019465228', name: 'Luxury Executive Living' },
+  'stunning-lake':  { id: '6a29dc8f5f85640014dfe380', name: 'Stunning Lake Views' },
+  'regent-skyline': { id: '6a4edd9fab1bbe001491a4e4', name: 'Regent Skyline' },
 };
 
 const LISTING_IDS = new Set(Object.values(LISTINGS).map(l => l.id));
@@ -278,5 +279,4 @@ module.exports = {
   createQuote,
   createInstantReservation,
   countNights,
-  __getTokenForDiscovery: getToken, // TEMP: remove after discovering new listing ID
 };
