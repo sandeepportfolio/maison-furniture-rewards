@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Regent | Luxury Short-Term Rentals in DFW</title>
 <meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across the Dallas-Fort Worth metroplex. Designer interiors, effortless check-in, unforgettable stays.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -244,7 +244,7 @@ ul{list-style:none}
 .section-cta .btn-primary{position:relative}
 
 /* ── Footer ── */
-.footer{background:var(--bg-dark);padding:72px 24px 36px}
+.footer{background:var(--bg-dark);padding:72px 24px calc(36px + env(safe-area-inset-bottom, 0px))}
 .footer-inner{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:36px}
 .footer-logo{font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.28em;color:var(--text-inv)}
 .footer-links{display:flex;gap:36px;flex-wrap:wrap;justify-content:center}
@@ -828,6 +828,8 @@ ul{list-style:none}
   .event-date-block{min-width:60px;padding:12px 10px}
   .event-date-day{font-size:22px}
   .event-date-month{font-size:9px}
+  .booking-body{padding:24px 20px}
+  .booking-modal{padding:16px}
 }
 </style>
 </head>
