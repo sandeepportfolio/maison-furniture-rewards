@@ -904,21 +904,21 @@ ul{list-style:none}
       <div class="search-divider"></div>
       <div class="search-field">
         <label>DATES</label>
-        <span class="search-val" id="searchDates" onclick="document.getElementById('properties').scrollIntoView({behavior:'auto'})">Add dates</span>
+        <span class="search-val" id="searchDates" onclick="document.getElementById('properties').scrollIntoView({behavior:'smooth',block:'start'})">Add dates</span>
       </div>
       <div class="search-divider"></div>
       <div class="search-field">
         <label>GUESTS</label>
         <span class="search-val">2 adults</span>
       </div>
-      <button class="search-btn" aria-label="Search" onclick="document.getElementById('properties').scrollIntoView({behavior:'auto'})">
+      <button class="search-btn" aria-label="Search" onclick="document.getElementById('properties').scrollIntoView({behavior:'smooth',block:'start'})">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
       </button>
     </div>
   </div>
 
   <!-- Map Preview Tile -->
-  <div class="bento-tile bento-map-tile" onclick="document.getElementById('properties').scrollIntoView({behavior:'auto'})">
+  <div class="bento-tile bento-map-tile" onclick="document.getElementById('properties').scrollIntoView({behavior:'smooth',block:'start'})">
     <span class="tile-label">04 CITIES</span>
     <div id="miniMap" class="mini-map"></div>
   </div>
@@ -1557,7 +1557,7 @@ ul{list-style:none}
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-/* ═══ PROPERTY DATA — All photos synced from Airbnb (75 Regent Villa, 59 Regent Skyline, 29 Cozy Designer, 33 Designer Game, 28 Lake View, 34 Executive, 28 Stunning Lake) ═══ */
+   ═══ PROPERTY DATA — All photos synced from Airbnb (75 Regent Villa, 59 Regent Skyline, 29 Cozy Designer, 33 Designer Game, 28 Lake View, 34 Executive, 28 Stunning Lake) ═══
    ═══════════════════════════════════════════════════════════════ */
 const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
 const imgUrl = (hid, uuid) => `${CDN}${hid}/original/${uuid}?im_w=720`;
@@ -2388,7 +2388,7 @@ function scrollToProperty(slug) {
   renderProperties(cityEl ? cityEl.value || null : null);
   setTimeout(() => {
     const el = document.getElementById('prop-' + slug);
-    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 100);
 }
 
