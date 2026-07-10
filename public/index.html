@@ -522,9 +522,12 @@ ul{list-style:none}
 .explore-map-subtitle{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
 .map-legend{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);letter-spacing:.03em}
 .map-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(199,107,66,.6);flex-shrink:0}
-.explore-map-wrap{border-radius:var(--radius-xl);overflow:hidden;height:500px;border:1px solid var(--border-dark);position:relative;transition:all .5s var(--ease)}
+.explore-map-wrap{display:flex;flex-direction:column;border-radius:var(--radius-xl);overflow:hidden;height:590px;border:1px solid var(--border-dark);position:relative;background:var(--bg-dark-card);transition:height .5s var(--ease),width .5s var(--ease),border-radius .5s var(--ease),top .5s var(--ease),left .5s var(--ease)}
 .explore-map-wrap.map-expanded{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1000;border-radius:0;border:none;backdrop-filter:blur(4px)}
-#exploreMap{height:100%;width:100%;z-index:1}
+.explore-map-wrap.map-sidebar-active{flex-direction:row}
+.explore-map-wrap.map-sidebar-active .map-property-card{left:324px}
+.explore-map-wrap.map-sidebar-active .map-nav-dots{display:none}
+#exploreMap{flex:1;min-height:0;width:100%;z-index:1}
 #exploreMap .leaflet-popup-content-wrapper{background:var(--bg-dark-card);color:var(--text-inv);border:1px solid var(--border-dark);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,.4)}
 #exploreMap .leaflet-popup-tip{background:var(--bg-dark-card)}
 #exploreMap .leaflet-popup-content{font-family:var(--sans);font-size:13px;margin:12px 16px}
@@ -534,8 +537,9 @@ ul{list-style:none}
 #exploreMap .leaflet-control-zoom a:hover{background:var(--accent);color:#fff}
 @keyframes markerPulse{0%{transform:scale(1);opacity:.7}50%{transform:scale(1.8);opacity:0}100%{transform:scale(1);opacity:0}}
 @keyframes markerFadeIn{from{transform:scale(0) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-@keyframes cardSlideIn{from{transform:translateX(-110%);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes cardSlideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(-110%);opacity:0}}
+@keyframes cardSlideIn{from{transform:translateX(-40px) scale(.96);opacity:0}to{transform:translateX(0) scale(1);opacity:1}}
+@keyframes cardSlideOut{from{transform:translateX(0) scale(1);opacity:1}to{transform:translateX(-40px) scale(.96);opacity:0}}
+@keyframes stripItemIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
 .map-marker{position:relative;width:40px;height:40px;cursor:pointer;transition:transform .25s var(--ease)}
 .map-marker:hover{transform:scale(1.15)}
 .map-marker.active{transform:scale(1.2)}
@@ -544,8 +548,9 @@ ul{list-style:none}
 .map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:var(--accent);border:2px solid rgba(255,255,255,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(199,107,66,.5);transition:box-shadow .25s var(--ease),background .25s var(--ease)}
 .map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 20px rgba(199,107,66,.7)}
 .map-marker-core svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none}
-.map-property-card{position:absolute;bottom:24px;left:24px;z-index:500;width:320px;background:var(--bg-dark-card);border:1px solid var(--border-dark);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.5);overflow:hidden;transform:translateX(-110%);opacity:0;pointer-events:none;transition:transform .4s var(--ease),opacity .4s var(--ease)}
-.map-property-card.visible{transform:translateX(0);opacity:1;pointer-events:auto}
+.map-property-card{position:absolute;bottom:24px;left:24px;z-index:500;width:320px;background:var(--bg-dark-card);border:1px solid var(--border-dark);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.5);overflow:hidden;opacity:0;pointer-events:none;transform:translateX(-40px);transition:left .4s var(--ease)}
+.map-property-card.visible{pointer-events:auto;animation:cardSlideIn .4s var(--ease) forwards}
+.map-property-card.closing{animation:cardSlideOut .3s var(--ease) forwards}
 .map-card-close{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.55);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s var(--ease)}
 .map-card-close:hover{background:rgba(199,107,66,.8)}
 .map-card-photo{width:100%;height:180px;background-size:cover;background-position:center;position:relative}
@@ -564,13 +569,34 @@ ul{list-style:none}
 .map-card-btn-primary:hover{background:var(--accent-hover)}
 .map-card-btn-secondary{flex:1;padding:10px 0;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease)}
 .map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light)}
-.map-nav-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;gap:8px;padding:6px 12px;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);border-radius:20px}
+.map-nav-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;gap:8px;padding:6px 12px;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);border-radius:20px;transition:opacity .3s var(--ease)}
 .map-nav-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);border:none;cursor:pointer;padding:0;transition:background .25s var(--ease),transform .25s var(--ease)}
 .map-nav-dots button:hover{background:rgba(255,255,255,.55)}
 .map-nav-dots button.active{background:var(--accent);transform:scale(1.3)}
-.map-expand-btn{position:absolute;top:16px;right:16px;z-index:500;width:36px;height:36px;border-radius:var(--radius);background:rgba(28,28,28,.75);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s var(--ease)}
-.map-expand-btn:hover{background:var(--accent)}
+.map-expand-btn{position:absolute;top:16px;right:16px;z-index:500;width:36px;height:36px;border-radius:var(--radius);background:rgba(28,28,28,.75);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s var(--ease),opacity .2s var(--ease),transform .2s var(--ease)}
+.map-expand-btn:hover{background:var(--accent);transform:scale(1.06)}
 .map-expand-btn svg{width:16px;height:16px;stroke:var(--text-inv);stroke-width:2;fill:none}
+.explore-map-wrap.map-expanded .map-expand-btn{opacity:0;pointer-events:none;transform:scale(.8)}
+.map-close-btn{position:absolute;top:16px;right:16px;z-index:600;width:44px;height:44px;border-radius:50%;background:rgba(17,17,17,.6);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;transform:scale(.7) rotate(-45deg);pointer-events:none;transition:background .2s var(--ease),transform .3s var(--ease),opacity .3s var(--ease)}
+.map-close-btn.visible{opacity:1;transform:scale(1) rotate(0deg);pointer-events:auto}
+.map-close-btn:hover{background:var(--accent)}
+.map-close-btn svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none}
+.map-prop-strip{flex-shrink:0;display:flex;align-items:stretch;gap:10px;padding:14px 16px;overflow-x:auto;overflow-y:hidden;background:var(--bg-dark-card);border-top:1px solid var(--border-dark);scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.map-prop-strip::-webkit-scrollbar{height:5px;width:5px}
+.map-prop-strip::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:10px}
+.map-prop-strip::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.map-prop-strip-item{flex-shrink:0;width:220px;display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius);background:rgba(255,255,255,.03);border:1px solid transparent;border-left:3px solid transparent;cursor:pointer;transition:background .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease);animation:stripItemIn .4s var(--ease) backwards}
+.map-prop-strip-item:hover{background:rgba(255,255,255,.07);transform:translateY(-2px)}
+.map-prop-strip-item.active{background:rgba(199,107,66,.14);border-color:rgba(199,107,66,.35);border-left-color:var(--accent)}
+.map-prop-strip-thumb{width:60px;height:60px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.map-prop-strip-info{min-width:0;flex:1}
+.map-prop-strip-name{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-inv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.map-prop-strip-loc{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.map-prop-strip-loc svg{width:10px;height:10px;stroke:var(--brass-light);stroke-width:2;fill:none;flex-shrink:0}
+.map-prop-strip-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.12);border-radius:20px;padding:2px 8px;margin-top:4px;width:fit-content}
+.map-prop-strip-item.active .map-prop-strip-badge{color:#fff;background:var(--accent)}
+.map-prop-strip.map-prop-sidebar{order:-1;flex-direction:column;width:300px;height:100%;padding:20px 14px;overflow-y:auto;overflow-x:hidden;border-top:none;border-right:1px solid var(--border-dark);gap:10px}
+.map-prop-strip.map-prop-sidebar .map-prop-strip-item{width:100%}
 
 /* Events Section */
 .explore-events{margin-bottom:20px}
@@ -960,14 +986,18 @@ ul{list-style:none}
   .explore-show-more-wrap{display:block}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
-  .explore-map-wrap{height:380px}
-  .map-property-card{position:absolute;bottom:0;left:0;right:0;width:100%;max-width:100%;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(110%);max-height:55vh;overflow-y:auto}
-  .map-property-card.visible{transform:translateY(0)}
+  .explore-map-wrap{height:480px}
+  .map-property-card{animation:none;position:absolute;bottom:0;left:0;right:0;width:100%;max-width:100%;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(110%);max-height:55vh;overflow-y:auto}
+  .map-property-card.visible{animation:none;transform:translateY(0)}
+  .map-property-card.closing{animation:none;transform:translateY(110%)}
   .map-card-photo{height:150px}
   .map-card-body{padding:14px 16px 16px}
   .map-card-name{font-size:18px}
   .map-card-btn-primary,.map-card-btn-secondary{font-size:11px;padding:9px 0}
   .map-nav-dots{bottom:auto;top:12px}
+  .map-prop-strip{padding:12px 14px;gap:8px}
+  .map-prop-strip-item{width:190px}
+  .map-close-btn{width:40px;height:40px;top:12px;right:12px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
   .explore-categories{gap:4px}
@@ -1012,7 +1042,7 @@ ul{list-style:none}
   .explore-hero-sub{font-size:14px}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
-  .explore-map-wrap{height:320px}
+  .explore-map-wrap{height:400px}
   .map-property-card{max-height:60vh}
   .map-card-photo{height:130px}
   .map-card-name{font-size:16px}
@@ -1021,6 +1051,12 @@ ul{list-style:none}
   .map-marker{width:34px;height:34px}
   .map-marker-core{width:24px;height:24px}
   .map-marker-core svg{width:11px;height:11px}
+  .map-prop-strip{padding:10px 12px;gap:8px}
+  .map-prop-strip-item{width:160px;padding:6px}
+  .map-prop-strip-thumb{width:50px;height:50px}
+  .map-prop-strip-name{font-size:12px}
+  .map-prop-strip-loc{font-size:10px}
+  .map-close-btn{width:38px;height:38px;top:10px;right:10px}
   .explore-events-title{font-size:24px}
   .explore-map-title{font-size:22px}
   .event-date-block{min-width:60px;padding:12px 10px}
@@ -1372,6 +1408,9 @@ ul{list-style:none}
         <button class="map-expand-btn" id="mapExpandBtn" aria-label="Expand map">
           <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
+        <button class="map-close-btn" id="mapCloseBtn" aria-label="Close expanded map">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
         <div class="map-property-card" id="mapPropertyCard">
           <button class="map-card-close" id="mapCardClose" aria-label="Close">&times;</button>
           <div class="map-card-photo" id="mapCardPhoto"></div>
@@ -1388,6 +1427,7 @@ ul{list-style:none}
           </div>
         </div>
         <div class="map-nav-dots" id="mapNavDots"></div>
+        <div class="map-prop-strip" id="mapPropStrip"></div>
       </div>
     </div>
 
@@ -3821,6 +3861,9 @@ function initExploreMap() {
   // Build nav dots
   buildMapNavDots();
 
+  // Build property strip
+  buildMapPropStrip();
+
   // Wire up expand/collapse
   initMapExpand();
 
@@ -3937,6 +3980,9 @@ function selectPropertyOnMap(idx) {
   // Update nav dots
   updateMapNavDots(idx);
 
+  // Update property strip
+  updateMapPropStrip(idx);
+
   // Update attraction markers for this property
   exploreSelectedProp = prop;
   updateExploreMap();
@@ -3944,7 +3990,11 @@ function selectPropertyOnMap(idx) {
 
 function closeMapCard() {
   const card = document.getElementById('mapPropertyCard');
-  if (card) card.classList.remove('visible');
+  if (card && card.classList.contains('visible')) {
+    card.classList.add('closing');
+    card.classList.remove('visible');
+    setTimeout(() => card.classList.remove('closing'), 320);
+  }
 
   // Deactivate markers
   mapPropertyMarkers.forEach(m => {
@@ -3954,6 +4004,9 @@ function closeMapCard() {
     if (inner) inner.classList.remove('active');
   });
   mapActiveProperty = null;
+
+  // Deactivate strip items
+  updateMapPropStrip(-1);
 }
 
 function buildMapNavDots() {
@@ -3979,9 +4032,41 @@ function updateMapNavDots(activeIdx) {
   });
 }
 
+function buildMapPropStrip() {
+  const strip = document.getElementById('mapPropStrip');
+  if (!strip) return;
+  strip.innerHTML = PROPERTIES.map((prop, idx) => `
+    <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 60}ms" onclick="selectPropertyOnMap(${idx})">
+      <div class="map-prop-strip-thumb" style="background-image:url(${prop.photos && prop.photos[0] ? imgUrl(prop.hostingId, prop.photos[0]) : ''})"></div>
+      <div class="map-prop-strip-info">
+        <div class="map-prop-strip-name">${prop.name}</div>
+        <div class="map-prop-strip-loc">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${prop.city}, ${prop.state}
+        </div>
+        <span class="map-prop-strip-badge">${prop.category === 'villa' ? 'Villa' : 'Suite'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateMapPropStrip(activeIdx) {
+  const strip = document.getElementById('mapPropStrip');
+  if (!strip) return;
+  const items = strip.querySelectorAll('.map-prop-strip-item');
+  items.forEach((item, i) => {
+    item.classList.toggle('active', i === activeIdx);
+  });
+  const activeItem = strip.querySelector('.map-prop-strip-item.active');
+  if (activeItem && typeof activeItem.scrollIntoView === 'function') {
+    activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+}
+
 function initMapExpand() {
   const wrap = document.getElementById('mapWrap');
   const btn = document.getElementById('mapExpandBtn');
+  const closeBtn = document.getElementById('mapCloseBtn');
   if (!wrap || !btn) return;
 
   btn.addEventListener('click', () => {
@@ -3993,6 +4078,10 @@ function initMapExpand() {
     }
   });
 
+  if (closeBtn) {
+    closeBtn.addEventListener('click', collapseMap);
+  }
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && wrap.classList.contains('map-expanded')) {
       collapseMap();
@@ -4003,11 +4092,17 @@ function initMapExpand() {
 function expandMap() {
   const wrap = document.getElementById('mapWrap');
   if (!wrap) return;
+  const closeBtn = document.getElementById('mapCloseBtn');
+  const strip = document.getElementById('mapPropStrip');
   wrap.classList.add('map-expanded');
   document.body.style.overflow = 'hidden';
-  // Update expand icon to collapse icon
-  const btn = document.getElementById('mapExpandBtn');
-  if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  // Show close button overlay
+  if (closeBtn) closeBtn.classList.add('visible');
+  // On desktop, turn the strip into a full-height sidebar
+  if (strip && window.innerWidth > 768) {
+    wrap.classList.add('map-sidebar-active');
+    strip.classList.add('map-prop-sidebar');
+  }
   if (exploreMapInstance) {
     setTimeout(() => exploreMapInstance.invalidateSize(), 350);
   }
@@ -4016,11 +4111,14 @@ function expandMap() {
 function collapseMap() {
   const wrap = document.getElementById('mapWrap');
   if (!wrap) return;
+  const closeBtn = document.getElementById('mapCloseBtn');
+  const strip = document.getElementById('mapPropStrip');
   wrap.classList.remove('map-expanded');
+  wrap.classList.remove('map-sidebar-active');
   document.body.style.overflow = '';
-  // Restore expand icon
-  const btn = document.getElementById('mapExpandBtn');
-  if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  // Hide close button overlay
+  if (closeBtn) closeBtn.classList.remove('visible');
+  if (strip) strip.classList.remove('map-prop-sidebar');
   if (exploreMapInstance) {
     setTimeout(() => exploreMapInstance.invalidateSize(), 350);
   }
