@@ -84,6 +84,9 @@ db.exec(`
   )
 `);
 
+// Migration: add subject column if not already present.
+try { db.exec("ALTER TABLE messages ADD COLUMN subject TEXT DEFAULT ''"); } catch (e) { /* column already exists */ }
+
 // Multer
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -487,10 +490,116 @@ app.post('/api/guesty/reservation', async (req, res) => {
 
 // ── MESSAGES / CONTACT ──
 
+/**
+ * Send a contact-form notification email via Web3Forms.
+ * Returns a Promise that always resolves (never rejects) so email
+ * failures cannot break the API response.
+ */
+function sendContactEmail({ name, email, phone, property, subject, message }) {
+  return new Promise((resolve) => {
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      console.warn('WEB3FORMS_ACCESS_KEY not set – skipping email notification');
+      return resolve({ skipped: true });
+    }
+
+    const timestamp = new Date().toLocaleString('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: 'America/New_York'
+    });
+
+    const htmlBody = `
+      <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;color:#333;">
+        <div style="background:#1a1a2e;padding:20px 24px;border-radius:8px 8px 0 0;">
+          <h2 style="margin:0;color:#ffffff;font-size:20px;">New Message from bookwithregent.com</h2>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="padding:8px 0;font-weight:bold;color:#555;width:100px;vertical-align:top;">From:</td>
+              <td style="padding:8px 0;">${name || 'N/A'} (${email})</td>
+            </tr>
+            ${phone ? `<tr>
+              <td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Phone:</td>
+              <td style="padding:8px 0;">${phone}</td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Subject:</td>
+              <td style="padding:8px 0;">${subject || 'General Inquiry'}</td>
+            </tr>
+            ${property ? `<tr>
+              <td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Property:</td>
+              <td style="padding:8px 0;">${property}</td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Message:</td>
+              <td style="padding:8px 0;white-space:pre-wrap;">${message}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Submitted:</td>
+              <td style="padding:8px 0;">${timestamp}</td>
+            </tr>
+          </table>
+        </div>
+        <div style="text-align:center;padding:16px 0;color:#999;font-size:12px;">
+          Regent Capital Ventures LLC
+        </div>
+      </div>
+    `.trim();
+
+    const payload = JSON.stringify({
+      access_key: accessKey,
+      subject: `New Contact: ${subject || 'General Inquiry'} from ${name || 'Guest'}`,
+      from_name: name || 'Website Visitor',
+      email: email,
+      cc: 'jatinshekhara@gmail.com',
+      message: htmlBody
+    });
+
+    const https = require('https');
+    const options = {
+      hostname: 'api.web3forms.com',
+      path: '/submit',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (resp) => {
+      let body = '';
+      resp.on('data', (chunk) => { body += chunk; });
+      resp.on('end', () => {
+        try {
+          const result = JSON.parse(body);
+          if (result.success) {
+            console.log('Web3Forms email sent successfully');
+          } else {
+            console.error('Web3Forms API error:', body);
+          }
+        } catch (e) {
+          console.error('Web3Forms response parse error:', body);
+        }
+        resolve({ sent: true });
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error('Web3Forms request error:', err.message);
+      resolve({ error: err.message });
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
+
 // Public: submit a contact / message form.
 app.post('/api/messages', (req, res) => {
   try {
-    const { name, email, phone, property, message } = req.body || {};
+    const { name, email, phone, property, subject, message } = req.body || {};
     if (!email || !email.includes('@')) {
       return res.status(400).json({ error: 'A valid email is required' });
     }
@@ -498,16 +607,27 @@ app.post('/api/messages', (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
     const stmt = db.prepare(
-      'INSERT INTO messages (name, email, phone, property, message) VALUES (?, ?, ?, ?, ?)'
+      'INSERT INTO messages (name, email, phone, property, subject, message) VALUES (?, ?, ?, ?, ?, ?)'
     );
     const r = stmt.run(
       (name || '').trim(),
       email.trim().toLowerCase(),
       (phone || '').trim(),
       (property || '').trim(),
+      (subject || '').trim(),
       message.trim()
     );
     res.json({ success: true, id: r.lastInsertRowid });
+
+    // Fire-and-forget: send email notification via Web3Forms.
+    sendContactEmail({
+      name: (name || '').trim(),
+      email: email.trim().toLowerCase(),
+      phone: (phone || '').trim(),
+      property: (property || '').trim(),
+      subject: (subject || '').trim(),
+      message: message.trim()
+    }).catch(() => {});
   } catch (err) {
     console.error('Message submit error:', err);
     res.status(500).json({ error: 'Failed to save message' });

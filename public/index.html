@@ -751,6 +751,63 @@ ul{list-style:none}
 .contact-msg.success{background:#E8F5E9;color:#2E7D32}
 .contact-msg.error{background:#FFEBEE;color:#C62828}
 
+/* ── Contact Us Section ── */
+.contact-section{background:var(--bg-dark);position:relative;overflow:hidden;padding:120px 24px}
+.contact-section::before{content:'';position:absolute;top:-200px;right:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(199,107,66,.08) 0%,transparent 70%);pointer-events:none}
+.contact-section::after{content:'';position:absolute;bottom:-150px;left:-150px;width:400px;height:400px;background:radial-gradient(circle,rgba(197,165,114,.06) 0%,transparent 70%);pointer-events:none}
+.contact-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;position:relative;z-index:1}
+.contact-info{display:flex;flex-direction:column;gap:40px}
+.contact-info-header{display:flex;flex-direction:column;gap:16px}
+.contact-info-badge{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent-light);text-transform:uppercase}
+.contact-info-title{font-family:var(--serif);font-size:clamp(36px,4vw,52px);font-weight:400;color:var(--text-inv);letter-spacing:-.02em;line-height:1.1}
+.contact-info-desc{font-family:var(--sans);font-size:16px;color:var(--text-inv-muted);line-height:1.7;max-width:440px}
+.contact-cards{display:flex;flex-direction:column;gap:16px}
+.contact-card{display:flex;align-items:flex-start;gap:16px;padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border-dark);border-radius:var(--radius-lg);transition:background .4s var(--ease),border-color .4s var(--ease),transform .3s var(--ease)}
+.contact-card:hover{background:rgba(255,255,255,.06);border-color:rgba(199,107,66,.3);transform:translateX(4px)}
+.contact-card-icon{width:44px;height:44px;border-radius:12px;background:rgba(199,107,66,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s var(--ease)}
+.contact-card:hover .contact-card-icon{background:rgba(199,107,66,.2)}
+.contact-card-icon svg{width:20px;height:20px;stroke:var(--accent-light);stroke-width:1.8;fill:none}
+.contact-card-text{display:flex;flex-direction:column;gap:4px}
+.contact-card-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text-inv-muted);text-transform:uppercase}
+.contact-card-value{font-family:var(--sans);font-size:15px;color:var(--text-inv);line-height:1.5}
+.contact-card-value a{color:var(--accent-light);transition:color .3s var(--ease)}
+.contact-card-value a:hover{color:var(--accent)}
+.contact-trust{display:flex;gap:24px;padding-top:16px}
+.contact-trust-item{display:flex;align-items:center;gap:8px}
+.contact-trust-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center}
+.contact-trust-icon svg{width:14px;height:14px;stroke:var(--brass-light);stroke-width:2;fill:none}
+.contact-trust-text{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);line-height:1.4}
+
+/* Contact Form (Section variant) */
+.contact-form-wrap{background:rgba(255,255,255,.03);border:1px solid var(--border-dark);border-radius:var(--radius-xl);padding:40px;position:relative;overflow:hidden}
+.contact-form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--brass),transparent)}
+.contact-form-title{font-family:var(--serif);font-size:28px;color:var(--text-inv);margin-bottom:6px;letter-spacing:-.02em}
+.contact-form-sub{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--text-inv-muted);margin-bottom:32px;text-transform:uppercase}
+.cf-form{display:flex;flex-direction:column;gap:20px}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cf-group{position:relative;display:flex;flex-direction:column}
+.cf-group label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text-inv-muted);text-transform:uppercase;margin-bottom:6px;transition:color .3s var(--ease)}
+.cf-group:focus-within label{color:var(--accent-light)}
+.cf-group input,.cf-group select,.cf-group textarea{font-family:var(--sans);font-size:15px;padding:14px 16px;border:1px solid var(--border-dark);border-radius:var(--radius);background:rgba(255,255,255,.04);color:var(--text-inv);outline:none;transition:border-color .4s var(--ease),background .4s var(--ease),box-shadow .4s var(--ease);-webkit-appearance:none}
+.cf-group input::placeholder,.cf-group textarea::placeholder{color:rgba(255,255,255,.2)}
+.cf-group input:focus,.cf-group select:focus,.cf-group textarea:focus{border-color:var(--accent);background:rgba(255,255,255,.06);box-shadow:0 0 0 3px rgba(199,107,66,.12)}
+.cf-group select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.cf-group select option{background:var(--bg-dark);color:var(--text-inv)}
+.cf-group textarea{resize:vertical;min-height:130px;line-height:1.6}
+.cf-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:var(--accent);color:#fff;font-family:var(--sans);font-size:15px;font-weight:500;border:none;border-radius:var(--radius);cursor:pointer;transition:background .3s var(--ease),transform .3s var(--ease),box-shadow .3s var(--ease);letter-spacing:.01em;position:relative;overflow:hidden}
+.cf-submit:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 8px 24px rgba(199,107,66,.25)}
+.cf-submit:active{transform:translateY(0)}
+.cf-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.cf-submit svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;transition:transform .3s var(--ease)}
+.cf-submit:hover svg{transform:translateX(3px)}
+.cf-submit .cf-spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.cf-submit.loading .cf-spinner{display:block}
+.cf-submit.loading span,.cf-submit.loading svg{display:none}
+.cf-msg{font-family:var(--sans);font-size:13px;text-align:center;padding:14px 16px;border-radius:var(--radius);margin-top:4px;transition:opacity .4s var(--ease),transform .4s var(--ease);opacity:0;transform:translateY(8px)}
+.cf-msg.show{opacity:1;transform:translateY(0)}
+.cf-msg.success{background:rgba(76,175,80,.12);color:#81C784;border:1px solid rgba(76,175,80,.2)}
+.cf-msg.error{background:rgba(244,67,54,.1);color:#EF9A9A;border:1px solid rgba(244,67,54,.15)}
+
 /* ── New Badge on Cards ── */
 .prop-new-badge{display:inline-flex;align-items:center;gap:4px;background:var(--accent-pale);color:var(--accent);font-family:var(--sans);font-size:11px;letter-spacing:.02em;padding:4px 10px;border-radius:var(--radius);font-weight:600}
 
@@ -776,6 +833,9 @@ ul{list-style:none}
   .amenity-highlight-card{flex:none}
   .detail-content{padding:36px}
   .detail-body{max-width:100%}
+  .contact-inner{grid-template-columns:1fr;gap:48px}
+  .contact-section{padding:80px 24px}
+  .contact-trust{flex-wrap:wrap}
 }
 @media(max-width:768px){
   .stats-bar{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:40px;padding:0 20px}
@@ -809,6 +869,12 @@ ul{list-style:none}
   .detail-actions button,.detail-actions a{width:100%;text-align:center;justify-content:center;padding:14px 24px}
   .detail-thumb{width:64px;height:44px}
   .contact-body{padding:24px}
+  .contact-section{padding:64px 16px}
+  .contact-inner{gap:36px}
+  .contact-form-wrap{padding:28px 20px}
+  .cf-row{grid-template-columns:1fr}
+  .contact-trust{gap:16px}
+  .contact-info-title{font-size:32px}
   .story-details{grid-template-columns:1fr}
   .legal-body{padding:60px 24px 80px}
   .legal-close{top:16px;right:16px;width:40px;height:40px}
@@ -890,7 +956,7 @@ ul{list-style:none}
     <a href="#experience">Experience</a>
     <a href="#explore">Explore</a>
     <a href="#story">Our Story</a>
-    <a href="javascript:void(0)" onclick="openContact()">Contact</a>
+    <a href="#contact">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
   </div>
   <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -902,7 +968,7 @@ ul{list-style:none}
   <a href="#experience" onclick="closeMobile()">Experience</a>
   <a href="#explore" onclick="closeMobile()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
-  <a href="javascript:void(0)" onclick="closeMobile();openContact()">Contact</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
 </div>
 
@@ -1248,6 +1314,135 @@ ul{list-style:none}
   <a href="#properties" class="btn-primary">Browse Properties &rarr;</a>
 </section>
 
+<!-- ═══ CONTACT US SECTION ═══ -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <!-- Left: Info Column -->
+    <div class="contact-info reveal-left">
+      <div class="contact-info-header">
+        <span class="contact-info-badge">Get in Touch</span>
+        <h2 class="contact-info-title">Let&rsquo;s Plan Your<br>Perfect Stay</h2>
+        <p class="contact-info-desc">Whether you have questions about our properties, need help planning a group trip, or want to discuss a corporate booking &mdash; we&rsquo;re here for you.</p>
+      </div>
+
+      <div class="contact-cards">
+        <div class="contact-card reveal reveal-delay-1">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div class="contact-card-text">
+            <span class="contact-card-label">Phone</span>
+            <span class="contact-card-value"><a href="tel:+14694500285">(469) 450-0285</a></span>
+          </div>
+        </div>
+
+        <div class="contact-card reveal reveal-delay-2">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="contact-card-text">
+            <span class="contact-card-label">Email</span>
+            <span class="contact-card-value"><a href="mailto:regentcapitalventures@gmail.com">regentcapitalventures@gmail.com</a></span>
+          </div>
+        </div>
+
+        <div class="contact-card reveal reveal-delay-3">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="contact-card-text">
+            <span class="contact-card-label">Location</span>
+            <span class="contact-card-value">Dallas&ndash;Fort Worth Metroplex, Texas</span>
+          </div>
+        </div>
+
+        <div class="contact-card reveal reveal-delay-4">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="contact-card-text">
+            <span class="contact-card-label">Response Time</span>
+            <span class="contact-card-value">Within 1 hour &mdash; typically faster</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-trust reveal">
+        <div class="contact-trust-item">
+          <div class="contact-trust-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <span class="contact-trust-text">Verified Host</span>
+        </div>
+        <div class="contact-trust-item">
+          <div class="contact-trust-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <span class="contact-trust-text">5-Star Rated</span>
+        </div>
+        <div class="contact-trust-item">
+          <div class="contact-trust-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <span class="contact-trust-text">Superhost</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form Column -->
+    <div class="contact-form-wrap reveal-right">
+      <h3 class="contact-form-title">Send a Message</h3>
+      <div class="contact-form-sub">All fields marked with * are required</div>
+      <form class="cf-form" id="contactSectionForm" onsubmit="submitContactSection(event)">
+        <div class="cf-row">
+          <div class="cf-group">
+            <label for="csName">Name *</label>
+            <input type="text" id="csName" name="name" placeholder="Your full name" required>
+          </div>
+          <div class="cf-group">
+            <label for="csEmail">Email *</label>
+            <input type="email" id="csEmail" name="email" placeholder="your@email.com" required>
+          </div>
+        </div>
+        <div class="cf-row">
+          <div class="cf-group">
+            <label for="csPhone">Phone</label>
+            <input type="tel" id="csPhone" name="phone" placeholder="(555) 000-0000">
+          </div>
+          <div class="cf-group">
+            <label for="csSubject">Subject *</label>
+            <select id="csSubject" name="subject" required>
+              <option value="" disabled selected>Select a topic</option>
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Booking Question">Booking Question</option>
+              <option value="Property Info">Property Information</option>
+              <option value="Corporate/Group Stays">Corporate / Group Stays</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="cf-group">
+          <label for="csProperty">Property</label>
+          <select id="csProperty" name="property">
+            <option value="">Not specific / General</option>
+            <option value="Regent Skyline">Regent Skyline</option>
+            <option value="Regent Villa">Regent Villa</option>
+            <option value="Cozy Designer Suite">Cozy Designer Suite</option>
+            <option value="Designer Game Suite">Designer Game Suite</option>
+            <option value="Gorgeous Luxury Lake View Suite">Gorgeous Luxury Lake View Suite</option>
+            <option value="Luxury Executive Living">Luxury Executive Living</option>
+            <option value="Stunning Lake Views">Stunning Lake Views</option>
+          </select>
+        </div>
+        <div class="cf-group">
+          <label for="csMessage">Message *</label>
+          <textarea id="csMessage" name="message" placeholder="Tell us about your upcoming trip, group size, preferred dates, or anything else..." required></textarea>
+        </div>
+        <button type="submit" class="cf-submit" id="csSubmitBtn">
+          <span>Send Message</span>
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <div class="cf-spinner"></div>
+        </button>
+        <div class="cf-msg" id="csMsg"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="footer-inner">
@@ -1257,7 +1452,7 @@ ul{list-style:none}
       <a href="#experience">Experience</a>
       <a href="#explore">Explore</a>
       <a href="#story">Our Story</a>
-      <a href="javascript:void(0)" onclick="openContact()">Contact</a>
+      <a href="#contact">Contact</a>
       <a href="#properties">Book Now</a>
     </div>
     <div class="footer-divider"></div>
@@ -3075,7 +3270,7 @@ async function submitContact() {
     const res = await fetch('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, phone, property, message })
+      body: JSON.stringify({ name, email, phone, property, subject: 'Property Inquiry', message })
     });
     if (!res.ok) throw new Error('Failed to send message');
     msgEl.innerHTML = '<div class="contact-msg success">Message sent! We\'ll get back to you within an hour.</div>';
@@ -3085,6 +3280,55 @@ async function submitContact() {
     document.getElementById('cMessage').value = '';
   } catch (err) {
     msgEl.innerHTML = '<div class="contact-msg error">Could not send message. Please try again or email us directly.</div>';
+  }
+}
+
+/* ═══ Contact Section Form ═══ */
+async function submitContactSection(e) {
+  e.preventDefault();
+  const btn = document.getElementById('csSubmitBtn');
+  const msgEl = document.getElementById('csMsg');
+  const form = document.getElementById('contactSectionForm');
+
+  const name = document.getElementById('csName').value.trim();
+  const email = document.getElementById('csEmail').value.trim();
+  const phone = document.getElementById('csPhone').value.trim();
+  const subject = document.getElementById('csSubject').value;
+  const property = document.getElementById('csProperty').value;
+  const message = document.getElementById('csMessage').value.trim();
+
+  if (!name || !email || !subject || !message) {
+    msgEl.className = 'cf-msg error show';
+    msgEl.textContent = 'Please fill in all required fields.';
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+  msgEl.className = 'cf-msg';
+  msgEl.textContent = '';
+
+  try {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, subject, property, message })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to send message');
+    }
+    msgEl.className = 'cf-msg success show';
+    msgEl.textContent = 'Message sent successfully! We\'ll get back to you within an hour.';
+    form.reset();
+    // Auto-hide success after 6 seconds
+    setTimeout(() => { msgEl.className = 'cf-msg'; }, 6000);
+  } catch (err) {
+    msgEl.className = 'cf-msg error show';
+    msgEl.textContent = err.message || 'Could not send message. Please try again or email us directly.';
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
   }
 }
 
