@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Regent | Luxury Short-Term Rentals in DFW</title>
 <meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across the Dallas-Fort Worth metroplex. Designer interiors, effortless check-in, unforgettable stays.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
@@ -991,19 +992,19 @@ ul{list-style:none}
     <!-- Animated Stats -->
     <div class="stats-bar reveal">
       <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="7">0</span></div>
+        <div class="stat-number"><span class="stat-val" data-target="7">7</span></div>
         <div class="stat-label">Properties</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="4.9" data-decimals="1">0</span><span class="stat-suffix">&#9733;</span></div>
+        <div class="stat-number"><span class="stat-val" data-target="4.9" data-decimals="1">4.9</span><span class="stat-suffix">&#9733;</span></div>
         <div class="stat-label">Avg Rating</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="79">0</span><span class="stat-suffix">+</span></div>
+        <div class="stat-number"><span class="stat-val" data-target="79">79</span><span class="stat-suffix">+</span></div>
         <div class="stat-label">Reviews</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="70">0</span><span class="stat-suffix">+</span></div>
+        <div class="stat-number"><span class="stat-val" data-target="70">70</span><span class="stat-suffix">+</span></div>
         <div class="stat-label">Amenities Per Stay</div>
       </div>
     </div>
@@ -2743,7 +2744,19 @@ function initMiniMap() {
   }).addTo(mini);
 
   PROPERTIES.forEach(p => {
-    L.marker([p.lat, p.lng], { icon: miniIcon, interactive: false }).addTo(mini);
+    const marker = L.marker([p.lat, p.lng], {
+      icon: miniIcon,
+      interactive: false,
+      keyboard: false,
+      alt: `${p.name} map location`,
+      title: `${p.name} map location`
+    }).addTo(mini);
+    const markerEl = marker.getElement();
+    if (markerEl) {
+      markerEl.setAttribute('aria-hidden', 'true');
+      markerEl.setAttribute('role', 'presentation');
+      markerEl.setAttribute('tabindex', '-1');
+    }
   });
 }
 
@@ -3421,9 +3434,16 @@ function updateExploreMap() {
     iconAnchor: [16, 16]
   });
 
-  const propMarker = L.marker([prop.lat, prop.lng], { icon: propIcon })
+  const propMarker = L.marker([prop.lat, prop.lng], {
+      icon: propIcon,
+      title: `${prop.name} location`,
+      alt: `${prop.name} location`,
+      keyboard: true
+    })
     .addTo(exploreMapInstance)
     .bindPopup(`<b>${prop.name}</b><br>${prop.city}, ${prop.state}<br><span style="font-family:var(--mono);font-size:10px;color:var(--accent)">YOUR STAY</span>`);
+  const propMarkerEl = propMarker.getElement();
+  if (propMarkerEl) propMarkerEl.setAttribute('aria-label', `${prop.name} location on map`);
   exploreMarkers.push(propMarker);
 
   // Attraction markers
@@ -3445,9 +3465,16 @@ function updateExploreMap() {
       iconAnchor: [11, 11]
     });
 
-    const m = L.marker([a.lat, a.lng], { icon })
+    const m = L.marker([a.lat, a.lng], {
+        icon,
+        title: `${a.name} near ${prop.name}`,
+        alt: `${a.name} near ${prop.name}`,
+        keyboard: true
+      })
       .addTo(exploreMapInstance)
       .bindPopup(`<b>${a.name}</b><br>${a.desc.slice(0, 80)}…<br><span style="font-family:var(--mono);font-size:10px;color:var(--accent)">${dist.toFixed(1)} mi from ${prop.name}</span>`);
+    const markerEl = m.getElement();
+    if (markerEl) markerEl.setAttribute('aria-label', `${a.name}, ${dist.toFixed(1)} miles from ${prop.name}`);
     exploreMarkers.push(m);
   });
 
