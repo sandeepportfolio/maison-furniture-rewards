@@ -234,6 +234,8 @@ ul{list-style:none}
 .prop-price{font-family:var(--sans);margin-bottom:16px;min-height:24px}
 .prop-price-amount{font-size:17px;font-weight:600;color:var(--text)}
 .prop-price-period{font-size:13px;font-weight:400;color:var(--text-muted)}
+.prop-price-original{font-size:13px;font-weight:400;color:var(--text-muted);text-decoration:line-through;margin-right:6px}
+.prop-price-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--accent);background:var(--accent-pale);padding:3px 8px;border-radius:100px;margin-left:8px;font-weight:500;white-space:nowrap}
 .prop-price-loading{display:inline-block;width:110px;height:18px;background:linear-gradient(90deg,var(--bg-card) 25%,rgba(255,255,255,.06) 50%,var(--bg-card) 75%);background-size:200% 100%;animation:priceShimmer 1.5s infinite;border-radius:4px;vertical-align:middle}
 @keyframes priceShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .detail-price{margin-top:12px}
@@ -577,6 +579,8 @@ ul{list-style:none}
 .map-card-location svg{width:12px;height:12px;stroke:var(--accent-light);fill:none;stroke-width:2;flex-shrink:0}
 .map-card-price{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--text-inv);margin:0 0 4px}
 .map-card-price span{font-weight:400;font-size:12px;color:var(--text-inv-muted)}
+.map-card-price .prop-price-original{font-size:12px;color:var(--text-inv-muted);text-decoration:line-through;margin-right:4px;font-weight:400}
+.map-card-price .prop-price-badge{font-family:var(--mono);font-size:9px;color:#fff;background:var(--accent);padding:2px 7px;border-radius:100px;margin-left:6px}
 .map-card-rating{font-family:var(--mono);font-size:12px;color:var(--brass-light);display:flex;align-items:center;gap:5px;margin-bottom:14px}
 .map-card-rating svg{width:13px;height:13px;fill:var(--brass);stroke:none}
 .map-card-specs{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-dark)}
@@ -591,6 +595,9 @@ ul{list-style:none}
 .map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light);transform:translateY(-1px)}
 /* Nav dots hidden — using strip instead */
 .map-nav-dots{display:none}
+/* Click-capture overlay — sits above Leaflet when collapsed */
+.map-click-overlay{position:absolute;inset:0;z-index:501;cursor:pointer;background:transparent}
+.map-expanded .map-click-overlay{display:none;pointer-events:none}
 /* Expand button */
 .map-expand-btn{position:absolute;top:16px;right:16px;z-index:502;width:38px;height:38px;border-radius:var(--radius);background:rgba(28,28,28,.8);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:background .2s var(--ease),opacity .2s var(--ease),transform .2s var(--ease)}
 .map-expand-btn:hover{background:var(--accent);transform:scale(1.08)}
@@ -1151,8 +1158,8 @@ ul{list-style:none}
     <span class="tile-label">WHY BOOK DIRECT</span>
     <div class="trust-row">
       <div class="trust-item">
-        <div class="trust-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--accent)" stroke="none"/></svg></div>
-        <div class="trust-text"><strong>4.95&#9733; Rating</strong><span>Superhost across all platforms</span></div>
+        <div class="trust-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4-4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="trust-text"><strong>Premium Customer Service</strong><span>Dedicated concierge for every stay</span></div>
       </div>
       <div class="trust-divider"></div>
       <div class="trust-item">
@@ -1168,7 +1175,7 @@ ul{list-style:none}
   </div>
 
   <!-- Map Preview Tile -->
-  <div class="bento-tile bento-map-tile" onclick="document.getElementById('properties').scrollIntoView({behavior:'smooth',block:'start'})">
+  <div class="bento-tile bento-map-tile" onclick="document.getElementById('propertyMapSection').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(expandMap,800)">
     <span class="tile-label">04 CITIES</span>
     <div id="miniMap" class="mini-map"></div>
   </div>
@@ -1430,6 +1437,7 @@ ul{list-style:none}
       <div class="map-backdrop" id="mapBackdrop"></div>
       <div class="explore-map-wrap" id="mapWrap">
         <div id="exploreMap"></div>
+        <div class="map-click-overlay" id="mapClickOverlay"></div>
         <div class="map-click-hint">
           <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
           Click to explore full map
@@ -2524,7 +2532,7 @@ function renderPropertyCard(p) {
       </div>
       <div class="prop-rating">${ratingHtml}</div>
       <div class="prop-amenities">${amenityHtml}</div>
-      <div class="prop-price" data-slug="${p.slug}">${p.basePrice ? `<span class="prop-price-amount">From $${Math.round(p.basePrice)}</span><span class="prop-price-period"> / night</span>` : '<span class="prop-price-loading"></span>'}</div>
+      <div class="prop-price" data-slug="${p.slug}">${p.basePrice ? renderDiscountedPrice(p.basePrice, 'card') : '<span class="prop-price-loading"></span>'}</div>
       <div class="prop-divider"></div>
       <div class="prop-actions" onclick="event.stopPropagation()">
         <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
@@ -2573,6 +2581,18 @@ function renderProperties(cityFilter) {
   }, 350);
 }
 
+/* ═══ Direct Booking Discount ═══ */
+const DIRECT_BOOKING_DISCOUNT = 0.95; // 5% off Guesty base price
+
+function renderDiscountedPrice(basePrice, cssPrefix) {
+  const discounted = Math.round(basePrice * DIRECT_BOOKING_DISCOUNT);
+  const original = Math.round(basePrice);
+  if (cssPrefix === 'map') {
+    return `<span class="prop-price-original">$${original}</span>$${discounted} <span>/ night</span> <span class="prop-price-badge">Save 5%</span>`;
+  }
+  return `<span class="prop-price-original">$${original}</span><span class="prop-price-amount">From $${discounted}</span><span class="prop-price-period"> / night</span><span class="prop-price-badge">Save 5%</span>`;
+}
+
 /* ═══ Live pricing from Guesty API ═══ */
 async function fetchAndApplyPrices() {
   try {
@@ -2590,12 +2610,12 @@ async function fetchAndApplyPrices() {
       }
     });
 
-    // Update all price elements in the DOM
+    // Update all price elements in the DOM (with 5% direct booking discount)
     document.querySelectorAll('.prop-price[data-slug]').forEach(el => {
       const slug = el.dataset.slug;
       const prop = PROPERTIES.find(p => p.slug === slug);
       if (prop && prop.basePrice != null) {
-        el.innerHTML = `<span class="prop-price-amount">From $${Math.round(prop.basePrice)}</span><span class="prop-price-period"> / night</span>`;
+        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card');
       } else {
         el.innerHTML = '';
       }
@@ -2605,7 +2625,7 @@ async function fetchAndApplyPrices() {
       const slug = el.dataset.slug;
       const prop = PROPERTIES.find(p => p.slug === slug);
       if (prop && prop.basePrice != null) {
-        el.innerHTML = `<span class="prop-price-amount">From $${Math.round(prop.basePrice)}</span><span class="prop-price-period"> / night</span>`;
+        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card');
       } else {
         el.innerHTML = '';
       }
@@ -3399,7 +3419,7 @@ function openDetail(slug) {
             <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
             <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
           </div>
-          <div class="detail-price" data-slug="${prop.slug}">${prop.basePrice ? `<span class="prop-price-amount">From $${Math.round(prop.basePrice)}</span><span class="prop-price-period"> / night</span>` : '<span class="prop-price-loading"></span>'}</div>
+          <div class="detail-price" data-slug="${prop.slug}">${prop.basePrice ? renderDiscountedPrice(prop.basePrice, 'card') : '<span class="prop-price-loading"></span>'}</div>
         </div>
         <div class="detail-header-right">${ratingHtml}</div>
       </div>
@@ -3987,11 +4007,11 @@ function selectPropertyOnMap(idx) {
   if (nameEl) nameEl.textContent = prop.name;
   if (locTextEl) locTextEl.textContent = `${prop.city}, ${prop.state}`;
 
-  // Price
+  // Price (with 5% direct booking discount)
   if (priceEl) {
     const priceData = prop.basePrice || prop.price;
     if (priceData) {
-      priceEl.innerHTML = `$${priceData} <span>/ night</span>`;
+      priceEl.innerHTML = renderDiscountedPrice(priceData, 'map');
     } else {
       priceEl.innerHTML = `<span>Check availability</span>`;
     }
@@ -4121,6 +4141,22 @@ function initMapInteraction() {
     if (e.target.closest('.map-expand-btn')) return;
     expandMap();
   });
+
+  // Click-capture overlay — catches clicks that Leaflet would otherwise eat
+  const clickOverlay = document.getElementById('mapClickOverlay');
+  if (clickOverlay) {
+    clickOverlay.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!mapIsExpanded && !mapExpandAnimating) expandMap();
+    });
+  }
+
+  // Also listen on the Leaflet map instance itself as a fallback
+  if (exploreMapInstance) {
+    exploreMapInstance.on('click', () => {
+      if (!mapIsExpanded && !mapExpandAnimating) expandMap();
+    });
+  }
 
   // Expand button
   if (expandBtn) {
