@@ -301,16 +301,15 @@ ul{list-style:none}
 .booking-msg{font-family:var(--sans);font-size:13px;text-align:center;padding:12px;border-radius:var(--radius);margin-top:8px}
 .booking-msg.success{background:#E8F5E9;color:#2E7D32}
 .booking-msg.error{background:#FFEBEE;color:#C62828}
-/* ── Stripe Payment Step ── */
+/* ── Guesty Pay Payment Step ── */
 .payment-step{display:none;margin-top:20px}
 .payment-step.visible{display:block}
 .payment-step-header{display:flex;align-items:center;gap:8px;margin-bottom:16px}
 .payment-step-header svg{width:18px;height:18px;stroke:var(--accent);stroke-width:1.5;fill:none}
 .payment-step-header span{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
-.stripe-card-wrap{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;background:var(--bg-card);transition:border-color .3s var(--ease),box-shadow .3s var(--ease);min-height:44px}
-.stripe-card-wrap.StripeElement--focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(199,107,66,.1)}
-.stripe-card-wrap.StripeElement--invalid{border-color:#C62828;box-shadow:0 0 0 3px rgba(198,40,40,.08)}
-.stripe-card-error{font-family:var(--sans);font-size:12px;color:#C62828;margin-top:6px;min-height:18px}
+.guesty-tokenization-wrap{border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;background:var(--bg-card);transition:border-color .3s var(--ease),box-shadow .3s var(--ease);min-height:230px}
+.guesty-tokenization-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(199,107,66,.1)}
+.payment-card-error{font-family:var(--sans);font-size:12px;color:#C62828;margin-top:6px;min-height:18px}
 .booking-review{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0}
 .review-header{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
 .review-row{display:flex;justify-content:space-between;font-family:var(--sans);font-size:13px;color:var(--text-muted);padding:3px 0}
@@ -1589,11 +1588,11 @@ ul{list-style:none}
       <!-- Review Summary -->
       <div id="paymentReview" class="booking-review"></div>
 
-      <!-- Stripe Card Element -->
+      <!-- Guesty Pay Tokenization iframe -->
       <div class="form-group">
         <label>CARD DETAILS</label>
-        <div id="stripeCardElement" class="stripe-card-wrap"></div>
-        <div id="stripeCardError" class="stripe-card-error"></div>
+        <div id="guestyTokenizationContainer" class="guesty-tokenization-wrap"></div>
+        <div id="paymentCardError" class="payment-card-error"></div>
       </div>
 
       <button class="btn-pay" id="btnConfirmPay" onclick="confirmAndPay()" style="margin-top:16px">
@@ -1636,8 +1635,8 @@ ul{list-style:none}
 
 <!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<!-- Stripe.js for payment tokenization (card data never touches our server) -->
-<script src="https://js.stripe.com/v3/"></script>
+<!-- Guesty Pay Tokenization JS (loads PCI-safe iframe from Guesty; do not bundle/self-host) -->
+<script src="https://pay.guesty.com/tokenization/v2/init.js"></script>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -2380,7 +2379,8 @@ function openBooking(slug) {
   document.getElementById('quoteResult').innerHTML = '';
   document.getElementById('bookingMsg').innerHTML = '';
   // Reset payment & confirmation steps
-  unmountStripeCard();
+  destroyGuestyTokenization();
+  guestyPaymentContext = null;
   document.getElementById('paymentStep').classList.remove('visible');
   document.getElementById('paymentStep').style.display = 'none';
   document.getElementById('bookingConfirmation').style.display = 'none';
@@ -2397,13 +2397,11 @@ function openBooking(slug) {
   document.getElementById('calGrid').innerHTML = '<div class="cal-loading">Loading availability&hellip;</div>';
   document.getElementById('bookingModal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  // Initialize Stripe lazily on first booking modal open
-  if (!stripe) initStripe();
   fetchCalMonth(calSlug, calYear, calMonth).then(() => renderCal());
 }
 
 function closeBooking() {
-  unmountStripeCard();
+  destroyGuestyTokenization();
   document.getElementById('bookingModal').classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -2439,103 +2437,141 @@ async function getQuote() {
   }
 }
 
-// ── Stripe Integration ──
-// Placeholder key — replace with your real publishable key from Stripe dashboard.
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY';
-let stripe = null;
-let stripeElements = null;
-let stripeCard = null;
+// ── Guesty Pay Integration ──
 let lastQuoteData = null; // cached quote for the payment review step
+let guestyPaymentContext = null; // requestId, guestId, reservationId, paymentProviderId
+let guestyTokenizationMounted = false;
 
-function initStripe() {
-  if (stripe) return;
-  try {
-    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    stripeElements = stripe.elements({
-      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500&display=swap' }],
-    });
-    stripeCard = stripeElements.create('card', {
-      style: {
-        base: {
-          fontFamily: '"Outfit", sans-serif',
-          fontSize: '16px',
-          color: '#1a1714',
-          '::placeholder': { color: '#999' },
-        },
-        invalid: { color: '#C62828' },
-      },
-      hidePostalCode: false,
-    });
-  } catch (e) {
-    console.warn('Stripe init failed:', e.message);
-  }
+function getGuestFormData() {
+  return {
+    firstName: document.getElementById('bFirstName').value.trim(),
+    lastName: document.getElementById('bLastName').value.trim(),
+    email: document.getElementById('bEmail').value.trim(),
+    phone: document.getElementById('bPhone').value.trim(),
+  };
 }
 
-function mountStripeCard() {
-  if (!stripeCard) initStripe();
-  if (!stripeCard) return;
-  const el = document.getElementById('stripeCardElement');
-  if (!el) return;
-  stripeCard.mount('#stripeCardElement');
-  stripeCard.on('change', (event) => {
-    const errEl = document.getElementById('stripeCardError');
-    errEl.textContent = event.error ? event.error.message : '';
+function destroyGuestyTokenization() {
+  if (window.guestyTokenization && typeof window.guestyTokenization.destroy === 'function') {
+    try { window.guestyTokenization.destroy(); } catch (_) {}
+  }
+  guestyTokenizationMounted = false;
+  const el = document.getElementById('guestyTokenizationContainer');
+  if (el) el.innerHTML = '';
+}
+
+async function mountGuestyTokenization(paymentProviderId, guest) {
+  if (!window.guestyTokenization || typeof window.guestyTokenization.render !== 'function') {
+    throw new Error('Secure Guesty Pay form did not load. Please refresh and try again.');
+  }
+  destroyGuestyTokenization();
+  const btn = document.getElementById('btnConfirmPay');
+  const errEl = document.getElementById('paymentCardError');
+  errEl.textContent = '';
+  btn.disabled = true;
+  await window.guestyTokenization.render({
+    containerId: 'guestyTokenizationContainer',
+    providerId: paymentProviderId,
+    onStatusChange: (isValid) => { btn.disabled = !isValid; },
+    initialValues: {
+      firstName: guest.firstName,
+      lastName: guest.lastName,
+      country: 'US',
+      state: 'TX',
+    },
+    styles: {
+      mobileBreakpoint: '768px',
+      fontFamily: 'Outfit, sans-serif',
+      fontSizeMd: '16px',
+      fontSizeLg: '16px',
+      borderRadius: '12px',
+      inputHeight: '44px',
+      inputPadding: '12px 14px',
+      colorText: '#1a1714',
+      colorTextError: '#C62828',
+      colorPlaceholder: '#999999',
+      colorBorder: '#E6E0D8',
+      colorBorderError: '#C62828',
+      colorBorderHover: '#C76B42',
+      colorFormBackground: '#FFFFFF',
+      colorBackground: '#FFFFFF',
+      colorBackgroundError: '#FFF5F5',
+      colorBackgroundDisabled: '#F5F0EB',
+    },
   });
+  guestyTokenizationMounted = true;
 }
 
-function unmountStripeCard() {
-  if (stripeCard) {
-    try { stripeCard.unmount(); } catch (_) {}
+// Step navigation: Guest Info → Guesty Pay → Confirmation
+async function goToPaymentStep() {
+  const guest = getGuestFormData();
+  if (!guest.firstName) { showBookingMsg('First name is required.', 'error'); return; }
+  if (!guest.lastName) { showBookingMsg('Last name is required.', 'error'); return; }
+  if (!guest.email || !guest.email.includes('@')) { showBookingMsg('A valid email is required.', 'error'); return; }
+  if (!lastQuoteData) { showBookingMsg('Please check availability and price first.', 'error'); return; }
+  showBookingMsg('Preparing secure Guesty Pay checkout…', '');
+
+  const continueBtn = document.querySelector('#guestFields .btn-primary');
+  if (continueBtn) continueBtn.disabled = true;
+
+  try {
+    const intentRes = await fetch('/api/guesty/reservation-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listing: calSlug,
+        checkIn: calCheckIn,
+        checkOut: calCheckOut,
+        guests: parseInt(document.getElementById('bGuests').value),
+        guest,
+      }),
+    });
+    const intent = await intentRes.json();
+    if (!intentRes.ok) throw new Error(intent.error || 'Could not start Guesty Pay checkout');
+    guestyPaymentContext = intent;
+    if (intent.quote) lastQuoteData = { ...lastQuoteData, ...intent.quote };
+
+    // Hide guest fields, calendar, quote
+    document.getElementById('guestFields').style.display = 'none';
+    document.getElementById('calContainer').style.display = 'none';
+    document.getElementById('quoteSection').style.display = 'none';
+    document.querySelector('.cal-bar').style.display = 'none';
+
+    // Build the payment review summary
+    const prop = PROPERTIES.find(p => p.slug === calSlug);
+    const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
+    const reviewHtml = `
+      <div class="review-header">Booking Summary</div>
+      <div class="review-row"><span>${prop ? prop.name : calSlug}</span></div>
+      <div class="review-row"><span>Check-in</span><span>${fmtDate(calCheckIn)}</span></div>
+      <div class="review-row"><span>Check-out</span><span>${fmtDate(calCheckOut)}</span></div>
+      <div class="review-row"><span>Guests</span><span>${document.getElementById('bGuests').value}</span></div>
+      <div class="review-row"><span>${nights} night${nights>1?'s':''}</span><span>${lastQuoteData ? '$'+(lastQuoteData.accommodation || 0).toFixed(2) : ''}</span></div>
+      ${lastQuoteData && lastQuoteData.cleaningFee ? `<div class="review-row"><span>Cleaning fee</span><span>$${lastQuoteData.cleaningFee.toFixed(2)}</span></div>` : ''}
+      ${lastQuoteData && lastQuoteData.taxes ? `<div class="review-row"><span>Taxes & fees</span><span>$${lastQuoteData.taxes.toFixed(2)}</span></div>` : ''}
+      <div class="review-row review-total"><span>Total</span><span>${lastQuoteData ? '$'+lastQuoteData.total.toFixed(2)+' '+(lastQuoteData.currency||'USD') : ''}</span></div>
+      <div class="review-row" style="padding-top:4px"><span>Guest</span><span>${guest.firstName} ${guest.lastName}</span></div>
+      <div class="review-row"><span>Email</span><span>${guest.email}</span></div>
+    `;
+    document.getElementById('paymentReview').innerHTML = reviewHtml;
+
+    // Show payment step and mount Guesty Pay iframe
+    const payStep = document.getElementById('paymentStep');
+    payStep.classList.add('visible');
+    payStep.style.display = 'block';
+    document.getElementById('btnPayText').textContent = 'Confirm & Pay';
+    document.getElementById('paymentCardError').textContent = '';
+    await mountGuestyTokenization(intent.paymentProviderId, guest);
+    showBookingMsg('');
+  } catch (err) {
+    showBookingMsg(err.message, 'error');
+    if (continueBtn) continueBtn.disabled = false;
   }
-}
-
-// Step navigation: Guest Info → Payment → Confirmation
-function goToPaymentStep() {
-  const firstName = document.getElementById('bFirstName').value.trim();
-  const email = document.getElementById('bEmail').value.trim();
-  if (!firstName) { showBookingMsg('First name is required.', 'error'); return; }
-  if (!email || !email.includes('@')) { showBookingMsg('A valid email is required.', 'error'); return; }
-  showBookingMsg('');
-
-  // Hide guest fields, calendar, quote
-  document.getElementById('guestFields').style.display = 'none';
-  document.getElementById('calContainer').style.display = 'none';
-  document.getElementById('quoteSection').style.display = 'none';
-  document.querySelector('.cal-bar').style.display = 'none';
-
-  // Build the payment review summary
-  const prop = PROPERTIES.find(p => p.slug === calSlug);
-  const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
-  const reviewHtml = `
-    <div class="review-header">Booking Summary</div>
-    <div class="review-row"><span>${prop ? prop.name : calSlug}</span></div>
-    <div class="review-row"><span>Check-in</span><span>${fmtDate(calCheckIn)}</span></div>
-    <div class="review-row"><span>Check-out</span><span>${fmtDate(calCheckOut)}</span></div>
-    <div class="review-row"><span>Guests</span><span>${document.getElementById('bGuests').value}</span></div>
-    <div class="review-row"><span>${nights} night${nights>1?'s':''}</span><span>${lastQuoteData ? '$'+lastQuoteData.accommodation.toFixed(2) : ''}</span></div>
-    ${lastQuoteData && lastQuoteData.cleaningFee ? `<div class="review-row"><span>Cleaning fee</span><span>$${lastQuoteData.cleaningFee.toFixed(2)}</span></div>` : ''}
-    ${lastQuoteData && lastQuoteData.taxes ? `<div class="review-row"><span>Taxes & fees</span><span>$${lastQuoteData.taxes.toFixed(2)}</span></div>` : ''}
-    <div class="review-row review-total"><span>Total</span><span>${lastQuoteData ? '$'+lastQuoteData.total.toFixed(2)+' '+(lastQuoteData.currency||'USD') : ''}</span></div>
-    <div class="review-row" style="padding-top:4px"><span>Guest</span><span>${firstName} ${document.getElementById('bLastName').value.trim()}</span></div>
-    <div class="review-row"><span>Email</span><span>${email}</span></div>
-  `;
-  document.getElementById('paymentReview').innerHTML = reviewHtml;
-
-  // Show payment step and mount Stripe
-  const payStep = document.getElementById('paymentStep');
-  payStep.classList.add('visible');
-  payStep.style.display = 'block';
-  mountStripeCard();
-
-  // Reset pay button
-  document.getElementById('btnConfirmPay').disabled = false;
-  document.getElementById('btnPayText').textContent = 'Confirm & Pay';
-  document.getElementById('stripeCardError').textContent = '';
 }
 
 function backToGuestInfo() {
-  // Unmount Stripe and hide payment step
-  unmountStripeCard();
+  // Destroy Guesty Pay iframe and hide payment step
+  destroyGuestyTokenization();
   document.getElementById('paymentStep').classList.remove('visible');
   document.getElementById('paymentStep').style.display = 'none';
 
@@ -2544,63 +2580,46 @@ function backToGuestInfo() {
   document.getElementById('calContainer').style.display = '';
   document.getElementById('quoteSection').style.display = 'block';
   document.querySelector('.cal-bar').style.display = '';
+  const continueBtn = document.querySelector('#guestFields .btn-primary');
+  if (continueBtn) continueBtn.disabled = false;
 }
 
 async function confirmAndPay() {
-  if (!stripe || !stripeCard) {
-    showBookingMsg('Payment system not loaded. Try refreshing the page.', 'error');
+  if (!guestyPaymentContext || !guestyPaymentContext.reservationId || !guestyPaymentContext.paymentProviderId) {
+    showBookingMsg('Secure checkout was not initialized. Please go back and try again.', 'error');
+    return;
+  }
+  if (!window.guestyTokenization || !guestyTokenizationMounted) {
+    showBookingMsg('Payment form is not ready yet.', 'error');
     return;
   }
 
   const btn = document.getElementById('btnConfirmPay');
   const btnText = document.getElementById('btnPayText');
   btn.disabled = true;
-  btnText.innerHTML = '<span class="spinner"></span> Processing…';
+  btnText.innerHTML = '<span class="spinner"></span> Tokenizing card…';
   showBookingMsg('');
-  document.getElementById('stripeCardError').textContent = '';
+  document.getElementById('paymentCardError').textContent = '';
 
   try {
-    // Step 1: Create Stripe PaymentMethod from card details
-    const { paymentMethod, error: stripeError } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: stripeCard,
-      billing_details: {
-        name: `${document.getElementById('bFirstName').value.trim()} ${document.getElementById('bLastName').value.trim()}`.trim(),
-        email: document.getElementById('bEmail').value.trim(),
-        phone: document.getElementById('bPhone').value.trim() || undefined,
-      },
+    const quote = guestyPaymentContext.quote || lastQuoteData || {};
+    const paymentMethod = await window.guestyTokenization.submit({
+      amount: Number((quote.total || 0).toFixed(2)),
+      currency: quote.currency || 'USD',
+      listingId: guestyPaymentContext.listingId,
+      reservationId: guestyPaymentContext.reservationId,
     });
 
-    if (stripeError) {
-      document.getElementById('stripeCardError').textContent = stripeError.message;
-      btn.disabled = false;
-      btnText.textContent = 'Confirm & Pay';
-      return;
-    }
-
-    // Step 2: Send to backend — it creates the Guesty guest, attaches payment, books.
-    btnText.innerHTML = '<span class="spinner"></span> Creating reservation…';
-    const res = await fetch('/api/guesty/reservation', {
+    btnText.innerHTML = '<span class="spinner"></span> Confirming reservation…';
+    const res = await fetch('/api/guesty/confirm-payment', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        listing: calSlug,
-        checkIn: calCheckIn,
-        checkOut: calCheckOut,
-        guests: parseInt(document.getElementById('bGuests').value),
-        guest: {
-          firstName: document.getElementById('bFirstName').value.trim(),
-          lastName: document.getElementById('bLastName').value.trim(),
-          email: document.getElementById('bEmail').value.trim(),
-          phone: document.getElementById('bPhone').value.trim(),
-        },
-        payment: {
-          stripePaymentMethodId: paymentMethod.id,
-          last4: paymentMethod.card?.last4 || '',
-          brand: paymentMethod.card?.brand || '',
-          expMonth: paymentMethod.card?.exp_month,
-          expYear: paymentMethod.card?.exp_year,
-        },
+        requestId: guestyPaymentContext.requestId,
+        guestId: guestyPaymentContext.guestId,
+        reservationId: guestyPaymentContext.reservationId,
+        paymentProviderId: guestyPaymentContext.paymentProviderId,
+        paymentMethod,
       }),
     });
 
@@ -2608,7 +2627,7 @@ async function confirmAndPay() {
 
     if (!res.ok) {
       if (data.code === 'card_error') {
-        document.getElementById('stripeCardError').textContent = data.error;
+        document.getElementById('paymentCardError').textContent = data.error;
         btn.disabled = false;
         btnText.textContent = 'Confirm & Pay';
         return;
@@ -2617,10 +2636,10 @@ async function confirmAndPay() {
     }
 
     // Success — show confirmation
-    showBookingConfirmation(data);
-
+    showBookingConfirmation({ ...data, quote });
   } catch (err) {
-    showBookingMsg(err.message, 'error');
+    const msg = err && err.message ? err.message : 'Payment failed. Please check the card details and try again.';
+    document.getElementById('paymentCardError').textContent = msg;
     btn.disabled = false;
     btnText.textContent = 'Confirm & Pay';
   }
@@ -2633,7 +2652,7 @@ async function submitBookingRequest() {
   const email = document.getElementById('bEmail').value.trim();
   const phone = document.getElementById('bPhone').value.trim();
   const guests = document.getElementById('bGuests').value;
-  if (!firstName || !email) { showBookingMsg('Name and email are required.', 'error'); return; }
+  if (!firstName || !lastName || !email) { showBookingMsg('First name, last name, and email are required.', 'error'); return; }
   showBookingMsg('Submitting your booking request...', '');
   try {
     const res = await fetch('/api/guesty/reservation', {
@@ -2655,7 +2674,7 @@ async function submitBookingRequest() {
 
 function showBookingConfirmation(data) {
   // Hide everything except confirmation
-  unmountStripeCard();
+  destroyGuestyTokenization();
   document.getElementById('paymentStep').style.display = 'none';
   document.getElementById('guestFields').style.display = 'none';
   document.getElementById('calContainer').style.display = 'none';

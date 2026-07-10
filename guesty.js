@@ -119,7 +119,7 @@ async function getToken() {
   }
 }
 
-async function guestyFetch(pathname, { method = 'GET', body } = {}) {
+async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true } = {}) {
   const token = await getToken();
   const res = await fetch(API_BASE + pathname, {
     method,
@@ -134,6 +134,15 @@ async function guestyFetch(pathname, { method = 'GET', body } = {}) {
   const text = await res.text();
   let json;
   try { json = text ? JSON.parse(text) : {}; } catch { json = { raw: text }; }
+
+  // Persisted tokens can become invalid outside their nominal expiry window.
+  // Clear cache and retry once on auth failure without logging token contents.
+  if ((res.status === 401 || res.status === 403) && retryOnAuth) {
+    cachedToken = null;
+    tokenExpiry = 0;
+    try { fs.rmSync(TOKEN_FILE, { force: true }); } catch (_) {}
+    return guestyFetch(pathname, { method, body, retryOnAuth: false });
+  }
 
   if (!res.ok) {
     const err = new Error('Guesty API error');
@@ -253,12 +262,37 @@ async function createQuote({ listingId, checkIn, checkOut, guests }) {
 }
 
 /**
- * Get the payment provider (Stripe account) connected to a listing.
- * Returns the provider info including the Stripe account ID needed for
- * tokenizing cards on the frontend via Stripe.js.
+ * Get the payment provider connected to a listing.
+ * Guesty Pay needs the Guesty payment provider ID, not a Stripe publishable
+ * key/account ID. The frontend passes this provider ID into Guesty's PCI-safe
+ * tokenization iframe.
  */
 async function getPaymentProvider(listingId) {
-  return guestyFetch(`/payment-providers/provider-by-listing?listingId=${encodeURIComponent(listingId)}`);
+  return guestyFetch(`/payment-providers/provider-by-listing?listingId=${encodeURIComponent(listingId)}&includeInactiveProviders=false`);
+}
+
+function normalizePaymentProvider(provider) {
+  const p = Array.isArray(provider) ? provider[0] : (provider?.provider || provider);
+  // The provider-by-listing response contains both `_id` and `paymentProviderId`.
+  // Guesty's tokenization docs explicitly say `paymentProviderId` is the value
+  // to pass into guestyTokenization.render/submit, so prefer it over `_id`.
+  const paymentProviderId =
+    p?.paymentProviderId ||
+    p?.providerId ||
+    p?.paymentProvider?.paymentProviderId ||
+    p?.paymentProvider?.id ||
+    p?.paymentProvider?._id ||
+    p?.id ||
+    p?._id ||
+    null;
+
+  return {
+    paymentProviderId,
+    provider: p?.paymentProcessorName || p?.provider || p?.providerType || p?.method || 'GuestyPay',
+    method: p?.method || p?.paymentProcessorKey || p?.providerType || null,
+    status: p?.status || (p?.active === false ? 'INACTIVE' : 'ACTIVE'),
+    active: p?.active !== false && p?.status !== 'INACTIVE',
+  };
 }
 
 /**
@@ -266,14 +300,14 @@ async function getPaymentProvider(listingId) {
  * Required for attaching payment methods and creating reservations.
  */
 async function createGuest({ firstName, lastName, email, phone }) {
-  if (!firstName || !email) {
-    throw Object.assign(new Error('First name and email are required'), { status: 400 });
+  if (!firstName || !lastName || !email) {
+    throw Object.assign(new Error('First name, last name, and email are required'), { status: 400 });
   }
   return guestyFetch('/guests-crud', {
     method: 'POST',
     body: {
       firstName,
-      lastName: lastName || '',
+      lastName,
       email,
       phone: phone || '',
     },
@@ -281,37 +315,54 @@ async function createGuest({ firstName, lastName, email, phone }) {
 }
 
 /**
- * Attach a Stripe payment method to an existing guest.
- * The paymentMethodToken comes from Stripe.js on the frontend —
- * a tokenized card that never touches our server in raw form.
+ * Attach a Guesty Pay tokenized payment method to an existing guest.
+ * `token` is the `_id` returned by Guesty's tokenization SDK/API. Raw card
+ * data never touches this server.
  */
-async function attachPaymentMethod(guestId, { token, last4, brand, expMonth, expYear }) {
-  if (!guestId || !token) {
-    throw Object.assign(new Error('Guest ID and payment token are required'), { status: 400 });
+async function attachPaymentMethod(guestId, { token, paymentProviderId, reservationId, reuse = true, stripeCardToken, skipSetupIntent }) {
+  if (!guestId || (!token && !stripeCardToken) || !paymentProviderId) {
+    throw Object.assign(new Error('Guest ID, payment provider ID, and payment token are required'), { status: 400 });
   }
+
+  const body = stripeCardToken
+    ? {
+        stripeCardToken,
+        paymentProviderId,
+        ...(reservationId && { reservationId }),
+        ...(skipSetupIntent !== undefined && { skipSetupIntent: !!skipSetupIntent }),
+        reuse: !!reuse,
+      }
+    : {
+        _id: token,
+        paymentProviderId,
+        ...(reservationId && { reservationId }),
+        reuse: !!reuse,
+      };
+
   return guestyFetch(`/guests/${encodeURIComponent(guestId)}/payment-methods`, {
     method: 'POST',
-    body: {
-      token,
-      type: 'card',
-      ...(last4 && { last4 }),
-      ...(brand && { brand }),
-      ...(expMonth && { expMonth }),
-      ...(expYear && { expYear }),
-    },
+    body,
   });
 }
 
 /**
- * Create a confirmed reservation in Guesty with payment.
- * This is the full flow: the guest and payment method should already
- * exist (created via createGuest + attachPaymentMethod above).
- *
- * Falls back to a request-to-book entry if the Guesty API returns
- * a plan-level error (some Open API tiers restrict /reservations).
+ * Create a reservation in Guesty. For Guesty Pay we normally create a short
+ * `reserved` reservation first, tokenize against that reservation ID, attach
+ * the payment method, then confirm the reservation.
  */
-async function createReservation({ listingId, checkIn, checkOut, guests, guestId, paymentMethodId, status = 'confirmed' }) {
-  if (!listingId || !checkIn || !checkOut || !guestId) {
+async function createReservation({
+  listingId,
+  checkIn,
+  checkOut,
+  guests,
+  guestId,
+  guest,
+  paymentMethodId,
+  status = 'confirmed',
+  reservedUntil,
+  money,
+}) {
+  if (!listingId || !checkIn || !checkOut || (!guestId && !guest)) {
     throw Object.assign(new Error('Missing required reservation fields'), { status: 400 });
   }
 
@@ -323,17 +374,50 @@ async function createReservation({ listingId, checkIn, checkOut, guests, guestId
     checkInDateLocalized: checkIn,
     checkOutDateLocalized: checkOut,
     status,
-    guestId,
-    guests: {
-      adults: guests || 1,
-      children: 0,
-      infants: 0,
-    },
     source: 'manual',
+    ...(guestId ? { guestId } : { guest }),
+    guestsCount: guests || 1,
+    numberOfGuests: {
+      numberOfAdults: guests || 1,
+      numberOfChildren: 0,
+      numberOfInfants: 0,
+      numberOfPets: 0,
+    },
+    ignoreCalendar: false,
+    ignoreTerms: false,
+    ignoreBlocks: false,
+    ...(status === 'reserved' && reservedUntil !== undefined && { reservedUntil }),
+    ...(money?.fareAccommodation !== undefined && { accommodationFare: money.fareAccommodation }),
     ...(paymentMethodId && { paymentMethodId }),
   };
 
-  return guestyFetch('/reservations', { method: 'POST', body });
+  return guestyFetch('/reservations-v3', { method: 'POST', body });
+}
+
+async function updateReservationStatus(reservationId, { status, reservedUntil }) {
+  if (!reservationId) {
+    throw Object.assign(new Error('Reservation ID is required'), { status: 400 });
+  }
+  if (!status) {
+    throw Object.assign(new Error('Reservation status is required'), { status: 400 });
+  }
+  return guestyFetch(`/reservations-v3/${encodeURIComponent(reservationId)}/status`, {
+    method: 'PUT',
+    body: {
+      status,
+      ...(reservedUntil !== undefined && { reservedUntil }),
+    },
+  });
+}
+
+async function updateReservation(reservationId, body) {
+  if (!reservationId) {
+    throw Object.assign(new Error('Reservation ID is required'), { status: 400 });
+  }
+  return guestyFetch(`/reservations/${encodeURIComponent(reservationId)}`, {
+    method: 'PUT',
+    body,
+  });
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -351,8 +435,11 @@ module.exports = {
   getCalendar,
   createQuote,
   getPaymentProvider,
+  normalizePaymentProvider,
   createGuest,
   attachPaymentMethod,
   createReservation,
+  updateReservationStatus,
+  updateReservation,
   countNights,
 };

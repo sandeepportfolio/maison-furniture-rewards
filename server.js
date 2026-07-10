@@ -208,18 +208,25 @@ app.post('/api/guesty/quote', async (req, res) => {
   }
 });
 
-// Payment provider — returns the Stripe account connected to a listing.
+// Payment provider — returns the Guesty Pay provider connected to a listing.
 //   GET /api/guesty/payment-provider?listing=<slug|id>
 app.get('/api/guesty/payment-provider', async (req, res) => {
   try {
     const listingId = guesty.resolveListingId(req.query.listing);
     if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
     const provider = await guesty.getPaymentProvider(listingId);
-    // Only expose what the frontend needs — never echo raw API keys.
+    const normalized = guesty.normalizePaymentProvider(provider);
+    if (!normalized.paymentProviderId) {
+      return res.status(502).json({ error: 'Payment provider is not configured for this listing' });
+    }
+    // Only expose what the frontend needs — never echo API credentials.
     res.json({
-      provider: provider.provider || 'stripe',
-      accountId: provider.accountId || provider.stripeAccountId || null,
-      status: provider.status || 'active',
+      listingId,
+      paymentProviderId: normalized.paymentProviderId,
+      provider: normalized.provider,
+      method: normalized.method,
+      status: normalized.status,
+      active: normalized.active,
     });
   } catch (err) {
     console.error('Payment provider error:', err.status || '', err.message);
@@ -235,6 +242,9 @@ app.post('/api/guesty/create-guest', async (req, res) => {
     const { firstName, lastName, email, phone } = req.body || {};
     if (!firstName || !(firstName || '').trim()) {
       return res.status(400).json({ error: 'First name is required' });
+    }
+    if (!lastName || !(lastName || '').trim()) {
+      return res.status(400).json({ error: 'Last name is required' });
     }
     if (!email || !email.includes('@')) {
       return res.status(400).json({ error: 'A valid email is required' });
@@ -253,41 +263,55 @@ app.post('/api/guesty/create-guest', async (req, res) => {
   }
 });
 
-// Attach a Stripe payment method to a guest.
-//   POST { guestId, token, last4, brand, expMonth, expYear }
+// Attach a Guesty Pay tokenized payment method to a guest.
+//   POST { guestId, paymentToken, paymentProviderId, reservationId? }
 app.post('/api/guesty/attach-payment', async (req, res) => {
   try {
-    const { guestId, token, last4, brand, expMonth, expYear } = req.body || {};
+    const { guestId, paymentToken, paymentProviderId, reservationId, reuse } = req.body || {};
     if (!guestId) return res.status(400).json({ error: 'Guest ID is required' });
-    if (!token) return res.status(400).json({ error: 'Payment token is required' });
+    if (!paymentProviderId) return res.status(400).json({ error: 'Payment provider ID is required' });
+    if (!paymentToken) return res.status(400).json({ error: 'Payment token is required' });
 
     const result = await guesty.attachPaymentMethod(guestId, {
-      token, last4, brand, expMonth, expYear,
+      token: paymentToken,
+      paymentProviderId,
+      reservationId,
+      reuse: reuse !== false,
     });
     res.json({
       paymentMethodId: result._id || result.id || null,
-      status: 'attached',
+      status: result.status || 'attached',
     });
   } catch (err) {
     console.error('Attach payment error:', err.status || '', err.message);
     const detail = err.body?.error?.message || err.body?.message;
-    // Common Stripe errors surface here (card_declined, expired_card, etc.)
-    if (detail && (detail.includes('declined') || detail.includes('expired') || detail.includes('card'))) {
+    // Common card/processor errors surface here.
+    if (detail && /declined|expired|insufficient|card|cvv|cvc|processor/i.test(detail)) {
       return res.status(400).json({ error: detail, code: 'card_error' });
     }
     res.status(502).json({ error: detail || 'Could not attach payment method' });
   }
 });
 
-// Full booking flow with payment: re-quotes server-side, creates guest + payment
-// method in Guesty, then creates a confirmed reservation. Falls back to
-// request-to-book if no payment token is provided.
-//   POST { listing, checkIn, checkOut, guests,
-//          guest: { firstName, lastName, email, phone },
-//          payment?: { stripePaymentMethodId, last4, brand, expMonth, expYear } }
-app.post('/api/guesty/reservation', async (req, res) => {
+function sanitizeGuestPayload(g) {
+  return {
+    firstName: (g.firstName || '').trim(),
+    lastName: (g.lastName || '').trim(),
+    email: (g.email || '').trim().toLowerCase(),
+    phone: (g.phone || '').trim(),
+  };
+}
+
+function extractPaymentToken(paymentMethod) {
+  return paymentMethod?._id || paymentMethod?.id || paymentMethod?.tokenId || paymentMethod?.payload?.tokenId || paymentMethod?.payload?.id || null;
+}
+
+// Create a short-lived Guesty reservation intent for Guesty Pay tokenization.
+// The frontend tokenizes against this reservationId using Guesty's PCI-safe iframe.
+//   POST { listing, checkIn, checkOut, guests, guest: { firstName, lastName, email, phone } }
+app.post('/api/guesty/reservation-intent', async (req, res) => {
   try {
-    const { listing, checkIn, checkOut, guest, payment } = req.body || {};
+    const { listing, checkIn, checkOut, guest } = req.body || {};
     const guests = Math.max(1, parseInt(req.body?.guests, 10) || 1);
     const listingId = guesty.resolveListingId(listing);
     if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
@@ -296,12 +320,144 @@ app.post('/api/guesty/reservation', async (req, res) => {
     }
     if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
 
-    const g = guest || {};
-    const email = (g.email || '').trim().toLowerCase();
-    const firstName = (g.firstName || '').trim();
-    const lastName = (g.lastName || '').trim();
-    if (!email.includes('@')) return res.status(400).json({ error: 'A valid email is required' });
-    if (!firstName) return res.status(400).json({ error: 'First name is required' });
+    const g = sanitizeGuestPayload(guest || {});
+    if (!g.email.includes('@')) return res.status(400).json({ error: 'A valid email is required' });
+    if (!g.firstName) return res.status(400).json({ error: 'First name is required' });
+    if (!g.lastName) return res.status(400).json({ error: 'Last name is required' });
+
+    const meta = Object.values(guesty.LISTINGS).find(l => l.id === listingId);
+    const { summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+    const providerRaw = await guesty.getPaymentProvider(listingId);
+    const provider = guesty.normalizePaymentProvider(providerRaw);
+    if (!provider.paymentProviderId) {
+      return res.status(502).json({ error: 'Guesty Pay is not configured for this listing' });
+    }
+
+    const row = db.prepare(`
+      INSERT INTO booking_requests
+        (listing_id, listing_name, guest_name, guest_email, guest_phone,
+         check_in, check_out, guests, nights, total, currency, quote_id, status, message)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `).run(
+      listingId, meta ? meta.name : '', `${g.firstName} ${g.lastName}`.trim(), g.email, g.phone,
+      checkIn, checkOut, guests, summary.nights, summary.total, summary.currency,
+      summary.quoteId, 'requested', (guest?.message || '').trim()
+    );
+    const requestId = row.lastInsertRowid;
+
+    const guestResult = await guesty.createGuest(g);
+    const guestId = guestResult._id || guestResult.id;
+    const reservation = await guesty.createReservation({
+      listingId,
+      checkIn,
+      checkOut,
+      guests,
+      guestId,
+      status: 'reserved',
+      // Keep the hold short so a failed/abandoned payment does not block the calendar indefinitely.
+      reservedUntil: 0.5,
+      money: { fareAccommodation: summary.accommodation },
+    });
+    const reservationId = reservation._id || reservation.reservationId || reservation.id;
+
+    db.prepare("UPDATE booking_requests SET guesty_reservation_id=? WHERE id=?")
+      .run(reservationId || null, requestId);
+
+    res.json({
+      success: true,
+      status: 'payment_pending',
+      requestId,
+      listingId,
+      guestId,
+      reservationId,
+      paymentProviderId: provider.paymentProviderId,
+      quote: summary,
+    });
+  } catch (err) {
+    const detail = err.body?.error?.message || err.body?.message || err.message;
+    console.error('Guesty reservation intent error:', err.status || '', err.message);
+    if (err.status === 400 && detail) return res.status(400).json({ error: detail });
+    if (err.status === 409) return res.status(409).json({ error: detail || err.message });
+    res.status(502).json({ error: detail || 'Could not start Guesty Pay checkout' });
+  }
+});
+
+// Attach the Guesty Pay token to the reservation and confirm it.
+//   POST { requestId, guestId, reservationId, paymentProviderId, paymentMethod }
+app.post('/api/guesty/confirm-payment', async (req, res) => {
+  try {
+    const { requestId, guestId, reservationId, paymentProviderId, paymentMethod } = req.body || {};
+    const paymentToken = typeof paymentMethod === 'string' ? paymentMethod : extractPaymentToken(paymentMethod);
+    if (!requestId) return res.status(400).json({ error: 'Request ID is required' });
+    if (!guestId) return res.status(400).json({ error: 'Guest ID is required' });
+    if (!reservationId) return res.status(400).json({ error: 'Reservation ID is required' });
+    if (!paymentProviderId) return res.status(400).json({ error: 'Payment provider ID is required' });
+    if (!paymentToken) return res.status(400).json({ error: 'Guesty Pay did not return a payment token' });
+
+    const pmResult = await guesty.attachPaymentMethod(guestId, {
+      token: paymentToken,
+      paymentProviderId,
+      reservationId,
+      reuse: true,
+    });
+
+    let reservation;
+    try {
+      reservation = await guesty.updateReservationStatus(reservationId, {
+        status: 'confirmed',
+      });
+    } catch (confirmErr) {
+      console.error('Guesty reservation confirm error:', confirmErr.status || '', confirmErr.message);
+      db.prepare("UPDATE booking_requests SET status='requested' WHERE id=?").run(requestId);
+      return res.json({
+        success: true,
+        status: 'requested',
+        requestId,
+        reservationId,
+        paymentMethodId: pmResult._id || pmResult.id || null,
+        note: 'Payment method was saved, but the reservation still needs host confirmation in Guesty.',
+      });
+    }
+
+    const resId = reservation._id || reservation.reservationId || reservation.id || reservationId;
+    db.prepare("UPDATE booking_requests SET status='confirmed', guesty_reservation_id=? WHERE id=?")
+      .run(resId, requestId);
+
+    res.json({
+      success: true,
+      status: 'confirmed',
+      requestId,
+      reservationId: resId,
+      paymentMethodId: pmResult._id || pmResult.id || null,
+    });
+  } catch (err) {
+    const detail = err.body?.error?.message || err.body?.message || err.message;
+    console.error('Guesty confirm payment error:', err.status || '', err.message);
+    if (detail && /declined|expired|insufficient|card|cvv|cvc|processor/i.test(detail)) {
+      return res.status(400).json({ error: detail, code: 'card_error' });
+    }
+    res.status(502).json({ error: detail || 'Could not confirm Guesty Pay booking' });
+  }
+});
+
+// Request-to-book fallback without online payment.
+// Guesty Pay card payments use the two-step reservation-intent/confirm-payment flow above.
+//   POST { listing, checkIn, checkOut, guests, guest: { firstName, lastName, email, phone } }
+app.post('/api/guesty/reservation', async (req, res) => {
+  try {
+    const { listing, checkIn, checkOut, guest } = req.body || {};
+    const guests = Math.max(1, parseInt(req.body?.guests, 10) || 1);
+    const listingId = guesty.resolveListingId(listing);
+    if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
+    if (!isValidDate(checkIn) || !isValidDate(checkOut) || checkOut <= checkIn) {
+      return res.status(400).json({ error: 'Invalid dates' });
+    }
+    if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
+
+    const g = sanitizeGuestPayload(guest || {});
+    if (!g.email.includes('@')) return res.status(400).json({ error: 'A valid email is required' });
+    if (!g.firstName) return res.status(400).json({ error: 'First name is required' });
+    if (!g.lastName) return res.status(400).json({ error: 'Last name is required' });
 
     const meta = Object.values(guesty.LISTINGS).find(l => l.id === listingId);
 
@@ -314,76 +470,15 @@ app.post('/api/guesty/reservation', async (req, res) => {
          check_in, check_out, guests, nights, total, currency, quote_id, status, message)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     `).run(
-      listingId, meta ? meta.name : '', `${firstName} ${lastName}`.trim(), email, (g.phone || '').trim(),
+      listingId, meta ? meta.name : '', `${g.firstName} ${g.lastName}`.trim(), g.email, g.phone,
       checkIn, checkOut, guests, summary.nights, summary.total, summary.currency,
-      summary.quoteId, 'requested', (g.message || '').trim()
+      summary.quoteId, 'requested', (guest?.message || '').trim()
     );
-    const requestId = row.lastInsertRowid;
 
-    // ── Payment flow: create guest → attach payment → create reservation ──
-    if (payment && payment.stripePaymentMethodId) {
-      try {
-        // Step 1: Create guest in Guesty
-        const guestResult = await guesty.createGuest({
-          firstName, lastName, email, phone: (g.phone || '').trim(),
-        });
-        const guestId = guestResult._id || guestResult.id;
-
-        // Step 2: Attach the Stripe payment method to the guest
-        const pmResult = await guesty.attachPaymentMethod(guestId, {
-          token: payment.stripePaymentMethodId,
-          last4: payment.last4 || '',
-          brand: payment.brand || '',
-          expMonth: payment.expMonth,
-          expYear: payment.expYear,
-        });
-        const paymentMethodId = pmResult._id || pmResult.id;
-
-        // Step 3: Create a confirmed reservation
-        const reservation = await guesty.createReservation({
-          listingId, checkIn, checkOut, guests, guestId, paymentMethodId,
-          status: 'confirmed',
-        });
-        const resId = reservation._id || reservation.reservationId || reservation.id;
-
-        db.prepare("UPDATE booking_requests SET status='confirmed', guesty_reservation_id=? WHERE id=?")
-          .run(resId || null, requestId);
-
-        return res.json({
-          success: true, status: 'confirmed', requestId,
-          reservationId: resId, quote: summary,
-        });
-      } catch (payErr) {
-        console.error('Guesty payment/reservation error:', payErr.status || '', payErr.message);
-        const detail = payErr.body?.error?.message || payErr.body?.message || payErr.message;
-
-        // Determine if this is a card error vs. API error
-        const isCardError = detail && (
-          detail.includes('declined') || detail.includes('expired') ||
-          detail.includes('insufficient') || detail.includes('card')
-        );
-
-        if (isCardError) {
-          // Card error — don't mark as failed, let user retry
-          return res.status(400).json({
-            error: detail, code: 'card_error', requestId, quote: summary,
-          });
-        }
-
-        // API-level error — fall back to request-to-book
-        db.prepare("UPDATE booking_requests SET status='requested' WHERE id=?").run(requestId);
-        return res.json({
-          success: true, status: 'requested', requestId, quote: summary,
-          note: 'Payment could not be processed. Your booking request has been submitted for host confirmation.',
-        });
-      }
-    }
-
-    // No payment: request-to-book (host confirms manually).
-    res.json({ success: true, status: 'requested', requestId, quote: summary });
+    res.json({ success: true, status: 'requested', requestId: row.lastInsertRowid, quote: summary });
   } catch (err) {
     const detail = err.body?.error?.message || err.body?.message;
-    console.error('Guesty booking error:', err.status || '', err.message);
+    console.error('Guesty booking request error:', err.status || '', err.message);
     if (err.status === 400 && detail) return res.status(400).json({ error: detail });
     if (err.status === 409) return res.status(409).json({ error: detail || err.message });
     res.status(502).json({ error: 'Could not complete the booking request' });
