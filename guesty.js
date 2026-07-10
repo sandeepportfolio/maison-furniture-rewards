@@ -53,14 +53,37 @@ let cachedToken = null;
 let tokenExpiry = 0; // epoch ms
 let inflight = null;  // de-dupe concurrent token fetches
 
+function parseTokenExpiry(value) {
+  if (!value) return 0;
+  if (/^\d+$/.test(String(value))) return Number(value);
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function useToken(token, expiry) {
+  if (token && expiry && Date.now() < expiry - 60_000) {
+    cachedToken = token;
+    tokenExpiry = expiry;
+    return true;
+  }
+  return false;
+}
+
+function loadBootstrapToken() {
+  // Optional deploy-time bootstrap for hosts with ephemeral filesystems. This is
+  // especially useful after a Render redeploy because Guesty's OAuth endpoint is
+  // aggressively rate-limited; the access token itself still stays server-side.
+  const token = process.env.GUESTY_ACCESS_TOKEN;
+  const expiry = parseTokenExpiry(process.env.GUESTY_ACCESS_TOKEN_EXPIRES_AT || process.env.GUESTY_TOKEN_EXPIRES_AT);
+  return useToken(token, expiry);
+}
+
 function loadPersistedToken() {
   try {
     const raw = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf8'));
-    if (raw && raw.token && raw.expiry && Date.now() < raw.expiry - 60_000) {
-      cachedToken = raw.token;
-      tokenExpiry = raw.expiry;
-    }
+    if (useToken(raw?.token, raw?.expiry)) return;
   } catch (_) { /* no/invalid cache file — ignore */ }
+  loadBootstrapToken();
 }
 loadPersistedToken();
 
@@ -69,6 +92,34 @@ function persistToken() {
     fs.mkdirSync(path.dirname(TOKEN_FILE), { recursive: true });
     fs.writeFileSync(TOKEN_FILE, JSON.stringify({ token: cachedToken, expiry: tokenExpiry }), { mode: 0o600 });
   } catch (_) { /* best-effort cache; ignore write failures */ }
+}
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+async function requestTokenWithBackoff(id, secret) {
+  const delays = [0, 2_000, 5_000, 10_000, 20_000];
+  let lastStatus = null;
+  for (let attempt = 0; attempt < delays.length; attempt++) {
+    if (delays[attempt]) await sleep(delays[attempt]);
+    const res = await fetch(TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        scope: SCOPE,
+        client_id: id,
+        client_secret: secret,
+      }),
+    });
+
+    if (res.ok) return res.json();
+    lastStatus = res.status;
+    // Do not surface the response body verbatim — it can echo request params.
+    if (![429, 500, 502, 503, 504].includes(res.status)) break;
+  }
+  const e = new Error(`Guesty auth failed (${lastStatus})`);
+  e.status = lastStatus;
+  throw e;
 }
 
 async function getToken() {
@@ -83,29 +134,16 @@ async function getToken() {
     return cachedToken;
   }
 
+  // Re-check the server-side env bootstrap before hitting Guesty's rate-limited
+  // OAuth endpoint. This keeps cold deploys from failing while a valid token is
+  // already available in Render env.
+  if (loadBootstrapToken()) return cachedToken;
+
   // Collapse concurrent refreshes into a single request.
   if (inflight) return inflight;
 
   inflight = (async () => {
-    const res = await fetch(TOKEN_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
-      body: new URLSearchParams({
-        grant_type: 'client_credentials',
-        scope: SCOPE,
-        client_id: id,
-        client_secret: secret,
-      }),
-    });
-
-    if (!res.ok) {
-      // Do not surface the response body verbatim — it can echo request params.
-      const e = new Error(`Guesty auth failed (${res.status})`);
-      e.status = res.status;
-      throw e;
-    }
-
-    const json = await res.json();
+    const json = await requestTokenWithBackoff(id, secret);
     cachedToken = json.access_token;
     tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
     persistToken();
