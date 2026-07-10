@@ -553,7 +553,7 @@ function sendContactEmail({ name, email, phone, property, subject, message }) {
       subject: `New Contact: ${subject || 'General Inquiry'} from ${name || 'Guest'}`,
       from_name: name || 'Website Visitor',
       email: email,
-      cc: 'jatinshekhara@gmail.com',
+      cc: 'jatinshekara@gmail.com',
       message: htmlBody
     });
 
