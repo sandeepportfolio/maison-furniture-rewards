@@ -230,6 +230,16 @@ ul{list-style:none}
 .amenity-tag.premium{background:var(--accent-pale);border-color:transparent;color:var(--accent);font-weight:500}
 .amenity-tag.premium:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 
+/* Price row */
+.prop-price{font-family:var(--sans);margin-bottom:16px;min-height:24px}
+.prop-price-amount{font-size:17px;font-weight:600;color:var(--text)}
+.prop-price-period{font-size:13px;font-weight:400;color:var(--text-muted)}
+.prop-price-loading{display:inline-block;width:110px;height:18px;background:linear-gradient(90deg,var(--bg-card) 25%,rgba(255,255,255,.06) 50%,var(--bg-card) 75%);background-size:200% 100%;animation:priceShimmer 1.5s infinite;border-radius:4px;vertical-align:middle}
+@keyframes priceShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.detail-price{margin-top:12px}
+.detail-price .prop-price-amount{font-size:20px}
+.detail-price .prop-price-period{font-size:14px}
+
 /* Divider before actions */
 .prop-divider{height:1px;background:var(--border);margin-bottom:20px}
 
@@ -507,15 +517,60 @@ ul{list-style:none}
 
 /* Explore Map */
 .explore-map-container{margin-bottom:64px}
-.explore-map-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.explore-map-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 .explore-map-title{font-family:var(--serif);font-size:28px;color:var(--text-inv)}
 .explore-map-subtitle{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
-.explore-map-wrap{border-radius:var(--radius-xl);overflow:hidden;height:420px;border:1px solid var(--border-dark);position:relative}
+.map-legend{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);letter-spacing:.03em}
+.map-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(199,107,66,.6);flex-shrink:0}
+.explore-map-wrap{border-radius:var(--radius-xl);overflow:hidden;height:500px;border:1px solid var(--border-dark);position:relative;transition:all .5s var(--ease)}
+.explore-map-wrap.map-expanded{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1000;border-radius:0;border:none;backdrop-filter:blur(4px)}
 #exploreMap{height:100%;width:100%;z-index:1}
 #exploreMap .leaflet-popup-content-wrapper{background:var(--bg-dark-card);color:var(--text-inv);border:1px solid var(--border-dark);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,.4)}
 #exploreMap .leaflet-popup-tip{background:var(--bg-dark-card)}
 #exploreMap .leaflet-popup-content{font-family:var(--sans);font-size:13px;margin:12px 16px}
 #exploreMap .leaflet-popup-content b{font-family:var(--serif);font-size:16px;display:block;margin-bottom:4px}
+#exploreMap .leaflet-control-attribution{display:none}
+#exploreMap .leaflet-control-zoom a{background:var(--bg-dark-card);color:var(--text-inv);border-color:var(--border-dark)}
+#exploreMap .leaflet-control-zoom a:hover{background:var(--accent);color:#fff}
+@keyframes markerPulse{0%{transform:scale(1);opacity:.7}50%{transform:scale(1.8);opacity:0}100%{transform:scale(1);opacity:0}}
+@keyframes markerFadeIn{from{transform:scale(0) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes cardSlideIn{from{transform:translateX(-110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes cardSlideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(-110%);opacity:0}}
+.map-marker{position:relative;width:40px;height:40px;cursor:pointer;transition:transform .25s var(--ease)}
+.map-marker:hover{transform:scale(1.15)}
+.map-marker.active{transform:scale(1.2)}
+.map-marker-ring{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;border:2px solid var(--accent);opacity:.5;animation:markerPulse 2.5s var(--ease) infinite}
+.map-marker.active .map-marker-ring{border-color:var(--accent-light);opacity:.8;animation-duration:1.8s}
+.map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:var(--accent);border:2px solid rgba(255,255,255,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(199,107,66,.5);transition:box-shadow .25s var(--ease),background .25s var(--ease)}
+.map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 20px rgba(199,107,66,.7)}
+.map-marker-core svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none}
+.map-property-card{position:absolute;bottom:24px;left:24px;z-index:500;width:320px;background:var(--bg-dark-card);border:1px solid var(--border-dark);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.5);overflow:hidden;transform:translateX(-110%);opacity:0;pointer-events:none;transition:transform .4s var(--ease),opacity .4s var(--ease)}
+.map-property-card.visible{transform:translateX(0);opacity:1;pointer-events:auto}
+.map-card-close{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.55);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s var(--ease)}
+.map-card-close:hover{background:rgba(199,107,66,.8)}
+.map-card-photo{width:100%;height:180px;background-size:cover;background-position:center;position:relative}
+.map-card-photo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,var(--bg-dark-card))}
+.map-card-body{padding:16px 18px 18px}
+.map-card-category{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-light);margin-bottom:6px}
+.map-card-name{font-family:var(--serif);font-size:20px;color:var(--text-inv);margin:0 0 4px;line-height:1.2}
+.map-card-location{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);margin:0 0 12px}
+.map-card-specs{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.map-card-specs span{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);display:flex;align-items:center;gap:4px}
+.map-card-specs span svg{width:13px;height:13px;stroke:var(--brass-light);stroke-width:1.5;fill:none}
+.map-card-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.map-card-amenities span{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);background:rgba(255,255,255,.06);border:1px solid var(--border-dark);border-radius:20px;padding:3px 10px}
+.map-card-actions{display:flex;gap:8px}
+.map-card-btn-primary{flex:1;padding:10px 0;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.04em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease)}
+.map-card-btn-primary:hover{background:var(--accent-hover)}
+.map-card-btn-secondary{flex:1;padding:10px 0;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease)}
+.map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light)}
+.map-nav-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;gap:8px;padding:6px 12px;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);border-radius:20px}
+.map-nav-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);border:none;cursor:pointer;padding:0;transition:background .25s var(--ease),transform .25s var(--ease)}
+.map-nav-dots button:hover{background:rgba(255,255,255,.55)}
+.map-nav-dots button.active{background:var(--accent);transform:scale(1.3)}
+.map-expand-btn{position:absolute;top:16px;right:16px;z-index:500;width:36px;height:36px;border-radius:var(--radius);background:rgba(28,28,28,.75);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s var(--ease)}
+.map-expand-btn:hover{background:var(--accent)}
+.map-expand-btn svg{width:16px;height:16px;stroke:var(--text-inv);stroke-width:2;fill:none}
 
 /* Events Section */
 .explore-events{margin-bottom:20px}
@@ -905,7 +960,14 @@ ul{list-style:none}
   .explore-show-more-wrap{display:block}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
-  .explore-map-wrap{height:320px}
+  .explore-map-wrap{height:380px}
+  .map-property-card{position:absolute;bottom:0;left:0;right:0;width:100%;max-width:100%;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(110%);max-height:55vh;overflow-y:auto}
+  .map-property-card.visible{transform:translateY(0)}
+  .map-card-photo{height:150px}
+  .map-card-body{padding:14px 16px 16px}
+  .map-card-name{font-size:18px}
+  .map-card-btn-primary,.map-card-btn-secondary{font-size:11px;padding:9px 0}
+  .map-nav-dots{bottom:auto;top:12px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
   .explore-categories{gap:4px}
@@ -950,7 +1012,15 @@ ul{list-style:none}
   .explore-hero-sub{font-size:14px}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
-  .explore-map-wrap{height:260px}
+  .explore-map-wrap{height:320px}
+  .map-property-card{max-height:60vh}
+  .map-card-photo{height:130px}
+  .map-card-name{font-size:16px}
+  .map-card-specs span{font-size:10px}
+  .map-card-amenities span{font-size:9px;padding:2px 8px}
+  .map-marker{width:34px;height:34px}
+  .map-marker-core{width:24px;height:24px}
+  .map-marker-core svg{width:11px;height:11px}
   .explore-events-title{font-size:24px}
   .explore-map-title{font-size:22px}
   .event-date-block{min-width:60px;padding:12px 10px}
@@ -1285,16 +1355,39 @@ ul{list-style:none}
       </button>
     </div>
 
-    <!-- Interactive Map -->
-    <div class="explore-map-container">
+    <!-- Interactive Property Map -->
+    <div class="explore-map-container" id="propertyMapSection">
       <div class="explore-map-header">
         <div>
-          <h3 class="explore-map-title">Explore the Neighborhood</h3>
-          <p class="explore-map-subtitle">Click markers to discover more &middot; Select a property to see distances</p>
+          <h3 class="explore-map-title">Discover Our Properties</h3>
+          <p class="explore-map-subtitle">Tap a marker to explore each luxury rental</p>
+        </div>
+        <div class="map-legend">
+          <span class="map-legend-dot"></span>
+          <span>7 Properties across DFW</span>
         </div>
       </div>
-      <div class="explore-map-wrap">
+      <div class="explore-map-wrap" id="mapWrap">
         <div id="exploreMap"></div>
+        <button class="map-expand-btn" id="mapExpandBtn" aria-label="Expand map">
+          <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+        <div class="map-property-card" id="mapPropertyCard">
+          <button class="map-card-close" id="mapCardClose" aria-label="Close">&times;</button>
+          <div class="map-card-photo" id="mapCardPhoto"></div>
+          <div class="map-card-body">
+            <div class="map-card-category" id="mapCardCategory"></div>
+            <h4 class="map-card-name" id="mapCardName"></h4>
+            <p class="map-card-location" id="mapCardLocation"></p>
+            <div class="map-card-specs" id="mapCardSpecs"></div>
+            <div class="map-card-amenities" id="mapCardAmenities"></div>
+            <div class="map-card-actions">
+              <button class="map-card-btn-primary" id="mapCardBook">Book Now</button>
+              <button class="map-card-btn-secondary" id="mapCardDetails">View Details</button>
+            </div>
+          </div>
+        </div>
+        <div class="map-nav-dots" id="mapNavDots"></div>
       </div>
     </div>
 
@@ -2353,6 +2446,7 @@ function renderPropertyCard(p) {
       </div>
       <div class="prop-rating">${ratingHtml}</div>
       <div class="prop-amenities">${amenityHtml}</div>
+      <div class="prop-price" data-slug="${p.slug}">${p.basePrice ? `<span class="prop-price-amount">From $${Math.round(p.basePrice)}</span><span class="prop-price-period"> / night</span>` : '<span class="prop-price-loading"></span>'}</div>
       <div class="prop-divider"></div>
       <div class="prop-actions" onclick="event.stopPropagation()">
         <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
@@ -2399,6 +2493,50 @@ function renderProperties(cityFilter) {
       requestAnimationFrame(() => grid.classList.remove('fading'));
     });
   }, 350);
+}
+
+/* ═══ Live pricing from Guesty API ═══ */
+async function fetchAndApplyPrices() {
+  try {
+    const res = await fetch('/api/guesty/listings');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const listings = data.listings || [];
+
+    // Merge prices into PROPERTIES
+    listings.forEach(listing => {
+      const prop = PROPERTIES.find(p => p.slug === listing.slug);
+      if (prop && listing.basePrice != null) {
+        prop.basePrice = listing.basePrice;
+        prop.currency = listing.currency || 'USD';
+      }
+    });
+
+    // Update all price elements in the DOM
+    document.querySelectorAll('.prop-price[data-slug]').forEach(el => {
+      const slug = el.dataset.slug;
+      const prop = PROPERTIES.find(p => p.slug === slug);
+      if (prop && prop.basePrice != null) {
+        el.innerHTML = `<span class="prop-price-amount">From $${Math.round(prop.basePrice)}</span><span class="prop-price-period"> / night</span>`;
+      } else {
+        el.innerHTML = '';
+      }
+    });
+    // Also update any open detail modal price
+    document.querySelectorAll('.detail-price[data-slug]').forEach(el => {
+      const slug = el.dataset.slug;
+      const prop = PROPERTIES.find(p => p.slug === slug);
+      if (prop && prop.basePrice != null) {
+        el.innerHTML = `<span class="prop-price-amount">From $${Math.round(prop.basePrice)}</span><span class="prop-price-period"> / night</span>`;
+      } else {
+        el.innerHTML = '';
+      }
+    });
+  } catch (err) {
+    console.warn('Could not load live prices:', err.message);
+    // Graceful degradation: remove loading shimmer, leave cards without price
+    document.querySelectorAll('.prop-price-loading').forEach(el => el.remove());
+  }
 }
 
 function carouselMove(slug, dir) {
@@ -3183,6 +3321,7 @@ function openDetail(slug) {
             <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
             <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
           </div>
+          <div class="detail-price" data-slug="${prop.slug}">${prop.basePrice ? `<span class="prop-price-amount">From $${Math.round(prop.basePrice)}</span><span class="prop-price-period"> / night</span>` : '<span class="prop-price-loading"></span>'}</div>
         </div>
         <div class="detail-header-right">${ratingHtml}</div>
       </div>
@@ -3500,6 +3639,9 @@ let exploreSelectedProp = null;
 let exploreSelectedCat = 'all';
 let exploreMapInstance = null;
 let exploreMarkers = [];
+let mapPropertyMarkers = [];
+let mapActiveProperty = null;
+let mapObserverAttached = false;
 
 // Haversine distance in miles
 function haversine(lat1, lon1, lat2, lon2) {
@@ -3653,53 +3795,244 @@ function toggleExploreExpand(section) {
 function initExploreMap() {
   const el = document.getElementById('exploreMap');
   if (!el || typeof L === 'undefined') return;
+  if (exploreMapInstance) return; // prevent double-init
+
+  const isMobile = window.innerWidth <= 768;
 
   exploreMapInstance = L.map('exploreMap', {
-    center: [32.92, -96.82],
+    center: [32.89, -96.83],
     zoom: 10,
-    zoomControl: false,
+    zoomControl: !isMobile,
     attributionControl: false
   });
 
-  L.control.zoom({ position: 'topright' }).addTo(exploreMapInstance);
+  if (!isMobile) {
+    L.control.zoom({ position: 'topright' }).addTo(exploreMapInstance);
+  }
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 18,
     subdomains: 'abcd'
   }).addTo(exploreMapInstance);
 
+  // Add all 7 property markers with stagger
+  addPropertyMarkers();
+
+  // Build nav dots
+  buildMapNavDots();
+
+  // Wire up expand/collapse
+  initMapExpand();
+
+  // Wire up card close
+  const closeBtn = document.getElementById('mapCardClose');
+  if (closeBtn) closeBtn.addEventListener('click', closeMapCard);
+
+  // Also add attraction markers for current property
   updateExploreMap();
+}
+
+function createPropertyMarkerIcon() {
+  return `<div class="map-marker">
+    <div class="map-marker-ring"></div>
+    <div class="map-marker-core">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+  </div>`;
+}
+
+function addPropertyMarkers() {
+  if (!exploreMapInstance) return;
+  mapPropertyMarkers.forEach(m => exploreMapInstance.removeLayer(m));
+  mapPropertyMarkers = [];
+
+  PROPERTIES.forEach((prop, idx) => {
+    const icon = L.divIcon({
+      html: createPropertyMarkerIcon(),
+      className: '',
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
+
+    const marker = L.marker([prop.lat, prop.lng], {
+      icon,
+      title: prop.name,
+      alt: prop.name + ' location',
+      keyboard: true
+    }).addTo(exploreMapInstance);
+
+    // Stagger fade-in
+    const markerEl = marker.getElement();
+    if (markerEl) {
+      markerEl.style.opacity = '0';
+      markerEl.style.animation = `markerFadeIn .4s var(--ease) ${idx * 100}ms forwards`;
+      markerEl.setAttribute('aria-label', `${prop.name} in ${prop.city}, ${prop.state}`);
+    }
+
+    marker.on('click', () => selectPropertyOnMap(idx));
+    marker.propertyIndex = idx;
+    mapPropertyMarkers.push(marker);
+  });
+}
+
+function selectPropertyOnMap(idx) {
+  if (!exploreMapInstance) return;
+  const prop = PROPERTIES[idx];
+  if (!prop) return;
+
+  mapActiveProperty = idx;
+
+  // Update active marker styling
+  mapPropertyMarkers.forEach((m, i) => {
+    const el = m.getElement();
+    if (!el) return;
+    const inner = el.querySelector('.map-marker');
+    if (inner) {
+      if (i === idx) inner.classList.add('active');
+      else inner.classList.remove('active');
+    }
+  });
+
+  // Pan to marker
+  exploreMapInstance.flyTo([prop.lat, prop.lng], 12, { duration: 0.8 });
+
+  // Populate card
+  const card = document.getElementById('mapPropertyCard');
+  const photo = document.getElementById('mapCardPhoto');
+  const catEl = document.getElementById('mapCardCategory');
+  const nameEl = document.getElementById('mapCardName');
+  const locEl = document.getElementById('mapCardLocation');
+  const specsEl = document.getElementById('mapCardSpecs');
+  const amenEl = document.getElementById('mapCardAmenities');
+  const bookBtn = document.getElementById('mapCardBook');
+  const detailBtn = document.getElementById('mapCardDetails');
+
+  if (photo && prop.photos && prop.photos[0]) {
+    photo.style.backgroundImage = `url(${imgUrl(prop.hostingId, prop.photos[0])})`;
+  }
+  if (catEl) catEl.textContent = prop.category === 'villa' ? 'Luxury Villa' : 'Designer Suite';
+  if (nameEl) nameEl.textContent = prop.name;
+  if (locEl) locEl.textContent = `${prop.city}, ${prop.state}`;
+  if (specsEl) {
+    specsEl.innerHTML = `
+      <span><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>${prop.guests} guests</span>
+      <span><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 012 2v10"/><path d="M2 17h20"/><path d="M6 8V4"/></svg>${prop.beds} bed${prop.beds>1?'s':''}</span>
+      <span><svg viewBox="0 0 24 24"><path d="M4 12h16v8H4z"/><path d="M6 12V8a2 2 0 012-2h8a2 2 0 012 2v4"/></svg>${prop.baths} bath${prop.baths>1?'s':''}</span>`;
+  }
+  if (amenEl && prop.amenities) {
+    amenEl.innerHTML = prop.amenities.slice(0, 3).map(a => `<span>${a.label}</span>`).join('');
+  }
+
+  // Wire action buttons
+  if (bookBtn) {
+    bookBtn.onclick = () => { if (typeof openBooking === 'function') openBooking(prop.slug); };
+  }
+  if (detailBtn) {
+    detailBtn.onclick = () => { if (typeof openDetail === 'function') openDetail(prop.slug); };
+  }
+
+  // Show card
+  if (card) card.classList.add('visible');
+
+  // Update nav dots
+  updateMapNavDots(idx);
+
+  // Update attraction markers for this property
+  exploreSelectedProp = prop;
+  updateExploreMap();
+}
+
+function closeMapCard() {
+  const card = document.getElementById('mapPropertyCard');
+  if (card) card.classList.remove('visible');
+
+  // Deactivate markers
+  mapPropertyMarkers.forEach(m => {
+    const el = m.getElement();
+    if (!el) return;
+    const inner = el.querySelector('.map-marker');
+    if (inner) inner.classList.remove('active');
+  });
+  mapActiveProperty = null;
+}
+
+function buildMapNavDots() {
+  const container = document.getElementById('mapNavDots');
+  if (!container) return;
+  container.innerHTML = '';
+  PROPERTIES.forEach((prop, idx) => {
+    const dot = document.createElement('button');
+    dot.setAttribute('aria-label', prop.name);
+    dot.title = prop.name;
+    dot.addEventListener('click', () => selectPropertyOnMap(idx));
+    container.appendChild(dot);
+  });
+}
+
+function updateMapNavDots(activeIdx) {
+  const container = document.getElementById('mapNavDots');
+  if (!container) return;
+  const dots = container.querySelectorAll('button');
+  dots.forEach((d, i) => {
+    if (i === activeIdx) d.classList.add('active');
+    else d.classList.remove('active');
+  });
+}
+
+function initMapExpand() {
+  const wrap = document.getElementById('mapWrap');
+  const btn = document.getElementById('mapExpandBtn');
+  if (!wrap || !btn) return;
+
+  btn.addEventListener('click', () => {
+    const isExpanded = wrap.classList.contains('map-expanded');
+    if (isExpanded) {
+      collapseMap();
+    } else {
+      expandMap();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && wrap.classList.contains('map-expanded')) {
+      collapseMap();
+    }
+  });
+}
+
+function expandMap() {
+  const wrap = document.getElementById('mapWrap');
+  if (!wrap) return;
+  wrap.classList.add('map-expanded');
+  document.body.style.overflow = 'hidden';
+  // Update expand icon to collapse icon
+  const btn = document.getElementById('mapExpandBtn');
+  if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  if (exploreMapInstance) {
+    setTimeout(() => exploreMapInstance.invalidateSize(), 350);
+  }
+}
+
+function collapseMap() {
+  const wrap = document.getElementById('mapWrap');
+  if (!wrap) return;
+  wrap.classList.remove('map-expanded');
+  document.body.style.overflow = '';
+  // Restore expand icon
+  const btn = document.getElementById('mapExpandBtn');
+  if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+  if (exploreMapInstance) {
+    setTimeout(() => exploreMapInstance.invalidateSize(), 350);
+  }
 }
 
 function updateExploreMap() {
   if (!exploreMapInstance) return;
   const prop = exploreSelectedProp || PROPERTIES[0];
 
-  // Clear existing markers
+  // Clear only attraction markers (not property markers)
   exploreMarkers.forEach(m => exploreMapInstance.removeLayer(m));
   exploreMarkers = [];
-
-  // Property marker (special)
-  const propIcon = L.divIcon({
-    html: `<div style="width:32px;height:32px;background:var(--accent);border:3px solid #fff;border-radius:50%;box-shadow:0 4px 12px rgba(199,107,66,.5);display:flex;align-items:center;justify-content:center">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </div>`,
-    className: '',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16]
-  });
-
-  const propMarker = L.marker([prop.lat, prop.lng], {
-      icon: propIcon,
-      title: `${prop.name} location`,
-      alt: `${prop.name} location`,
-      keyboard: true
-    })
-    .addTo(exploreMapInstance)
-    .bindPopup(`<b>${prop.name}</b><br>${prop.city}, ${prop.state}<br><span style="font-family:var(--mono);font-size:10px;color:var(--accent)">YOUR STAY</span>`);
-  const propMarkerEl = propMarker.getElement();
-  if (propMarkerEl) propMarkerEl.setAttribute('aria-label', `${prop.name} location on map`);
-  exploreMarkers.push(propMarker);
 
   // Attraction markers
   let filteredAttractions = ATTRACTIONS;
@@ -3733,9 +4066,9 @@ function updateExploreMap() {
     exploreMarkers.push(m);
   });
 
-  // Fit bounds
-  const allCoords = [[prop.lat, prop.lng], ...filteredAttractions.map(a => [a.lat, a.lng])];
-  if (allCoords.length > 1) {
+  // Fit bounds to include property markers and attractions
+  const allCoords = PROPERTIES.map(p => [p.lat, p.lng]).concat(filteredAttractions.map(a => [a.lat, a.lng]));
+  if (allCoords.length > 1 && mapActiveProperty === null) {
     exploreMapInstance.fitBounds(allCoords, { padding: [40, 40], maxZoom: 12 });
   }
 }
@@ -3838,7 +4171,24 @@ function initExploreReveals() {
 function initExplore() {
   initExplorePropSelector();
   renderExploreGrid();
-  initExploreMap();
+  // Lazy-load map when section scrolls into view
+  if (!mapObserverAttached) {
+    const mapSection = document.getElementById('propertyMapSection');
+    if (mapSection && 'IntersectionObserver' in window) {
+      const mapObs = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            initExploreMap();
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '200px' });
+      mapObs.observe(mapSection);
+      mapObserverAttached = true;
+    } else {
+      initExploreMap();
+    }
+  }
   fetchEvents();
   // Delay reveals slightly so cards are rendered
   setTimeout(initExploreReveals, 200);
@@ -3909,6 +4259,7 @@ function initDetailGallerySwipe() {
 /* ═══ Init ═══ */
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
+  fetchAndApplyPrices(); // async, non-blocking — updates cards when prices arrive
   initMiniMap();
   initScrollReveal();
   initPropertyReveal();
