@@ -515,88 +515,112 @@ ul{list-style:none}
 .explore-card-overlay-cta{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px}
 .explore-card-overlay-cta svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
 
-/* Explore Map */
+/* ══ Explore Map — Rebuilt Interactive System ══ */
 .explore-map-container{margin-bottom:64px}
 .explore-map-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 .explore-map-title{font-family:var(--serif);font-size:28px;color:var(--text-inv)}
 .explore-map-subtitle{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
 .map-legend{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);letter-spacing:.03em}
 .map-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(199,107,66,.6);flex-shrink:0}
-.explore-map-wrap{display:flex;flex-direction:column;border-radius:var(--radius-xl);overflow:hidden;height:590px;border:1px solid var(--border-dark);position:relative;background:var(--bg-dark-card);transition:height .5s var(--ease),width .5s var(--ease),border-radius .5s var(--ease),top .5s var(--ease),left .5s var(--ease)}
-.explore-map-wrap.map-expanded{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1000;border-radius:0;border:none;backdrop-filter:blur(4px)}
-.explore-map-wrap.map-sidebar-active{flex-direction:row}
-.explore-map-wrap.map-sidebar-active .map-property-card{left:324px}
-.explore-map-wrap.map-sidebar-active .map-nav-dots{display:none}
+/* Backdrop overlay */
+.map-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:999;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.4,0,.2,1)}
+.map-backdrop.visible{opacity:1;pointer-events:auto}
+/* Map wrapper — collapsed state */
+.explore-map-wrap{display:flex;flex-direction:column;border-radius:var(--radius-xl);overflow:hidden;height:590px;border:1px solid var(--border-dark);position:relative;background:var(--bg-dark-card);cursor:pointer;z-index:1;transform-origin:center center;transition:none;will-change:transform,width,height,top,left,border-radius}
+.explore-map-wrap .map-click-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:502;display:flex;align-items:center;gap:8px;padding:10px 22px;background:rgba(17,17,17,.75);backdrop-filter:blur(10px);border:1px solid var(--border-dark);border-radius:100px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.7);pointer-events:none;opacity:1;transition:opacity .3s var(--ease)}
+.explore-map-wrap .map-click-hint svg{width:14px;height:14px;stroke:var(--accent-light);fill:none;stroke-width:2}
+.explore-map-wrap:hover .map-click-hint{color:var(--accent-light)}
+/* Map wrapper — expanded state */
+.explore-map-wrap.map-expanded{position:fixed;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:1000;border-radius:0;border:none;cursor:default}
+.explore-map-wrap.map-expanded .map-click-hint{opacity:0}
+/* Map element */
 #exploreMap{flex:1;min-height:0;width:100%;z-index:1}
-#exploreMap .leaflet-popup-content-wrapper{background:var(--bg-dark-card);color:var(--text-inv);border:1px solid var(--border-dark);border-radius:var(--radius);box-shadow:0 12px 40px rgba(0,0,0,.4)}
-#exploreMap .leaflet-popup-tip{background:var(--bg-dark-card)}
-#exploreMap .leaflet-popup-content{font-family:var(--sans);font-size:13px;margin:12px 16px}
-#exploreMap .leaflet-popup-content b{font-family:var(--serif);font-size:16px;display:block;margin-bottom:4px}
 #exploreMap .leaflet-control-attribution{display:none}
-#exploreMap .leaflet-control-zoom a{background:var(--bg-dark-card);color:var(--text-inv);border-color:var(--border-dark)}
-#exploreMap .leaflet-control-zoom a:hover{background:var(--accent);color:#fff}
-@keyframes markerPulse{0%{transform:scale(1);opacity:.7}50%{transform:scale(1.8);opacity:0}100%{transform:scale(1);opacity:0}}
-@keyframes markerFadeIn{from{transform:scale(0) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-@keyframes cardSlideIn{from{transform:translateX(-40px) scale(.96);opacity:0}to{transform:translateX(0) scale(1);opacity:1}}
-@keyframes cardSlideOut{from{transform:translateX(0) scale(1);opacity:1}to{transform:translateX(-40px) scale(.96);opacity:0}}
-@keyframes stripItemIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
-.map-marker{position:relative;width:40px;height:40px;cursor:pointer;transition:transform .25s var(--ease)}
-.map-marker:hover{transform:scale(1.15)}
-.map-marker.active{transform:scale(1.2)}
-.map-marker-ring{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;border:2px solid var(--accent);opacity:.5;animation:markerPulse 2.5s var(--ease) infinite}
-.map-marker.active .map-marker-ring{border-color:var(--accent-light);opacity:.8;animation-duration:1.8s}
-.map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:var(--accent);border:2px solid rgba(255,255,255,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(199,107,66,.5);transition:box-shadow .25s var(--ease),background .25s var(--ease)}
-.map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 20px rgba(199,107,66,.7)}
+#exploreMap .leaflet-control-zoom{display:none}
+/* Custom zoom controls */
+.map-zoom-controls{position:absolute;bottom:80px;right:16px;z-index:502;display:flex;flex-direction:column;gap:1px;border-radius:var(--radius);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.map-expanded .map-zoom-controls{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.2s}
+.map-zoom-btn{width:40px;height:40px;background:rgba(28,28,28,.85);border:none;color:var(--text-inv);font-size:20px;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:background .2s var(--ease)}
+.map-zoom-btn:hover{background:var(--accent)}
+.map-zoom-btn:first-child{border-bottom:1px solid var(--border-dark)}
+/* Marker animations */
+@keyframes markerPulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.2);opacity:0}100%{transform:scale(2.2);opacity:0}}
+@keyframes markerFadeIn{from{transform:scale(0) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes markerGlow{0%,100%{box-shadow:0 4px 14px rgba(199,107,66,.4)}50%{box-shadow:0 4px 20px rgba(199,107,66,.7),0 0 30px rgba(199,107,66,.2)}}
+@keyframes cardSlideInDesktop{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes cardSlideOutDesktop{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+@keyframes cardSlideInMobile{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes cardSlideOutMobile{from{transform:translateY(0);opacity:1}to{transform:translateY(100%);opacity:0}}
+@keyframes stripItemIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes closeBtnIn{from{transform:scale(0) rotate(-90deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+/* Markers */
+.map-marker{position:relative;width:42px;height:42px;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.map-marker:hover{transform:scale(1.3)}
+.map-marker.active{transform:scale(1.25)}
+.map-marker-ring{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;border:2px solid var(--accent);opacity:.5;animation:markerPulse 2.8s cubic-bezier(.4,0,.2,1) infinite}
+.map-marker.active .map-marker-ring{border-color:var(--accent-light);opacity:.8;animation-duration:1.6s}
+.map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;background:var(--accent);border:2.5px solid rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(199,107,66,.5);transition:box-shadow .3s var(--ease),background .3s var(--ease),transform .3s cubic-bezier(.34,1.56,.64,1);animation:markerGlow 3s ease-in-out infinite}
+.map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 24px rgba(199,107,66,.8);transform:translate(-50%,-50%) scale(1.1)}
 .map-marker-core svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none}
-.map-property-card{position:absolute;bottom:24px;left:24px;z-index:500;width:320px;background:var(--bg-dark-card);border:1px solid var(--border-dark);border-radius:var(--radius-lg);box-shadow:0 16px 48px rgba(0,0,0,.5);overflow:hidden;opacity:0;pointer-events:none;transform:translateX(-40px);transition:left .4s var(--ease)}
-.map-property-card.visible{pointer-events:auto;animation:cardSlideIn .4s var(--ease) forwards}
-.map-property-card.closing{animation:cardSlideOut .3s var(--ease) forwards}
-.map-card-close{position:absolute;top:10px;right:10px;z-index:10;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.55);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s var(--ease)}
-.map-card-close:hover{background:rgba(199,107,66,.8)}
-.map-card-photo{width:100%;height:180px;background-size:cover;background-position:center;position:relative}
-.map-card-photo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,var(--bg-dark-card))}
-.map-card-body{padding:16px 18px 18px}
-.map-card-category{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-light);margin-bottom:6px}
-.map-card-name{font-family:var(--serif);font-size:20px;color:var(--text-inv);margin:0 0 4px;line-height:1.2}
-.map-card-location{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);margin:0 0 12px}
-.map-card-specs{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-.map-card-specs span{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);display:flex;align-items:center;gap:4px}
-.map-card-specs span svg{width:13px;height:13px;stroke:var(--brass-light);stroke-width:1.5;fill:none}
-.map-card-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.map-card-amenities span{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);background:rgba(255,255,255,.06);border:1px solid var(--border-dark);border-radius:20px;padding:3px 10px}
+/* Property card — desktop: right sidebar panel */
+.map-property-card{position:absolute;top:0;right:0;bottom:0;z-index:500;width:380px;background:rgba(28,28,28,.97);backdrop-filter:blur(12px);border-left:1px solid var(--border-dark);box-shadow:-8px 0 40px rgba(0,0,0,.4);overflow-y:auto;overflow-x:hidden;transform:translateX(100%);opacity:0;pointer-events:none;transition:none}
+.map-property-card.visible{pointer-events:auto;animation:cardSlideInDesktop .45s cubic-bezier(.22,1,.36,1) forwards}
+.map-property-card.closing{pointer-events:none;animation:cardSlideOutDesktop .3s cubic-bezier(.55,.06,.68,.19) forwards}
+.map-card-close{position:absolute;top:14px;right:14px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s var(--ease),transform .2s var(--ease)}
+.map-card-close:hover{background:var(--accent);transform:scale(1.1)}
+.map-card-photo{width:100%;height:220px;background-size:cover;background-position:center;position:relative}
+.map-card-photo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,rgba(28,28,28,.97))}
+.map-card-body{padding:20px 22px 24px}
+.map-card-category{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-light);margin-bottom:8px}
+.map-card-name{font-family:var(--serif);font-size:24px;color:var(--text-inv);margin:0 0 6px;line-height:1.2}
+.map-card-location{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);margin:0 0 4px;display:flex;align-items:center;gap:5px}
+.map-card-location svg{width:12px;height:12px;stroke:var(--accent-light);fill:none;stroke-width:2;flex-shrink:0}
+.map-card-price{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--text-inv);margin:0 0 4px}
+.map-card-price span{font-weight:400;font-size:12px;color:var(--text-inv-muted)}
+.map-card-rating{font-family:var(--mono);font-size:12px;color:var(--brass-light);display:flex;align-items:center;gap:5px;margin-bottom:14px}
+.map-card-rating svg{width:13px;height:13px;fill:var(--brass);stroke:none}
+.map-card-specs{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-dark)}
+.map-card-specs span{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);display:flex;align-items:center;gap:5px}
+.map-card-specs span svg{width:14px;height:14px;stroke:var(--brass-light);stroke-width:1.5;fill:none}
+.map-card-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.map-card-amenities span{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);background:rgba(255,255,255,.06);border:1px solid var(--border-dark);border-radius:20px;padding:4px 12px}
 .map-card-actions{display:flex;gap:8px}
-.map-card-btn-primary{flex:1;padding:10px 0;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.04em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease)}
-.map-card-btn-primary:hover{background:var(--accent-hover)}
-.map-card-btn-secondary{flex:1;padding:10px 0;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease)}
-.map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light)}
-.map-nav-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:500;display:flex;gap:8px;padding:6px 12px;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);border-radius:20px;transition:opacity .3s var(--ease)}
-.map-nav-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);border:none;cursor:pointer;padding:0;transition:background .25s var(--ease),transform .25s var(--ease)}
-.map-nav-dots button:hover{background:rgba(255,255,255,.55)}
-.map-nav-dots button.active{background:var(--accent);transform:scale(1.3)}
-.map-expand-btn{position:absolute;top:16px;right:16px;z-index:500;width:36px;height:36px;border-radius:var(--radius);background:rgba(28,28,28,.75);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background .2s var(--ease),opacity .2s var(--ease),transform .2s var(--ease)}
-.map-expand-btn:hover{background:var(--accent);transform:scale(1.06)}
+.map-card-btn-primary{flex:1;padding:12px 0;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease),transform .2s var(--ease)}
+.map-card-btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.map-card-btn-secondary{flex:1;padding:12px 0;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease)}
+.map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light);transform:translateY(-1px)}
+/* Nav dots hidden — using strip instead */
+.map-nav-dots{display:none}
+/* Expand button */
+.map-expand-btn{position:absolute;top:16px;right:16px;z-index:502;width:38px;height:38px;border-radius:var(--radius);background:rgba(28,28,28,.8);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:background .2s var(--ease),opacity .2s var(--ease),transform .2s var(--ease)}
+.map-expand-btn:hover{background:var(--accent);transform:scale(1.08)}
 .map-expand-btn svg{width:16px;height:16px;stroke:var(--text-inv);stroke-width:2;fill:none}
-.explore-map-wrap.map-expanded .map-expand-btn{opacity:0;pointer-events:none;transform:scale(.8)}
-.map-close-btn{position:absolute;top:16px;right:16px;z-index:600;width:44px;height:44px;border-radius:50%;background:rgba(17,17,17,.6);border:1px solid var(--border-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;transform:scale(.7) rotate(-45deg);pointer-events:none;transition:background .2s var(--ease),transform .3s var(--ease),opacity .3s var(--ease)}
-.map-close-btn.visible{opacity:1;transform:scale(1) rotate(0deg);pointer-events:auto}
+.map-expanded .map-expand-btn{opacity:0;pointer-events:none;transform:scale(.6)}
+/* Close button */
+.map-close-btn{position:absolute;top:20px;right:20px;z-index:600;width:48px;height:48px;border-radius:50%;background:rgba(17,17,17,.7);border:1px solid rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);opacity:0;transform:scale(0) rotate(-90deg);pointer-events:none;transition:background .2s var(--ease)}
+.map-close-btn.visible{opacity:1;transform:scale(1) rotate(0deg);pointer-events:auto;animation:closeBtnIn .4s cubic-bezier(.34,1.56,.64,1) forwards}
 .map-close-btn:hover{background:var(--accent)}
-.map-close-btn svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none}
-.map-prop-strip{flex-shrink:0;display:flex;align-items:stretch;gap:10px;padding:14px 16px;overflow-x:auto;overflow-y:hidden;background:var(--bg-dark-card);border-top:1px solid var(--border-dark);scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
-.map-prop-strip::-webkit-scrollbar{height:5px;width:5px}
+.map-close-btn svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
+/* Property strip — bottom thumbnails */
+.map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px;overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);scroll-behavior:smooth;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.map-expanded .map-prop-strip{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
+.map-prop-strip::before,.map-prop-strip::after{content:'';position:sticky;min-width:20px;z-index:2;flex-shrink:0;pointer-events:none}
+.map-prop-strip::before{left:0;background:linear-gradient(to right,rgba(17,17,17,.9),transparent)}
+.map-prop-strip::after{right:0;background:linear-gradient(to left,rgba(17,17,17,.9),transparent)}
+.map-prop-strip::-webkit-scrollbar{height:4px}
 .map-prop-strip::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:10px}
 .map-prop-strip::-webkit-scrollbar-thumb:hover{background:var(--accent)}
-.map-prop-strip-item{flex-shrink:0;width:220px;display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius);background:rgba(255,255,255,.03);border:1px solid transparent;border-left:3px solid transparent;cursor:pointer;transition:background .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease);animation:stripItemIn .4s var(--ease) backwards}
-.map-prop-strip-item:hover{background:rgba(255,255,255,.07);transform:translateY(-2px)}
-.map-prop-strip-item.active{background:rgba(199,107,66,.14);border-color:rgba(199,107,66,.35);border-left-color:var(--accent)}
-.map-prop-strip-thumb{width:60px;height:60px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.map-prop-strip-item{flex-shrink:0;width:200px;display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius);background:rgba(28,28,28,.8);backdrop-filter:blur(6px);border:1.5px solid transparent;cursor:pointer;transition:background .25s var(--ease),border-color .3s var(--ease),transform .25s var(--ease);animation:stripItemIn .4s var(--ease) backwards}
+.map-prop-strip-item:hover{background:rgba(40,40,40,.9);transform:translateY(-3px)}
+.map-prop-strip-item.active{background:rgba(199,107,66,.18);border-color:var(--accent)}
+.map-prop-strip-thumb{width:56px;height:56px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.4);transition:box-shadow .3s var(--ease)}
+.map-prop-strip-item.active .map-prop-strip-thumb{box-shadow:0 4px 16px rgba(199,107,66,.4)}
 .map-prop-strip-info{min-width:0;flex:1}
-.map-prop-strip-name{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-inv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.map-prop-strip-loc{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.map-prop-strip-name{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--text-inv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.map-prop-strip-loc{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
 .map-prop-strip-loc svg{width:10px;height:10px;stroke:var(--brass-light);stroke-width:2;fill:none;flex-shrink:0}
-.map-prop-strip-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.12);border-radius:20px;padding:2px 8px;margin-top:4px;width:fit-content}
+.map-prop-strip-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.12);border-radius:20px;padding:2px 8px;margin-top:3px;width:fit-content}
 .map-prop-strip-item.active .map-prop-strip-badge{color:#fff;background:var(--accent)}
-.map-prop-strip.map-prop-sidebar{order:-1;flex-direction:column;width:300px;height:100%;padding:20px 14px;overflow-y:auto;overflow-x:hidden;border-top:none;border-right:1px solid var(--border-dark);gap:10px}
-.map-prop-strip.map-prop-sidebar .map-prop-strip-item{width:100%}
 
 /* Events Section */
 .explore-events{margin-bottom:20px}
@@ -987,17 +1011,17 @@ ul{list-style:none}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
-  .map-property-card{animation:none;position:absolute;bottom:0;left:0;right:0;width:100%;max-width:100%;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(110%);max-height:55vh;overflow-y:auto}
-  .map-property-card.visible{animation:none;transform:translateY(0)}
-  .map-property-card.closing{animation:none;transform:translateY(110%)}
-  .map-card-photo{height:150px}
-  .map-card-body{padding:14px 16px 16px}
-  .map-card-name{font-size:18px}
-  .map-card-btn-primary,.map-card-btn-secondary{font-size:11px;padding:9px 0}
-  .map-nav-dots{bottom:auto;top:12px}
+  .map-property-card{position:absolute;top:auto;right:0;bottom:0;left:0;width:100%;max-width:100%;max-height:55vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%)}
+  .map-property-card.visible{animation:cardSlideInMobile .4s cubic-bezier(.22,1,.36,1) forwards}
+  .map-property-card.closing{animation:cardSlideOutMobile .3s cubic-bezier(.55,.06,.68,.19) forwards}
+  .map-card-photo{height:160px}
+  .map-card-body{padding:16px 18px 18px}
+  .map-card-name{font-size:20px}
+  .map-card-btn-primary,.map-card-btn-secondary{font-size:12px;padding:10px 0}
   .map-prop-strip{padding:12px 14px;gap:8px}
-  .map-prop-strip-item{width:190px}
-  .map-close-btn{width:40px;height:40px;top:12px;right:12px}
+  .map-prop-strip-item{width:180px}
+  .map-close-btn{width:42px;height:42px;top:14px;right:14px}
+  .map-zoom-controls{bottom:auto;top:80px;right:12px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
   .explore-categories{gap:4px}
@@ -1043,20 +1067,20 @@ ul{list-style:none}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
   .explore-map-wrap{height:400px}
-  .map-property-card{max-height:60vh}
-  .map-card-photo{height:130px}
-  .map-card-name{font-size:16px}
+  .map-property-card{max-height:65vh}
+  .map-card-photo{height:140px}
+  .map-card-name{font-size:18px}
   .map-card-specs span{font-size:10px}
-  .map-card-amenities span{font-size:9px;padding:2px 8px}
-  .map-marker{width:34px;height:34px}
-  .map-marker-core{width:24px;height:24px}
+  .map-card-amenities span{font-size:9px;padding:3px 8px}
+  .map-marker{width:36px;height:36px}
+  .map-marker-core{width:26px;height:26px}
   .map-marker-core svg{width:11px;height:11px}
   .map-prop-strip{padding:10px 12px;gap:8px}
-  .map-prop-strip-item{width:160px;padding:6px}
-  .map-prop-strip-thumb{width:50px;height:50px}
-  .map-prop-strip-name{font-size:12px}
+  .map-prop-strip-item{width:160px;padding:8px}
+  .map-prop-strip-thumb{width:48px;height:48px}
+  .map-prop-strip-name{font-size:11px}
   .map-prop-strip-loc{font-size:10px}
-  .map-close-btn{width:38px;height:38px;top:10px;right:10px}
+  .map-close-btn{width:40px;height:40px;top:12px;right:12px}
   .explore-events-title{font-size:24px}
   .explore-map-title{font-size:22px}
   .event-date-block{min-width:60px;padding:12px 10px}
@@ -1391,38 +1415,52 @@ ul{list-style:none}
       </button>
     </div>
 
-    <!-- Interactive Property Map -->
+    <!-- Interactive Property Map — Rebuilt -->
     <div class="explore-map-container" id="propertyMapSection">
       <div class="explore-map-header">
         <div>
           <h3 class="explore-map-title">Discover Our Properties</h3>
-          <p class="explore-map-subtitle">Tap a marker to explore each luxury rental</p>
+          <p class="explore-map-subtitle">Click the map to explore each luxury rental</p>
         </div>
         <div class="map-legend">
           <span class="map-legend-dot"></span>
           <span>7 Properties across DFW</span>
         </div>
       </div>
+      <div class="map-backdrop" id="mapBackdrop"></div>
       <div class="explore-map-wrap" id="mapWrap">
         <div id="exploreMap"></div>
+        <div class="map-click-hint">
+          <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          Click to explore full map
+        </div>
         <button class="map-expand-btn" id="mapExpandBtn" aria-label="Expand map">
           <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
         </button>
         <button class="map-close-btn" id="mapCloseBtn" aria-label="Close expanded map">
           <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
+        <div class="map-zoom-controls">
+          <button class="map-zoom-btn" id="mapZoomIn" aria-label="Zoom in">+</button>
+          <button class="map-zoom-btn" id="mapZoomOut" aria-label="Zoom out">&minus;</button>
+        </div>
         <div class="map-property-card" id="mapPropertyCard">
           <button class="map-card-close" id="mapCardClose" aria-label="Close">&times;</button>
           <div class="map-card-photo" id="mapCardPhoto"></div>
           <div class="map-card-body">
             <div class="map-card-category" id="mapCardCategory"></div>
             <h4 class="map-card-name" id="mapCardName"></h4>
-            <p class="map-card-location" id="mapCardLocation"></p>
+            <p class="map-card-location" id="mapCardLocation">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="mapCardLocationText"></span>
+            </p>
+            <div class="map-card-price" id="mapCardPrice"></div>
+            <div class="map-card-rating" id="mapCardRating"></div>
             <div class="map-card-specs" id="mapCardSpecs"></div>
             <div class="map-card-amenities" id="mapCardAmenities"></div>
             <div class="map-card-actions">
               <button class="map-card-btn-primary" id="mapCardBook">Book Now</button>
-              <button class="map-card-btn-secondary" id="mapCardDetails">View Details</button>
+              <button class="map-card-btn-secondary" id="mapCardDetails">View Property</button>
             </div>
           </div>
         </div>
@@ -3682,6 +3720,8 @@ let exploreMarkers = [];
 let mapPropertyMarkers = [];
 let mapActiveProperty = null;
 let mapObserverAttached = false;
+let mapIsExpanded = false;
+let mapExpandAnimating = false;
 
 // Haversine distance in miles
 function haversine(lat1, lon1, lat2, lon2) {
@@ -3835,43 +3875,28 @@ function toggleExploreExpand(section) {
 function initExploreMap() {
   const el = document.getElementById('exploreMap');
   if (!el || typeof L === 'undefined') return;
-  if (exploreMapInstance) return; // prevent double-init
-
-  const isMobile = window.innerWidth <= 768;
+  if (exploreMapInstance) return;
 
   exploreMapInstance = L.map('exploreMap', {
     center: [32.89, -96.83],
     zoom: 10,
-    zoomControl: !isMobile,
-    attributionControl: false
+    zoomControl: false,
+    attributionControl: false,
+    scrollWheelZoom: false
   });
-
-  if (!isMobile) {
-    L.control.zoom({ position: 'topright' }).addTo(exploreMapInstance);
-  }
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 18,
     subdomains: 'abcd'
   }).addTo(exploreMapInstance);
 
-  // Add all 7 property markers with stagger
   addPropertyMarkers();
-
-  // Build nav dots
-  buildMapNavDots();
-
-  // Build property strip
   buildMapPropStrip();
+  initMapInteraction();
 
-  // Wire up expand/collapse
-  initMapExpand();
-
-  // Wire up card close
   const closeBtn = document.getElementById('mapCardClose');
   if (closeBtn) closeBtn.addEventListener('click', closeMapCard);
 
-  // Also add attraction markers for current property
   updateExploreMap();
 }
 
@@ -3893,8 +3918,8 @@ function addPropertyMarkers() {
     const icon = L.divIcon({
       html: createPropertyMarkerIcon(),
       className: '',
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
+      iconSize: [42, 42],
+      iconAnchor: [21, 21]
     });
 
     const marker = L.marker([prop.lat, prop.lng], {
@@ -3904,15 +3929,18 @@ function addPropertyMarkers() {
       keyboard: true
     }).addTo(exploreMapInstance);
 
-    // Stagger fade-in
     const markerEl = marker.getElement();
     if (markerEl) {
       markerEl.style.opacity = '0';
-      markerEl.style.animation = `markerFadeIn .4s var(--ease) ${idx * 100}ms forwards`;
+      markerEl.style.animation = `markerFadeIn .5s cubic-bezier(.34,1.56,.64,1) ${idx * 120}ms forwards`;
       markerEl.setAttribute('aria-label', `${prop.name} in ${prop.city}, ${prop.state}`);
     }
 
-    marker.on('click', () => selectPropertyOnMap(idx));
+    marker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      if (!mapIsExpanded) expandMap();
+      setTimeout(() => selectPropertyOnMap(idx), mapIsExpanded ? 0 : 450);
+    });
     marker.propertyIndex = idx;
     mapPropertyMarkers.push(marker);
   });
@@ -3936,15 +3964,17 @@ function selectPropertyOnMap(idx) {
     }
   });
 
-  // Pan to marker
-  exploreMapInstance.flyTo([prop.lat, prop.lng], 12, { duration: 0.8 });
+  // Fly to marker
+  exploreMapInstance.flyTo([prop.lat, prop.lng], 12, { duration: 1.0, easeLinearity: 0.25 });
 
   // Populate card
   const card = document.getElementById('mapPropertyCard');
   const photo = document.getElementById('mapCardPhoto');
   const catEl = document.getElementById('mapCardCategory');
   const nameEl = document.getElementById('mapCardName');
-  const locEl = document.getElementById('mapCardLocation');
+  const locTextEl = document.getElementById('mapCardLocationText');
+  const priceEl = document.getElementById('mapCardPrice');
+  const ratingEl = document.getElementById('mapCardRating');
   const specsEl = document.getElementById('mapCardSpecs');
   const amenEl = document.getElementById('mapCardAmenities');
   const bookBtn = document.getElementById('mapCardBook');
@@ -3955,7 +3985,27 @@ function selectPropertyOnMap(idx) {
   }
   if (catEl) catEl.textContent = prop.category === 'villa' ? 'Luxury Villa' : 'Designer Suite';
   if (nameEl) nameEl.textContent = prop.name;
-  if (locEl) locEl.textContent = `${prop.city}, ${prop.state}`;
+  if (locTextEl) locTextEl.textContent = `${prop.city}, ${prop.state}`;
+
+  // Price
+  if (priceEl) {
+    const priceData = prop.basePrice || prop.price;
+    if (priceData) {
+      priceEl.innerHTML = `$${priceData} <span>/ night</span>`;
+    } else {
+      priceEl.innerHTML = `<span>Check availability</span>`;
+    }
+  }
+
+  // Rating
+  if (ratingEl) {
+    if (prop.rating) {
+      ratingEl.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${prop.rating} &middot; ${prop.reviews} review${prop.reviews !== 1 ? 's' : ''}`;
+    } else {
+      ratingEl.innerHTML = `<span style="color:var(--text-inv-muted);font-size:11px">New listing</span>`;
+    }
+  }
+
   if (specsEl) {
     specsEl.innerHTML = `
       <span><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>${prop.guests} guests</span>
@@ -3963,27 +4013,35 @@ function selectPropertyOnMap(idx) {
       <span><svg viewBox="0 0 24 24"><path d="M4 12h16v8H4z"/><path d="M6 12V8a2 2 0 012-2h8a2 2 0 012 2v4"/></svg>${prop.baths} bath${prop.baths>1?'s':''}</span>`;
   }
   if (amenEl && prop.amenities) {
-    amenEl.innerHTML = prop.amenities.slice(0, 3).map(a => `<span>${a.label}</span>`).join('');
+    amenEl.innerHTML = prop.amenities.slice(0, 4).map(a => `<span>${a.label}</span>`).join('');
   }
 
-  // Wire action buttons
   if (bookBtn) {
     bookBtn.onclick = () => { if (typeof openBooking === 'function') openBooking(prop.slug); };
   }
   if (detailBtn) {
-    detailBtn.onclick = () => { if (typeof openDetail === 'function') openDetail(prop.slug); };
+    detailBtn.onclick = () => {
+      collapseMap();
+      setTimeout(() => {
+        if (typeof openDetail === 'function') openDetail(prop.slug);
+      }, 400);
+    };
   }
 
-  // Show card
-  if (card) card.classList.add('visible');
+  // Close existing card first if open, then show new
+  if (card && card.classList.contains('visible') && mapActiveProperty !== idx) {
+    card.classList.add('closing');
+    card.classList.remove('visible');
+    setTimeout(() => {
+      card.classList.remove('closing');
+      card.classList.add('visible');
+    }, 200);
+  } else if (card) {
+    card.classList.remove('closing');
+    card.classList.add('visible');
+  }
 
-  // Update nav dots
-  updateMapNavDots(idx);
-
-  // Update property strip
   updateMapPropStrip(idx);
-
-  // Update attraction markers for this property
   exploreSelectedProp = prop;
   updateExploreMap();
 }
@@ -3993,10 +4051,9 @@ function closeMapCard() {
   if (card && card.classList.contains('visible')) {
     card.classList.add('closing');
     card.classList.remove('visible');
-    setTimeout(() => card.classList.remove('closing'), 320);
+    setTimeout(() => card.classList.remove('closing'), 350);
   }
 
-  // Deactivate markers
   mapPropertyMarkers.forEach(m => {
     const el = m.getElement();
     if (!el) return;
@@ -4004,39 +4061,14 @@ function closeMapCard() {
     if (inner) inner.classList.remove('active');
   });
   mapActiveProperty = null;
-
-  // Deactivate strip items
   updateMapPropStrip(-1);
-}
-
-function buildMapNavDots() {
-  const container = document.getElementById('mapNavDots');
-  if (!container) return;
-  container.innerHTML = '';
-  PROPERTIES.forEach((prop, idx) => {
-    const dot = document.createElement('button');
-    dot.setAttribute('aria-label', prop.name);
-    dot.title = prop.name;
-    dot.addEventListener('click', () => selectPropertyOnMap(idx));
-    container.appendChild(dot);
-  });
-}
-
-function updateMapNavDots(activeIdx) {
-  const container = document.getElementById('mapNavDots');
-  if (!container) return;
-  const dots = container.querySelectorAll('button');
-  dots.forEach((d, i) => {
-    if (i === activeIdx) d.classList.add('active');
-    else d.classList.remove('active');
-  });
 }
 
 function buildMapPropStrip() {
   const strip = document.getElementById('mapPropStrip');
   if (!strip) return;
   strip.innerHTML = PROPERTIES.map((prop, idx) => `
-    <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 60}ms" onclick="selectPropertyOnMap(${idx})">
+    <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 70}ms">
       <div class="map-prop-strip-thumb" style="background-image:url(${prop.photos && prop.photos[0] ? imgUrl(prop.hostingId, prop.photos[0]) : ''})"></div>
       <div class="map-prop-strip-info">
         <div class="map-prop-strip-name">${prop.name}</div>
@@ -4048,6 +4080,14 @@ function buildMapPropStrip() {
       </div>
     </div>
   `).join('');
+
+  // Wire click handlers
+  strip.querySelectorAll('.map-prop-strip-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const idx = parseInt(item.dataset.idx, 10);
+      selectPropertyOnMap(idx);
+    });
+  });
 }
 
 function updateMapPropStrip(activeIdx) {
@@ -4058,70 +4098,196 @@ function updateMapPropStrip(activeIdx) {
     item.classList.toggle('active', i === activeIdx);
   });
   const activeItem = strip.querySelector('.map-prop-strip-item.active');
-  if (activeItem && typeof activeItem.scrollIntoView === 'function') {
+  if (activeItem) {
     activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }
 }
 
-function initMapExpand() {
+/* ── Map expand/collapse with cinematic FLIP animation ── */
+function initMapInteraction() {
   const wrap = document.getElementById('mapWrap');
-  const btn = document.getElementById('mapExpandBtn');
+  const expandBtn = document.getElementById('mapExpandBtn');
   const closeBtn = document.getElementById('mapCloseBtn');
-  if (!wrap || !btn) return;
+  const backdrop = document.getElementById('mapBackdrop');
+  const zoomIn = document.getElementById('mapZoomIn');
+  const zoomOut = document.getElementById('mapZoomOut');
+  if (!wrap) return;
 
-  btn.addEventListener('click', () => {
-    const isExpanded = wrap.classList.contains('map-expanded');
-    if (isExpanded) {
-      collapseMap();
-    } else {
-      expandMap();
-    }
+  // Click anywhere on the map container to expand (when collapsed)
+  wrap.addEventListener('click', (e) => {
+    if (mapIsExpanded || mapExpandAnimating) return;
+    // Don't trigger on marker clicks (they propagate separately)
+    if (e.target.closest('.map-marker') || e.target.closest('.map-marker-core') || e.target.closest('.map-marker-ring')) return;
+    if (e.target.closest('.map-expand-btn')) return;
+    expandMap();
   });
 
-  if (closeBtn) {
-    closeBtn.addEventListener('click', collapseMap);
+  // Expand button
+  if (expandBtn) {
+    expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!mapIsExpanded) expandMap();
+    });
   }
 
+  // Close button
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      collapseMap();
+    });
+  }
+
+  // Backdrop click closes
+  if (backdrop) {
+    backdrop.addEventListener('click', collapseMap);
+  }
+
+  // Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && wrap.classList.contains('map-expanded')) {
+    if (e.key === 'Escape' && mapIsExpanded) {
       collapseMap();
     }
   });
+
+  // Custom zoom controls
+  if (zoomIn) {
+    zoomIn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (exploreMapInstance) exploreMapInstance.zoomIn(1, { animate: true });
+    });
+  }
+  if (zoomOut) {
+    zoomOut.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (exploreMapInstance) exploreMapInstance.zoomOut(1, { animate: true });
+    });
+  }
 }
 
 function expandMap() {
   const wrap = document.getElementById('mapWrap');
-  if (!wrap) return;
+  if (!wrap || mapIsExpanded || mapExpandAnimating) return;
+  mapExpandAnimating = true;
   const closeBtn = document.getElementById('mapCloseBtn');
-  const strip = document.getElementById('mapPropStrip');
-  wrap.classList.add('map-expanded');
+  const backdrop = document.getElementById('mapBackdrop');
+
+  // Get current position for FLIP animation
+  const rect = wrap.getBoundingClientRect();
+  const scaleX = rect.width / window.innerWidth;
+  const scaleY = rect.height / window.innerHeight;
+  const translateX = rect.left + rect.width / 2 - window.innerWidth / 2;
+  const translateY = rect.top + rect.height / 2 - window.innerHeight / 2;
+
+  // Set the starting transform (current visual position mapped to fixed coords)
+  wrap.style.transition = 'none';
+  wrap.style.position = 'fixed';
+  wrap.style.top = '0';
+  wrap.style.left = '0';
+  wrap.style.width = '100vw';
+  wrap.style.height = '100vh';
+  wrap.style.zIndex = '1000';
+  wrap.style.borderRadius = rect.width < 600 ? '16px' : '24px';
+  wrap.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+
+  // Force reflow
+  wrap.offsetHeight;
+
+  // Animate to fullscreen
+  wrap.style.transition = 'transform .45s cubic-bezier(.22,1,.36,1), border-radius .45s cubic-bezier(.22,1,.36,1)';
+  wrap.style.transform = 'translate(0, 0) scale(1, 1)';
+  wrap.style.borderRadius = '0';
+
+  // Show backdrop
+  if (backdrop) backdrop.classList.add('visible');
+
   document.body.style.overflow = 'hidden';
-  // Show close button overlay
-  if (closeBtn) closeBtn.classList.add('visible');
-  // On desktop, turn the strip into a full-height sidebar
-  if (strip && window.innerWidth > 768) {
-    wrap.classList.add('map-sidebar-active');
-    strip.classList.add('map-prop-sidebar');
-  }
-  if (exploreMapInstance) {
-    setTimeout(() => exploreMapInstance.invalidateSize(), 350);
-  }
+
+  // After animation completes
+  setTimeout(() => {
+    wrap.classList.add('map-expanded');
+    wrap.style.transition = '';
+    wrap.style.transform = '';
+    wrap.style.position = '';
+    wrap.style.top = '';
+    wrap.style.left = '';
+    wrap.style.width = '';
+    wrap.style.height = '';
+    wrap.style.zIndex = '';
+    wrap.style.borderRadius = '';
+    wrap.style.cursor = 'default';
+    mapIsExpanded = true;
+    mapExpandAnimating = false;
+
+    if (closeBtn) closeBtn.classList.add('visible');
+
+    // Enable scroll-wheel zoom when expanded
+    if (exploreMapInstance) {
+      exploreMapInstance.scrollWheelZoom.enable();
+      exploreMapInstance.invalidateSize();
+      // Fit all markers
+      const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
+      exploreMapInstance.fitBounds(bounds.pad(0.15), { animate: true, duration: 0.6 });
+    }
+  }, 460);
 }
 
 function collapseMap() {
   const wrap = document.getElementById('mapWrap');
-  if (!wrap) return;
+  if (!wrap || !mapIsExpanded || mapExpandAnimating) return;
+  mapExpandAnimating = true;
   const closeBtn = document.getElementById('mapCloseBtn');
-  const strip = document.getElementById('mapPropStrip');
-  wrap.classList.remove('map-expanded');
-  wrap.classList.remove('map-sidebar-active');
-  document.body.style.overflow = '';
-  // Hide close button overlay
+  const backdrop = document.getElementById('mapBackdrop');
+
+  // Close any open property card
+  closeMapCard();
+
+  // Hide close button
   if (closeBtn) closeBtn.classList.remove('visible');
-  if (strip) strip.classList.remove('map-prop-sidebar');
-  if (exploreMapInstance) {
-    setTimeout(() => exploreMapInstance.invalidateSize(), 350);
-  }
+
+  // Get the target (collapsed) position
+  // We need to temporarily remove map-expanded to measure where it should go
+  wrap.classList.remove('map-expanded');
+  const targetRect = wrap.getBoundingClientRect();
+  wrap.classList.add('map-expanded');
+
+  // Calculate the reverse FLIP
+  const scaleX = targetRect.width / window.innerWidth;
+  const scaleY = targetRect.height / window.innerHeight;
+  const translateX = targetRect.left + targetRect.width / 2 - window.innerWidth / 2;
+  const translateY = targetRect.top + targetRect.height / 2 - window.innerHeight / 2;
+
+  // Start from fullscreen
+  wrap.style.transition = 'none';
+  wrap.style.transform = 'translate(0, 0) scale(1, 1)';
+  wrap.offsetHeight;
+
+  // Animate to collapsed position
+  wrap.style.transition = 'transform .4s cubic-bezier(.55,.06,.68,.19), border-radius .4s cubic-bezier(.55,.06,.68,.19)';
+  wrap.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+  wrap.style.borderRadius = '24px';
+
+  // Fade backdrop
+  if (backdrop) backdrop.classList.remove('visible');
+
+  setTimeout(() => {
+    wrap.classList.remove('map-expanded');
+    wrap.style.transition = '';
+    wrap.style.transform = '';
+    wrap.style.borderRadius = '';
+    wrap.style.cursor = '';
+    document.body.style.overflow = '';
+    mapIsExpanded = false;
+    mapExpandAnimating = false;
+
+    if (exploreMapInstance) {
+      exploreMapInstance.scrollWheelZoom.disable();
+      exploreMapInstance.invalidateSize();
+      // Zoom back to overview
+      const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
+      exploreMapInstance.fitBounds(bounds.pad(0.1), { animate: true, duration: 0.5 });
+    }
+  }, 420);
 }
 
 function updateExploreMap() {
