@@ -301,6 +301,34 @@ ul{list-style:none}
 .booking-msg{font-family:var(--sans);font-size:13px;text-align:center;padding:12px;border-radius:var(--radius);margin-top:8px}
 .booking-msg.success{background:#E8F5E9;color:#2E7D32}
 .booking-msg.error{background:#FFEBEE;color:#C62828}
+/* ── Stripe Payment Step ── */
+.payment-step{display:none;margin-top:20px}
+.payment-step.visible{display:block}
+.payment-step-header{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.payment-step-header svg{width:18px;height:18px;stroke:var(--accent);stroke-width:1.5;fill:none}
+.payment-step-header span{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+.stripe-card-wrap{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;background:var(--bg-card);transition:border-color .3s var(--ease),box-shadow .3s var(--ease);min-height:44px}
+.stripe-card-wrap.StripeElement--focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(199,107,66,.1)}
+.stripe-card-wrap.StripeElement--invalid{border-color:#C62828;box-shadow:0 0 0 3px rgba(198,40,40,.08)}
+.stripe-card-error{font-family:var(--sans);font-size:12px;color:#C62828;margin-top:6px;min-height:18px}
+.booking-review{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:16px 0}
+.review-header{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.review-row{display:flex;justify-content:space-between;font-family:var(--sans);font-size:13px;color:var(--text-muted);padding:3px 0}
+.review-total{border-top:1px solid var(--border);margin-top:8px;padding-top:10px;font-weight:600;color:var(--text);font-size:15px}
+.btn-pay{background:var(--accent);color:#fff;border:none;padding:16px;border-radius:var(--radius);font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s,background .2s;letter-spacing:.01em}
+.btn-pay:hover{background:var(--accent-light)}
+.btn-pay:disabled{opacity:.5;cursor:not-allowed}
+.btn-pay .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.booking-step-nav{display:flex;align-items:center;gap:8px;margin-top:12px}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:12px 20px;border-radius:var(--radius);font-family:var(--sans);font-size:13px;cursor:pointer;transition:border-color .2s}
+.btn-back:hover{border-color:var(--text)}
+.booking-confirmation{text-align:center;padding:32px 16px}
+.confirmation-icon{width:64px;height:64px;border-radius:50%;background:#E8F5E9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.confirmation-icon svg{width:32px;height:32px;stroke:#2E7D32;stroke-width:2;fill:none}
+.confirmation-title{font-family:var(--serif);font-size:24px;margin-bottom:8px}
+.confirmation-sub{font-family:var(--sans);font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+.confirmation-id{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.05em;margin-bottom:20px}
 /* Mobile full-screen booking */
 @media(max-width:768px){
   .booking-modal{padding:0;align-items:flex-end}
@@ -1547,7 +1575,45 @@ ul{list-style:none}
       </div>
       <div class="form-group" style="margin-top:12px"><label>EMAIL</label><input type="email" id="bEmail" autocomplete="email" inputmode="email"></div>
       <div class="form-group" style="margin-top:12px"><label>PHONE</label><input type="tel" id="bPhone" autocomplete="tel" inputmode="tel"></div>
-      <button class="btn-primary btn-full" style="margin-top:16px" onclick="submitBooking()">Request Booking</button>
+      <button class="btn-primary btn-full" style="margin-top:16px" onclick="goToPaymentStep()">Continue to Payment</button>
+      <button class="btn-back btn-full" style="margin-top:8px" onclick="submitBookingRequest()">Request Without Payment</button>
+    </div>
+
+    <!-- Payment Step (appears after guest info) -->
+    <div id="paymentStep" class="payment-step">
+      <div class="payment-step-header">
+        <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Payment Details</span>
+      </div>
+
+      <!-- Review Summary -->
+      <div id="paymentReview" class="booking-review"></div>
+
+      <!-- Stripe Card Element -->
+      <div class="form-group">
+        <label>CARD DETAILS</label>
+        <div id="stripeCardElement" class="stripe-card-wrap"></div>
+        <div id="stripeCardError" class="stripe-card-error"></div>
+      </div>
+
+      <button class="btn-pay" id="btnConfirmPay" onclick="confirmAndPay()" style="margin-top:16px">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span id="btnPayText">Confirm &amp; Pay</span>
+      </button>
+      <div class="booking-step-nav">
+        <button class="btn-back" onclick="backToGuestInfo()" style="width:100%">&larr; Back to Guest Info</button>
+      </div>
+    </div>
+
+    <!-- Confirmation (appears after successful booking) -->
+    <div id="bookingConfirmation" style="display:none">
+      <div class="booking-confirmation">
+        <div class="confirmation-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h3 class="confirmation-title">Booking Confirmed!</h3>
+        <div class="confirmation-sub" id="confirmationDetails"></div>
+        <div class="confirmation-id" id="confirmationId"></div>
+        <button class="btn-primary btn-full" onclick="closeBooking()">Done</button>
+      </div>
     </div>
 
     <div id="bookingMsg"></div>
@@ -1570,6 +1636,8 @@ ul{list-style:none}
 
 <!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Stripe.js for payment tokenization (card data never touches our server) -->
+<script src="https://js.stripe.com/v3/"></script>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -2302,6 +2370,7 @@ function openBooking(slug) {
   document.getElementById('bookingTitle').textContent = prop.name;
   document.getElementById('bookingSub').textContent = `${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}`;
   calCheckIn = null; calCheckOut = null; calAvail = {}; calMode = 'in';
+  lastQuoteData = null;
   document.getElementById('calValIn').textContent = 'Select date';
   document.getElementById('calValOut').textContent = 'Select date';
   document.getElementById('calFieldIn').classList.add('active');
@@ -2310,6 +2379,15 @@ function openBooking(slug) {
   document.getElementById('guestFields').style.display = 'none';
   document.getElementById('quoteResult').innerHTML = '';
   document.getElementById('bookingMsg').innerHTML = '';
+  // Reset payment & confirmation steps
+  unmountStripeCard();
+  document.getElementById('paymentStep').classList.remove('visible');
+  document.getElementById('paymentStep').style.display = 'none';
+  document.getElementById('bookingConfirmation').style.display = 'none';
+  // Restore calendar/bar visibility (may have been hidden by payment step)
+  document.getElementById('calContainer').style.display = '';
+  try { document.querySelector('.cal-bar').style.display = ''; } catch(_){}
+  try { document.querySelector('.cancellation-policy').style.display = ''; } catch(_){}
   if (document.getElementById('bFirstName')) document.getElementById('bFirstName').value = '';
   if (document.getElementById('bLastName')) document.getElementById('bLastName').value = '';
   if (document.getElementById('bEmail')) document.getElementById('bEmail').value = '';
@@ -2319,10 +2397,13 @@ function openBooking(slug) {
   document.getElementById('calGrid').innerHTML = '<div class="cal-loading">Loading availability&hellip;</div>';
   document.getElementById('bookingModal').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Initialize Stripe lazily on first booking modal open
+  if (!stripe) initStripe();
   fetchCalMonth(calSlug, calYear, calMonth).then(() => renderCal());
 }
 
 function closeBooking() {
+  unmountStripeCard();
   document.getElementById('bookingModal').classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -2342,6 +2423,8 @@ async function getQuote() {
     if (!res.ok) throw new Error(data.error || 'Could not get a quote');
     const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
     const accom = data.accommodation || (data.perNight ? data.perNight * nights : null) || 0;
+    // Cache quote data for the payment review step
+    lastQuoteData = { ...data, accommodation: accom, nights };
     document.getElementById('quoteResult').innerHTML = `
       <div class="booking-quote">
         <div class="quote-row"><span>${nights} night${nights>1?'s':''}</span><span>$${accom.toFixed(2)}</span></div>
@@ -2356,7 +2439,195 @@ async function getQuote() {
   }
 }
 
-async function submitBooking() {
+// ── Stripe Integration ──
+// Placeholder key — replace with your real publishable key from Stripe dashboard.
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY';
+let stripe = null;
+let stripeElements = null;
+let stripeCard = null;
+let lastQuoteData = null; // cached quote for the payment review step
+
+function initStripe() {
+  if (stripe) return;
+  try {
+    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    stripeElements = stripe.elements({
+      fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500&display=swap' }],
+    });
+    stripeCard = stripeElements.create('card', {
+      style: {
+        base: {
+          fontFamily: '"Outfit", sans-serif',
+          fontSize: '16px',
+          color: '#1a1714',
+          '::placeholder': { color: '#999' },
+        },
+        invalid: { color: '#C62828' },
+      },
+      hidePostalCode: false,
+    });
+  } catch (e) {
+    console.warn('Stripe init failed:', e.message);
+  }
+}
+
+function mountStripeCard() {
+  if (!stripeCard) initStripe();
+  if (!stripeCard) return;
+  const el = document.getElementById('stripeCardElement');
+  if (!el) return;
+  stripeCard.mount('#stripeCardElement');
+  stripeCard.on('change', (event) => {
+    const errEl = document.getElementById('stripeCardError');
+    errEl.textContent = event.error ? event.error.message : '';
+  });
+}
+
+function unmountStripeCard() {
+  if (stripeCard) {
+    try { stripeCard.unmount(); } catch (_) {}
+  }
+}
+
+// Step navigation: Guest Info → Payment → Confirmation
+function goToPaymentStep() {
+  const firstName = document.getElementById('bFirstName').value.trim();
+  const email = document.getElementById('bEmail').value.trim();
+  if (!firstName) { showBookingMsg('First name is required.', 'error'); return; }
+  if (!email || !email.includes('@')) { showBookingMsg('A valid email is required.', 'error'); return; }
+  showBookingMsg('');
+
+  // Hide guest fields, calendar, quote
+  document.getElementById('guestFields').style.display = 'none';
+  document.getElementById('calContainer').style.display = 'none';
+  document.getElementById('quoteSection').style.display = 'none';
+  document.querySelector('.cal-bar').style.display = 'none';
+
+  // Build the payment review summary
+  const prop = PROPERTIES.find(p => p.slug === calSlug);
+  const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
+  const reviewHtml = `
+    <div class="review-header">Booking Summary</div>
+    <div class="review-row"><span>${prop ? prop.name : calSlug}</span></div>
+    <div class="review-row"><span>Check-in</span><span>${fmtDate(calCheckIn)}</span></div>
+    <div class="review-row"><span>Check-out</span><span>${fmtDate(calCheckOut)}</span></div>
+    <div class="review-row"><span>Guests</span><span>${document.getElementById('bGuests').value}</span></div>
+    <div class="review-row"><span>${nights} night${nights>1?'s':''}</span><span>${lastQuoteData ? '$'+lastQuoteData.accommodation.toFixed(2) : ''}</span></div>
+    ${lastQuoteData && lastQuoteData.cleaningFee ? `<div class="review-row"><span>Cleaning fee</span><span>$${lastQuoteData.cleaningFee.toFixed(2)}</span></div>` : ''}
+    ${lastQuoteData && lastQuoteData.taxes ? `<div class="review-row"><span>Taxes & fees</span><span>$${lastQuoteData.taxes.toFixed(2)}</span></div>` : ''}
+    <div class="review-row review-total"><span>Total</span><span>${lastQuoteData ? '$'+lastQuoteData.total.toFixed(2)+' '+(lastQuoteData.currency||'USD') : ''}</span></div>
+    <div class="review-row" style="padding-top:4px"><span>Guest</span><span>${firstName} ${document.getElementById('bLastName').value.trim()}</span></div>
+    <div class="review-row"><span>Email</span><span>${email}</span></div>
+  `;
+  document.getElementById('paymentReview').innerHTML = reviewHtml;
+
+  // Show payment step and mount Stripe
+  const payStep = document.getElementById('paymentStep');
+  payStep.classList.add('visible');
+  payStep.style.display = 'block';
+  mountStripeCard();
+
+  // Reset pay button
+  document.getElementById('btnConfirmPay').disabled = false;
+  document.getElementById('btnPayText').textContent = 'Confirm & Pay';
+  document.getElementById('stripeCardError').textContent = '';
+}
+
+function backToGuestInfo() {
+  // Unmount Stripe and hide payment step
+  unmountStripeCard();
+  document.getElementById('paymentStep').classList.remove('visible');
+  document.getElementById('paymentStep').style.display = 'none';
+
+  // Restore guest fields, calendar, quote
+  document.getElementById('guestFields').style.display = 'block';
+  document.getElementById('calContainer').style.display = '';
+  document.getElementById('quoteSection').style.display = 'block';
+  document.querySelector('.cal-bar').style.display = '';
+}
+
+async function confirmAndPay() {
+  if (!stripe || !stripeCard) {
+    showBookingMsg('Payment system not loaded. Try refreshing the page.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnConfirmPay');
+  const btnText = document.getElementById('btnPayText');
+  btn.disabled = true;
+  btnText.innerHTML = '<span class="spinner"></span> Processing…';
+  showBookingMsg('');
+  document.getElementById('stripeCardError').textContent = '';
+
+  try {
+    // Step 1: Create Stripe PaymentMethod from card details
+    const { paymentMethod, error: stripeError } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: stripeCard,
+      billing_details: {
+        name: `${document.getElementById('bFirstName').value.trim()} ${document.getElementById('bLastName').value.trim()}`.trim(),
+        email: document.getElementById('bEmail').value.trim(),
+        phone: document.getElementById('bPhone').value.trim() || undefined,
+      },
+    });
+
+    if (stripeError) {
+      document.getElementById('stripeCardError').textContent = stripeError.message;
+      btn.disabled = false;
+      btnText.textContent = 'Confirm & Pay';
+      return;
+    }
+
+    // Step 2: Send to backend — it creates the Guesty guest, attaches payment, books.
+    btnText.innerHTML = '<span class="spinner"></span> Creating reservation…';
+    const res = await fetch('/api/guesty/reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listing: calSlug,
+        checkIn: calCheckIn,
+        checkOut: calCheckOut,
+        guests: parseInt(document.getElementById('bGuests').value),
+        guest: {
+          firstName: document.getElementById('bFirstName').value.trim(),
+          lastName: document.getElementById('bLastName').value.trim(),
+          email: document.getElementById('bEmail').value.trim(),
+          phone: document.getElementById('bPhone').value.trim(),
+        },
+        payment: {
+          stripePaymentMethodId: paymentMethod.id,
+          last4: paymentMethod.card?.last4 || '',
+          brand: paymentMethod.card?.brand || '',
+          expMonth: paymentMethod.card?.exp_month,
+          expYear: paymentMethod.card?.exp_year,
+        },
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (data.code === 'card_error') {
+        document.getElementById('stripeCardError').textContent = data.error;
+        btn.disabled = false;
+        btnText.textContent = 'Confirm & Pay';
+        return;
+      }
+      throw new Error(data.error || 'Booking failed');
+    }
+
+    // Success — show confirmation
+    showBookingConfirmation(data);
+
+  } catch (err) {
+    showBookingMsg(err.message, 'error');
+    btn.disabled = false;
+    btnText.textContent = 'Confirm & Pay';
+  }
+}
+
+// Submit without payment (request-to-book fallback)
+async function submitBookingRequest() {
   const firstName = document.getElementById('bFirstName').value.trim();
   const lastName = document.getElementById('bLastName').value.trim();
   const email = document.getElementById('bEmail').value.trim();
@@ -2380,6 +2651,32 @@ async function submitBooking() {
   } catch (err) {
     showBookingMsg(err.message, 'error');
   }
+}
+
+function showBookingConfirmation(data) {
+  // Hide everything except confirmation
+  unmountStripeCard();
+  document.getElementById('paymentStep').style.display = 'none';
+  document.getElementById('guestFields').style.display = 'none';
+  document.getElementById('calContainer').style.display = 'none';
+  document.getElementById('quoteSection').style.display = 'none';
+  try { document.querySelector('.cal-bar').style.display = 'none'; } catch(_){}
+  try { document.querySelector('.cancellation-policy').style.display = 'none'; } catch(_){}
+  document.getElementById('bookingMsg').innerHTML = '';
+
+  const prop = PROPERTIES.find(p => p.slug === calSlug);
+  const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
+  const status = data.status === 'confirmed' ? 'confirmed' : 'submitted for host confirmation';
+
+  document.getElementById('confirmationDetails').innerHTML =
+    `Your stay at <strong>${prop ? prop.name : calSlug}</strong> has been ${status}.<br>
+     ${fmtDate(calCheckIn)} — ${fmtDate(calCheckOut)} · ${nights} night${nights>1?'s':''}<br>
+     ${data.quote ? 'Total: $' + data.quote.total.toFixed(2) + ' ' + (data.quote.currency || 'USD') : ''}
+     ${data.note ? '<br><em style="font-size:12px;color:var(--accent)">' + data.note + '</em>' : ''}`;
+  document.getElementById('confirmationId').textContent =
+    data.reservationId ? 'Confirmation #' + data.reservationId : 'Request #' + data.requestId;
+
+  document.getElementById('bookingConfirmation').style.display = 'block';
 }
 
 function showBookingMsg(msg, type) {

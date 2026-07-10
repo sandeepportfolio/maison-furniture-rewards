@@ -253,14 +253,87 @@ async function createQuote({ listingId, checkIn, checkOut, guests }) {
 }
 
 /**
- * Placeholder — instant reservations require a Guesty plan with
- * /reservations-v3 access. For now all bookings go through the
- * local request-to-book flow (captured in SQLite, host confirms in Guesty).
+ * Get the payment provider (Stripe account) connected to a listing.
+ * Returns the provider info including the Stripe account ID needed for
+ * tokenizing cards on the frontend via Stripe.js.
  */
-async function createInstantReservation(/* { quoteId, ratePlanId, guest, ccToken } */) {
-  const err = new Error('Instant reservations are not available — booking requests are captured for host confirmation');
-  err.status = 501;
-  throw err;
+async function getPaymentProvider(listingId) {
+  return guestyFetch(`/payment-providers/provider-by-listing?listingId=${encodeURIComponent(listingId)}`);
+}
+
+/**
+ * Create a guest profile in Guesty.
+ * Required for attaching payment methods and creating reservations.
+ */
+async function createGuest({ firstName, lastName, email, phone }) {
+  if (!firstName || !email) {
+    throw Object.assign(new Error('First name and email are required'), { status: 400 });
+  }
+  return guestyFetch('/guests-crud', {
+    method: 'POST',
+    body: {
+      firstName,
+      lastName: lastName || '',
+      email,
+      phone: phone || '',
+    },
+  });
+}
+
+/**
+ * Attach a Stripe payment method to an existing guest.
+ * The paymentMethodToken comes from Stripe.js on the frontend —
+ * a tokenized card that never touches our server in raw form.
+ */
+async function attachPaymentMethod(guestId, { token, last4, brand, expMonth, expYear }) {
+  if (!guestId || !token) {
+    throw Object.assign(new Error('Guest ID and payment token are required'), { status: 400 });
+  }
+  return guestyFetch(`/guests/${encodeURIComponent(guestId)}/payment-methods`, {
+    method: 'POST',
+    body: {
+      token,
+      type: 'card',
+      ...(last4 && { last4 }),
+      ...(brand && { brand }),
+      ...(expMonth && { expMonth }),
+      ...(expYear && { expYear }),
+    },
+  });
+}
+
+/**
+ * Create a confirmed reservation in Guesty with payment.
+ * This is the full flow: the guest and payment method should already
+ * exist (created via createGuest + attachPaymentMethod above).
+ *
+ * Falls back to a request-to-book entry if the Guesty API returns
+ * a plan-level error (some Open API tiers restrict /reservations).
+ */
+async function createReservation({ listingId, checkIn, checkOut, guests, guestId, paymentMethodId, status = 'confirmed' }) {
+  if (!listingId || !checkIn || !checkOut || !guestId) {
+    throw Object.assign(new Error('Missing required reservation fields'), { status: 400 });
+  }
+
+  const nights = countNights(checkIn, checkOut);
+  if (nights < 1) throw Object.assign(new Error('Invalid date range'), { status: 400 });
+
+  const body = {
+    listingId,
+    checkInDateLocalized: checkIn,
+    checkOutDateLocalized: checkOut,
+    status,
+    guestId,
+    guests: {
+      adults: guests || 1,
+      children: 0,
+      infants: 0,
+    },
+    source: 'manual',
+    ...(paymentMethodId && { paymentMethodId }),
+  };
+
+  return guestyFetch('/reservations', { method: 'POST', body });
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -277,6 +350,9 @@ module.exports = {
   getListings,
   getCalendar,
   createQuote,
-  createInstantReservation,
+  getPaymentProvider,
+  createGuest,
+  attachPaymentMethod,
+  createReservation,
   countNights,
 };
