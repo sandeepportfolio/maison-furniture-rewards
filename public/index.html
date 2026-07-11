@@ -4994,10 +4994,11 @@ window.addEventListener('popstate', (e) => {
   // If hash says #map, re-open the map
   if (location.hash.startsWith('#map')) {
     if (!mapIsExpanded) {
+      const hashParts = location.hash.split('/');
+      const hashSlug = hashParts[1] || null;
       openMapModal();
-      const parts = location.hash.split('/');
-      if (parts[1]) {
-        const idx = PROPERTIES.findIndex(p => p.slug === parts[1]);
+      if (hashSlug) {
+        const idx = PROPERTIES.findIndex(p => p.slug === hashSlug);
         if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 350);
       }
     }
@@ -5013,13 +5014,15 @@ function initRewardsHash() {
 // Open map if URL has #map on page load (state persistence)
 function initMapHash() {
   if (!location.hash.startsWith('#map')) return;
+  // Save hash before openMapModal overwrites it
+  const savedHash = location.hash;
+  const parts = savedHash.split('/');
+  const savedSlug = parts[1] || null;
   // Delay to ensure map is fully initialized
   setTimeout(() => {
     openMapModal();
-    const parts = location.hash.split('/');
-    if (parts[1]) {
-      const slug = parts[1];
-      const idx = PROPERTIES.findIndex(p => p.slug === slug);
+    if (savedSlug) {
+      const idx = PROPERTIES.findIndex(p => p.slug === savedSlug);
       if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 400);
     }
   }, 300);
