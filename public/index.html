@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Regent | Luxury Short-Term Rentals in DFW</title>
-<meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across the Dallas-Fort Worth metroplex. Designer interiors, effortless check-in, unforgettable stays.">
+<title>Regent | Luxury Short-Term Rentals in Houston</title>
+<meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across Greater Houston. Designer interiors, effortless check-in, unforgettable stays.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1108,7 +1108,7 @@ ul{list-style:none}
   <div class="nav-links">
     <a href="#properties">Properties</a>
     <a href="#experience">Experience</a>
-    <a href="#explore">Explore</a>
+    <a href="#explore" onclick="event.preventDefault();scrollToMapAndExpand()">Explore</a>
     <a href="#story">Our Story</a>
     <a href="#contact">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
@@ -1120,7 +1120,7 @@ ul{list-style:none}
 <div class="mobile-menu" id="mobileMenu">
   <a href="#properties" onclick="closeMobile()">Properties</a>
   <a href="#experience" onclick="closeMobile()">Experience</a>
-  <a href="#explore" onclick="closeMobile()">Explore</a>
+  <a href="#explore" onclick="closeMobile();event.preventDefault();scrollToMapAndExpand()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
@@ -1175,8 +1175,8 @@ ul{list-style:none}
   </div>
 
   <!-- Map Preview Tile -->
-  <div class="bento-tile bento-map-tile" onclick="document.getElementById('propertyMapSection').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(expandMap,800)">
-    <span class="tile-label">04 CITIES</span>
+  <div class="bento-tile bento-map-tile" onclick="scrollToMapAndExpand()">
+    <span class="tile-label">EXPLORE MAP</span>
     <div id="miniMap" class="mini-map"></div>
   </div>
 </section>
@@ -1431,7 +1431,7 @@ ul{list-style:none}
         </div>
         <div class="map-legend">
           <span class="map-legend-dot"></span>
-          <span>7 Properties across DFW</span>
+          <span>7 Properties across Houston</span>
         </div>
       </div>
       <div class="map-backdrop" id="mapBackdrop"></div>
@@ -1497,7 +1497,7 @@ ul{list-style:none}
 <!-- ═══ CTA ═══ -->
 <section class="section-cta reveal">
   <h2>Your Next Escape Awaits</h2>
-  <p>Designer interiors, effortless check-in, and the finest locations across the Dallas&ndash;Fort Worth metroplex. Book direct for the best rates.</p>
+  <p>Designer interiors, effortless check-in, and the finest locations across Greater Houston. Book direct for the best rates.</p>
   <a href="#properties" class="btn-primary">Browse Properties &rarr;</a>
 </section>
 
@@ -1539,7 +1539,7 @@ ul{list-style:none}
           </div>
           <div class="contact-card-text">
             <span class="contact-card-label">Location</span>
-            <span class="contact-card-value">Dallas&ndash;Fort Worth Metroplex, Texas</span>
+            <span class="contact-card-value">Greater Houston, Texas</span>
           </div>
         </div>
 
@@ -1647,7 +1647,7 @@ ul{list-style:none}
       <a href="javascript:void(0)" onclick="openTerms()">Terms of Service</a>
       <a href="javascript:void(0)" onclick="openPrivacy()">Privacy Policy</a>
     </div>
-    <div class="footer-copy">&copy; 2026 Regent Capital Ventures LLC. All rights reserved.<br>Luxury short-term rentals across the Dallas-Fort Worth metroplex.</div>
+    <div class="footer-copy">&copy; 2026 Regent Capital Ventures LLC. All rights reserved.<br>Luxury short-term rentals across Greater Houston.</div>
   </div>
 </footer>
 
@@ -1764,7 +1764,7 @@ ul{list-style:none}
 
     <div class="legal-section">
       <h3>9. Governing Law</h3>
-      <p>These Terms of Service shall be governed by and construed in accordance with the laws of the State of Texas, without regard to its conflict of law provisions. Any disputes arising from or relating to these terms or your use of our services shall be resolved in the courts of Dallas County, Texas.</p>
+      <p>These Terms of Service shall be governed by and construed in accordance with the laws of the State of Texas, without regard to its conflict of law provisions. Any disputes arising from or relating to these terms or your use of our services shall be resolved in the courts of Fort Bend County, Texas.</p>
     </div>
 
     <div class="legal-section">
@@ -1776,7 +1776,7 @@ ul{list-style:none}
 
     <div class="legal-contact-box">
       <p>For questions regarding these terms, please contact us at <a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a> or through our <a href="javascript:void(0)" onclick="closeTerms();openContact()">contact form</a>.</p>
-      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Dallas, Texas</p>
+      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Houston, Texas</p>
     </div>
   </div>
 </div>
@@ -1877,7 +1877,7 @@ ul{list-style:none}
 
     <div class="legal-contact-box">
       <p>For privacy-related inquiries or to exercise your data rights, please contact us at <a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a> or through our <a href="javascript:void(0)" onclick="closePrivacy();openContact()">contact form</a>.</p>
-      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Dallas, Texas</p>
+      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Houston, Texas</p>
     </div>
   </div>
 </div>
@@ -2035,12 +2035,12 @@ const PROPERTIES = [
     name: 'Regent Villa',
     slug: 'regent-villa',
     category: 'villa',
-    city: 'Plano',
+    city: 'Sugar Land',
     state: 'Texas',
     hostingId: '1711340298974810369',
     guests: 14, beds: 4, baths: 3.5,
     rating: null, reviews: 0,
-    lat: 33.0198, lng: -96.6989,
+    lat: 29.5967, lng: -95.6349,
     amenities: [
       { label: 'Hot Tub', premium: true },
       { label: '85" TV', premium: true },
@@ -2133,12 +2133,12 @@ const PROPERTIES = [
     name: 'Regent Skyline',
     slug: 'regent-skyline',
     category: 'suite',
-    city: 'Dallas',
+    city: 'Houston',
     state: 'Texas',
     hostingId: '1725649500272518567',
     guests: 5, beds: 1, baths: 1,
     rating: null, reviews: 0,
-    lat: 32.7830, lng: -96.7935,
+    lat: 29.7604, lng: -95.3698,
     amenities: [
       { label: 'Skyline Views', premium: true },
       { label: 'Valet Parking', premium: true },
@@ -2215,12 +2215,12 @@ const PROPERTIES = [
     name: 'Cozy Designer Suite',
     slug: 'cozy-designer',
     category: 'suite',
-    city: 'Irving',
+    city: 'Missouri City',
     state: 'Texas',
     hostingId: '1656911479326581139',
     guests: 3, beds: 1, baths: 1,
     rating: 4.89, reviews: 9,
-    lat: 32.8554, lng: -96.9430,
+    lat: 29.5636, lng: -95.5377,
     amenities: [
       { label: 'Soaking Tub', premium: true },
       { label: '65" TV', premium: true },
@@ -2267,12 +2267,12 @@ const PROPERTIES = [
     name: 'Designer Game Suite',
     slug: 'designer-game',
     category: 'suite',
-    city: 'Irving',
+    city: 'Missouri City',
     state: 'Texas',
     hostingId: '1691507762565991335',
     guests: 3, beds: 1, baths: 1,
     rating: null, reviews: 1,
-    lat: 32.8554, lng: -96.9430,
+    lat: 29.5700, lng: -95.5200,
     amenities: [
       { label: 'Sky Lounge', premium: true },
       { label: 'Mini Golf', premium: true },
@@ -2323,12 +2323,12 @@ const PROPERTIES = [
     name: 'Gorgeous Luxury Lake View Suite',
     slug: 'lake-view',
     category: 'suite',
-    city: 'Irving',
+    city: 'Sugar Land',
     state: 'Texas',
     hostingId: '1579365691674889946',
     guests: 3, beds: 1, baths: 1,
     rating: 4.92, reviews: 25,
-    lat: 32.8554, lng: -96.9430,
+    lat: 29.5880, lng: -95.6250,
     amenities: [
       { label: 'Lake View', premium: true },
       { label: '27" Monitor', premium: true },
@@ -2374,12 +2374,12 @@ const PROPERTIES = [
     name: 'Luxury Executive Living',
     slug: 'executive',
     category: 'suite',
-    city: 'Richardson',
+    city: 'Sugar Land',
     state: 'Texas',
     hostingId: '1622247533469388804',
     guests: 5, beds: 1, baths: 1,
     rating: 4.95, reviews: 21,
-    lat: 32.9483, lng: -96.7299,
+    lat: 29.6100, lng: -95.6400,
     amenities: [
       { label: '75" TV', premium: true },
       { label: 'EV Charger', premium: true },
@@ -2431,12 +2431,12 @@ const PROPERTIES = [
     name: 'Stunning Lake Views',
     slug: 'stunning-lake',
     category: 'suite',
-    city: 'Irving',
+    city: 'Sugar Land',
     state: 'Texas',
     hostingId: '862596563097784023',
     guests: 3, beds: 1, baths: 1,
     rating: 4.83, reviews: 23,
-    lat: 32.8554, lng: -96.9430,
+    lat: 29.5850, lng: -95.6300,
     amenities: [
       { label: 'Lake View', premium: true },
       { label: '1GB Fiber', premium: true },
@@ -3179,7 +3179,7 @@ function initMiniMap() {
     zoomControl: false, attributionControl: false,
     dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
     boxZoom: false, keyboard: false, tap: false, touchZoom: false
-  }).setView([32.92, -96.84], 10);
+  }).setView([29.59, -95.58], 11);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd', maxZoom: 19
@@ -3365,7 +3365,7 @@ function openDetail(slug) {
     'Arcade Room': 'Retro gaming arcade',
     'L-Shaped Couch': 'Oversized comfort seating',
     'BBQ': 'Outdoor grilling station',
-    'Skyline Views': 'Downtown Dallas panorama',
+    'Skyline Views': 'Downtown Houston panorama',
     'Valet Parking': 'Complimentary VIP parking',
     'Cinema Room': 'Private screening room',
     'Exposed Brick': 'Historic 1910 character',
@@ -3684,53 +3684,40 @@ document.addEventListener('keydown', (e) => {
 /* ═══ EXPLORE THE AREA ═══ */
 
 const ATTRACTIONS = [
-  // ── PLANO ──
-  { name:'Legacy West', desc:'Open-air luxury destination with dining, boutique shops, and a vibrant town-center atmosphere.', cat:'shopping', lat:33.0754, lng:-96.7003, rating:4.7, img:'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Shops at Legacy', desc:'Premier mixed-use district with upscale retail, craft cocktail lounges, and rooftop dining.', cat:'shopping', lat:33.0727, lng:-96.6971, rating:4.6, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Arbor Hills Nature Preserve', desc:'160-acre wooded preserve with paved trails, observation tower, and sunset views over rolling hills.', cat:'outdoor', lat:33.0526, lng:-96.8256, rating:4.8, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Toyota Stadium', desc:'20,500-seat venue hosting FC Dallas matches, major concerts, and international sporting events.', cat:'sports', lat:33.1543, lng:-96.8352, rating:4.5, img:'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Medieval Times', desc:'Immersive dinner-theater experience with jousting knights, falconry, and a royal four-course feast.', cat:'family', lat:32.9074, lng:-96.7685, rating:4.4, img:'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Topgolf Dallas', desc:'High-tech driving range with climate-controlled hitting bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:33.0270, lng:-96.7040, rating:4.6, img:'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Oak Point Park & Nature Preserve', desc:'800 acres of trails, wetlands, and open meadows perfect for hiking, biking, and birding.', cat:'outdoor', lat:33.0460, lng:-96.6775, rating:4.7, img:'https://images.unsplash.com/photo-1500829243541-74b677fecc30?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Haggard Park & Interurban Museum', desc:'Historic downtown Plano park with the restored 1908 interurban railway car and fountains.', cat:'arts', lat:33.0169, lng:-96.6989, rating:4.3, img:'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Urban Rio', desc:'Cantina-style dining with craft margaritas, rooftop patio, and live music on weekends.', cat:'dining', lat:33.0705, lng:-96.6991, rating:4.5, img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Go Ape Zip Line & Treetop Adventure', desc:'Aerial treetop course with zip lines, rope bridges, and Tarzan swings through mature forest.', cat:'family', lat:33.0440, lng:-96.6780, rating:4.5, img:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=400&fit=crop', area:'plano' },
+  // ── SUGAR LAND ──
+  { name:'Sugar Land Town Square', desc:'Open-air lifestyle center with boutique shops, chef-driven restaurants, and a vibrant event plaza.', cat:'shopping', lat:29.5966, lng:-95.6221, rating:4.7, img:'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Constellation Field', desc:'Home of the Sugar Land Space Cowboys — a state-of-the-art minor league baseball stadium with craft beer and family fun.', cat:'sports', lat:29.5878, lng:-95.6458, rating:4.7, img:'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Brazos River Park', desc:'Scenic 500-acre park with paved trails along the Brazos River, disc golf, fishing, and stunning sunsets.', cat:'outdoor', lat:29.5680, lng:-95.6500, rating:4.8, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Fort Bend Museum', desc:'Local history museum showcasing the heritage of Fort Bend County with interactive exhibits and guided tours.', cat:'arts', lat:29.5750, lng:-95.6350, rating:4.4, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Sugar Land Memorial Park', desc:'Beautifully landscaped community park with splash pads, playgrounds, walking trails, and picnic areas.', cat:'family', lat:29.6050, lng:-95.6150, rating:4.6, img:'https://images.unsplash.com/photo-1500829243541-74b677fecc30?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Cullinan Park', desc:'754-acre nature preserve with boardwalk trails through wetlands, birding blinds, and serene lake views.', cat:'outdoor', lat:29.5400, lng:-95.6200, rating:4.7, img:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Smart Financial Centre', desc:'Premier 6,400-seat entertainment venue hosting top concerts, comedy shows, and performing arts events.', cat:'arts', lat:29.5850, lng:-95.6500, rating:4.6, img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Imperial Market', desc:'Trendy food hall and market with local vendors, craft cocktails, and weekend live music.', cat:'dining', lat:29.5930, lng:-95.6300, rating:4.5, img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Topgolf Sugar Land', desc:'High-tech driving range with climate-controlled hitting bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:29.5770, lng:-95.6380, rating:4.6, img:'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop', area:'sugarland' },
+  { name:'Oyster Creek Park', desc:'Tree-lined urban greenway with paved biking and jogging trails following Oyster Creek through Sugar Land.', cat:'outdoor', lat:29.5980, lng:-95.6100, rating:4.5, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'sugarland' },
 
-  // ── IRVING / LAS COLINAS ──
-  { name:'Toyota Music Factory', desc:'World-class entertainment complex with indoor/outdoor concert venues, restaurants, and nightlife.', cat:'dining', lat:32.8779, lng:-96.9430, rating:4.7, img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Las Colinas Urban Center', desc:'Walkable master-planned neighborhood with canals, galleries, upscale dining, and boutique hotels.', cat:'shopping', lat:32.8680, lng:-96.9405, rating:4.5, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Mandalay Canal Walk', desc:'Venetian-inspired waterway with gondola rides, waterside dining, and illuminated evening strolls.', cat:'outdoor', lat:32.8700, lng:-96.9450, rating:4.6, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Irving Arts Center', desc:'Contemporary arts campus featuring rotating exhibitions, sculpture garden, and performing arts theater.', cat:'arts', lat:32.8507, lng:-96.9507, rating:4.4, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Lake Carolyn', desc:'Scenic urban lake with miles of paved trails, kayak rentals, and stunning skyline reflections.', cat:'outdoor', lat:32.8733, lng:-96.9400, rating:4.6, img:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Mustangs of Las Colinas', desc:'Iconic bronze sculpture of nine wild mustangs galloping through a granite stream — the world\'s largest equestrian sculpture.', cat:'arts', lat:32.8780, lng:-96.9429, rating:4.8, img:'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Alamo Drafthouse Cinema', desc:'Dine-in theater with craft beer, gourmet food, and a strict no-talking policy for the ultimate movie experience.', cat:'shopping', lat:32.8687, lng:-96.9445, rating:4.7, img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Water Street', desc:'Vibrant waterfront dining district with patios overlooking the canal and live entertainment nightly.', cat:'dining', lat:32.8756, lng:-96.9420, rating:4.5, img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop', area:'irving' },
-  { name:'National Scouting Museum', desc:'Interactive museum celebrating scouting history with Norman Rockwell art collection and outdoor challenges.', cat:'family', lat:32.8600, lng:-96.9431, rating:4.3, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Campión Trail', desc:'22-mile multi-use trail following the Elm Fork Trinity River — perfect for cycling, running, and nature walks.', cat:'sports', lat:32.8580, lng:-96.9580, rating:4.6, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Whistle Britches', desc:'Southern-style fried chicken, scratch-made biscuits, and Texas craft beers in a rustic-chic setting.', cat:'dining', lat:32.8662, lng:-96.9385, rating:4.6, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Globe Life Field', desc:'Home of the Texas Rangers — a state-of-the-art retractable-roof stadium with world-class game-day dining.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?w=600&h=400&fit=crop', area:'irving' },
+  // ── MISSOURI CITY ──
+  { name:'The Palms at Town Center', desc:'Mixed-use shopping destination with specialty stores, dining patios, and a relaxed neighborhood vibe.', cat:'shopping', lat:29.5636, lng:-95.5377, rating:4.4, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'missouricity' },
+  { name:'Buffalo Run Park', desc:'132-acre park with fishing lakes, playgrounds, pavilions, and scenic trails through native prairie.', cat:'family', lat:29.5450, lng:-95.5500, rating:4.5, img:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=400&fit=crop', area:'missouricity' },
+  { name:'Community Park', desc:'Family-friendly park with sports fields, splash pad, walking trails, and shaded picnic areas.', cat:'family', lat:29.5550, lng:-95.5250, rating:4.3, img:'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&h=400&fit=crop', area:'missouricity' },
 
-  // ── DALLAS (Downtown / Deep Ellum) ──
-  { name:'Dallas Farmers Market', desc:'Historic open-air market with local produce, artisan goods, food hall, and weekend live music.', cat:'shopping', lat:32.7830, lng:-96.7960, rating:4.6, img:'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Deep Ellum', desc:'Iconic entertainment district with murals, live music venues, craft breweries, and eclectic nightlife.', cat:'dining', lat:32.7850, lng:-96.7830, rating:4.7, img:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'AT&T Discovery District', desc:'Interactive outdoor experience in downtown with a massive media wall, dining, and free events.', cat:'arts', lat:32.7810, lng:-96.7970, rating:4.5, img:'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Klyde Warren Park', desc:'Award-winning deck park over a freeway with food trucks, yoga, games, and seasonal festivals.', cat:'outdoor', lat:32.7894, lng:-96.8010, rating:4.8, img:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Dallas Arts District', desc:'Largest contiguous urban arts district in the US, spanning 20+ blocks of galleries, theaters, and museums.', cat:'arts', lat:32.7892, lng:-96.7994, rating:4.7, img:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Reunion Tower', desc:'Iconic 561-foot observation tower with 360-degree views of the Dallas skyline and interactive GeO-Deck.', cat:'family', lat:32.7755, lng:-96.8089, rating:4.6, img:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Bishop Arts District', desc:'Charming walkable neighborhood with indie boutiques, art galleries, craft cocktail bars, and cafés.', cat:'shopping', lat:32.7470, lng:-96.8270, rating:4.6, img:'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Dallas World Aquarium', desc:'Multi-level rainforest and aquarium experience with exotic species from around the globe.', cat:'family', lat:32.7838, lng:-96.8015, rating:4.5, img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Perot Museum of Nature and Science', desc:'Five floors of interactive exhibits on everything from dinosaurs to space exploration.', cat:'family', lat:32.7868, lng:-96.8066, rating:4.7, img:'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'American Airlines Center', desc:'Premier sports and entertainment arena — home of the Dallas Mavericks and Dallas Stars.', cat:'sports', lat:32.7905, lng:-96.8103, rating:4.6, img:'https://images.unsplash.com/photo-1504016798967-59a258e9386d?w=600&h=400&fit=crop', area:'dallas' },
-
-  // ── RICHARDSON / CITYLINE ──
-  { name:'CityLine', desc:'Mixed-use urban village with restaurants, retail, green spaces, and walkable streetscapes.', cat:'shopping', lat:32.9500, lng:-96.7290, rating:4.5, img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'Galatyn Park', desc:'Beautiful urban park with trails, a pond, and performance pavilion — steps from the DART station.', cat:'outdoor', lat:32.9510, lng:-96.7320, rating:4.4, img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'Eisemann Center', desc:'State-of-the-art performing arts center with Broadway touring shows, concerts, and dance performances.', cat:'arts', lat:32.9490, lng:-96.7330, rating:4.6, img:'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'UT Dallas Campus', desc:'Sprawling 500-acre campus with public art installations, nature trails, and the Crow Museum.', cat:'arts', lat:32.9860, lng:-96.7500, rating:4.3, img:'https://images.unsplash.com/photo-1562774053-701939374585?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'Spring Creek Nature Area', desc:'Serene 100-acre preserve with miles of trails through wetlands, prairie, and bottomland forest.', cat:'outdoor', lat:33.0050, lng:-96.7190, rating:4.5, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'Alamo Drafthouse Richardson', desc:'Dine-in cinema with craft cocktails, chef-driven bites, and a no-phones-allowed movie experience.', cat:'shopping', lat:32.9550, lng:-96.7310, rating:4.6, img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'Plano Road Dining District', desc:'Diverse corridor of Korean BBQ, Vietnamese pho, Indian thali, and Tex-Mex favorites.', cat:'dining', lat:32.9530, lng:-96.7180, rating:4.4, img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop', area:'richardson' },
-  { name:'Heights Park', desc:'Community sports complex with tennis courts, playgrounds, disc golf, and a skate park.', cat:'sports', lat:32.9600, lng:-96.7420, rating:4.3, img:'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&h=400&fit=crop', area:'richardson' }
+  // ── HOUSTON ──
+  { name:'Space Center Houston', desc:'Official visitor center of NASA\'s Johnson Space Center with astronaut exhibits, moon rocks, and tram tours.', cat:'family', lat:29.5519, lng:-95.0981, rating:4.8, img:'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=600&h=400&fit=crop', area:'houston' },
+  { name:'The Galleria', desc:'World-famous luxury shopping destination with 400+ stores, an ice rink, and upscale dining.', cat:'shopping', lat:29.7400, lng:-95.4614, rating:4.6, img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Houston Museum District', desc:'19 world-class museums spanning art, science, history, and culture across a walkable urban district.', cat:'arts', lat:29.7220, lng:-95.3900, rating:4.8, img:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Discovery Green', desc:'12-acre urban park in downtown with kayaking, concerts, a playground, and seasonal festivals.', cat:'outdoor', lat:29.7525, lng:-95.3572, rating:4.7, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Buffalo Bayou Park', desc:'160-acre linear park along the bayou with trails, public art, kayak rentals, and stunning skyline views.', cat:'outdoor', lat:29.7630, lng:-95.3836, rating:4.8, img:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Houston Zoo', desc:'55-acre zoo with 6,000+ animals, immersive exhibits, a splash pad, and seasonal evening events.', cat:'family', lat:29.7142, lng:-95.3908, rating:4.7, img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Minute Maid Park', desc:'Home of the Houston Astros — retractable-roof stadium with iconic train, local eats, and game-day energy.', cat:'sports', lat:29.7573, lng:-95.3555, rating:4.7, img:'https://images.unsplash.com/photo-1504016798967-59a258e9386d?w=600&h=400&fit=crop', area:'houston' },
+  { name:'NRG Stadium', desc:'71,500-seat multi-purpose venue hosting the Houston Texans, rodeo, and major concerts.', cat:'sports', lat:29.6847, lng:-95.4107, rating:4.6, img:'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Hermann Park', desc:'445-acre urban oasis with a Japanese garden, pedal boats, miniature train, and the Miller Outdoor Theatre.', cat:'outdoor', lat:29.7138, lng:-95.3900, rating:4.8, img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop', area:'houston' },
+  { name:'The Heights', desc:'Walkable historic neighborhood with craft breweries, vintage shops, brunch spots, and vibrant murals.', cat:'dining', lat:29.7900, lng:-95.3980, rating:4.7, img:'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Montrose District', desc:'Eclectic arts and dining hub with galleries, cocktail bars, global cuisine, and a thriving creative scene.', cat:'dining', lat:29.7384, lng:-95.3969, rating:4.6, img:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Kemah Boardwalk', desc:'Waterfront amusement park with rides, seafood restaurants, and live entertainment on Galveston Bay.', cat:'family', lat:29.5427, lng:-95.0198, rating:4.5, img:'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Museum of Fine Arts Houston', desc:'One of the largest art museums in the US with 70,000+ works spanning 6,000 years of history.', cat:'arts', lat:29.7256, lng:-95.3906, rating:4.7, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Rice Village', desc:'Upscale shopping and dining district near Rice University with boutiques, cafés, and specialty stores.', cat:'shopping', lat:29.7160, lng:-95.4100, rating:4.5, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Pappas Bros. Steakhouse', desc:'Award-winning steakhouse with prime cuts dry-aged in-house, an extensive wine list, and impeccable service.', cat:'dining', lat:29.7380, lng:-95.4620, rating:4.8, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'houston' },
+  { name:'Typhoon Texas', desc:'Massive waterpark with wave pools, lazy rivers, speed slides, and family splash zones.', cat:'family', lat:29.7800, lng:-95.7300, rating:4.5, img:'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=600&h=400&fit=crop', area:'houston' }
 ];
 
 let exploreSelectedProp = null;
@@ -3814,7 +3801,7 @@ function renderExploreGrid() {
             <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             ${a.rating}
           </span>
-          <span class="explore-card-tag">${{plano:'PLANO',irving:'IRVING',dallas:'DALLAS',richardson:'RICHARDSON'}[a.area]||a.area.toUpperCase()}</span>
+          <span class="explore-card-tag">${{sugarland:'SUGAR LAND',missouricity:'MISSOURI CITY',houston:'HOUSTON'}[a.area]||a.area.toUpperCase()}</span>
         </div>
       </div>
       <div class="explore-card-overlay">
@@ -3898,8 +3885,8 @@ function initExploreMap() {
   if (exploreMapInstance) return;
 
   exploreMapInstance = L.map('exploreMap', {
-    center: [32.89, -96.83],
-    zoom: 10,
+    center: [29.59, -95.58],
+    zoom: 11,
     zoomControl: false,
     attributionControl: false,
     scrollWheelZoom: false
@@ -4201,6 +4188,45 @@ function initMapInteraction() {
   }
 }
 
+/* ── Smooth scroll-to-map + auto-expand from anywhere ── */
+function scrollToMapAndExpand() {
+  if (mapIsExpanded) return;
+  const section = document.getElementById('propertyMapSection');
+  if (!section) return;
+
+  // Initialize the map early if not done yet
+  if (!exploreMapInstance) initExploreMap();
+
+  // Calculate target scroll position (center the map section in viewport)
+  const rect = section.getBoundingClientRect();
+  const targetTop = window.pageYOffset + rect.top - (window.innerHeight - rect.height) / 2;
+
+  // Smooth scroll using requestAnimationFrame for buttery performance
+  const startY = window.pageYOffset;
+  const diff = targetTop - startY;
+  const duration = Math.min(800, Math.max(400, Math.abs(diff) * 0.4));
+  let start = null;
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    const elapsed = timestamp - start;
+    const progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY + diff * easeOutCubic(progress));
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      // Brief pause then expand
+      setTimeout(() => {
+        if (!mapIsExpanded && !mapExpandAnimating) expandMap();
+      }, 200);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
 function expandMap() {
   const wrap = document.getElementById('mapWrap');
   if (!wrap || mapIsExpanded || mapExpandAnimating) return;
@@ -4328,48 +4354,15 @@ function collapseMap() {
 
 function updateExploreMap() {
   if (!exploreMapInstance) return;
-  const prop = exploreSelectedProp || PROPERTIES[0];
 
-  // Clear only attraction markers (not property markers)
+  // Clear any leftover attraction markers
   exploreMarkers.forEach(m => exploreMapInstance.removeLayer(m));
   exploreMarkers = [];
 
-  // Attraction markers
-  let filteredAttractions = ATTRACTIONS;
-  if (exploreSelectedCat !== 'all') {
-    filteredAttractions = ATTRACTIONS.filter(a => a.cat === exploreSelectedCat);
-  }
-
-  const catColors = { dining:'#E74C3C', outdoor:'#27AE60', shopping:'#9B59B6', arts:'#F39C12', family:'#3498DB', sports:'#1ABC9C' };
-
-  filteredAttractions.forEach(a => {
-    const dist = haversine(prop.lat, prop.lng, a.lat, a.lng);
-    const color = catColors[a.cat] || '#C76B42';
-
-    const icon = L.divIcon({
-      html: `<div style="width:22px;height:22px;background:${color};border:2px solid rgba(255,255,255,.7);border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
-      className: '',
-      iconSize: [22, 22],
-      iconAnchor: [11, 11]
-    });
-
-    const m = L.marker([a.lat, a.lng], {
-        icon,
-        title: `${a.name} near ${prop.name}`,
-        alt: `${a.name} near ${prop.name}`,
-        keyboard: true
-      })
-      .addTo(exploreMapInstance)
-      .bindPopup(`<b>${a.name}</b><br>${a.desc.slice(0, 80)}…<br><span style="font-family:var(--mono);font-size:10px;color:var(--accent)">${dist.toFixed(1)} mi from ${prop.name}</span>`);
-    const markerEl = m.getElement();
-    if (markerEl) markerEl.setAttribute('aria-label', `${a.name}, ${dist.toFixed(1)} miles from ${prop.name}`);
-    exploreMarkers.push(m);
-  });
-
-  // Fit bounds to include property markers and attractions
-  const allCoords = PROPERTIES.map(p => [p.lat, p.lng]).concat(filteredAttractions.map(a => [a.lat, a.lng]));
+  // Fit bounds to property markers only (no attraction markers)
+  const allCoords = PROPERTIES.map(p => [p.lat, p.lng]);
   if (allCoords.length > 1 && mapActiveProperty === null) {
-    exploreMapInstance.fitBounds(allCoords, { padding: [40, 40], maxZoom: 12 });
+    exploreMapInstance.fitBounds(allCoords, { padding: [40, 40], maxZoom: 13 });
   }
 }
 
