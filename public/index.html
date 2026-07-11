@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Regent | Luxury Short-Term Rentals in Houston</title>
-<meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across Greater Houston. Designer interiors, effortless check-in, unforgettable stays.">
+<title>Regent | Luxury Short-Term Rentals in Dallas-Fort Worth</title>
+<meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across Dallas-Fort Worth. Designer interiors, effortless check-in, unforgettable stays.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"/>
 <style>
 :root {
   --bg:#FAFAF8;--bg-card:#FFFFFF;--bg-dark:#111111;--bg-dark-card:#1C1C1C;
@@ -564,6 +566,26 @@ ul{list-style:none}
 .map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;background:var(--accent);border:2.5px solid rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(199,107,66,.5);transition:box-shadow .3s var(--ease),background .3s var(--ease),transform .3s cubic-bezier(.34,1.56,.64,1);animation:markerGlow 3s ease-in-out infinite}
 .map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 24px rgba(199,107,66,.8);transform:translate(-50%,-50%) scale(1.1)}
 .map-marker-core svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none}
+/* MarkerCluster copper/bronze theme */
+.marker-cluster-small,.marker-cluster-medium,.marker-cluster-large{background:rgba(199,107,66,.25);border:2px solid rgba(199,107,66,.6)}
+.marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:rgba(184,101,74,.85);color:#fff;font-family:var(--sans);font-weight:600;font-size:13px;width:32px;height:32px;margin:3px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(184,101,74,.5)}
+.marker-cluster-medium{background:rgba(199,107,66,.35)}
+.marker-cluster-large{background:rgba(199,107,66,.45)}
+/* Geolocation pulsing blue dot */
+@keyframes userLocPulse{0%{transform:scale(1);opacity:.5}70%{transform:scale(2.5);opacity:0}100%{transform:scale(2.5);opacity:0}}
+.user-loc-marker{position:relative;width:20px;height:20px}
+.user-loc-ring{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;border:2px solid rgba(59,130,246,.6);animation:userLocPulse 2s ease-out infinite}
+.user-loc-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:#3B82F6;border:2.5px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(59,130,246,.5)}
+/* My Location button */
+.map-my-loc-btn{position:absolute;bottom:80px;right:16px;z-index:550;width:40px;height:40px;background:rgba(28,28,28,.85);border:1px solid var(--border-dark);border-radius:10px;color:#3B82F6;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:background .2s var(--ease)}
+.map-expanded .map-my-loc-btn{display:flex}
+.map-my-loc-btn:hover{background:rgba(59,130,246,.15)}
+.map-my-loc-btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none}
+/* Distance badge in property strip */
+.map-prop-strip-dist{font-size:10px;color:var(--accent-light);font-family:var(--mono);letter-spacing:.04em;margin-top:2px}
+/* Distance in map card */
+.map-card-distance{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--accent-light);font-family:var(--mono);letter-spacing:.04em;margin-top:4px}
+.map-card-distance svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
 /* Property card — desktop: right sidebar panel */
 .map-property-card{position:absolute;top:0;right:0;bottom:0;z-index:500;width:380px;background:rgba(28,28,28,.97);backdrop-filter:blur(12px);border-left:1px solid var(--border-dark);box-shadow:-8px 0 40px rgba(0,0,0,.4);overflow-y:auto;overflow-x:hidden;transform:translateX(100%);opacity:0;pointer-events:none;transition:none}
 .map-property-card.visible{pointer-events:auto;animation:cardSlideInDesktop .45s cubic-bezier(.22,1,.36,1) forwards}
@@ -1466,7 +1488,7 @@ ul{list-style:none}
         </div>
         <div class="map-legend">
           <span class="map-legend-dot"></span>
-          <span>7 Properties across Houston</span>
+          <span>7 Properties across Dallas-Fort Worth</span>
         </div>
       </div>
       <div class="map-backdrop" id="mapBackdrop"></div>
@@ -1497,6 +1519,10 @@ ul{list-style:none}
               <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <span id="mapCardLocationText"></span>
             </p>
+            <div class="map-card-distance" id="mapCardDistance" style="display:none">
+              <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="mapCardDistText"></span>
+            </div>
             <div class="map-card-price" id="mapCardPrice"></div>
             <div class="map-card-rating" id="mapCardRating"></div>
             <div class="map-card-specs" id="mapCardSpecs"></div>
@@ -1507,6 +1533,9 @@ ul{list-style:none}
             </div>
           </div>
         </div>
+        <button class="map-my-loc-btn" id="mapMyLocBtn" aria-label="Go to my location" title="My Location">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="8"/></svg>
+        </button>
         <div class="map-nav-dots" id="mapNavDots"></div>
         <div class="map-prop-strip" id="mapPropStrip"></div>
       </div>
@@ -1532,7 +1561,7 @@ ul{list-style:none}
 <!-- ═══ CTA ═══ -->
 <section class="section-cta reveal">
   <h2>Your Next Escape Awaits</h2>
-  <p>Designer interiors, effortless check-in, and the finest locations across Greater Houston. Book direct for the best rates.</p>
+  <p>Designer interiors, effortless check-in, and the finest locations across Dallas-Fort Worth. Book direct for the best rates.</p>
   <a href="#properties" class="btn-primary">Browse Properties &rarr;</a>
 </section>
 
@@ -1574,7 +1603,7 @@ ul{list-style:none}
           </div>
           <div class="contact-card-text">
             <span class="contact-card-label">Location</span>
-            <span class="contact-card-value">Greater Houston, Texas</span>
+            <span class="contact-card-value">Dallas-Fort Worth, Texas</span>
           </div>
         </div>
 
@@ -1774,7 +1803,7 @@ ul{list-style:none}
       <a href="javascript:void(0)" onclick="openTerms()">Terms of Service</a>
       <a href="javascript:void(0)" onclick="openPrivacy()">Privacy Policy</a>
     </div>
-    <div class="footer-copy">&copy; 2026 Regent Capital Ventures LLC. All rights reserved.<br>Luxury short-term rentals across Greater Houston.</div>
+    <div class="footer-copy">&copy; 2026 Regent Capital Ventures LLC. All rights reserved.<br>Luxury short-term rentals across Dallas-Fort Worth.</div>
   </div>
 </footer>
 
@@ -1903,7 +1932,7 @@ ul{list-style:none}
 
     <div class="legal-contact-box">
       <p>For questions regarding these terms, please contact us at <a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a> or through our <a href="javascript:void(0)" onclick="closeTerms();openContact()">contact form</a>.</p>
-      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Houston, Texas</p>
+      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Dallas-Fort Worth, Texas</p>
     </div>
   </div>
 </div>
@@ -2004,7 +2033,7 @@ ul{list-style:none}
 
     <div class="legal-contact-box">
       <p>For privacy-related inquiries or to exercise your data rights, please contact us at <a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a> or through our <a href="javascript:void(0)" onclick="closePrivacy();openContact()">contact form</a>.</p>
-      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Houston, Texas</p>
+      <p style="margin-top:8px">Regent Capital Ventures LLC &middot; Dallas-Fort Worth, Texas</p>
     </div>
   </div>
 </div>
@@ -2147,6 +2176,7 @@ ul{list-style:none}
 
 <!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <!-- Guesty Pay Tokenization JS (loads PCI-safe iframe from Guesty; do not bundle/self-host) -->
 <script src="https://pay.guesty.com/tokenization/v2/init.js"></script>
 
@@ -2167,7 +2197,7 @@ const PROPERTIES = [
     hostingId: '1711340298974810369',
     guests: 14, beds: 4, baths: 3.5,
     rating: null, reviews: 0,
-    lat: 33.08492089299817, lng: -96.81974105536938,
+    lat: 33.02050, lng: -96.75080,
     amenities: [
       { label: 'Hot Tub', premium: true },
       { label: '85" TV', premium: true },
@@ -3327,11 +3357,13 @@ function initMiniMap() {
   if (miniMapInstance) { miniMapInstance.remove(); miniMapInstance = null; }
   miniMapMarkers = [];
 
+  const miniBounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
   miniMapInstance = L.map('miniMap', {
     zoomControl: false, attributionControl: false,
     dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
     boxZoom: false, keyboard: false, tap: false, touchZoom: false
-  }).setView([32.89, -96.87], 11);
+  }).setView(miniBounds.getCenter(), 11);
+  miniMapInstance.fitBounds(miniBounds.pad(0.1), { animate: false });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd', maxZoom: 19
@@ -3376,9 +3408,10 @@ function refreshAllMaps() {
     });
   }
 
-  // Rebuild explore map markers
+  // Rebuild explore map markers (including cluster)
   if (exploreMapInstance) {
     addPropertyMarkers();
+    updateUserLocMarker();
   }
 }
 
@@ -3598,7 +3631,7 @@ function openDetail(slug) {
     'Arcade Room': 'Retro gaming arcade',
     'L-Shaped Couch': 'Oversized comfort seating',
     'BBQ': 'Outdoor grilling station',
-    'Skyline Views': 'Downtown Houston panorama',
+    'Skyline Views': 'Downtown Dallas panorama',
     'Valet Parking': 'Complimentary VIP parking',
     'Cinema Room': 'Private screening room',
     'Exposed Brick': 'Historic 1910 character',
@@ -3930,51 +3963,56 @@ document.addEventListener('keydown', (e) => {
 /* ═══ EXPLORE THE AREA ═══ */
 
 const ATTRACTIONS = [
-  // ── SUGAR LAND ──
-  { name:'Sugar Land Town Square', desc:'Open-air lifestyle center with boutique shops, chef-driven restaurants, and a vibrant event plaza.', cat:'shopping', lat:29.5966, lng:-95.6221, rating:4.7, img:'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Constellation Field', desc:'Home of the Sugar Land Space Cowboys — a state-of-the-art minor league baseball stadium with craft beer and family fun.', cat:'sports', lat:29.5878, lng:-95.6458, rating:4.7, img:'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Brazos River Park', desc:'Scenic 500-acre park with paved trails along the Brazos River, disc golf, fishing, and stunning sunsets.', cat:'outdoor', lat:29.5680, lng:-95.6500, rating:4.8, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Fort Bend Museum', desc:'Local history museum showcasing the heritage of Fort Bend County with interactive exhibits and guided tours.', cat:'arts', lat:29.5750, lng:-95.6350, rating:4.4, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Sugar Land Memorial Park', desc:'Beautifully landscaped community park with splash pads, playgrounds, walking trails, and picnic areas.', cat:'family', lat:29.6050, lng:-95.6150, rating:4.6, img:'https://images.unsplash.com/photo-1500829243541-74b677fecc30?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Cullinan Park', desc:'754-acre nature preserve with boardwalk trails through wetlands, birding blinds, and serene lake views.', cat:'outdoor', lat:29.5400, lng:-95.6200, rating:4.7, img:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Smart Financial Centre', desc:'Premier 6,400-seat entertainment venue hosting top concerts, comedy shows, and performing arts events.', cat:'arts', lat:29.5850, lng:-95.6500, rating:4.6, img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Imperial Market', desc:'Trendy food hall and market with local vendors, craft cocktails, and weekend live music.', cat:'dining', lat:29.5930, lng:-95.6300, rating:4.5, img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Topgolf Sugar Land', desc:'High-tech driving range with climate-controlled hitting bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:29.5770, lng:-95.6380, rating:4.6, img:'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop', area:'sugarland' },
-  { name:'Oyster Creek Park', desc:'Tree-lined urban greenway with paved biking and jogging trails following Oyster Creek through Sugar Land.', cat:'outdoor', lat:29.5980, lng:-95.6100, rating:4.5, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'sugarland' },
+  // ── IRVING / LAS COLINAS ──
+  { name:'Toyota Music Factory', desc:'Premier entertainment district with live music venues, restaurants, and the Pavilion amphitheater.', cat:'arts', lat:32.8775, lng:-96.9425, rating:4.6, img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Lake Carolyn', desc:'Scenic urban lake with gondola rides, waterfront trails, public art, and stunning Las Colinas skyline views.', cat:'outdoor', lat:32.8680, lng:-96.9350, rating:4.7, img:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Mandalay Canal Walk', desc:'European-inspired canal promenade with cafes, boutiques, and tranquil waterways through Las Colinas.', cat:'outdoor', lat:32.8720, lng:-96.9380, rating:4.5, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Irving Arts Center', desc:'Cultural hub with two galleries, a sculpture garden, and 700-seat performing arts theater.', cat:'arts', lat:32.8530, lng:-96.9410, rating:4.5, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Mustangs of Las Colinas', desc:'World\'s largest equestrian sculpture — nine bronze mustangs charging through a granite stream.', cat:'arts', lat:32.8690, lng:-96.9320, rating:4.8, img:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Campion Trail', desc:'22-mile paved trail along the Elm Fork of the Trinity River, perfect for biking, running, and nature walks.', cat:'outdoor', lat:32.8400, lng:-96.9700, rating:4.7, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Alamo Drafthouse Cinema', desc:'Dine-in movie theater with craft food, cocktails, and a strict no-talking policy for the best film experience.', cat:'arts', lat:32.8760, lng:-96.9400, rating:4.7, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Water Street', desc:'Open-air dining and entertainment district along Lake Carolyn with waterfront patios and live music.', cat:'dining', lat:32.8710, lng:-96.9360, rating:4.5, img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop', area:'irving' },
 
-  // ── MISSOURI CITY ──
-  { name:'The Palms at Town Center', desc:'Mixed-use shopping destination with specialty stores, dining patios, and a relaxed neighborhood vibe.', cat:'shopping', lat:29.5636, lng:-95.5377, rating:4.4, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'missouricity' },
-  { name:'Buffalo Run Park', desc:'132-acre park with fishing lakes, playgrounds, pavilions, and scenic trails through native prairie.', cat:'family', lat:29.5450, lng:-95.5500, rating:4.5, img:'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=400&fit=crop', area:'missouricity' },
-  { name:'Community Park', desc:'Family-friendly park with sports fields, splash pad, walking trails, and shaded picnic areas.', cat:'family', lat:29.5550, lng:-95.5250, rating:4.3, img:'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&h=400&fit=crop', area:'missouricity' },
+  // ── PLANO / RICHARDSON ──
+  { name:'Legacy West', desc:'Upscale mixed-use development with designer shopping, chef-driven restaurants, and luxury living.', cat:'shopping', lat:33.0770, lng:-96.8260, rating:4.7, img:'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=600&h=400&fit=crop', area:'plano' },
+  { name:'The Shops at Willow Bend', desc:'Premier shopping destination with Neiman Marcus, Dillard\'s, and 125+ specialty stores.', cat:'shopping', lat:33.0320, lng:-96.8380, rating:4.5, img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop', area:'plano' },
+  { name:'Arbor Hills Nature Preserve', desc:'200-acre urban nature preserve with elevated boardwalks, prairie views, and challenging mountain bike trails.', cat:'outdoor', lat:33.0600, lng:-96.8470, rating:4.8, img:'https://images.unsplash.com/photo-1500829243541-74b677fecc30?w=600&h=400&fit=crop', area:'plano' },
+  { name:'CityLine', desc:'Vibrant mixed-use community in Richardson with dining, entertainment, and the State Farm campus.', cat:'shopping', lat:32.9850, lng:-96.7100, rating:4.4, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'plano' },
+  { name:'TopGolf Dallas', desc:'High-tech driving range with climate-controlled bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:33.0230, lng:-96.8310, rating:4.6, img:'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop', area:'plano' },
 
-  // ── HOUSTON ──
-  { name:'Space Center Houston', desc:'Official visitor center of NASA\'s Johnson Space Center with astronaut exhibits, moon rocks, and tram tours.', cat:'family', lat:29.5519, lng:-95.0981, rating:4.8, img:'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=600&h=400&fit=crop', area:'houston' },
-  { name:'The Galleria', desc:'World-famous luxury shopping destination with 400+ stores, an ice rink, and upscale dining.', cat:'shopping', lat:29.7400, lng:-95.4614, rating:4.6, img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Houston Museum District', desc:'19 world-class museums spanning art, science, history, and culture across a walkable urban district.', cat:'arts', lat:29.7220, lng:-95.3900, rating:4.8, img:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Discovery Green', desc:'12-acre urban park in downtown with kayaking, concerts, a playground, and seasonal festivals.', cat:'outdoor', lat:29.7525, lng:-95.3572, rating:4.7, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Buffalo Bayou Park', desc:'160-acre linear park along the bayou with trails, public art, kayak rentals, and stunning skyline views.', cat:'outdoor', lat:29.7630, lng:-95.3836, rating:4.8, img:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Houston Zoo', desc:'55-acre zoo with 6,000+ animals, immersive exhibits, a splash pad, and seasonal evening events.', cat:'family', lat:29.7142, lng:-95.3908, rating:4.7, img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Minute Maid Park', desc:'Home of the Houston Astros — retractable-roof stadium with iconic train, local eats, and game-day energy.', cat:'sports', lat:29.7573, lng:-95.3555, rating:4.7, img:'https://images.unsplash.com/photo-1504016798967-59a258e9386d?w=600&h=400&fit=crop', area:'houston' },
-  { name:'NRG Stadium', desc:'71,500-seat multi-purpose venue hosting the Houston Texans, rodeo, and major concerts.', cat:'sports', lat:29.6847, lng:-95.4107, rating:4.6, img:'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Hermann Park', desc:'445-acre urban oasis with a Japanese garden, pedal boats, miniature train, and the Miller Outdoor Theatre.', cat:'outdoor', lat:29.7138, lng:-95.3900, rating:4.8, img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop', area:'houston' },
-  { name:'The Heights', desc:'Walkable historic neighborhood with craft breweries, vintage shops, brunch spots, and vibrant murals.', cat:'dining', lat:29.7900, lng:-95.3980, rating:4.7, img:'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Montrose District', desc:'Eclectic arts and dining hub with galleries, cocktail bars, global cuisine, and a thriving creative scene.', cat:'dining', lat:29.7384, lng:-95.3969, rating:4.6, img:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Kemah Boardwalk', desc:'Waterfront amusement park with rides, seafood restaurants, and live entertainment on Galveston Bay.', cat:'family', lat:29.5427, lng:-95.0198, rating:4.5, img:'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Museum of Fine Arts Houston', desc:'One of the largest art museums in the US with 70,000+ works spanning 6,000 years of history.', cat:'arts', lat:29.7256, lng:-95.3906, rating:4.7, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Rice Village', desc:'Upscale shopping and dining district near Rice University with boutiques, cafés, and specialty stores.', cat:'shopping', lat:29.7160, lng:-95.4100, rating:4.5, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Pappas Bros. Steakhouse', desc:'Award-winning steakhouse with prime cuts dry-aged in-house, an extensive wine list, and impeccable service.', cat:'dining', lat:29.7380, lng:-95.4620, rating:4.8, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'houston' },
-  { name:'Typhoon Texas', desc:'Massive waterpark with wave pools, lazy rivers, speed slides, and family splash zones.', cat:'family', lat:29.7800, lng:-95.7300, rating:4.5, img:'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=600&h=400&fit=crop', area:'houston' }
+  // ── DALLAS ──
+  { name:'Deep Ellum', desc:'Eclectic arts and entertainment district with live music, street art, craft breweries, and vibrant nightlife.', cat:'dining', lat:32.7845, lng:-96.7834, rating:4.7, img:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Dallas Farmers Market', desc:'Historic market with local produce, artisan foods, chef-led cooking classes, and seasonal festivals.', cat:'dining', lat:32.7750, lng:-96.7960, rating:4.6, img:'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'AT&T Discovery District', desc:'Immersive downtown destination with media walls, public art, dining, and the AT&T flagship store.', cat:'arts', lat:32.7790, lng:-96.7980, rating:4.5, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Reunion Tower', desc:'Iconic 561-ft observation tower with GeO-Deck offering 360-degree panoramic views of the Dallas skyline.', cat:'family', lat:32.7757, lng:-96.8088, rating:4.7, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Perot Museum of Nature and Science', desc:'World-class museum with interactive exhibits on dinosaurs, space, sports physics, and engineering.', cat:'family', lat:32.7868, lng:-96.8066, rating:4.8, img:'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Dallas Museum of Art', desc:'Free admission museum with 24,000+ works spanning 5,000 years from ancient to contemporary art.', cat:'arts', lat:32.7877, lng:-96.8010, rating:4.7, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Klyde Warren Park', desc:'Deck park over a freeway with food trucks, yoga, concerts, games, and a children\'s park in downtown Dallas.', cat:'outdoor', lat:32.7893, lng:-96.8016, rating:4.8, img:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Globe Life Field', desc:'Home of the Texas Rangers — retractable-roof stadium with craft food, craft beer, and championship energy.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'https://images.unsplash.com/photo-1504016798967-59a258e9386d?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'AT&T Stadium', desc:'Home of the Dallas Cowboys — the iconic 80,000-seat venue with art collection, tours, and world-class events.', cat:'sports', lat:32.7473, lng:-97.0945, rating:4.7, img:'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Bishop Arts District', desc:'Charming walkable neighborhood in Oak Cliff with indie boutiques, galleries, cocktail bars, and brunch spots.', cat:'dining', lat:32.7478, lng:-96.8267, rating:4.6, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Dallas Arboretum', desc:'66-acre botanical garden on White Rock Lake with seasonal festivals, stunning gardens, and a children\'s adventure area.', cat:'outdoor', lat:32.8234, lng:-96.7168, rating:4.8, img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Dallas Zoo', desc:'106-acre zoo with 2,000+ animals, Giants of the Savanna habitat, and a world-renowned conservation program.', cat:'family', lat:32.7410, lng:-96.8150, rating:4.6, img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Six Flags Over Texas', desc:'Legendary theme park with world-class roller coasters, family rides, and seasonal events in Arlington.', cat:'family', lat:32.7560, lng:-97.0700, rating:4.5, img:'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=600&h=400&fit=crop', area:'dallas' },
+  { name:'Galleria Dallas', desc:'Luxury shopping mall with 200+ stores, an ice rink, Westin hotel, and upscale dining.', cat:'shopping', lat:32.9310, lng:-96.8210, rating:4.5, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'dallas' }
 ];
+
 
 let exploreSelectedProp = null;
 let exploreSelectedCat = 'all';
 let exploreMapInstance = null;
 let exploreMarkers = [];
 let mapPropertyMarkers = [];
+let mapClusterGroup = null;
 let mapActiveProperty = null;
 let mapObserverAttached = false;
 let mapIsExpanded = false;
 let mapExpandAnimating = false;
+
+// ── Geolocation state ──
+let userLat = null, userLng = null;
+let userLocMarker = null;
+let geoWatchId = null;
 
 // Haversine distance in miles
 function haversine(lat1, lon1, lat2, lon2) {
@@ -3983,6 +4021,100 @@ function haversine(lat1, lon1, lat2, lon2) {
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ── Geolocation ──
+function initGeolocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => { onGeoSuccess(pos); startGeoWatch(); },
+    () => {},  // silently degrade
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+  );
+}
+
+function startGeoWatch() {
+  if (geoWatchId || !navigator.geolocation) return;
+  geoWatchId = navigator.geolocation.watchPosition(
+    onGeoSuccess,
+    () => {},
+    { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+  );
+}
+
+function onGeoSuccess(pos) {
+  userLat = pos.coords.latitude;
+  userLng = pos.coords.longitude;
+  updateUserLocMarker();
+  updateAllDistances();
+}
+
+function updateUserLocMarker() {
+  if (userLat == null) return;
+  const locIcon = L.divIcon({
+    className: '',
+    html: '<div class="user-loc-marker"><div class="user-loc-ring"></div><div class="user-loc-dot"></div></div>',
+    iconSize: [20, 20], iconAnchor: [10, 10]
+  });
+
+  // Explore map
+  if (exploreMapInstance) {
+    if (userLocMarker) exploreMapInstance.removeLayer(userLocMarker);
+    userLocMarker = L.marker([userLat, userLng], {
+      icon: locIcon, interactive: false, keyboard: false,
+      zIndexOffset: -100
+    }).addTo(exploreMapInstance);
+  }
+
+  // Show My Location button
+  const btn = document.getElementById('mapMyLocBtn');
+  if (btn) btn.style.display = '';
+}
+
+function flyToMyLocation() {
+  if (userLat == null || !exploreMapInstance) return;
+  exploreMapInstance.flyTo([userLat, userLng], 13, { duration: 0.8 });
+}
+
+function updateAllDistances() {
+  if (userLat == null) return;
+  // Update property strip distances
+  const strip = document.getElementById('mapPropStrip');
+  if (strip) {
+    strip.querySelectorAll('.map-prop-strip-item').forEach((item, i) => {
+      const prop = PROPERTIES[i];
+      if (!prop) return;
+      const dist = haversine(userLat, userLng, prop.lat, prop.lng);
+      let distEl = item.querySelector('.map-prop-strip-dist');
+      if (!distEl) {
+        distEl = document.createElement('div');
+        distEl.className = 'map-prop-strip-dist';
+        item.querySelector('.map-prop-strip-info')?.appendChild(distEl);
+      }
+      distEl.textContent = dist.toFixed(1) + ' mi away';
+    });
+  }
+  // Update map card distance if visible
+  if (mapActiveProperty != null) {
+    const prop = PROPERTIES[mapActiveProperty];
+    if (prop) showMapCardDistance(prop);
+  }
+}
+
+function showMapCardDistance(prop) {
+  const distEl = document.getElementById('mapCardDistance');
+  const distText = document.getElementById('mapCardDistText');
+  if (!distEl || !distText) return;
+  if (userLat == null) { distEl.style.display = 'none'; return; }
+  const dist = haversine(userLat, userLng, prop.lat, prop.lng);
+  distText.textContent = dist.toFixed(1) + ' mi from you';
+  distEl.style.display = '';
+}
+
+function getMapBounds() {
+  const coords = PROPERTIES.map(p => [p.lat, p.lng]);
+  if (userLat != null) coords.push([userLat, userLng]);
+  return L.latLngBounds(coords);
 }
 
 function initExplorePropSelector() {
@@ -4047,7 +4179,7 @@ function renderExploreGrid() {
             <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             ${a.rating}
           </span>
-          <span class="explore-card-tag">${{sugarland:'SUGAR LAND',missouricity:'MISSOURI CITY',houston:'HOUSTON'}[a.area]||a.area.toUpperCase()}</span>
+          <span class="explore-card-tag">${{irving:'IRVING',plano:'PLANO',dallas:'DALLAS',richardson:'RICHARDSON'}[a.area]||a.area.toUpperCase()}</span>
         </div>
       </div>
       <div class="explore-card-overlay">
@@ -4130,8 +4262,9 @@ function initExploreMap() {
   if (!el || typeof L === 'undefined') return;
   if (exploreMapInstance) return;
 
+  const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
   exploreMapInstance = L.map('exploreMap', {
-    center: [32.89, -96.87],
+    center: bounds.getCenter(),
     zoom: 11,
     zoomControl: false,
     attributionControl: false,
@@ -4143,12 +4276,21 @@ function initExploreMap() {
     subdomains: 'abcd'
   }).addTo(exploreMapInstance);
 
+  exploreMapInstance.fitBounds(bounds.pad(0.12), { animate: false });
+
   addPropertyMarkers();
   buildMapPropStrip();
   initMapInteraction();
 
   const closeBtn = document.getElementById('mapCardClose');
   if (closeBtn) closeBtn.addEventListener('click', closeMapCard);
+
+  // My Location button
+  const myLocBtn = document.getElementById('mapMyLocBtn');
+  if (myLocBtn) myLocBtn.addEventListener('click', (e) => { e.stopPropagation(); flyToMyLocation(); });
+
+  // Kick off geolocation
+  initGeolocation();
 
   updateExploreMap();
 }
@@ -4164,10 +4306,40 @@ function createPropertyMarkerIcon() {
 
 function addPropertyMarkers() {
   if (!exploreMapInstance) return;
-  mapPropertyMarkers.forEach(m => exploreMapInstance.removeLayer(m));
+
+  // Remove old markers/cluster
+  if (mapClusterGroup) {
+    exploreMapInstance.removeLayer(mapClusterGroup);
+    mapClusterGroup = null;
+  }
+  mapPropertyMarkers.forEach(m => {
+    if (exploreMapInstance.hasLayer(m)) exploreMapInstance.removeLayer(m);
+  });
   mapPropertyMarkers = [];
 
+  // Create cluster group with copper styling
+  mapClusterGroup = L.markerClusterGroup({
+    maxClusterRadius: 45,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    disableClusteringAtZoom: 13,
+    iconCreateFunction: function(cluster) {
+      const count = cluster.getChildCount();
+      let size = 'small';
+      if (count >= 5) size = 'large';
+      else if (count >= 3) size = 'medium';
+      return L.divIcon({
+        html: '<div>' + count + '</div>',
+        className: 'marker-cluster marker-cluster-' + size,
+        iconSize: L.point(40, 40)
+      });
+    }
+  });
+
   PROPERTIES.forEach((prop, idx) => {
+    if (!prop.lat || !prop.lng) return; // skip invalid coords
+
     const icon = L.divIcon({
       html: createPropertyMarkerIcon(),
       className: '',
@@ -4180,14 +4352,7 @@ function addPropertyMarkers() {
       title: prop.name,
       alt: prop.name + ' location',
       keyboard: true
-    }).addTo(exploreMapInstance);
-
-    const markerEl = marker.getElement();
-    if (markerEl) {
-      markerEl.style.opacity = '0';
-      markerEl.style.animation = `markerFadeIn .3s cubic-bezier(.34,1.56,.64,1) ${idx * 40}ms forwards`;
-      markerEl.setAttribute('aria-label', `${prop.name} in ${prop.city}, ${prop.state}`);
-    }
+    });
 
     marker.on('click', (e) => {
       L.DomEvent.stopPropagation(e);
@@ -4196,6 +4361,21 @@ function addPropertyMarkers() {
     });
     marker.propertyIndex = idx;
     mapPropertyMarkers.push(marker);
+    mapClusterGroup.addLayer(marker);
+  });
+
+  exploreMapInstance.addLayer(mapClusterGroup);
+
+  // Apply fade-in animation after markers are on the DOM
+  requestAnimationFrame(() => {
+    mapPropertyMarkers.forEach((marker, idx) => {
+      const markerEl = marker.getElement();
+      if (markerEl) {
+        markerEl.style.opacity = '0';
+        markerEl.style.animation = `markerFadeIn .3s cubic-bezier(.34,1.56,.64,1) ${idx * 40}ms forwards`;
+        markerEl.setAttribute('aria-label', `${PROPERTIES[idx].name} in ${PROPERTIES[idx].city}, ${PROPERTIES[idx].state}`);
+      }
+    });
   });
 }
 
@@ -4239,6 +4419,9 @@ function selectPropertyOnMap(idx) {
   if (catEl) catEl.textContent = prop.category === 'villa' ? 'Luxury Villa' : 'Designer Suite';
   if (nameEl) nameEl.textContent = prop.name;
   if (locTextEl) locTextEl.textContent = `${prop.city}, ${prop.state}`;
+
+  // Distance from user
+  showMapCardDistance(prop);
 
   // Price (with 5% direct booking discount)
   if (priceEl) {
@@ -4320,7 +4503,11 @@ function closeMapCard() {
 function buildMapPropStrip() {
   const strip = document.getElementById('mapPropStrip');
   if (!strip) return;
-  strip.innerHTML = PROPERTIES.map((prop, idx) => `
+  strip.innerHTML = PROPERTIES.map((prop, idx) => {
+    const distHtml = userLat != null
+      ? `<div class="map-prop-strip-dist">${haversine(userLat, userLng, prop.lat, prop.lng).toFixed(1)} mi away</div>`
+      : '';
+    return `
     <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
       <div class="map-prop-strip-thumb" style="background-image:url(${prop.photos && prop.photos[0] ? imgUrl(prop.hostingId, prop.photos[0]) : ''})"></div>
       <div class="map-prop-strip-info">
@@ -4329,10 +4516,11 @@ function buildMapPropStrip() {
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           ${prop.city}, ${prop.state}
         </div>
+        ${distHtml}
         <span class="map-prop-strip-badge">${prop.category === 'villa' ? 'Villa' : 'Suite'}</span>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   // Wire click handlers
   strip.querySelectorAll('.map-prop-strip-item').forEach(item => {
@@ -4480,12 +4668,11 @@ function expandMap() {
       mapIsExpanded = true;
       mapExpandAnimating = false;
 
-      // Enable scroll-wheel zoom and fit all markers
+      // Enable scroll-wheel zoom and fit all markers + user location
       if (exploreMapInstance) {
         exploreMapInstance.scrollWheelZoom.enable();
         exploreMapInstance.invalidateSize();
-        const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
-        exploreMapInstance.fitBounds(bounds.pad(0.15), { animate: true, duration: 0.6 });
+        exploreMapInstance.fitBounds(getMapBounds().pad(0.15), { animate: true, duration: 0.6 });
       }
     }, 260);
   });
@@ -4523,8 +4710,7 @@ function collapseMap() {
     if (exploreMapInstance) {
       exploreMapInstance.scrollWheelZoom.disable();
       exploreMapInstance.invalidateSize();
-      const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
-      exploreMapInstance.fitBounds(bounds.pad(0.1), { animate: false });
+      exploreMapInstance.fitBounds(getMapBounds().pad(0.1), { animate: false });
     }
   }, 210);
 }
@@ -4536,10 +4722,9 @@ function updateExploreMap() {
   exploreMarkers.forEach(m => exploreMapInstance.removeLayer(m));
   exploreMarkers = [];
 
-  // Fit bounds to property markers only (no attraction markers)
-  const allCoords = PROPERTIES.map(p => [p.lat, p.lng]);
-  if (allCoords.length > 1 && mapActiveProperty === null) {
-    exploreMapInstance.fitBounds(allCoords, { padding: [40, 40], maxZoom: 13 });
+  // Fit bounds to property markers + user location
+  if (PROPERTIES.length > 1 && mapActiveProperty === null) {
+    exploreMapInstance.fitBounds(getMapBounds(), { padding: [40, 40], maxZoom: 13 });
   }
 }
 
