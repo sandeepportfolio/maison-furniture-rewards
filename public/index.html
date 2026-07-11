@@ -577,7 +577,7 @@ ul{list-style:none}
 .user-loc-ring{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;border:2px solid rgba(59,130,246,.6);animation:userLocPulse 2s ease-out infinite}
 .user-loc-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:#3B82F6;border:2.5px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(59,130,246,.5)}
 /* My Location button */
-.map-my-loc-btn{position:absolute;bottom:80px;right:16px;z-index:550;width:40px;height:40px;background:rgba(28,28,28,.85);border:1px solid var(--border-dark);border-radius:10px;color:#3B82F6;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:background .2s var(--ease)}
+.map-my-loc-btn{position:absolute;bottom:80px;left:16px;z-index:550;width:40px;height:40px;background:rgba(28,28,28,.85);border:1px solid var(--border-dark);border-radius:10px;color:#3B82F6;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:background .2s var(--ease)}
 .map-expanded .map-my-loc-btn{display:flex}
 .map-my-loc-btn:hover{background:rgba(59,130,246,.15)}
 .map-my-loc-btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none}
@@ -645,7 +645,7 @@ ul{list-style:none}
 .map-prop-strip-thumb{width:56px;height:56px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.4);transition:box-shadow .3s var(--ease)}
 .map-prop-strip-item.active .map-prop-strip-thumb{box-shadow:0 4px 16px rgba(199,107,66,.4)}
 .map-prop-strip-info{min-width:0;flex:1}
-.map-prop-strip-name{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--text-inv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.map-prop-strip-name{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--text-inv);margin-bottom:2px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .map-prop-strip-loc{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
 .map-prop-strip-loc svg{width:10px;height:10px;stroke:var(--brass-light);stroke-width:2;fill:none;flex-shrink:0}
 .map-prop-strip-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.12);border-radius:20px;padding:2px 8px;margin-top:3px;width:fit-content}
@@ -1041,17 +1041,36 @@ ul{list-style:none}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
-  .map-property-card{position:absolute;top:auto;right:0;bottom:0;left:0;width:100%;max-width:100%;max-height:55vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%)}
+  .map-property-card{position:absolute;top:auto;right:0;bottom:0;left:0;width:100%;max-width:100%;max-height:40vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%);display:flex;flex-direction:row}
   .map-property-card.visible{animation:cardSlideInMobile .4s cubic-bezier(.22,1,.36,1) forwards}
   .map-property-card.closing{animation:cardSlideOutMobile .3s cubic-bezier(.55,.06,.68,.19) forwards}
-  .map-card-photo{height:160px}
-  .map-card-body{padding:16px 18px 18px}
-  .map-card-name{font-size:20px}
-  .map-card-btn-primary,.map-card-btn-secondary{font-size:12px;padding:10px 0}
+  .map-card-photo{width:120px;min-width:120px;height:auto;min-height:100%;background-size:cover;background-position:center;border-radius:var(--radius-lg) 0 0 0}
+  .map-card-photo::after{display:none}
+  .map-card-body{padding:12px 14px 12px;flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .map-card-category{font-size:8px;margin-bottom:2px}
+  .map-card-name{font-size:16px;margin-bottom:2px}
+  .map-card-location{font-size:11px;margin-bottom:1px}
+  .map-card-distance{margin-top:0;font-size:11px}
+  .map-card-price{font-size:14px;margin-bottom:2px}
+  .map-card-price span{font-size:11px}
+  .map-card-rating{font-size:11px;margin-bottom:4px}
+  .map-card-rating svg{width:11px;height:11px}
+  .map-card-specs{gap:8px;margin-bottom:6px;padding-bottom:6px}
+  .map-card-specs span{font-size:10px}
+  .map-card-amenities{display:none}
+  .map-card-actions{gap:6px}
+  .map-card-btn-primary,.map-card-btn-secondary{font-size:11px;padding:8px 0}
+  .map-card-close{display:none}
+  .map-my-loc-btn{bottom:auto;top:80px;left:12px}
+  .map-zoom-controls{bottom:auto;top:130px;left:12px;right:auto}
   .map-prop-strip{padding:12px 14px;gap:8px}
-  .map-prop-strip-item{width:180px}
+  .map-prop-strip-item{width:200px;padding:10px;flex-direction:column;align-items:stretch;gap:6px}
+  .map-prop-strip-thumb{width:100%;height:48px;border-radius:8px}
+  .map-prop-strip-name{white-space:normal;overflow:visible;text-overflow:unset;font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .map-prop-strip-loc{font-size:9px}
+  .map-prop-strip-badge{font-size:8px;padding:2px 6px;margin-top:2px}
+  .map-prop-strip-dist{font-size:9px;white-space:nowrap;margin-top:1px}
   .map-close-btn{width:42px;height:42px;top:14px;right:14px}
-  .map-zoom-controls{bottom:auto;top:80px;right:12px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
   .explore-categories{gap:4px}
@@ -1097,19 +1116,19 @@ ul{list-style:none}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
   .explore-map-wrap{height:400px}
-  .map-property-card{max-height:65vh}
-  .map-card-photo{height:140px}
-  .map-card-name{font-size:18px}
+  .map-property-card{max-height:40vh}
+  .map-card-photo{width:100px;min-width:100px}
+  .map-card-name{font-size:15px}
   .map-card-specs span{font-size:10px}
-  .map-card-amenities span{font-size:9px;padding:3px 8px}
+  .map-card-amenities{display:none}
   .map-marker{width:36px;height:36px}
   .map-marker-core{width:26px;height:26px}
   .map-marker-core svg{width:11px;height:11px}
   .map-prop-strip{padding:10px 12px;gap:8px}
-  .map-prop-strip-item{width:160px;padding:8px}
-  .map-prop-strip-thumb{width:48px;height:48px}
-  .map-prop-strip-name{font-size:11px}
-  .map-prop-strip-loc{font-size:10px}
+  .map-prop-strip-item{width:170px;padding:8px}
+  .map-prop-strip-thumb{width:100%;height:40px}
+  .map-prop-strip-name{font-size:10px}
+  .map-prop-strip-loc{font-size:9px}
   .map-close-btn{width:40px;height:40px;top:12px;right:12px}
   .explore-events-title{font-size:24px}
   .explore-map-title{font-size:22px}
@@ -4091,7 +4110,7 @@ function updateAllDistances() {
         distEl.className = 'map-prop-strip-dist';
         item.querySelector('.map-prop-strip-info')?.appendChild(distEl);
       }
-      distEl.textContent = dist.toFixed(1) + ' mi away';
+      distEl.textContent = Math.round(dist) + ' mi';
     });
   }
   // Update map card distance if visible
@@ -4107,7 +4126,7 @@ function showMapCardDistance(prop) {
   if (!distEl || !distText) return;
   if (userLat == null) { distEl.style.display = 'none'; return; }
   const dist = haversine(userLat, userLng, prop.lat, prop.lng);
-  distText.textContent = dist.toFixed(1) + ' mi from you';
+  distText.textContent = Math.round(dist) + ' mi';
   distEl.style.display = '';
 }
 
@@ -4505,7 +4524,7 @@ function buildMapPropStrip() {
   if (!strip) return;
   strip.innerHTML = PROPERTIES.map((prop, idx) => {
     const distHtml = userLat != null
-      ? `<div class="map-prop-strip-dist">${haversine(userLat, userLng, prop.lat, prop.lng).toFixed(1)} mi away</div>`
+      ? `<div class="map-prop-strip-dist">${Math.round(haversine(userLat, userLng, prop.lat, prop.lng))} mi</div>`
       : '';
     return `
     <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
@@ -4514,7 +4533,7 @@ function buildMapPropStrip() {
         <div class="map-prop-strip-name">${prop.name}</div>
         <div class="map-prop-strip-loc">
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${prop.city}, ${prop.state}
+          ${prop.city}, ${prop.state === 'Texas' ? 'TX' : prop.state}
         </div>
         ${distHtml}
         <span class="map-prop-strip-badge">${prop.category === 'villa' ? 'Villa' : 'Suite'}</span>
