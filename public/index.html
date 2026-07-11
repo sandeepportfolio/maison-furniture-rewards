@@ -1095,6 +1095,112 @@ ul{list-style:none}
   .event-date-month{font-size:9px}
   /* booking modal handled above with full-screen mobile rules */
 }
+
+/* ═══ REDESIGNED REGENT DIFFERENCE (combined) ═══ */
+.rd-section{background:var(--bg-dark);max-width:none;margin:0;position:relative;overflow:hidden}
+.rd-divider-top{height:1px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.2) 30%,rgba(199,107,66,.2) 70%,transparent);margin:0 auto;max-width:900px}
+.rd-inner{max-width:1200px;margin:0 auto;padding:64px 40px 40px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+.rd-story .section-label{text-align:left;display:block;margin-bottom:16px}
+.rd-headline{font-family:var(--serif);font-size:clamp(28px,3vw,42px);font-weight:400;color:var(--text-inv);line-height:1.18;letter-spacing:-.02em;margin-bottom:20px}
+.rd-headline em{font-style:italic;color:var(--accent-light)}
+.rd-lede{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted);line-height:1.8;margin-bottom:28px}
+.rd-stats{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:12px!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important}
+.rd-stats .stat-item{padding:14px 0!important;min-width:0!important}
+.rd-stats .stat-number{font-size:clamp(22px,2vw,30px)!important}
+.rd-stats .stat-label{font-size:10px!important}
+
+/* Accordion features */
+.rd-features-label{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-inv-muted);margin-bottom:16px}
+.rd-accordion{display:flex;flex-direction:column;gap:0}
+.rd-item{border-bottom:1px solid rgba(255,255,255,.06)}
+.rd-item:first-child{border-top:1px solid rgba(255,255,255,.06)}
+.rd-item summary{display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer;list-style:none;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--text-inv);letter-spacing:-.01em;transition:color .3s var(--ease);position:relative;padding-right:24px}
+.rd-item summary::-webkit-details-marker{display:none}
+.rd-item summary::after{content:'';position:absolute;right:0;top:50%;width:10px;height:10px;border-right:1.5px solid var(--text-inv-muted);border-bottom:1.5px solid var(--text-inv-muted);transform:translateY(-60%) rotate(45deg);transition:transform .3s var(--ease),border-color .3s var(--ease)}
+.rd-item[open] summary::after{transform:translateY(-30%) rotate(-135deg);border-color:var(--accent-light)}
+.rd-item summary:hover{color:var(--accent-light)}
+.rd-item summary svg{width:18px;height:18px;stroke:var(--accent-light);stroke-width:1.5;fill:none;flex-shrink:0;opacity:.7}
+.rd-item[open] summary svg{opacity:1}
+.rd-item p{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.7;padding:0 0 14px 30px;margin:0}
+
+/* Slim marquee override */
+.rd-marquee{padding:24px 0!important}
+.rd-marquee .marquee-item{font-size:11px!important;letter-spacing:.12em!important}
+
+/* ── Responsive: Regent Difference ── */
+@media(max-width:900px){
+  .rd-inner{grid-template-columns:1fr;gap:36px;padding:48px 24px 24px}
+  .rd-stats{grid-template-columns:repeat(4,1fr)!important;gap:8px!important}
+}
+@media(max-width:520px){
+  .rd-inner{padding:40px 20px 20px;gap:28px}
+  .rd-headline{font-size:26px}
+  .rd-lede{font-size:14px;margin-bottom:20px}
+  .rd-stats{grid-template-columns:repeat(2,1fr)!important}
+  .rd-stats .stat-number{font-size:22px!important}
+  .rd-item summary{font-size:13px;padding:12px 0}
+  .rd-item p{font-size:12px;padding-bottom:10px}
+  .rd-marquee{padding:16px 0!important}
+}
+
+/* ═══ REWARDS OVERLAY ═══ */
+.rewards-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg-dark);overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+.rewards-overlay.open{opacity:1;pointer-events:auto}
+.rewards-page{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+
+/* Top bar */
+.rewards-topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 0;position:sticky;top:0;background:var(--bg-dark);z-index:10;border-bottom:1px solid rgba(255,255,255,.06)}
+.rewards-back{display:flex;align-items:center;gap:8px;background:none;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:8px 16px;color:var(--text-inv);font-family:var(--sans);font-size:13px;cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.rewards-back:hover{border-color:var(--accent);color:var(--accent-light)}
+.rewards-topbar-logo{font-family:var(--sans);font-size:13px;font-weight:300;letter-spacing:.25em;color:var(--text-inv-muted)}
+
+/* Hero */
+.rewards-hero{text-align:center;padding:64px 0 48px}
+.rewards-hero .section-label{margin-bottom:16px}
+.rewards-title{font-family:var(--serif);font-size:clamp(36px,5vw,60px);font-weight:400;color:var(--text-inv);line-height:1.1;letter-spacing:-.03em;margin-bottom:20px}
+.rewards-title em{font-style:italic;color:var(--accent-light)}
+.rewards-subtitle{font-family:var(--sans);font-size:16px;color:var(--text-inv-muted);line-height:1.75;max-width:560px;margin:0 auto}
+
+/* Tiers */
+.rewards-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:72px}
+.rewards-tier{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);padding:36px 28px;position:relative;transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.rewards-tier:hover{border-color:rgba(199,107,66,.2);transform:translateY(-2px)}
+.rewards-tier.featured{border-color:rgba(199,107,66,.3);background:rgba(199,107,66,.04)}
+.rewards-tier-label{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 14px;border-radius:20px}
+.rewards-tier-badge{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.rewards-tier-badge.silver{background:rgba(192,192,192,.1);border:1px solid rgba(192,192,192,.2);color:#c0c0c0}
+.rewards-tier-badge.gold{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);color:#d4af37}
+.rewards-tier-badge.platinum{background:rgba(199,107,66,.1);border:1px solid rgba(199,107,66,.2);color:var(--accent-light)}
+.rewards-tier h3{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--text-inv);margin-bottom:6px}
+.rewards-tier-req{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);margin-bottom:20px}
+.rewards-perks{list-style:none;display:flex;flex-direction:column;gap:10px}
+.rewards-perks li{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.5;padding-left:18px;position:relative}
+.rewards-perks li::before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.5}
+.rewards-tier.featured .rewards-perks li::before{opacity:.8}
+
+/* How it works */
+.rewards-how{margin-bottom:56px}
+.rewards-how-title{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--text-inv);text-align:center;margin-bottom:36px}
+.rewards-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.rewards-step{text-align:center;padding:24px 16px}
+.rewards-step-num{font-family:var(--mono);font-size:32px;color:var(--accent);opacity:.3;margin-bottom:12px}
+.rewards-step h4{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text-inv);margin-bottom:8px}
+.rewards-step p{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.6}
+
+/* CTA */
+.rewards-cta-box{text-align:center;padding:40px;border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);background:rgba(199,107,66,.03)}
+.rewards-cta-box p{font-family:var(--serif);font-size:22px;color:var(--text-inv);margin-bottom:20px}
+
+/* Responsive rewards */
+@media(max-width:768px){
+  .rewards-tiers{grid-template-columns:1fr;gap:16px;margin-bottom:48px}
+  .rewards-steps{grid-template-columns:1fr;gap:16px}
+  .rewards-hero{padding:40px 0 32px}
+  .rewards-title{font-size:32px}
+  .rewards-subtitle{font-size:14px}
+  .rewards-tier{padding:28px 20px}
+  .rewards-cta-box{padding:28px 20px}
+}
 </style>
 </head>
 <body>
@@ -1110,6 +1216,7 @@ ul{list-style:none}
     <a href="#experience">Experience</a>
     <a href="#explore" onclick="event.preventDefault();openMapModal()">Explore</a>
     <a href="#story">Our Story</a>
+    <a href="#rewards" onclick="event.preventDefault();showRewards()">Rewards</a>
     <a href="#contact">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
   </div>
@@ -1122,6 +1229,7 @@ ul{list-style:none}
   <a href="#experience" onclick="closeMobile()">Experience</a>
   <a href="#explore" onclick="closeMobile();event.preventDefault();openMapModal()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
+  <a href="#rewards" onclick="closeMobile();event.preventDefault();showRewards()">Rewards</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
 </div>
@@ -1195,171 +1303,97 @@ ul{list-style:none}
   <div class="properties-grid" id="propertiesGrid"></div>
 </section>
 
-<!-- ═══ EXPERIENCE ═══ -->
-<section class="section-dark" id="experience">
-  <div class="section-inner">
-    <div class="section-header reveal">
-      <span class="section-label light">03&ensp;THE REGENT DIFFERENCE</span>
-      <h2 class="light">An experience,<br>not just a booking</h2>
+<!-- ═══ THE REGENT DIFFERENCE + OUR STORY (Combined) ═══ -->
+<section class="rd-section" id="experience">
+  <!-- Subtle top divider -->
+  <div class="rd-divider-top"></div>
+
+  <div class="rd-inner">
+    <!-- Left column: Story + Stats -->
+    <div class="rd-story reveal-left" id="story">
+      <span class="section-label light">THE REGENT DIFFERENCE</span>
+      <h2 class="rd-headline">Two friends, tired of<br><em>paying more for less.</em></h2>
+      <p class="rd-lede">We kept booking beautiful Airbnbs that looked stunning in photos&mdash;then showed up to thin towels, barely-there WiFi, and a kitchen with exactly two forks. So we built Regent: every property fitted with premium finishings, stocked with tremendous care, because luxury shouldn&rsquo;t come with an absurd price tag.</p>
+      <!-- Inline stats -->
+      <div class="rd-stats stats-bar">
+        <div class="stat-item">
+          <div class="stat-number"><span class="stat-val" data-target="7">7</span></div>
+          <div class="stat-label">Properties</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span class="stat-val" data-target="4.9" data-decimals="1">4.9</span><span class="stat-suffix">&#9733;</span></div>
+          <div class="stat-label">Avg Rating</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span class="stat-val" data-target="79">79</span><span class="stat-suffix">+</span></div>
+          <div class="stat-label">Reviews</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span class="stat-val" data-target="70">70</span><span class="stat-suffix">+</span></div>
+          <div class="stat-label">Amenities</div>
+        </div>
+      </div>
     </div>
-    <!-- Animated Stats -->
-    <div class="stats-bar reveal">
-      <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="7">7</span></div>
-        <div class="stat-label">Properties</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="4.9" data-decimals="1">4.9</span><span class="stat-suffix">&#9733;</span></div>
-        <div class="stat-label">Avg Rating</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="79">79</span><span class="stat-suffix">+</span></div>
-        <div class="stat-label">Reviews</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number"><span class="stat-val" data-target="70">70</span><span class="stat-suffix">+</span></div>
-        <div class="stat-label">Amenities Per Stay</div>
-      </div>
-    </div>
-    <!-- Feature Grid -->
-    <div class="experience-grid" id="experienceGrid">
-      <div class="exp-card" data-delay="0">
-        <div class="exp-num">01</div>
-        <div class="exp-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg></div>
-        <div class="exp-title">Resort-Style Pool &amp; Gym</div>
-        <div class="exp-desc">24/7 fitness centers, resort pools, and sky lounges at every property.</div>
-      </div>
-      <div class="exp-card" data-delay="80">
-        <div class="exp-num">02</div>
-        <div class="exp-icon"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg></div>
-        <div class="exp-title">Chef-Ready Kitchens</div>
-        <div class="exp-desc">Premium cookware, spices, complimentary coffee bar with Keurig &amp; pods.</div>
-      </div>
-      <div class="exp-card" data-delay="160">
-        <div class="exp-num">03</div>
-        <div class="exp-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-        <div class="exp-title">Smart TVs Up to 85"</div>
-        <div class="exp-desc">Large-screen entertainment in every room. Sign into your streaming apps.</div>
-      </div>
-      <div class="exp-card" data-delay="240">
-        <div class="exp-num">04</div>
-        <div class="exp-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
-        <div class="exp-title">Dedicated Workspace</div>
-        <div class="exp-desc">27" monitor, 1GB fiber WiFi, and ergonomic setup for remote work.</div>
-      </div>
-      <div class="exp-card" data-delay="320">
-        <div class="exp-num">05</div>
-        <div class="exp-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="8" r="1.5"/><circle cx="8" cy="16" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg></div>
-        <div class="exp-title">Games &amp; Entertainment</div>
-        <div class="exp-desc">Pool tables, arcade machines, basketball hoops, board games, and more.</div>
-      </div>
-      <div class="exp-card" data-delay="400">
-        <div class="exp-num">06</div>
-        <div class="exp-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-        <div class="exp-title">EV Charging &amp; DART Rail</div>
-        <div class="exp-desc">Electric vehicle charging on-site. Steps from DART — no car needed.</div>
+
+    <!-- Right column: Accordion features -->
+    <div class="rd-features reveal-right">
+      <div class="rd-features-label">What&rsquo;s included in every stay</div>
+      <div class="rd-accordion">
+        <details class="rd-item" open>
+          <summary><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg><span>Resort-Style Pool &amp; Gym</span></summary>
+          <p>24/7 fitness centers, resort pools, sky lounges, and game rooms at every property&mdash;all included free.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg><span>Chef-Ready Kitchens</span></summary>
+          <p>Premium cookware, every spice and utensil, complimentary Keurig coffee bar with pods, and all supplies you need.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>Smart TVs Up to 85&Prime;</span></summary>
+          <p>Large-screen entertainment in every room. Sign into your streaming apps and enjoy.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg><span>Dedicated Workspace</span></summary>
+          <p>27&Prime; monitor, 1GB fiber WiFi, and ergonomic setup for productive remote work.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>Deep Cleaning Standards</span></summary>
+          <p>Exceeding luxury hotel protocols after every single stay. Premium bath products, plush towels, and fresh linens.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>EV Charging &amp; Transit</span></summary>
+          <p>Electric vehicle charging on-site. Steps from DART rail&mdash;explore without a car. In-unit washer &amp; dryer with supplies.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Premier Concierge</span></summary>
+          <p>100% response rate, usually within an hour. We&rsquo;re here before, during, and after your stay.</p>
+        </details>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ═══ OUR STORY ═══ -->
-<section class="story-section" id="story">
-  <!-- Amenity Marquee -->
-  <div class="amenity-marquee">
+  <!-- Slim amenity marquee -->
+  <div class="amenity-marquee rd-marquee">
     <div class="marquee-track">
       <span class="marquee-item">RESORT-STYLE POOL</span>
-      <span class="marquee-item">24/7 GYM ACCESS</span>
+      <span class="marquee-item">24/7 GYM</span>
       <span class="marquee-item">CHEF-READY KITCHEN</span>
       <span class="marquee-item">IN-UNIT WASHER &amp; DRYER</span>
-      <span class="marquee-item">SMART TVs UP TO 85"</span>
-      <span class="marquee-item">DART RAIL ACCESS</span>
-      <span class="marquee-item">DEEP CLEANING STANDARDS</span>
-      <span class="marquee-item">PREMIUM BATH PRODUCTS</span>
+      <span class="marquee-item">SMART TVs UP TO 85&Prime;</span>
+      <span class="marquee-item">DART RAIL</span>
+      <span class="marquee-item">DEEP CLEANING</span>
       <span class="marquee-item">EV CHARGING</span>
-      <span class="marquee-item">27" MONITOR WORKSTATION</span>
-      <span class="marquee-item">COMPLIMENTARY COFFEE BAR</span>
-      <span class="marquee-item">SCENTED CANDLES</span>
+      <span class="marquee-item">27&Prime; MONITOR</span>
+      <span class="marquee-item">COFFEE BAR</span>
       <span class="marquee-item">RESORT-STYLE POOL</span>
-      <span class="marquee-item">24/7 GYM ACCESS</span>
+      <span class="marquee-item">24/7 GYM</span>
       <span class="marquee-item">CHEF-READY KITCHEN</span>
       <span class="marquee-item">IN-UNIT WASHER &amp; DRYER</span>
-      <span class="marquee-item">SMART TVs UP TO 85"</span>
-      <span class="marquee-item">DART RAIL ACCESS</span>
-      <span class="marquee-item">DEEP CLEANING STANDARDS</span>
-      <span class="marquee-item">PREMIUM BATH PRODUCTS</span>
+      <span class="marquee-item">SMART TVs UP TO 85&Prime;</span>
+      <span class="marquee-item">DART RAIL</span>
+      <span class="marquee-item">DEEP CLEANING</span>
       <span class="marquee-item">EV CHARGING</span>
-      <span class="marquee-item">27" MONITOR WORKSTATION</span>
-      <span class="marquee-item">COMPLIMENTARY COFFEE BAR</span>
-      <span class="marquee-item">SCENTED CANDLES</span>
-    </div>
-  </div>
-  <div class="story-inner">
-    <div class="story-visual reveal-scale">
-      <svg class="story-svg" viewBox="0 0 380 460" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M40 460 L40 160 Q40 30 190 30 Q340 30 340 160 L340 460" stroke="#B8654A" stroke-width="1.5" opacity=".25"/>
-        <path d="M65 460 L65 175 Q65 60 190 60 Q315 60 315 175 L315 460" stroke="#D4A088" stroke-width="1" opacity=".18"/>
-        <path d="M90 460 L90 190 Q90 90 190 90 Q290 90 290 190 L290 460" stroke="#B8654A" stroke-width=".8" opacity=".12"/>
-        <rect x="165" y="310" width="50" height="90" rx="3" stroke="#D4A088" stroke-width="1.2" opacity=".5"/>
-        <rect x="172" y="295" width="36" height="15" rx="2" stroke="#D4A088" stroke-width="1" opacity=".4"/>
-        <line x1="190" y1="295" x2="190" y2="265" stroke="#D4A088" stroke-width="1.2" opacity=".5"/>
-        <path d="M190 265 Q183 248 190 234 Q197 248 190 265" fill="#B8654A" opacity=".3"/>
-        <path d="M260 400 Q255 365 270 360 Q285 355 290 400" stroke="#D4A088" stroke-width="1.2" opacity=".5"/>
-        <path d="M275 360 Q270 320 278 290" stroke="#B8654A" stroke-width="1" opacity=".35"/>
-        <path d="M275 360 Q285 325 282 295" stroke="#B8654A" stroke-width="1" opacity=".3"/>
-        <path d="M275 360 Q260 330 268 300" stroke="#B8654A" stroke-width="1" opacity=".25"/>
-        <circle cx="278" cy="285" r="4" stroke="#B8654A" stroke-width=".8" opacity=".3"/>
-        <circle cx="284" cy="294" r="3" stroke="#B8654A" stroke-width=".8" opacity=".25"/>
-        <circle cx="266" cy="296" r="3.5" stroke="#B8654A" stroke-width=".8" opacity=".2"/>
-        <rect x="95" y="375" width="45" height="8" rx="3" stroke="#D4A088" stroke-width="1" opacity=".45"/>
-        <rect x="98" y="365" width="39" height="10" rx="3" stroke="#D4A088" stroke-width="1" opacity=".35"/>
-        <rect x="100" y="355" width="35" height="10" rx="3" stroke="#D4A088" stroke-width="1" opacity=".25"/>
-        <circle cx="150" cy="120" r="2" fill="#D4A088" opacity=".2"/>
-        <circle cx="230" cy="100" r="1.5" fill="#D4A088" opacity=".15"/>
-        <circle cx="260" cy="145" r="1.5" fill="#D4A088" opacity=".2"/>
-        <circle cx="120" cy="160" r="1" fill="#D4A088" opacity=".15"/>
-        <circle cx="190" cy="80" r="2.5" fill="#D4A088" opacity=".15"/>
-        <circle cx="300" cy="180" r="1" fill="#D4A088" opacity=".1"/>
-        <circle cx="140" cy="220" r="1.5" fill="#D4A088" opacity=".12"/>
-        <circle cx="240" cy="200" r="2" fill="#D4A088" opacity=".1"/>
-        <line x1="30" y1="460" x2="350" y2="460" stroke="#D4A088" stroke-width=".5" opacity=".15"/>
-      </svg>
-    </div>
-    <div class="story-content reveal-right">
-      <span class="section-label light">04&ensp;OUR STORY</span>
-      <h2>Two friends, tired of<br><em>paying more for less.</em></h2>
-      <p>We kept booking beautiful Airbnbs that looked amazing in photos -- then showed up to thin towels, barely-there WiFi, a TV from 2012, and a kitchen with exactly two forks. We knew we could do better.</p>
-      <p>So we built Regent. Every property is fitted with premium finishings and stocked with tremendous care -- because we believe luxury shouldn't come with an absurd price tag. Resort-style amenities, chef-ready kitchens, and deep cleaning that exceeds luxury hotel standards after <strong>every single stay</strong>.</p>
-      <div class="story-details">
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M12 2L5 12a7 7 0 1014 0L12 2z"/></svg></div>
-          <div class="story-metric-text"><strong>Stand-Up &amp; Vanity Mirrors</strong><span>Full-body mirrors throughout, because details matter</span></div>
-        </div>
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg></div>
-          <div class="story-metric-text"><strong>Resort-Style Amenities</strong><span>Gym, pool, sky lounge, game room -- all included free</span></div>
-        </div>
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg></div>
-          <div class="story-metric-text"><strong>Chef-Ready Kitchen</strong><span>Every utensil, spice, and supply you could need</span></div>
-        </div>
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-          <div class="story-metric-text"><strong>Deep Cleaning Standards</strong><span>Exceeding luxury hotel protocols after every stay</span></div>
-        </div>
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0012 0c0-3-2-7-6-11z"/></svg></div>
-          <div class="story-metric-text"><strong>Plush Towels &amp; Throws</strong><span>Ample premium linens and cozy blankets in every room</span></div>
-        </div>
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
-          <div class="story-metric-text"><strong>In-Unit Washer &amp; Dryer</strong><span>Detergent, dryer sheets, and all supplies included</span></div>
-        </div>
-        <div class="story-metric">
-          <div class="story-metric-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-          <div class="story-metric-text"><strong>Premier Concierge Service</strong><span>100% response rate, usually within an hour</span></div>
-        </div>
-      </div>
+      <span class="marquee-item">27&Prime; MONITOR</span>
+      <span class="marquee-item">COFFEE BAR</span>
     </div>
   </div>
 </section>
@@ -1371,7 +1405,7 @@ ul{list-style:none}
     <div class="explore-hero-bg"></div>
     <div class="explore-hero-grid"></div>
     <div class="explore-hero-content">
-      <span class="explore-hero-label">05&ensp;EXPLORE THE AREA</span>
+      <span class="explore-hero-label">04&ensp;EXPLORE THE AREA</span>
       <h2 class="explore-hero-title">Discover <em>what&rsquo;s nearby</em></h2>
       <p class="explore-hero-sub">World-class dining, entertainment, and outdoor adventures — all minutes from your door.</p>
     </div>
@@ -1630,6 +1664,97 @@ ul{list-style:none}
   </div>
 </section>
 
+<!-- ═══ REWARDS OVERLAY ═══ -->
+<div class="rewards-overlay" id="rewardsOverlay">
+  <div class="rewards-page">
+    <div class="rewards-topbar">
+      <button class="rewards-back" onclick="hideRewards()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <span>Back to Site</span>
+      </button>
+      <span class="rewards-topbar-logo">R E G E N T</span>
+    </div>
+
+    <div class="rewards-hero">
+      <span class="section-label light">REGENT REWARDS</span>
+      <h2 class="rewards-title">Loyalty,<br><em>redefined.</em></h2>
+      <p class="rewards-subtitle">Every stay earns you points toward free nights, upgrades, and exclusive perks. No blackout dates, no hidden rules&mdash;just genuine hospitality that gets better with every visit.</p>
+    </div>
+
+    <div class="rewards-tiers">
+      <div class="rewards-tier">
+        <div class="rewards-tier-badge silver">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Silver</h3>
+        <p class="rewards-tier-req">Join free&mdash;earn from day one</p>
+        <ul class="rewards-perks">
+          <li>1 point per $1 spent</li>
+          <li>Early check-in when available</li>
+          <li>Birthday bonus: 250 points</li>
+          <li>Exclusive member pricing</li>
+        </ul>
+      </div>
+      <div class="rewards-tier featured">
+        <div class="rewards-tier-label">Most Popular</div>
+        <div class="rewards-tier-badge gold">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Gold</h3>
+        <p class="rewards-tier-req">After 3 stays or 5,000 points</p>
+        <ul class="rewards-perks">
+          <li>1.5x points multiplier</li>
+          <li>Guaranteed early check-in / late checkout</li>
+          <li>Complimentary room upgrade</li>
+          <li>Welcome gift at every property</li>
+          <li>Priority concierge support</li>
+        </ul>
+      </div>
+      <div class="rewards-tier">
+        <div class="rewards-tier-badge platinum">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Platinum</h3>
+        <p class="rewards-tier-req">After 8 stays or 15,000 points</p>
+        <ul class="rewards-perks">
+          <li>2x points multiplier</li>
+          <li>Free night every 10,000 points</li>
+          <li>Guaranteed best-available unit</li>
+          <li>Complimentary late checkout (2 PM)</li>
+          <li>Exclusive new-property previews</li>
+          <li>Dedicated personal concierge</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rewards-how">
+      <h3 class="rewards-how-title">How It Works</h3>
+      <div class="rewards-steps">
+        <div class="rewards-step">
+          <div class="rewards-step-num">01</div>
+          <h4>Book Direct</h4>
+          <p>Reserve any Regent property through our website for the best rates and automatic point earning.</p>
+        </div>
+        <div class="rewards-step">
+          <div class="rewards-step-num">02</div>
+          <h4>Earn Points</h4>
+          <p>Every dollar spent earns points. Multipliers increase as you move through tiers.</p>
+        </div>
+        <div class="rewards-step">
+          <div class="rewards-step-num">03</div>
+          <h4>Redeem &amp; Enjoy</h4>
+          <p>Use points for free nights, upgrades, and exclusive experiences. No blackout dates.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rewards-cta-box">
+      <p>Ready to start earning?</p>
+      <a href="#contact" class="btn-primary" onclick="hideRewards()">Get in Touch &rarr;</a>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="footer-inner">
@@ -1639,6 +1764,7 @@ ul{list-style:none}
       <a href="#experience">Experience</a>
       <a href="#explore">Explore</a>
       <a href="#story">Our Story</a>
+      <a href="#rewards" onclick="event.preventDefault();showRewards()">Rewards</a>
       <a href="#contact">Contact</a>
       <a href="#properties">Book Now</a>
     </div>
@@ -2601,14 +2727,29 @@ async function fetchAndApplyPrices() {
     const data = await res.json();
     const listings = data.listings || [];
 
-    // Merge prices into PROPERTIES
+    // Merge prices and coordinates into PROPERTIES
+    let coordsUpdated = false;
     listings.forEach(listing => {
       const prop = PROPERTIES.find(p => p.slug === listing.slug);
-      if (prop && listing.basePrice != null) {
+      if (!prop) return;
+      if (listing.basePrice != null) {
         prop.basePrice = listing.basePrice;
         prop.currency = listing.currency || 'USD';
       }
+      // Update coordinates from Guesty if available
+      if (listing.lat != null && listing.lng != null) {
+        if (prop.lat !== listing.lat || prop.lng !== listing.lng) {
+          prop.lat = listing.lat;
+          prop.lng = listing.lng;
+          coordsUpdated = true;
+        }
+      }
     });
+
+    // If coordinates were updated, refresh all map markers
+    if (coordsUpdated) {
+      refreshAllMaps();
+    }
 
     // Update all price elements in the DOM (with 5% direct booking discount)
     document.querySelectorAll('.prop-price[data-slug]').forEach(el => {
@@ -3174,8 +3315,18 @@ const miniIcon = L.divIcon({
   iconSize: [10, 10], iconAnchor: [5, 5]
 });
 
+let miniMapInstance = null;
+let miniMapMarkers = [];
+
 function initMiniMap() {
-  const mini = L.map('miniMap', {
+  const el = document.getElementById('miniMap');
+  if (!el || typeof L === 'undefined') return;
+
+  // Clean up previous instance
+  if (miniMapInstance) { miniMapInstance.remove(); miniMapInstance = null; }
+  miniMapMarkers = [];
+
+  miniMapInstance = L.map('miniMap', {
     zoomControl: false, attributionControl: false,
     dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
     boxZoom: false, keyboard: false, tap: false, touchZoom: false
@@ -3183,7 +3334,7 @@ function initMiniMap() {
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd', maxZoom: 19
-  }).addTo(mini);
+  }).addTo(miniMapInstance);
 
   PROPERTIES.forEach(p => {
     const marker = L.marker([p.lat, p.lng], {
@@ -3192,14 +3343,95 @@ function initMiniMap() {
       keyboard: false,
       alt: `${p.name} map location`,
       title: `${p.name} map location`
-    }).addTo(mini);
+    }).addTo(miniMapInstance);
     const markerEl = marker.getElement();
     if (markerEl) {
       markerEl.setAttribute('aria-hidden', 'true');
       markerEl.setAttribute('role', 'presentation');
       markerEl.setAttribute('tabindex', '-1');
     }
+    miniMapMarkers.push(marker);
   });
+}
+
+/* ═══ Refresh All Maps (after coordinate updates) ═══ */
+function refreshAllMaps() {
+  // Rebuild mini map markers
+  if (miniMapInstance) {
+    miniMapMarkers.forEach(m => miniMapInstance.removeLayer(m));
+    miniMapMarkers = [];
+    PROPERTIES.forEach(p => {
+      const marker = L.marker([p.lat, p.lng], {
+        icon: miniIcon, interactive: false, keyboard: false,
+        alt: `${p.name} map location`, title: `${p.name} map location`
+      }).addTo(miniMapInstance);
+      const markerEl = marker.getElement();
+      if (markerEl) {
+        markerEl.setAttribute('aria-hidden', 'true');
+        markerEl.setAttribute('role', 'presentation');
+        markerEl.setAttribute('tabindex', '-1');
+      }
+      miniMapMarkers.push(marker);
+    });
+  }
+
+  // Rebuild explore map markers
+  if (exploreMapInstance) {
+    addPropertyMarkers();
+  }
+}
+
+/* ═══ Detail Map (shown in property detail modal) ═══ */
+let detailMapInstance = null;
+
+function initDetailMap(prop) {
+  // Destroy previous detail map if any
+  if (detailMapInstance) {
+    detailMapInstance.remove();
+    detailMapInstance = null;
+  }
+
+  const el = document.getElementById('detailMap');
+  if (!el || typeof L === 'undefined' || !prop.lat || !prop.lng) return;
+
+  detailMapInstance = L.map('detailMap', {
+    center: [prop.lat, prop.lng],
+    zoom: 16,
+    zoomControl: true,
+    attributionControl: false,
+    scrollWheelZoom: false,
+    dragging: true,
+    doubleClickZoom: true,
+    boxZoom: false,
+    keyboard: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd', maxZoom: 19
+  }).addTo(detailMapInstance);
+
+  const detailIcon = L.divIcon({
+    className: '',
+    html: `<div style="width:32px;height:32px;border-radius:50%;background:#B8654A;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+  });
+
+  L.marker([prop.lat, prop.lng], {
+    icon: detailIcon,
+    alt: prop.name + ' location',
+    title: prop.name
+  }).addTo(detailMapInstance);
+
+  // Force map to recalculate size after modal animation
+  setTimeout(() => {
+    detailMapInstance.invalidateSize();
+    detailMapInstance.setView([prop.lat, prop.lng], 16);
+  }, 400);
 }
 
 /* ═══ Scroll Reveal ═══ */
@@ -3437,6 +3669,11 @@ function openDetail(slug) {
         ${amenitiesHtml}
       </div>
     </div>
+    <div class="detail-section">
+      <h3>Location</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin:0 0 12px">${prop.city}, ${prop.state}</p>
+      <div id="detailMap" style="width:100%;height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
+    </div>
     <div class="detail-actions">
       <button class="btn-book" onclick="closeDetail();openBooking('${prop.slug}')">Book This Property</button>
       <button class="btn-contact" onclick="closeDetail();openContact('${prop.slug}')">Contact Host</button>
@@ -3446,9 +3683,17 @@ function openDetail(slug) {
   document.getElementById('detailModal').classList.add('open');
   document.getElementById('detailModal').scrollTop = 0;
   document.body.style.overflow = 'hidden';
+
+  // Initialize the detail map after modal is shown
+  setTimeout(() => initDetailMap(prop), 100);
 }
 
 function closeDetail() {
+  // Clean up detail map
+  if (detailMapInstance) {
+    detailMapInstance.remove();
+    detailMapInstance = null;
+  }
   const modal = document.getElementById('detailModal');
   modal.style.opacity = '0';
   modal.querySelector('.detail-body').style.transform = 'translateY(20px)';
@@ -3670,7 +3915,7 @@ function initPremiumReveals() {
 
 /* ═══ Keyboard ═══ */
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeDetail(); closeContact(); closeTerms(); closePrivacy(); closeMobile(); }
+  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeDetail(); closeContact(); closeTerms(); closePrivacy(); closeMobile(); hideRewards(); }
   if (document.getElementById('lightbox').classList.contains('open')) {
     if (e.key === 'ArrowLeft') lightboxNav(-1);
     if (e.key === 'ArrowRight') lightboxNav(1);
@@ -4464,6 +4709,28 @@ function initDetailGallerySwipe() {
   }, { passive: true });
 }
 
+/* ═══ Rewards Overlay ═══ */
+function showRewards() {
+  const overlay = document.getElementById('rewardsOverlay');
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  history.pushState({ rewards: true }, '', '#rewards');
+}
+function hideRewards() {
+  const overlay = document.getElementById('rewardsOverlay');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if (location.hash === '#rewards') history.pushState({}, '', location.pathname);
+}
+window.addEventListener('popstate', (e) => {
+  if (document.getElementById('rewardsOverlay').classList.contains('open')) hideRewards();
+});
+// Open rewards if URL has #rewards on load
+function initRewardsHash() {
+  if (location.hash === '#rewards') showRewards();
+}
+
 /* ═══ Init ═══ */
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
@@ -4479,6 +4746,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initExplore();
   initCarouselSwipe();
   initDetailGallerySwipe();
+  initRewardsHash();
 });
 </script>
 </body>
