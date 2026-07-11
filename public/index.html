@@ -535,7 +535,7 @@ ul{list-style:none}
 .explore-map-wrap .map-click-hint svg{width:14px;height:14px;stroke:var(--accent-light);fill:none;stroke-width:2}
 .explore-map-wrap:hover .map-click-hint{color:var(--accent-light)}
 /* Map wrapper — expanded state */
-.explore-map-wrap.map-expanded{position:fixed;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:1000;border-radius:0;border:none;cursor:default}
+.explore-map-wrap.map-expanded{position:fixed;top:0!important;left:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;height:-webkit-fill-available!important;z-index:1000;border-radius:0;border:none;cursor:default;padding-bottom:env(safe-area-inset-bottom,0px)}
 .explore-map-wrap.map-expanded .map-click-hint{opacity:0}
 /* Map element */
 #exploreMap{flex:1;min-height:0;width:100%;z-index:1}
@@ -631,7 +631,7 @@ ul{list-style:none}
 .map-close-btn:hover{background:var(--accent)}
 .map-close-btn svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
 /* Property strip — bottom thumbnails */
-.map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px;overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
 .map-expanded .map-prop-strip{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
 .map-prop-strip::before,.map-prop-strip::after{content:'';min-width:4px;flex-shrink:0;pointer-events:none}
 .map-prop-strip::-webkit-scrollbar{height:4px}
@@ -1039,31 +1039,31 @@ ul{list-style:none}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
-  .map-property-card{position:absolute;top:auto;right:0;left:0;width:100%;max-width:100%;max-height:55vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%);display:flex;flex-direction:column;z-index:510;bottom:0}
+  .map-property-card{position:absolute;right:0;left:0;width:100%;max-width:100%;max-height:45vh;max-height:45dvh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%);display:flex;flex-direction:column;z-index:510;bottom:140px;top:auto}
   .map-property-card.visible{animation:cardSlideInMobile .4s cubic-bezier(.22,1,.36,1) forwards}
   .map-property-card.closing{animation:cardSlideOutMobile .3s cubic-bezier(.55,.06,.68,.19) forwards}
-  .map-card-photo{width:100%;min-width:unset;height:160px;min-height:unset;background-size:cover;background-position:center;border-radius:var(--radius-lg) var(--radius-lg) 0 0;flex-shrink:0}
+  .map-card-photo{width:100%;min-width:unset;height:130px;min-height:unset;background-size:cover;background-position:center;border-radius:var(--radius-lg) var(--radius-lg) 0 0;flex-shrink:0}
   .map-card-photo::after{display:block}
-  .map-card-body{padding:14px 18px 16px;flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-  .map-card-category{font-size:9px;margin-bottom:3px}
-  .map-card-name{font-size:18px;margin-bottom:3px}
-  .map-card-location{font-size:12px;margin-bottom:2px}
-  .map-card-distance{margin-top:0;font-size:11px}
-  .map-card-price{font-size:15px;margin-bottom:3px}
+  .map-card-body{padding:12px 16px 14px;flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .map-card-category{font-size:9px;margin-bottom:2px}
+  .map-card-name{font-size:17px;margin-bottom:2px}
+  .map-card-location{font-size:11px;margin-bottom:1px}
+  .map-card-distance{margin-top:0;font-size:10px}
+  .map-card-price{font-size:14px;margin-bottom:2px}
   .map-card-price span{font-size:11px}
-  .map-card-rating{font-size:11px;margin-bottom:6px}
-  .map-card-rating svg{width:12px;height:12px}
-  .map-card-specs{gap:10px;margin-bottom:8px;padding-bottom:8px}
-  .map-card-specs span{font-size:11px}
+  .map-card-rating{font-size:11px;margin-bottom:4px}
+  .map-card-rating svg{width:11px;height:11px}
+  .map-card-specs{gap:8px;margin-bottom:6px;padding-bottom:6px}
+  .map-card-specs span{font-size:10px}
   .map-card-amenities{display:none}
-  .map-card-actions{gap:8px;margin-top:4px}
+  .map-card-actions{gap:8px;margin-top:2px;padding-bottom:env(safe-area-inset-bottom,0px)}
   .map-card-btn-primary,.map-card-btn-secondary{font-size:13px;padding:12px 0;min-height:44px}
-  .map-card-close{display:flex;top:10px;right:10px;width:28px;height:28px;font-size:16px;z-index:15}
+  .map-card-close{display:flex;top:8px;right:8px;width:28px;height:28px;font-size:16px;z-index:15}
   .map-my-loc-btn{bottom:auto;top:80px;left:12px}
   .map-zoom-controls{bottom:auto;top:130px;left:12px;right:auto}
-  .map-prop-strip{padding:12px 16px;gap:10px}
+  .map-prop-strip{padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));gap:10px}
   .map-prop-strip-item{width:160px;padding:10px;flex-direction:column;align-items:stretch;gap:6px}
-  .map-prop-strip-thumb{width:100%;height:52px;border-radius:8px}
+  .map-prop-strip-thumb{width:100%;height:48px;border-radius:8px}
   .map-prop-strip-name{white-space:normal;font-size:12px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .map-prop-strip-loc{font-size:10px}
   .map-prop-strip-badge{font-size:8px;padding:2px 6px;margin-top:2px}
@@ -1114,10 +1114,10 @@ ul{list-style:none}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
   .explore-map-wrap{height:400px}
-  .map-property-card{max-height:55vh}
-  .map-card-photo{height:140px}
-  .map-card-name{font-size:16px}
-  .map-card-specs span{font-size:10px}
+  .map-property-card{max-height:42vh;max-height:42dvh;bottom:120px}
+  .map-card-photo{height:110px}
+  .map-card-name{font-size:15px}
+  .map-card-specs{display:none}
   .map-card-amenities{display:none}
   .map-marker{width:36px;height:36px}
   .map-marker-core{width:26px;height:26px}
