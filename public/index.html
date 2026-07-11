@@ -633,7 +633,7 @@ ul{list-style:none}
 /* Property strip — bottom thumbnails */
 .map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px;overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
 .map-expanded .map-prop-strip{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
-.map-prop-strip::before,.map-prop-strip::after{content:'';min-width:6px;flex-shrink:0;pointer-events:none}
+.map-prop-strip::before,.map-prop-strip::after{content:'';min-width:4px;flex-shrink:0;pointer-events:none}
 .map-prop-strip::-webkit-scrollbar{height:4px}
 .map-prop-strip::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:10px}
 .map-prop-strip::-webkit-scrollbar-thumb:hover{background:var(--accent)}
@@ -1039,26 +1039,26 @@ ul{list-style:none}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
-  .map-property-card{position:absolute;top:auto;right:0;bottom:0;left:0;width:100%;max-width:100%;max-height:40vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%);display:flex;flex-direction:row}
+  .map-property-card{position:absolute;top:auto;right:0;left:0;width:100%;max-width:100%;max-height:55vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%);display:flex;flex-direction:column;z-index:510;bottom:0}
   .map-property-card.visible{animation:cardSlideInMobile .4s cubic-bezier(.22,1,.36,1) forwards}
   .map-property-card.closing{animation:cardSlideOutMobile .3s cubic-bezier(.55,.06,.68,.19) forwards}
-  .map-card-photo{width:120px;min-width:120px;height:auto;min-height:100%;background-size:cover;background-position:center;border-radius:var(--radius-lg) 0 0 0}
-  .map-card-photo::after{display:none}
-  .map-card-body{padding:12px 14px 12px;flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-  .map-card-category{font-size:8px;margin-bottom:2px}
-  .map-card-name{font-size:16px;margin-bottom:2px}
-  .map-card-location{font-size:11px;margin-bottom:1px}
+  .map-card-photo{width:100%;min-width:unset;height:160px;min-height:unset;background-size:cover;background-position:center;border-radius:var(--radius-lg) var(--radius-lg) 0 0;flex-shrink:0}
+  .map-card-photo::after{display:block}
+  .map-card-body{padding:14px 18px 16px;flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .map-card-category{font-size:9px;margin-bottom:3px}
+  .map-card-name{font-size:18px;margin-bottom:3px}
+  .map-card-location{font-size:12px;margin-bottom:2px}
   .map-card-distance{margin-top:0;font-size:11px}
-  .map-card-price{font-size:14px;margin-bottom:2px}
+  .map-card-price{font-size:15px;margin-bottom:3px}
   .map-card-price span{font-size:11px}
-  .map-card-rating{font-size:11px;margin-bottom:4px}
-  .map-card-rating svg{width:11px;height:11px}
-  .map-card-specs{gap:8px;margin-bottom:6px;padding-bottom:6px}
-  .map-card-specs span{font-size:10px}
+  .map-card-rating{font-size:11px;margin-bottom:6px}
+  .map-card-rating svg{width:12px;height:12px}
+  .map-card-specs{gap:10px;margin-bottom:8px;padding-bottom:8px}
+  .map-card-specs span{font-size:11px}
   .map-card-amenities{display:none}
-  .map-card-actions{gap:6px}
-  .map-card-btn-primary,.map-card-btn-secondary{font-size:12px;padding:10px 0;min-height:44px}
-  .map-card-close{display:none}
+  .map-card-actions{gap:8px;margin-top:4px}
+  .map-card-btn-primary,.map-card-btn-secondary{font-size:13px;padding:12px 0;min-height:44px}
+  .map-card-close{display:flex;top:10px;right:10px;width:28px;height:28px;font-size:16px;z-index:15}
   .map-my-loc-btn{bottom:auto;top:80px;left:12px}
   .map-zoom-controls{bottom:auto;top:130px;left:12px;right:auto}
   .map-prop-strip{padding:12px 16px;gap:10px}
@@ -1068,7 +1068,6 @@ ul{list-style:none}
   .map-prop-strip-loc{font-size:10px}
   .map-prop-strip-badge{font-size:8px;padding:2px 6px;margin-top:2px}
   .map-prop-strip-dist{font-size:9px;white-space:nowrap;margin-top:1px}
-  .map-card-btn-primary,.map-card-btn-secondary{min-height:44px;display:flex;align-items:center;justify-content:center}
   .map-close-btn{width:42px;height:42px;top:14px;right:14px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
@@ -1115,9 +1114,9 @@ ul{list-style:none}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
   .explore-map-wrap{height:400px}
-  .map-property-card{max-height:40vh}
-  .map-card-photo{width:100px;min-width:100px}
-  .map-card-name{font-size:15px}
+  .map-property-card{max-height:55vh}
+  .map-card-photo{height:140px}
+  .map-card-name{font-size:16px}
   .map-card-specs span{font-size:10px}
   .map-card-amenities{display:none}
   .map-marker{width:36px;height:36px}
@@ -4454,7 +4453,10 @@ function selectPropertyOnMap(idx) {
   }
   if (catEl) catEl.textContent = prop.category === 'villa' ? 'Luxury Villa' : 'Designer Suite';
   if (nameEl) nameEl.textContent = prop.name;
-  if (locTextEl) locTextEl.textContent = `${prop.city}, ${prop.state}`;
+  if (locTextEl) {
+    const stateAbbr = prop.state === 'Texas' ? 'TX' : prop.state;
+    locTextEl.textContent = `${prop.city}, ${stateAbbr}`;
+  }
 
   // Distance from user
   showMapCardDistance(prop);
