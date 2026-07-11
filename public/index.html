@@ -1108,7 +1108,7 @@ ul{list-style:none}
   <div class="nav-links">
     <a href="#properties">Properties</a>
     <a href="#experience">Experience</a>
-    <a href="#explore" onclick="event.preventDefault();scrollToMapAndExpand()">Explore</a>
+    <a href="#explore" onclick="event.preventDefault();openMapModal()">Explore</a>
     <a href="#story">Our Story</a>
     <a href="#contact">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
@@ -1120,7 +1120,7 @@ ul{list-style:none}
 <div class="mobile-menu" id="mobileMenu">
   <a href="#properties" onclick="closeMobile()">Properties</a>
   <a href="#experience" onclick="closeMobile()">Experience</a>
-  <a href="#explore" onclick="closeMobile();event.preventDefault();scrollToMapAndExpand()">Explore</a>
+  <a href="#explore" onclick="closeMobile();event.preventDefault();openMapModal()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
@@ -1175,7 +1175,7 @@ ul{list-style:none}
   </div>
 
   <!-- Map Preview Tile -->
-  <div class="bento-tile bento-map-tile" onclick="scrollToMapAndExpand()">
+  <div class="bento-tile bento-map-tile" onclick="openMapModal()">
     <span class="tile-label">EXPLORE MAP</span>
     <div id="miniMap" class="mini-map"></div>
   </div>
@@ -3939,14 +3939,14 @@ function addPropertyMarkers() {
     const markerEl = marker.getElement();
     if (markerEl) {
       markerEl.style.opacity = '0';
-      markerEl.style.animation = `markerFadeIn .5s cubic-bezier(.34,1.56,.64,1) ${idx * 120}ms forwards`;
+      markerEl.style.animation = `markerFadeIn .3s cubic-bezier(.34,1.56,.64,1) ${idx * 40}ms forwards`;
       markerEl.setAttribute('aria-label', `${prop.name} in ${prop.city}, ${prop.state}`);
     }
 
     marker.on('click', (e) => {
       L.DomEvent.stopPropagation(e);
-      if (!mapIsExpanded) expandMap();
-      setTimeout(() => selectPropertyOnMap(idx), mapIsExpanded ? 0 : 450);
+      if (!mapIsExpanded) openMapModal();
+      setTimeout(() => selectPropertyOnMap(idx), mapIsExpanded ? 0 : 300);
     });
     marker.propertyIndex = idx;
     mapPropertyMarkers.push(marker);
@@ -4075,7 +4075,7 @@ function buildMapPropStrip() {
   const strip = document.getElementById('mapPropStrip');
   if (!strip) return;
   strip.innerHTML = PROPERTIES.map((prop, idx) => `
-    <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 70}ms">
+    <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
       <div class="map-prop-strip-thumb" style="background-image:url(${prop.photos && prop.photos[0] ? imgUrl(prop.hostingId, prop.photos[0]) : ''})"></div>
       <div class="map-prop-strip-info">
         <div class="map-prop-strip-name">${prop.name}</div>
@@ -4126,7 +4126,7 @@ function initMapInteraction() {
     // Don't trigger on marker clicks (they propagate separately)
     if (e.target.closest('.map-marker') || e.target.closest('.map-marker-core') || e.target.closest('.map-marker-ring')) return;
     if (e.target.closest('.map-expand-btn')) return;
-    expandMap();
+    openMapModal();
   });
 
   // Click-capture overlay — catches clicks that Leaflet would otherwise eat
@@ -4134,14 +4134,14 @@ function initMapInteraction() {
   if (clickOverlay) {
     clickOverlay.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (!mapIsExpanded && !mapExpandAnimating) expandMap();
+      if (!mapIsExpanded && !mapExpandAnimating) openMapModal();
     });
   }
 
   // Also listen on the Leaflet map instance itself as a fallback
   if (exploreMapInstance) {
     exploreMapInstance.on('click', () => {
-      if (!mapIsExpanded && !mapExpandAnimating) expandMap();
+      if (!mapIsExpanded && !mapExpandAnimating) openMapModal();
     });
   }
 
@@ -4149,7 +4149,7 @@ function initMapInteraction() {
   if (expandBtn) {
     expandBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (!mapIsExpanded) expandMap();
+      if (!mapIsExpanded) openMapModal();
     });
   }
 
@@ -4188,43 +4188,14 @@ function initMapInteraction() {
   }
 }
 
-/* ── Smooth scroll-to-map + auto-expand from anywhere ── */
-function scrollToMapAndExpand() {
-  if (mapIsExpanded) return;
-  const section = document.getElementById('propertyMapSection');
-  if (!section) return;
+/* ── Open map as instant modal overlay from anywhere ── */
+function openMapModal() {
+  if (mapIsExpanded || mapExpandAnimating) return;
 
-  // Initialize the map early if not done yet
+  // Initialize the map if not done yet
   if (!exploreMapInstance) initExploreMap();
 
-  // Calculate target scroll position (center the map section in viewport)
-  const rect = section.getBoundingClientRect();
-  const targetTop = window.pageYOffset + rect.top - (window.innerHeight - rect.height) / 2;
-
-  // Smooth scroll using requestAnimationFrame for buttery performance
-  const startY = window.pageYOffset;
-  const diff = targetTop - startY;
-  const duration = Math.min(800, Math.max(400, Math.abs(diff) * 0.4));
-  let start = null;
-
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
-  function step(timestamp) {
-    if (!start) start = timestamp;
-    const elapsed = timestamp - start;
-    const progress = Math.min(elapsed / duration, 1);
-    window.scrollTo(0, startY + diff * easeOutCubic(progress));
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      // Brief pause then expand
-      setTimeout(() => {
-        if (!mapIsExpanded && !mapExpandAnimating) expandMap();
-      }, 200);
-    }
-  }
-
-  requestAnimationFrame(step);
+  expandMap();
 }
 
 function expandMap() {
@@ -4234,64 +4205,44 @@ function expandMap() {
   const closeBtn = document.getElementById('mapCloseBtn');
   const backdrop = document.getElementById('mapBackdrop');
 
-  // Get current position for FLIP animation
-  const rect = wrap.getBoundingClientRect();
-  const scaleX = rect.width / window.innerWidth;
-  const scaleY = rect.height / window.innerHeight;
-  const translateX = rect.left + rect.width / 2 - window.innerWidth / 2;
-  const translateY = rect.top + rect.height / 2 - window.innerHeight / 2;
+  // Lock body scroll immediately
+  document.body.style.overflow = 'hidden';
 
-  // Set the starting transform (current visual position mapped to fixed coords)
-  wrap.style.transition = 'none';
-  wrap.style.position = 'fixed';
-  wrap.style.top = '0';
-  wrap.style.left = '0';
-  wrap.style.width = '100vw';
-  wrap.style.height = '100vh';
-  wrap.style.zIndex = '1000';
-  wrap.style.borderRadius = rect.width < 600 ? '16px' : '24px';
-  wrap.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
+  // Show backdrop instantly
+  if (backdrop) backdrop.classList.add('visible');
+
+  // Apply expanded class immediately — no FLIP animation, pure modal overlay
+  wrap.classList.add('map-expanded');
+  wrap.style.opacity = '0';
 
   // Force reflow
   wrap.offsetHeight;
 
-  // Animate to fullscreen
-  wrap.style.transition = 'transform .45s cubic-bezier(.22,1,.36,1), border-radius .45s cubic-bezier(.22,1,.36,1)';
-  wrap.style.transform = 'translate(0, 0) scale(1, 1)';
-  wrap.style.borderRadius = '0';
+  // Fast fade-in (250ms)
+  wrap.style.transition = 'opacity .25s cubic-bezier(.22,1,.36,1)';
+  wrap.style.opacity = '1';
 
-  // Show backdrop
-  if (backdrop) backdrop.classList.add('visible');
+  // Show close button
+  if (closeBtn) closeBtn.classList.add('visible');
 
-  document.body.style.overflow = 'hidden';
+  // Finalize after animation
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      wrap.style.transition = '';
+      wrap.style.opacity = '';
+      wrap.style.cursor = 'default';
+      mapIsExpanded = true;
+      mapExpandAnimating = false;
 
-  // After animation completes
-  setTimeout(() => {
-    wrap.classList.add('map-expanded');
-    wrap.style.transition = '';
-    wrap.style.transform = '';
-    wrap.style.position = '';
-    wrap.style.top = '';
-    wrap.style.left = '';
-    wrap.style.width = '';
-    wrap.style.height = '';
-    wrap.style.zIndex = '';
-    wrap.style.borderRadius = '';
-    wrap.style.cursor = 'default';
-    mapIsExpanded = true;
-    mapExpandAnimating = false;
-
-    if (closeBtn) closeBtn.classList.add('visible');
-
-    // Enable scroll-wheel zoom when expanded
-    if (exploreMapInstance) {
-      exploreMapInstance.scrollWheelZoom.enable();
-      exploreMapInstance.invalidateSize();
-      // Fit all markers
-      const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
-      exploreMapInstance.fitBounds(bounds.pad(0.15), { animate: true, duration: 0.6 });
-    }
-  }, 460);
+      // Enable scroll-wheel zoom and fit all markers
+      if (exploreMapInstance) {
+        exploreMapInstance.scrollWheelZoom.enable();
+        exploreMapInstance.invalidateSize();
+        const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
+        exploreMapInstance.fitBounds(bounds.pad(0.15), { animate: true, duration: 0.6 });
+      }
+    }, 260);
+  });
 }
 
 function collapseMap() {
@@ -4307,36 +4258,17 @@ function collapseMap() {
   // Hide close button
   if (closeBtn) closeBtn.classList.remove('visible');
 
-  // Get the target (collapsed) position
-  // We need to temporarily remove map-expanded to measure where it should go
-  wrap.classList.remove('map-expanded');
-  const targetRect = wrap.getBoundingClientRect();
-  wrap.classList.add('map-expanded');
-
-  // Calculate the reverse FLIP
-  const scaleX = targetRect.width / window.innerWidth;
-  const scaleY = targetRect.height / window.innerHeight;
-  const translateX = targetRect.left + targetRect.width / 2 - window.innerWidth / 2;
-  const translateY = targetRect.top + targetRect.height / 2 - window.innerHeight / 2;
-
-  // Start from fullscreen
-  wrap.style.transition = 'none';
-  wrap.style.transform = 'translate(0, 0) scale(1, 1)';
-  wrap.offsetHeight;
-
-  // Animate to collapsed position
-  wrap.style.transition = 'transform .4s cubic-bezier(.55,.06,.68,.19), border-radius .4s cubic-bezier(.55,.06,.68,.19)';
-  wrap.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-  wrap.style.borderRadius = '24px';
-
   // Fade backdrop
   if (backdrop) backdrop.classList.remove('visible');
+
+  // Fast fade-out (200ms)
+  wrap.style.transition = 'opacity .2s cubic-bezier(.55,.06,.68,.19)';
+  wrap.style.opacity = '0';
 
   setTimeout(() => {
     wrap.classList.remove('map-expanded');
     wrap.style.transition = '';
-    wrap.style.transform = '';
-    wrap.style.borderRadius = '';
+    wrap.style.opacity = '';
     wrap.style.cursor = '';
     document.body.style.overflow = '';
     mapIsExpanded = false;
@@ -4345,11 +4277,10 @@ function collapseMap() {
     if (exploreMapInstance) {
       exploreMapInstance.scrollWheelZoom.disable();
       exploreMapInstance.invalidateSize();
-      // Zoom back to overview
       const bounds = L.latLngBounds(PROPERTIES.map(p => [p.lat, p.lng]));
-      exploreMapInstance.fitBounds(bounds.pad(0.1), { animate: true, duration: 0.5 });
+      exploreMapInstance.fitBounds(bounds.pad(0.1), { animate: false });
     }
-  }, 420);
+  }, 210);
 }
 
 function updateExploreMap() {
@@ -4464,24 +4395,8 @@ function initExploreReveals() {
 function initExplore() {
   initExplorePropSelector();
   renderExploreGrid();
-  // Lazy-load map when section scrolls into view
-  if (!mapObserverAttached) {
-    const mapSection = document.getElementById('propertyMapSection');
-    if (mapSection && 'IntersectionObserver' in window) {
-      const mapObs = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            initExploreMap();
-            obs.unobserve(entry.target);
-          }
-        });
-      }, { rootMargin: '200px' });
-      mapObs.observe(mapSection);
-      mapObserverAttached = true;
-    } else {
-      initExploreMap();
-    }
-  }
+  // Pre-initialize the map immediately so it's ready when the user clicks
+  initExploreMap();
   fetchEvents();
   // Delay reveals slightly so cards are rendered
   setTimeout(initExploreReveals, 200);
