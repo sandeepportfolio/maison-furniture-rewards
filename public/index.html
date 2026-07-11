@@ -611,9 +611,9 @@ ul{list-style:none}
 .map-card-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
 .map-card-amenities span{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);background:rgba(255,255,255,.06);border:1px solid var(--border-dark);border-radius:20px;padding:4px 12px}
 .map-card-actions{display:flex;gap:8px}
-.map-card-btn-primary{flex:1;padding:12px 0;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease),transform .2s var(--ease)}
+.map-card-btn-primary{flex:1;padding:14px 0;min-height:44px;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease),transform .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:6px}
 .map-card-btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.map-card-btn-secondary{flex:1;padding:12px 0;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease)}
+.map-card-btn-secondary{flex:1;padding:14px 0;min-height:44px;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:6px}
 .map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light);transform:translateY(-1px)}
 /* Nav dots hidden — using strip instead */
 .map-nav-dots{display:none}
@@ -631,15 +631,13 @@ ul{list-style:none}
 .map-close-btn:hover{background:var(--accent)}
 .map-close-btn svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
 /* Property strip — bottom thumbnails */
-.map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px;overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);scroll-behavior:smooth;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+.map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px;overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
 .map-expanded .map-prop-strip{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
-.map-prop-strip::before,.map-prop-strip::after{content:'';position:sticky;min-width:20px;z-index:2;flex-shrink:0;pointer-events:none}
-.map-prop-strip::before{left:0;background:linear-gradient(to right,rgba(17,17,17,.9),transparent)}
-.map-prop-strip::after{right:0;background:linear-gradient(to left,rgba(17,17,17,.9),transparent)}
+.map-prop-strip::before,.map-prop-strip::after{content:'';min-width:6px;flex-shrink:0;pointer-events:none}
 .map-prop-strip::-webkit-scrollbar{height:4px}
 .map-prop-strip::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:10px}
 .map-prop-strip::-webkit-scrollbar-thumb:hover{background:var(--accent)}
-.map-prop-strip-item{flex-shrink:0;width:200px;display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius);background:rgba(28,28,28,.8);backdrop-filter:blur(6px);border:1.5px solid transparent;cursor:pointer;transition:background .25s var(--ease),border-color .3s var(--ease),transform .25s var(--ease);animation:stripItemIn .4s var(--ease) backwards}
+.map-prop-strip-item{flex-shrink:0;width:200px;display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius);background:rgba(28,28,28,.8);backdrop-filter:blur(6px);border:1.5px solid transparent;cursor:pointer;transition:background .25s var(--ease),border-color .3s var(--ease),transform .25s var(--ease);animation:stripItemIn .4s var(--ease) backwards;scroll-snap-align:center}
 .map-prop-strip-item:hover{background:rgba(40,40,40,.9);transform:translateY(-3px)}
 .map-prop-strip-item.active{background:rgba(199,107,66,.18);border-color:var(--accent)}
 .map-prop-strip-thumb{width:56px;height:56px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.4);transition:box-shadow .3s var(--ease)}
@@ -1059,17 +1057,18 @@ ul{list-style:none}
   .map-card-specs span{font-size:10px}
   .map-card-amenities{display:none}
   .map-card-actions{gap:6px}
-  .map-card-btn-primary,.map-card-btn-secondary{font-size:11px;padding:8px 0}
+  .map-card-btn-primary,.map-card-btn-secondary{font-size:12px;padding:10px 0;min-height:44px}
   .map-card-close{display:none}
   .map-my-loc-btn{bottom:auto;top:80px;left:12px}
   .map-zoom-controls{bottom:auto;top:130px;left:12px;right:auto}
-  .map-prop-strip{padding:12px 14px;gap:8px}
-  .map-prop-strip-item{width:200px;padding:10px;flex-direction:column;align-items:stretch;gap:6px}
-  .map-prop-strip-thumb{width:100%;height:48px;border-radius:8px}
-  .map-prop-strip-name{white-space:normal;overflow:visible;text-overflow:unset;font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .map-prop-strip-loc{font-size:9px}
+  .map-prop-strip{padding:12px 16px;gap:10px}
+  .map-prop-strip-item{width:160px;padding:10px;flex-direction:column;align-items:stretch;gap:6px}
+  .map-prop-strip-thumb{width:100%;height:52px;border-radius:8px}
+  .map-prop-strip-name{white-space:normal;font-size:12px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .map-prop-strip-loc{font-size:10px}
   .map-prop-strip-badge{font-size:8px;padding:2px 6px;margin-top:2px}
   .map-prop-strip-dist{font-size:9px;white-space:nowrap;margin-top:1px}
+  .map-card-btn-primary,.map-card-btn-secondary{min-height:44px;display:flex;align-items:center;justify-content:center}
   .map-close-btn{width:42px;height:42px;top:14px;right:14px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
@@ -1124,10 +1123,10 @@ ul{list-style:none}
   .map-marker{width:36px;height:36px}
   .map-marker-core{width:26px;height:26px}
   .map-marker-core svg{width:11px;height:11px}
-  .map-prop-strip{padding:10px 12px;gap:8px}
-  .map-prop-strip-item{width:170px;padding:8px}
-  .map-prop-strip-thumb{width:100%;height:40px}
-  .map-prop-strip-name{font-size:10px}
+  .map-prop-strip{padding:10px 14px;gap:8px}
+  .map-prop-strip-item{width:148px;padding:8px}
+  .map-prop-strip-thumb{width:100%;height:44px}
+  .map-prop-strip-name{font-size:11px}
   .map-prop-strip-loc{font-size:9px}
   .map-close-btn{width:40px;height:40px;top:12px;right:12px}
   .explore-events-title{font-size:24px}
@@ -1547,8 +1546,8 @@ ul{list-style:none}
             <div class="map-card-specs" id="mapCardSpecs"></div>
             <div class="map-card-amenities" id="mapCardAmenities"></div>
             <div class="map-card-actions">
-              <button class="map-card-btn-primary" id="mapCardBook">Book Now</button>
-              <button class="map-card-btn-secondary" id="mapCardDetails">View Property</button>
+              <button class="map-card-btn-primary" id="mapCardBook"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Book Now</button>
+              <button class="map-card-btn-secondary" id="mapCardDetails"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View Details</button>
             </div>
           </div>
         </div>
@@ -4027,6 +4026,7 @@ let mapActiveProperty = null;
 let mapObserverAttached = false;
 let mapIsExpanded = false;
 let mapExpandAnimating = false;
+let mapSavedScrollY = null;
 
 // ── Geolocation state ──
 let userLat = null, userLng = null;
@@ -4376,7 +4376,19 @@ function addPropertyMarkers() {
     marker.on('click', (e) => {
       L.DomEvent.stopPropagation(e);
       if (!mapIsExpanded) openMapModal();
-      setTimeout(() => selectPropertyOnMap(idx), mapIsExpanded ? 0 : 300);
+      // Allow time for map modal to open, then spiderfy cluster if needed
+      const delay = mapIsExpanded ? 0 : 350;
+      setTimeout(() => {
+        // If marker is in a cluster, zoom to it first to break the cluster
+        const parent = mapClusterGroup ? mapClusterGroup.getVisibleParent(marker) : marker;
+        if (parent && parent !== marker) {
+          mapClusterGroup.zoomToShowLayer(marker, () => {
+            selectPropertyOnMap(idx);
+          });
+        } else {
+          selectPropertyOnMap(idx);
+        }
+      }, delay);
     });
     marker.propertyIndex = idx;
     mapPropertyMarkers.push(marker);
@@ -4405,6 +4417,11 @@ function selectPropertyOnMap(idx) {
 
   mapActiveProperty = idx;
 
+  // Update hash to persist selected property
+  if (mapIsExpanded) {
+    history.replaceState({ map: true, property: prop.slug }, '', '#map/' + prop.slug);
+  }
+
   // Update active marker styling
   mapPropertyMarkers.forEach((m, i) => {
     const el = m.getElement();
@@ -4416,8 +4433,8 @@ function selectPropertyOnMap(idx) {
     }
   });
 
-  // Fly to marker
-  exploreMapInstance.flyTo([prop.lat, prop.lng], 12, { duration: 1.0, easeLinearity: 0.25 });
+  // Smooth fly to marker at street level
+  exploreMapInstance.flyTo([prop.lat, prop.lng], 15, { duration: 1.5, easeLinearity: 0.25 });
 
   // Populate card
   const card = document.getElementById('mapPropertyCard');
@@ -4476,9 +4493,23 @@ function selectPropertyOnMap(idx) {
   }
   if (detailBtn) {
     detailBtn.onclick = () => {
+      const selectedSlug = prop.slug;
       collapseMap();
       setTimeout(() => {
-        if (typeof openDetail === 'function') openDetail(prop.slug);
+        // Scroll to property section or open detail
+        if (typeof openDetail === 'function') {
+          openDetail(selectedSlug);
+        } else {
+          // Fallback: scroll to the property card on the main page
+          const propCard = document.querySelector(`.prop-card[data-slug="${selectedSlug}"]`);
+          if (propCard) {
+            propCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            propCard.style.boxShadow = '0 0 0 3px var(--accent), var(--shadow-xl)';
+            setTimeout(() => { propCard.style.boxShadow = ''; }, 2000);
+          }
+        }
+        // Push state so back button returns to map with this property
+        history.pushState({ mapReturn: true, property: selectedSlug }, '', '#property/' + selectedSlug);
       }, 400);
     };
   }
@@ -4610,19 +4641,19 @@ function initMapInteraction() {
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      collapseMap();
+      collapseMap(false);
     });
   }
 
   // Backdrop click closes
   if (backdrop) {
-    backdrop.addEventListener('click', collapseMap);
+    backdrop.addEventListener('click', () => collapseMap());
   }
 
   // Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && mapIsExpanded) {
-      collapseMap();
+      collapseMap(false);
     }
   });
 
@@ -4658,6 +4689,9 @@ function expandMap() {
   const closeBtn = document.getElementById('mapCloseBtn');
   const backdrop = document.getElementById('mapBackdrop');
 
+  // Save scroll position before locking
+  mapSavedScrollY = window.scrollY;
+
   // Lock body scroll immediately
   document.body.style.overflow = 'hidden';
 
@@ -4678,6 +4712,9 @@ function expandMap() {
   // Show close button
   if (closeBtn) closeBtn.classList.add('visible');
 
+  // Push state to browser history and set hash
+  history.pushState({ map: true }, '', '#map');
+
   // Finalize after animation
   requestAnimationFrame(() => {
     setTimeout(() => {
@@ -4697,7 +4734,7 @@ function expandMap() {
   });
 }
 
-function collapseMap() {
+function collapseMap(skipHistory) {
   const wrap = document.getElementById('mapWrap');
   if (!wrap || !mapIsExpanded || mapExpandAnimating) return;
   mapExpandAnimating = true;
@@ -4713,6 +4750,11 @@ function collapseMap() {
   // Fade backdrop
   if (backdrop) backdrop.classList.remove('visible');
 
+  // Clear hash — unless called from popstate (skipHistory)
+  if (!skipHistory && location.hash.startsWith('#map')) {
+    history.pushState('', '', window.location.pathname);
+  }
+
   // Fast fade-out (200ms)
   wrap.style.transition = 'opacity .2s cubic-bezier(.55,.06,.68,.19)';
   wrap.style.opacity = '0';
@@ -4725,6 +4767,11 @@ function collapseMap() {
     document.body.style.overflow = '';
     mapIsExpanded = false;
     mapExpandAnimating = false;
+
+    // Restore saved scroll position
+    if (mapSavedScrollY != null) {
+      window.scrollTo(0, mapSavedScrollY);
+    }
 
     if (exploreMapInstance) {
       exploreMapInstance.scrollWheelZoom.disable();
@@ -4929,11 +4976,51 @@ function hideRewards() {
   if (location.hash === '#rewards') history.pushState({}, '', location.pathname);
 }
 window.addEventListener('popstate', (e) => {
+  const state = e.state || {};
+  // Handle map modal back navigation
+  if (mapIsExpanded && !state.map) {
+    collapseMap(true); // skipHistory=true since popstate already changed history
+    return;
+  }
+  // Handle "View Details" back → return to map with same property
+  if (state.mapReturn && state.property) {
+    openMapModal();
+    const idx = PROPERTIES.findIndex(p => p.slug === state.property);
+    if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 350);
+    return;
+  }
+  // If hash says #map, re-open the map
+  if (location.hash.startsWith('#map')) {
+    if (!mapIsExpanded) {
+      openMapModal();
+      const parts = location.hash.split('/');
+      if (parts[1]) {
+        const idx = PROPERTIES.findIndex(p => p.slug === parts[1]);
+        if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 350);
+      }
+    }
+    return;
+  }
+  // Handle rewards overlay
   if (document.getElementById('rewardsOverlay').classList.contains('open')) hideRewards();
 });
 // Open rewards if URL has #rewards on load
 function initRewardsHash() {
   if (location.hash === '#rewards') showRewards();
+}
+// Open map if URL has #map on page load (state persistence)
+function initMapHash() {
+  if (!location.hash.startsWith('#map')) return;
+  // Delay to ensure map is fully initialized
+  setTimeout(() => {
+    openMapModal();
+    const parts = location.hash.split('/');
+    if (parts[1]) {
+      const slug = parts[1];
+      const idx = PROPERTIES.findIndex(p => p.slug === slug);
+      if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 400);
+    }
+  }, 300);
 }
 
 /* ═══ Init ═══ */
@@ -4952,6 +5039,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initCarouselSwipe();
   initDetailGallerySwipe();
   initRewardsHash();
+  initMapHash();
 });
 </script>
 </body>
