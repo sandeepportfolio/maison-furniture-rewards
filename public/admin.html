@@ -3,622 +3,1158 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maison · Admin</title>
+<title>Regent Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --paper:#F6F1E8;--paper-2:#FCF9F3;--paper-3:#EFE7D8;
-  --line:#E4D9C6;--line-2:#D8CBB4;
-  --ink:#26211C;--ink-2:#6E6359;--ink-3:#A89C8C;
-  --clay:#B5562F;--clay-2:#9C451F;--clay-soft:#E9D6C8;
-  --sage:#5F6E45;--sage-soft:#DEE2CF;
-  --gold:#B4894C;--gold-soft:#EFE2C8;
-  --red:#B23A2C;--red-soft:#F0D8D2;
-  --blue:#3A6B9F;--blue-soft:#D4E2F0;
-  --serif:'Fraunces',Georgia,serif;--sans:'Hanken Grotesk',system-ui,sans-serif;
+  --bg:#0d0d0d;--surface:#1a1a1a;--surface-2:#242424;--surface-3:#1f1f1f;
+  --border:#2a2a2a;--border-hover:#3a3a3a;
+  --copper:#C76B42;--copper-hover:#A85A38;--copper-soft:#E8D5C4;--copper-glow:rgba(199,107,66,0.3);
+  --text:#ffffff;--text-2:#a0a0a0;--text-3:#666666;
+  --green:#4CAF50;--red:#e74c3c;--amber:#f39c12;--blue:#3b82f6;
+  --sidebar:#111111;
+  --font:'Outfit',system-ui,-apple-system,sans-serif;
+  --radius-card:12px;--radius-btn:8px;--radius-badge:20px;
+  --shadow:0 2px 8px rgba(0,0,0,0.3);--shadow-lg:0 8px 24px rgba(0,0,0,0.4);
   --ease:cubic-bezier(.22,1,.36,1);
 }
-html{-webkit-text-size-adjust:100%}
-body{font-family:var(--sans);background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(ellipse 60% 45% at 88% -5%,rgba(181,86,47,.06),transparent 60%)}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
-button{font-family:var(--sans);cursor:pointer;border:none;background:none;color:inherit}
-input,textarea,select{font-family:var(--sans);color:var(--ink)}
+button{font-family:var(--font);cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:var(--font);color:var(--text)}
 textarea{resize:vertical}
-::selection{background:var(--clay);color:var(--paper)}
-::-webkit-scrollbar{width:9px;height:9px}
-::-webkit-scrollbar-track{background:var(--paper)}
-::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px;border:2px solid var(--paper)}
+::selection{background:var(--copper);color:var(--text)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-hover);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--copper)}
 
-.wrap{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+/* ── Login Page ── */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;background:var(--bg)}
+.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--copper);border-radius:var(--radius-card);padding:2.5rem;box-shadow:var(--shadow-lg)}
+.login-brand{text-align:center;margin-bottom:2rem}
+.login-brand svg{width:36px;height:36px;color:var(--copper);margin-bottom:.8rem}
+.login-brand h1{font-size:1.6rem;font-weight:600;letter-spacing:.02em}
+.login-brand h1 span{color:var(--copper)}
+.login-brand p{color:var(--text-2);font-size:.85rem;margin-top:.3rem}
+.login-field{margin-bottom:1.2rem}
+.login-field label{display:block;font-size:.8rem;font-weight:500;color:var(--text-2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em}
+.login-field input{width:100%;padding:.75rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.login-field input:focus{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper-glow)}
+.login-error{color:var(--red);font-size:.82rem;margin-bottom:1rem;display:none;padding:.5rem .75rem;background:rgba(231,76,60,.1);border-radius:var(--radius-btn)}
+.login-btn{width:100%;padding:.8rem;background:var(--copper);color:#fff;border-radius:var(--radius-btn);font-size:.95rem;font-weight:600;transition:background .2s;margin-top:.5rem}
+.login-btn:hover{background:var(--copper-hover)}
+.login-btn:disabled{opacity:.6;cursor:not-allowed}
 
-/* ── Top bar ── */
-.topbar{position:sticky;top:0;z-index:50;background:rgba(246,241,232,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.topbar-inner{display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
-.brand{display:flex;align-items:baseline;gap:.5rem;font-family:var(--serif);font-size:1.3rem;font-weight:500}
-.brand .mark{width:8px;height:8px;border-radius:50%;background:var(--clay);transform:translateY(-1px)}
-.brand small{font-family:var(--sans);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
-.bar-actions{display:flex;gap:.5rem;align-items:center}
-.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.5rem .95rem;border:1px solid var(--line-2);border-radius:100px;font-size:.8rem;font-weight:500;color:var(--ink-2);transition:all .25s var(--ease)}
-.btn:hover{border-color:var(--ink);color:var(--ink)}
-.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8}
-.btn-solid{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.btn-solid:hover{background:var(--clay-2);border-color:var(--clay-2);color:var(--paper)}
+/* ── Dashboard Layout ── */
+.dashboard{display:none}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--sidebar);border-right:1px solid var(--border);z-index:100;display:flex;flex-direction:column;transition:transform .3s var(--ease)}
+.sidebar-brand{padding:1.5rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.sidebar-brand h2{font-size:1.3rem;font-weight:600;letter-spacing:.03em}
+.sidebar-brand .admin-badge{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .5rem;background:var(--copper);color:#fff;border-radius:var(--radius-badge)}
+.sidebar-nav{flex:1;padding:.8rem 0;overflow-y:auto}
+.nav-link{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.4rem;font-size:.88rem;font-weight:400;color:var(--text-2);transition:all .2s ease;position:relative;border-left:3px solid transparent}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-link.active{color:var(--text);background:rgba(255,255,255,.06);border-left-color:var(--copper);font-weight:500}
+.nav-link svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0}
+.nav-link .nav-badge{margin-left:auto;font-size:.65rem;font-weight:600;padding:.15rem .5rem;background:var(--copper);color:#fff;border-radius:var(--radius-badge);min-width:20px;text-align:center}
+.sidebar-bottom{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.5rem}
+.sidebar-bottom a,.sidebar-bottom button{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;font-size:.82rem;color:var(--text-2);transition:color .2s}
+.sidebar-bottom a:hover,.sidebar-bottom button:hover{color:var(--text)}
+.sidebar-bottom svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+
+.main-content{margin-left:260px;min-height:100vh;padding:2rem}
+.main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.main-header h1{font-size:1.5rem;font-weight:600}
+.main-header .subtitle{color:var(--text-2);font-size:.85rem;margin-top:.15rem}
+.header-actions{display:flex;gap:.6rem;align-items:center}
+
+/* ── Hamburger (mobile) ── */
+.hamburger{display:none;position:fixed;top:1rem;left:1rem;z-index:200;width:40px;height:40px;border-radius:var(--radius-btn);background:var(--surface);border:1px solid var(--border);align-items:center;justify-content:center}
+.hamburger svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;backdrop-filter:blur(2px)}
+.overlay.show{display:block}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.82rem;font-weight:500;color:var(--text-2);transition:all .2s ease;white-space:nowrap}
+.btn:hover{border-color:var(--border-hover);color:var(--text)}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.btn-copper{background:var(--copper);color:#fff;border-color:var(--copper)}
+.btn-copper:hover{background:var(--copper-hover);border-color:var(--copper-hover);color:#fff}
+.btn-danger{background:rgba(231,76,60,.1);color:var(--red);border-color:rgba(231,76,60,.2)}
+.btn-danger:hover{background:rgba(231,76,60,.2)}
+.btn-sm{padding:.35rem .7rem;font-size:.76rem}
+.btn-ghost{border:none;padding:.4rem .6rem}
 .spin svg{animation:rot .8s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 
-main{padding:2rem 0 3rem}
-.page-head{margin-bottom:1.6rem}
-.page-head h1{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,3.5vw,2.3rem);letter-spacing:-.01em}
-.page-head p{color:var(--ink-2);font-size:.9rem;margin-top:.2rem}
+/* ── Stat cards ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1.3rem 1.4rem;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.stat-card.sc-copper::before{background:var(--copper)}
+.stat-card.sc-green::before{background:var(--green)}
+.stat-card.sc-amber::before{background:var(--amber)}
+.stat-card.sc-blue::before{background:var(--blue)}
+.stat-card.sc-red::before{background:var(--red)}
+.stat-num{font-size:2rem;font-weight:600;line-height:1}
+.stat-label{font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-top:.5rem}
 
-/* ── Tab navigation ── */
-.tab-nav{display:flex;gap:.3rem;margin-bottom:1.8rem;border-bottom:1px solid var(--line);padding-bottom:0}
-.tab-btn{position:relative;display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.2rem;font-size:.85rem;font-weight:500;color:var(--ink-3);border-radius:10px 10px 0 0;transition:all .25s var(--ease);border:1px solid transparent;border-bottom:none;margin-bottom:-1px}
-.tab-btn:hover{color:var(--ink-2);background:var(--paper-3)}
-.tab-btn.active{color:var(--ink);background:var(--paper-2);border-color:var(--line);font-weight:600}
-.tab-btn.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--paper-2)}
-.tab-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
-.tab-btn .tab-badge{font-size:.65rem;padding:.15rem .45rem;border-radius:100px;background:var(--clay-soft);color:var(--clay-2);font-weight:600;min-width:20px;text-align:center}
-.tab-btn.active .tab-badge{background:var(--clay);color:var(--paper)}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
-
-/* ── Stats ── */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.8rem}
-.stat{position:relative;padding:1.3rem 1.4rem;background:var(--paper-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
-.stat:hover{transform:translateY(-3px);box-shadow:0 22px 36px -28px rgba(30,24,16,.5)}
-.stat::before{content:'';position:absolute;left:0;top:1.1rem;bottom:1.1rem;width:3px;border-radius:3px;background:var(--line-2)}
-.stat.s-pending::before{background:var(--gold)}
-.stat.s-sent::before{background:var(--sage)}
-.stat.s-rejected::before{background:var(--red)}
-.stat.s-unread::before{background:var(--clay)}
-.stat.s-replied::before{background:var(--sage)}
-.stat.s-confirmed::before{background:var(--sage)}
-.stat.s-requested::before{background:var(--gold)}
-.stat .num{font-family:var(--serif);font-size:2.2rem;font-weight:500;line-height:1}
-.stat .lab{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:.45rem}
-.stat.s-pending .num{color:var(--gold)}
-.stat.s-sent .num{color:var(--sage)}
-.stat.s-rejected .num{color:var(--red)}
-.stat.s-unread .num{color:var(--clay)}
-.stat.s-replied .num{color:var(--sage)}
-.stat.s-confirmed .num{color:var(--sage)}
-.stat.s-requested .num{color:var(--gold)}
-
-/* ── Toolbar (filters + search) ── */
-.toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap}
+/* ── Filter pills ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
 .filters{display:flex;gap:.4rem;flex-wrap:wrap}
-.fbtn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .9rem;border:1px solid var(--line-2);border-radius:100px;font-size:.78rem;font-weight:500;color:var(--ink-2);transition:all .25s var(--ease)}
-.fbtn:hover{border-color:var(--ink-3);color:var(--ink)}
-.fbtn.active{background:var(--ink);border-color:var(--ink);color:var(--paper)}
-.fbtn .count{font-size:.68rem;padding:.05rem .4rem;border-radius:100px;background:var(--paper-3);color:var(--ink-2)}
-.fbtn.active .count{background:rgba(255,255,255,.18);color:var(--paper)}
-.search{position:relative;flex:0 1 260px}
-.search input{width:100%;padding:.55rem .9rem .55rem 2.2rem;background:var(--paper-2);border:1px solid var(--line-2);border-radius:100px;font-size:.85rem;outline:none;transition:border-color .25s,box-shadow .25s}
-.search input:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(181,86,47,.1)}
-.search svg{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:2}
+.pill{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .85rem;border:1px solid var(--border);border-radius:var(--radius-badge);font-size:.78rem;font-weight:500;color:var(--text-2);transition:all .2s ease;cursor:pointer}
+.pill:hover{border-color:var(--border-hover);color:var(--text)}
+.pill.active{background:var(--copper);border-color:var(--copper);color:#fff}
+.pill .count{font-size:.68rem;padding:.05rem .35rem;border-radius:var(--radius-badge);background:rgba(255,255,255,.1)}
+.pill.active .count{background:rgba(255,255,255,.2)}
 
-/* ── Table (desktop) ── */
-.table-wrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper-2)}
-table{width:100%;border-collapse:collapse;font-size:.86rem}
-thead th{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:.85rem 1.1rem;background:var(--paper-3);border-bottom:1px solid var(--line);white-space:nowrap}
-tbody td{padding:.8rem 1.1rem;border-bottom:1px solid var(--line);vertical-align:middle}
-tbody tr:last-child td{border-bottom:none}
-tbody tr{transition:background .2s}
-tbody tr:hover{background:rgba(239,231,216,.5)}
-.cell-name{font-weight:500}
-.muted{color:var(--ink-3)}
-.cell-email{color:var(--ink-2)}
-.cap{text-transform:capitalize}
-.cell-date{color:var(--ink-2);white-space:nowrap;font-size:.8rem}
-.thumb{width:46px;height:46px;border-radius:9px;object-fit:cover;cursor:zoom-in;border:1px solid var(--line-2);transition:transform .2s,box-shadow .2s}
-.thumb:hover{transform:scale(1.08);box-shadow:0 8px 18px -10px rgba(30,24,16,.6)}
-.no-thumb{width:46px;height:46px;border-radius:9px;background:var(--paper-3);display:grid;place-items:center;color:var(--ink-3);font-size:.7rem}
+/* ── Search input ── */
+.search-wrap{position:relative;flex:0 1 280px}
+.search-wrap input{width:100%;padding:.55rem .9rem .55rem 2.3rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.85rem;outline:none;transition:border-color .2s,box-shadow .2s;color:var(--text)}
+.search-wrap input::placeholder{color:var(--text-3)}
+.search-wrap input:focus{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper-glow)}
+.search-wrap svg{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--text-3);fill:none;stroke-width:2}
 
-.badge{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .65rem;border-radius:100px;font-size:.68rem;font-weight:600;letter-spacing:.02em;text-transform:capitalize}
-.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-.badge.pending{background:var(--gold-soft);color:#8a6a2e}
-.badge.sent{background:var(--sage-soft);color:#4a5836}
-.badge.approved{background:var(--sage-soft);color:#4a5836}
-.badge.rejected{background:var(--red-soft);color:var(--red)}
-.badge.unread{background:var(--clay-soft);color:var(--clay-2)}
-.badge.read{background:var(--blue-soft);color:var(--blue)}
-.badge.replied{background:var(--sage-soft);color:#4a5836}
-.badge.archived{background:var(--paper-3);color:var(--ink-3)}
-.badge.requested{background:var(--gold-soft);color:#8a6a2e}
-.badge.confirmed{background:var(--sage-soft);color:#4a5836}
-.badge.failed{background:var(--red-soft);color:var(--red)}
-.badge.cancelled{background:var(--paper-3);color:var(--ink-3)}
+/* ── Section panels ── */
+.section{display:none}
+.section.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-.actions{display:flex;gap:.35rem;justify-content:flex-end;flex-wrap:wrap}
-.act{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .7rem;border-radius:8px;font-size:.74rem;font-weight:600;transition:all .2s}
-.act svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
-.act-send{background:var(--sage-soft);color:#4a5836}
-.act-send:hover{background:#cfd6ba}
-.act-reject{background:var(--red-soft);color:var(--red)}
-.act-reject:hover{background:#e8c6bd}
-.act-del{background:var(--paper-3);color:var(--ink-3)}
-.act-del:hover{background:#e2d6c0;color:var(--ink-2)}
-.act-undo{background:var(--paper-3);color:var(--ink-2)}
-.act-undo:hover{background:#e2d6c0}
-.act-read{background:var(--blue-soft);color:var(--blue)}
-.act-read:hover{background:#c0d4e8}
-.act-archive{background:var(--paper-3);color:var(--ink-3)}
-.act-archive:hover{background:#e2d6c0;color:var(--ink-2)}
-.act-reply{background:var(--clay-soft);color:var(--clay-2)}
-.act-reply:hover{background:#dcc4b0}
-
-.empty{text-align:center;padding:3.5rem 1rem;color:var(--ink-3)}
-.empty svg{width:38px;height:38px;stroke:var(--ink-3);fill:none;stroke-width:1.4;margin-bottom:.8rem;opacity:.7}
-.empty p{font-size:.9rem}
-
-/* ── Mobile cards ── */
-.cards{display:none;flex-direction:column;gap:.8rem}
-.card{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:1rem;display:flex;gap:.9rem}
-.card .thumb,.card .no-thumb{width:58px;height:58px;flex:none}
-.card-body{flex:1;min-width:0}
-.card-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.25rem}
-.card-name{font-weight:600;font-size:.95rem}
-.card-email{font-size:.82rem;color:var(--ink-2);word-break:break-all;margin-bottom:.5rem}
-.card-meta{display:flex;gap:.8rem;font-size:.74rem;color:var(--ink-3);margin-bottom:.7rem;flex-wrap:wrap}
-.card-meta .cap{color:var(--ink-2)}
-.card .actions{justify-content:flex-start;flex-wrap:wrap}
-
-/* ── Message items ── */
+/* ── Message cards ── */
 .msg-list{display:flex;flex-direction:column;gap:.8rem}
-.msg-item{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
-.msg-item:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(30,24,16,.35)}
-.msg-item.is-unread{border-left:3px solid var(--clay)}
-.msg-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.6rem}
-.msg-contact{flex:1;min-width:0}
+.msg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1.2rem 1.4rem;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}
+.msg-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.msg-card.unread{border-left:3px solid var(--copper)}
+.msg-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.5rem}
+.msg-sender{flex:1;min-width:0}
 .msg-name{font-weight:600;font-size:.95rem}
-.msg-detail{font-size:.8rem;color:var(--ink-2);margin-top:.15rem}
-.msg-detail a{color:var(--clay);text-decoration:underline;text-decoration-color:var(--clay-soft)}
-.msg-detail a:hover{text-decoration-color:var(--clay)}
-.msg-property{display:inline-flex;align-items:center;gap:.3rem;margin-top:.35rem;padding:.2rem .6rem;background:var(--paper-3);border-radius:6px;font-size:.74rem;font-weight:500;color:var(--ink-2)}
-.msg-property svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
-.msg-body{font-size:.88rem;line-height:1.6;color:var(--ink-2);margin:.8rem 0;padding:.8rem 1rem;background:var(--paper);border-radius:10px;border:1px solid var(--line)}
-.msg-footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.msg-time{font-size:.76rem;color:var(--ink-3)}
+.msg-contact{font-size:.8rem;color:var(--text-2);margin-top:.15rem}
+.msg-contact a{color:var(--copper);text-decoration:underline;text-underline-offset:2px}
+.msg-contact a:hover{color:var(--copper-soft)}
+.msg-property-tag{display:inline-flex;align-items:center;gap:.3rem;margin-top:.4rem;padding:.2rem .6rem;background:var(--surface-2);border-radius:6px;font-size:.74rem;font-weight:500;color:var(--text-2)}
+.msg-property-tag svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.msg-subject{font-weight:600;font-size:.88rem;margin:.6rem 0 .3rem;color:var(--copper-soft)}
+.msg-body{font-size:.86rem;line-height:1.6;color:var(--text-2);padding:.8rem 1rem;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin:.5rem 0;cursor:pointer;max-height:80px;overflow:hidden;transition:max-height .3s ease}
+.msg-body.expanded{max-height:1000px}
+.msg-footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:.6rem}
+.msg-time{font-size:.76rem;color:var(--text-3)}
 .msg-actions{display:flex;gap:.35rem;flex-wrap:wrap}
 
-/* Reply form */
-.reply-form{margin-top:.8rem;display:none}
-.reply-form.open{display:block}
-.reply-textarea{width:100%;min-height:80px;padding:.75rem 1rem;background:var(--paper);border:1px solid var(--line-2);border-radius:10px;font-size:.85rem;line-height:1.5;outline:none;transition:border-color .25s,box-shadow .25s}
-.reply-textarea:focus{border-color:var(--clay);box-shadow:0 0 0 3px rgba(181,86,47,.1)}
-.reply-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem}
-.reply-send{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;background:var(--clay);color:var(--paper);border-radius:8px;font-size:.78rem;font-weight:600;transition:background .2s}
-.reply-send:hover{background:var(--clay-2)}
-.reply-send svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
-.reply-cancel{padding:.45rem .7rem;border-radius:8px;font-size:.78rem;font-weight:500;color:var(--ink-3);transition:color .2s}
-.reply-cancel:hover{color:var(--ink)}
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .6rem;border-radius:var(--radius-badge);font-size:.7rem;font-weight:600;text-transform:capitalize}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%}
+.badge.b-unread{background:rgba(199,107,66,.15);color:var(--copper)}
+.badge.b-unread::before{background:var(--copper)}
+.badge.b-read{background:rgba(59,130,246,.15);color:var(--blue)}
+.badge.b-read::before{background:var(--blue)}
+.badge.b-replied{background:rgba(76,175,80,.15);color:var(--green)}
+.badge.b-replied::before{background:var(--green)}
+.badge.b-archived{background:rgba(102,102,102,.15);color:var(--text-3)}
+.badge.b-archived::before{background:var(--text-3)}
+.badge.b-pending{background:rgba(243,156,18,.15);color:var(--amber)}
+.badge.b-pending::before{background:var(--amber)}
+.badge.b-sent{background:rgba(76,175,80,.15);color:var(--green)}
+.badge.b-sent::before{background:var(--green)}
+.badge.b-confirmed{background:rgba(76,175,80,.15);color:var(--green)}
+.badge.b-confirmed::before{background:var(--green)}
+.badge.b-property{background:var(--surface-2);color:var(--copper-soft);font-weight:500}
+.badge.b-property::before{display:none}
 
-/* ── Booking items ── */
-.booking-list{display:flex;flex-direction:column;gap:.8rem}
-.booking-item{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;display:grid;grid-template-columns:1fr auto;gap:1rem;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
-.booking-item:hover{transform:translateY(-2px);box-shadow:0 12px 24px -16px rgba(30,24,16,.35)}
-.booking-guest{min-width:0}
-.booking-guest-name{font-weight:600;font-size:.95rem;margin-bottom:.15rem}
-.booking-guest-contact{font-size:.8rem;color:var(--ink-2)}
-.booking-guest-contact a{color:var(--clay);text-decoration:underline;text-decoration-color:var(--clay-soft)}
-.booking-details{display:flex;flex-wrap:wrap;gap:.5rem .8rem;margin-top:.7rem}
-.booking-tag{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;background:var(--paper-3);border-radius:6px;font-size:.74rem;font-weight:500;color:var(--ink-2)}
-.booking-tag svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
-.booking-tag.price{background:var(--gold-soft);color:#8a6a2e;font-weight:600}
-.booking-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;justify-content:space-between}
-.booking-time{font-size:.76rem;color:var(--ink-3);text-align:right}
+/* ── Action buttons ── */
+.act{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .65rem;border-radius:6px;font-size:.74rem;font-weight:600;transition:all .2s}
+.act svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.act-read{background:rgba(59,130,246,.1);color:var(--blue)}
+.act-read:hover{background:rgba(59,130,246,.2)}
+.act-reply{background:rgba(199,107,66,.1);color:var(--copper)}
+.act-reply:hover{background:rgba(199,107,66,.2)}
+.act-archive{background:rgba(102,102,102,.1);color:var(--text-2)}
+.act-archive:hover{background:rgba(102,102,102,.2)}
+.act-del{background:rgba(231,76,60,.08);color:var(--red)}
+.act-del:hover{background:rgba(231,76,60,.15)}
+.act-edit{background:rgba(199,107,66,.1);color:var(--copper)}
+.act-edit:hover{background:rgba(199,107,66,.2)}
+.act-undo{background:rgba(102,102,102,.1);color:var(--text-2)}
+.act-undo:hover{background:rgba(102,102,102,.2)}
+
+/* ── Review cards ── */
+.review-grid{display:flex;flex-direction:column;gap:.8rem}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1.3rem 1.4rem;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.review-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.review-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.6rem}
+.review-guest{flex:1;min-width:0}
+.review-guest-name{font-weight:600;font-size:.95rem}
+.review-guest-email{font-size:.8rem;color:var(--text-2);margin-top:.1rem}
+.stars{display:flex;gap:2px;margin:.5rem 0}
+.star{width:18px;height:18px;cursor:pointer;transition:transform .15s}
+.star.filled{color:var(--amber);fill:var(--amber)}
+.star.empty{color:var(--text-3);fill:none}
+.star:hover{transform:scale(1.15)}
+.review-text{font-size:.86rem;line-height:1.6;color:var(--text-2);margin:.5rem 0}
+.review-photo{width:80px;height:80px;border-radius:8px;object-fit:cover;cursor:zoom-in;border:1px solid var(--border);transition:transform .2s}
+.review-photo:hover{transform:scale(1.05)}
+.gc-info{margin-top:.8rem;padding:.8rem 1rem;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:.82rem}
+.gc-info .gc-label{font-weight:600;color:var(--copper-soft);margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem}
+.gc-info .gc-detail{color:var(--text-2);display:flex;gap:1rem;flex-wrap:wrap}
+
+/* ── Price section ── */
+.price-info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1.3rem 1.4rem;margin-bottom:1.5rem;box-shadow:var(--shadow)}
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.price-row:last-child{border-bottom:none}
+.price-row .pl{color:var(--text-2);font-size:.85rem}
+.price-row .pv{font-weight:600;font-size:.95rem}
+.price-row .pv.discount{color:var(--green)}
+
+.override-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.override-table thead th{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);text-align:left;padding:.75rem 1rem;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.override-table tbody td{padding:.7rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.override-table tbody tr:nth-child(even){background:var(--surface-3)}
+.override-table tbody tr:hover{background:var(--surface-2)}
+
+/* ── Calendar ── */
+.calendar{margin-top:1.5rem}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.cal-header h3{font-size:1rem;font-weight:500}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day-label{text-align:center;font-size:.7rem;font-weight:600;color:var(--text-3);text-transform:uppercase;padding:.5rem 0}
+.cal-day{text-align:center;padding:.6rem .4rem;font-size:.82rem;border-radius:6px;color:var(--text-2);position:relative;transition:background .2s}
+.cal-day.today{color:var(--text);font-weight:600;border:1px solid var(--copper)}
+.cal-day.has-override{background:rgba(199,107,66,.15);color:var(--copper-soft);font-weight:500}
+.cal-day.empty{color:transparent}
+
+/* ── Properties grid ── */
+.prop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.prop-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1.3rem 1.4rem;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s}
+.prop-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.prop-name{font-size:1.05rem;font-weight:600;margin-bottom:.2rem}
+.prop-slug{font-size:.78rem;color:var(--text-3);font-family:monospace;margin-bottom:.8rem}
+.prop-stats{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.8rem}
+.prop-stat{font-size:.8rem;color:var(--text-2)}
+.prop-stat span{font-weight:600;color:var(--text)}
+.prop-actions{display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border)}
+
+/* ── Settings form ── */
+.settings-form{max-width:600px}
+.form-group{margin-bottom:1.5rem}
+.form-group label{display:block;font-size:.82rem;font-weight:500;color:var(--text-2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:.7rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.88rem;outline:none;transition:border-color .2s,box-shadow .2s;color:var(--text)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--text-3)}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper-glow)}
+.form-group textarea{min-height:100px}
+.form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
+.form-group select option{background:var(--surface);color:var(--text)}
+
+/* ── Toggle switch ── */
+.toggle-wrap{display:flex;align-items:center;gap:.8rem}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .slider{position:absolute;inset:0;background:var(--border-hover);border-radius:12px;transition:background .2s}
+.toggle .slider::before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle input:checked+.slider{background:var(--copper)}
+.toggle input:checked+.slider::before{transform:translateX(20px)}
+
+/* ── Visibility toggle ── */
+.vis-toggle{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;color:var(--text-2);transition:color .2s}
+.vis-toggle:hover{color:var(--text)}
+.vis-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.vis-toggle.hidden{color:var(--text-3)}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(3px)}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);width:100%;max-width:560px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border)}
+.modal-header h3{font-size:1.05rem;font-weight:600}
+.modal-close{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--text-2);transition:background .2s,color .2s}
+.modal-close:hover{background:var(--surface-2);color:var(--text)}
+.modal-body{padding:1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.6rem;justify-content:flex-end}
 
 /* ── Image modal ── */
-.modal{display:none;position:fixed;inset:0;background:rgba(30,24,16,.82);z-index:200;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(3px)}
-.modal.show{display:flex;animation:fade .25s ease}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-.modal img{max-width:92vw;max-height:88vh;border-radius:12px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
-.modal-close{position:fixed;top:1.1rem;right:1.1rem;width:40px;height:40px;border-radius:50%;background:rgba(252,249,243,.15);color:var(--paper);display:grid;place-items:center;font-size:20px;transition:background .2s}
-.modal-close:hover{background:rgba(252,249,243,.3)}
+.img-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;align-items:center;justify-content:center;padding:1.5rem;cursor:zoom-out}
+.img-modal.show{display:flex;animation:fadeIn .2s ease}
+.img-modal img{max-width:92vw;max-height:88vh;border-radius:var(--radius-card);box-shadow:var(--shadow-lg)}
 
 /* ── Toast ── */
-.toast{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%) translateY(140%);z-index:300;
-  padding:.7rem 1.2rem;background:var(--ink);color:var(--paper);border-radius:100px;font-size:.84rem;font-weight:500;
-  box-shadow:0 16px 30px -14px rgba(0,0,0,.5);transition:transform .35s var(--ease);display:flex;align-items:center;gap:.5rem}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast svg{width:15px;height:15px;stroke:var(--sage-soft);fill:none;stroke-width:2.4}
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:700;display:flex;flex-direction:column;gap:.5rem}
+.toast{padding:.7rem 1.2rem;border-radius:var(--radius-btn);font-size:.84rem;font-weight:500;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:.5rem;transform:translateX(120%);transition:transform .3s var(--ease);max-width:380px}
+.toast.show{transform:translateX(0)}
+.toast.t-success{background:var(--green);color:#fff}
+.toast.t-error{background:var(--red);color:#fff}
+.toast.t-info{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+.toast svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
 
-@media(max-width:760px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .table-wrap{display:none}
-  .cards{display:flex}
+/* ── Spinner ── */
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--copper);border-radius:50%;animation:rot .7s linear infinite}
+.loading-state{display:flex;align-items:center;justify-content:center;padding:3rem;color:var(--text-2);gap:.8rem;font-size:.9rem}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-3)}
+.empty-state svg{width:40px;height:40px;stroke:var(--text-3);fill:none;stroke-width:1.4;margin-bottom:.8rem;opacity:.6}
+.empty-state p{font-size:.9rem}
+
+/* ── Activity feed ── */
+.activity-feed{display:flex;flex-direction:column;gap:.6rem}
+.activity-item{display:flex;align-items:flex-start;gap:.8rem;padding:.8rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);transition:background .2s}
+.activity-item:hover{background:var(--surface-2)}
+.activity-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.activity-icon.ai-msg{background:rgba(199,107,66,.15);color:var(--copper)}
+.activity-icon.ai-booking{background:rgba(76,175,80,.15);color:var(--green)}
+.activity-icon.ai-review{background:rgba(243,156,18,.15);color:var(--amber)}
+.activity-icon svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.activity-text{flex:1;min-width:0;font-size:.85rem;color:var(--text-2);line-height:1.4}
+.activity-text strong{color:var(--text);font-weight:500}
+.activity-time{font-size:.72rem;color:var(--text-3);white-space:nowrap;flex-shrink:0}
+.activity-type{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:.15rem .45rem;border-radius:var(--radius-badge);background:var(--surface-2);color:var(--text-3);flex-shrink:0}
+
+/* ── Star selector in form ── */
+.star-selector{display:flex;gap:4px;margin:.4rem 0}
+.star-selector .star-btn{background:none;border:none;cursor:pointer;padding:2px}
+.star-selector .star-btn svg{width:24px;height:24px;stroke:var(--amber);stroke-width:2;transition:transform .15s}
+.star-selector .star-btn svg.filled{fill:var(--amber)}
+.star-selector .star-btn svg.empty{fill:none}
+.star-selector .star-btn:hover svg{transform:scale(1.2)}
+
+/* ── Responsive ── */
+@media(max-width:1100px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .prop-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .hamburger{display:flex}
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0;padding:1.2rem;padding-top:4rem}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
   .toolbar{flex-direction:column;align-items:stretch}
-  .search{flex:1}
-  .tab-nav{overflow-x:auto;gap:.15rem}
-  .tab-btn{font-size:.78rem;padding:.6rem .8rem;white-space:nowrap}
-  .booking-item{grid-template-columns:1fr}
-  .booking-right{flex-direction:row;align-items:center;justify-content:flex-start}
+  .search-wrap{flex:1}
+  .prop-grid{grid-template-columns:1fr}
+  .override-table{font-size:.78rem}
+  .override-table thead th,.override-table tbody td{padding:.5rem .6rem}
+  .main-header{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr 1fr;gap:.6rem}
+  .stat-card{padding:1rem}
+  .stat-num{font-size:1.6rem}
+  .msg-actions{gap:.25rem}
+  .act{padding:.3rem .5rem;font-size:.7rem}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 </style>
 </head>
 <body>
 
-<!-- ── Top bar ── -->
-<div class="topbar">
-  <div class="wrap topbar-inner">
-    <a href="/admin.html" class="brand"><span class="mark"></span>Maison <small>Admin</small></a>
-    <div class="bar-actions">
-      <a href="/" class="btn">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        View site
-      </a>
-      <button class="btn btn-solid" id="refreshBtn">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Refresh
-      </button>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- LOGIN PAGE                                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="login-page" id="loginPage">
+  <div class="login-card">
+    <div class="login-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01M9 13h.01M15 13h.01"/></svg>
+      <h1>Regent <span>Admin</span></h1>
+      <p>Property management dashboard</p>
     </div>
+    <div class="login-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" autocomplete="username" placeholder="Enter username" required>
+      </div>
+      <div class="login-field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+    </form>
   </div>
 </div>
 
-<main>
-  <div class="wrap">
-    <div class="page-head">
-      <h1>Administration</h1>
-      <p>Manage rewards, messages, and bookings.</p>
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- DASHBOARD                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="dashboard" id="dashboard">
+
+  <!-- Hamburger (mobile) -->
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--copper)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
+      <h2>Regent</h2>
+      <span class="admin-badge">Admin</span>
     </div>
 
-    <!-- Tab navigation -->
-    <div class="tab-nav" id="tabNav">
-      <button class="tab-btn active" data-tab="rewards">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21M3 12h18M7.5 8V6.5a4.5 4.5 0 0 1 9 0V8"/></svg>
-        Gift Card Rewards
-      </button>
-      <button class="tab-btn" data-tab="messages">
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a href="#" class="nav-link active" data-section="overview">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </a>
+      <a href="#" class="nav-link" data-section="messages">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Messages
-        <span class="tab-badge" id="msgBadge" style="display:none">0</span>
-      </button>
-      <button class="tab-btn" data-tab="bookings">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Bookings
-        <span class="tab-badge" id="bookingBadge" style="display:none">0</span>
+        <span class="nav-badge" id="navMsgBadge" style="display:none">0</span>
+      </a>
+      <a href="#" class="nav-link" data-section="reviews">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Reviews &amp; Gift Cards
+      </a>
+      <a href="#" class="nav-link" data-section="pricing">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Pricing
+      </a>
+      <a href="#" class="nav-link" data-section="properties">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Properties
+      </a>
+      <a href="#" class="nav-link" data-section="settings">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a href="/" target="_blank">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View Site
+      </a>
+      <button onclick="doLogout()">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
       </button>
     </div>
+  </aside>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- TAB: Gift Card Rewards                      -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="tab-panel active" id="panel-rewards">
-      <!-- Stats -->
-      <div class="stats">
-        <div class="stat"><div class="num" id="sTotal">—</div><div class="lab">Total</div></div>
-        <div class="stat s-pending"><div class="num" id="sPending">—</div><div class="lab">Pending</div></div>
-        <div class="stat s-sent"><div class="num" id="sSent">—</div><div class="lab">Sent</div></div>
-        <div class="stat s-rejected"><div class="num" id="sRejected">—</div><div class="lab">Rejected</div></div>
+  <!-- Main content -->
+  <div class="main-content">
+    <div class="main-header">
+      <div>
+        <h1 id="pageTitle">Overview</h1>
+        <p class="subtitle" id="pageSubtitle">Dashboard summary and recent activity</p>
       </div>
-
-      <!-- Toolbar -->
-      <div class="toolbar">
-        <div class="filters" id="filters">
-          <button class="fbtn active" data-f="all">All <span class="count" id="cAll">0</span></button>
-          <button class="fbtn" data-f="pending">Pending <span class="count" id="cPending">0</span></button>
-          <button class="fbtn" data-f="approved">Approved <span class="count" id="cApproved">0</span></button>
-          <button class="fbtn" data-f="sent">Sent <span class="count" id="cSent">0</span></button>
-          <button class="fbtn" data-f="rejected">Rejected <span class="count" id="cRejected">0</span></button>
-        </div>
-        <div class="search">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="search" id="searchInput" placeholder="Search name or email...">
-        </div>
+      <div class="header-actions">
+        <button class="btn" id="refreshBtn" onclick="refreshCurrentSection()">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
       </div>
-
-      <!-- Desktop table -->
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Proof</th><th>Name</th><th>Email</th><th>Platform</th><th>Submitted</th><th>Status</th><th style="text-align:right">Actions</th>
-          </tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-
-      <!-- Mobile cards -->
-      <div class="cards" id="cards"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- TAB: Messages                               -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="tab-panel" id="panel-messages">
-      <!-- Stats -->
-      <div class="stats" id="msgStats">
-        <div class="stat"><div class="num" id="mTotal">—</div><div class="lab">Total</div></div>
-        <div class="stat s-unread"><div class="num" id="mUnread">—</div><div class="lab">Unread</div></div>
-        <div class="stat s-replied"><div class="num" id="mReplied">—</div><div class="lab">Replied</div></div>
-        <div class="stat"><div class="num" id="mArchived">—</div><div class="lab">Archived</div></div>
+    <!-- ═══ OVERVIEW ═══ -->
+    <div class="section active" id="sec-overview">
+      <div class="stat-grid" id="overviewStats">
+        <div class="stat-card sc-copper"><div class="stat-num" id="ovMsgWeek">--</div><div class="stat-label">Messages This Week</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="ovBookings">--</div><div class="stat-label">Total Bookings</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="ovRevenue">--</div><div class="stat-label">Revenue</div></div>
+        <div class="stat-card sc-amber"><div class="stat-num" id="ovGiftCards">--</div><div class="stat-label">Pending Gift Cards</div></div>
       </div>
+      <h3 style="font-size:1rem;font-weight:500;margin-bottom:1rem;color:var(--text-2)">Recent Activity</h3>
+      <div class="activity-feed" id="activityFeed">
+        <div class="loading-state"><span class="spinner"></span> Loading activity...</div>
+      </div>
+    </div>
 
-      <!-- Toolbar -->
+    <!-- ═══ MESSAGES ═══ -->
+    <div class="section" id="sec-messages">
+      <div class="stat-grid" id="msgStats">
+        <div class="stat-card sc-copper"><div class="stat-num" id="mTotal">--</div><div class="stat-label">Total</div></div>
+        <div class="stat-card sc-copper"><div class="stat-num" id="mUnread">--</div><div class="stat-label">Unread</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="mReplied">--</div><div class="stat-label">Replied</div></div>
+        <div class="stat-card sc-blue"><div class="stat-num" id="mArchived">--</div><div class="stat-label">Archived</div></div>
+      </div>
       <div class="toolbar">
         <div class="filters" id="msgFilters">
-          <button class="fbtn active" data-mf="all">All</button>
-          <button class="fbtn" data-mf="unread">Unread</button>
-          <button class="fbtn" data-mf="read">Read</button>
-          <button class="fbtn" data-mf="replied">Replied</button>
-          <button class="fbtn" data-mf="archived">Archived</button>
+          <button class="pill active" data-mf="all">All</button>
+          <button class="pill" data-mf="unread">Unread</button>
+          <button class="pill" data-mf="read">Read</button>
+          <button class="pill" data-mf="replied">Replied</button>
+          <button class="pill" data-mf="archived">Archived</button>
         </div>
-        <div class="search">
+        <div class="search-wrap">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="search" id="msgSearchInput" placeholder="Search messages...">
+          <input type="search" id="msgSearch" placeholder="Search messages...">
         </div>
       </div>
-
-      <!-- Message list -->
-      <div class="msg-list" id="msgList"></div>
+      <div class="msg-list" id="msgList">
+        <div class="loading-state"><span class="spinner"></span> Loading messages...</div>
+      </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- TAB: Bookings                               -->
-    <!-- ═══════════════════════════════════════════ -->
-    <div class="tab-panel" id="panel-bookings">
-      <!-- Stats -->
-      <div class="stats" id="bookingStats" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat"><div class="num" id="bTotal">—</div><div class="lab">Total</div></div>
-        <div class="stat s-requested"><div class="num" id="bRequested">—</div><div class="lab">Requested</div></div>
-        <div class="stat s-confirmed"><div class="num" id="bConfirmed">—</div><div class="lab">Confirmed</div></div>
-        <div class="stat s-rejected"><div class="num" id="bCancelled">—</div><div class="lab">Cancelled / Failed</div></div>
+    <!-- ═══ REVIEWS & GIFT CARDS ═══ -->
+    <div class="section" id="sec-reviews">
+      <div class="stat-grid" id="reviewStats">
+        <div class="stat-card sc-copper"><div class="stat-num" id="rTotal">--</div><div class="stat-label">Total Reviews</div></div>
+        <div class="stat-card sc-amber"><div class="stat-num" id="rAvgRating">--</div><div class="stat-label">Average Rating</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="rGCSent">--</div><div class="stat-label">Gift Cards Sent</div></div>
+        <div class="stat-card sc-amber"><div class="stat-num" id="rGCPending">--</div><div class="stat-label">Gift Cards Pending</div></div>
       </div>
-
-      <!-- Toolbar -->
       <div class="toolbar">
-        <div class="filters" id="bookingFilters">
-          <button class="fbtn active" data-bf="all">All</button>
-          <button class="fbtn" data-bf="requested">Requested</button>
-          <button class="fbtn" data-bf="confirmed">Confirmed</button>
-          <button class="fbtn" data-bf="failed">Failed</button>
-          <button class="fbtn" data-bf="cancelled">Cancelled</button>
-        </div>
-        <div class="search">
-          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="search" id="bookingSearchInput" placeholder="Search bookings...">
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-copper" onclick="openReviewModal()">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Review
+          </button>
+          <select id="rvPropertyFilter" class="form-group" style="padding:.45rem .8rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.82rem;color:var(--text);outline:none;width:auto;appearance:auto">
+            <option value="">All Properties</option>
+          </select>
+          <select id="rvRatingFilter" style="padding:.45rem .8rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.82rem;color:var(--text);outline:none;appearance:auto">
+            <option value="">All Ratings</option>
+            <option value="5">5 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="2">2 Stars</option>
+            <option value="1">1 Star</option>
+          </select>
+          <select id="rvGiftFilter" style="padding:.45rem .8rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.82rem;color:var(--text);outline:none;appearance:auto">
+            <option value="">All Gift Cards</option>
+            <option value="sent">Sent</option>
+            <option value="pending">Pending</option>
+          </select>
         </div>
       </div>
+      <div class="review-grid" id="reviewList">
+        <div class="loading-state"><span class="spinner"></span> Loading reviews...</div>
+      </div>
+    </div>
 
-      <!-- Booking list -->
-      <div class="booking-list" id="bookingList"></div>
+    <!-- ═══ PRICING ═══ -->
+    <div class="section" id="sec-pricing">
+      <div class="toolbar">
+        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+          <select id="pricePropertySelect" style="padding:.5rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.88rem;color:var(--text);outline:none;min-width:220px;appearance:auto">
+          </select>
+          <button class="btn btn-copper" onclick="openPriceModal()">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Price Override
+          </button>
+        </div>
+      </div>
+      <div class="price-info-card" id="priceInfoCard">
+        <div class="price-row"><span class="pl">Guesty Base Price</span><span class="pv" id="prBasePrice">--</span></div>
+        <div class="price-row"><span class="pl">Current Display Override</span><span class="pv" id="prOverridePrice">None set</span></div>
+        <div class="price-row"><span class="pl">5% Discount Price</span><span class="pv discount" id="prDiscountPrice">--</span></div>
+      </div>
+      <h3 style="font-size:1rem;font-weight:500;margin-bottom:1rem">Price Overrides</h3>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
+        <table class="override-table">
+          <thead><tr><th>Date Range</th><th>Price</th><th>Label</th><th style="text-align:right">Actions</th></tr></thead>
+          <tbody id="overrideBody"></tbody>
+        </table>
+      </div>
+      <div class="calendar" id="calendarSection">
+        <div class="cal-header">
+          <button class="btn btn-sm" onclick="calNav(-1)">&larr; Prev</button>
+          <h3 id="calTitle">July 2026</h3>
+          <button class="btn btn-sm" onclick="calNav(1)">Next &rarr;</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+    </div>
+
+    <!-- ═══ PROPERTIES ═══ -->
+    <div class="section" id="sec-properties">
+      <div class="prop-grid" id="propGrid">
+        <div class="loading-state" style="grid-column:1/-1"><span class="spinner"></span> Loading properties...</div>
+      </div>
+    </div>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <div class="section" id="sec-settings">
+      <div class="settings-form">
+        <div class="form-group">
+          <label>Contact Email</label>
+          <input type="email" id="setEmail" placeholder="admin@bookwithregent.com">
+        </div>
+        <div class="form-group">
+          <label>Contact Phone</label>
+          <input type="tel" id="setPhone" placeholder="+1 555-0123">
+        </div>
+        <div class="form-group">
+          <label>Maintenance Mode</label>
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="setMaintenance"><span class="slider"></span></label>
+            <span style="font-size:.85rem;color:var(--text-2)" id="maintLabel">Off</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Announcement Banner</label>
+          <textarea id="setAnnouncement" placeholder="Leave blank for no banner..."></textarea>
+        </div>
+        <button class="btn btn-copper" onclick="saveSettings()" style="padding:.65rem 1.5rem;font-size:.9rem">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Settings
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /dashboard -->
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Review modal -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="reviewModalTitle">Add Review</h3>
+      <button class="modal-close" onclick="closeModal('reviewModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="rvEditId">
+      <div class="form-group"><label>Guest Name</label><input type="text" id="rvName" placeholder="Guest name"></div>
+      <div class="form-group"><label>Guest Email</label><input type="email" id="rvEmail" placeholder="guest@email.com"></div>
+      <div class="form-group">
+        <label>Property</label>
+        <select id="rvProperty">
+          <option value="">Select property...</option>
+          <option value="regent-villa">Regent Villa</option>
+          <option value="cozy-designer">Cozy Designer Suite</option>
+          <option value="lake-view">Gorgeous Luxury Lake View Suite</option>
+          <option value="designer-game">Designer Game Suite</option>
+          <option value="executive">Luxury Executive Living</option>
+          <option value="stunning-lake">Stunning Lake Views</option>
+          <option value="regent-skyline">Regent Skyline</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rating</label>
+        <div class="star-selector" id="rvStarSelector"></div>
+      </div>
+      <div class="form-group"><label>Review Text</label><textarea id="rvText" placeholder="Write the review..." rows="4"></textarea></div>
+      <div class="form-group"><label>Photo</label><input type="file" id="rvPhoto" accept="image/*" style="padding:.5rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-btn);width:100%;color:var(--text-2);font-size:.85rem"></div>
+      <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:.5rem">
+        <div class="form-group">
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="rvGCSent"><span class="slider"></span></label>
+            <span style="font-size:.85rem;color:var(--text-2)">Gift Card Sent</span>
+          </div>
+        </div>
+        <div id="gcFields" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group"><label>Amount ($)</label><input type="number" id="rvGCAmount" placeholder="25"></div>
+            <div class="form-group">
+              <label>Type</label>
+              <select id="rvGCType">
+                <option value="">Select...</option>
+                <option value="Amazon">Amazon</option>
+                <option value="Visa">Visa</option>
+                <option value="Restaurant">Restaurant</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label>Date Sent</label><input type="date" id="rvGCDate"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('reviewModal')">Cancel</button>
+      <button class="btn btn-copper" onclick="submitReview()">Save Review</button>
     </div>
   </div>
-</main>
-
-<!-- Image modal -->
-<div class="modal" id="modal">
-  <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
-  <img id="modalImg" alt="Review proof">
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span id="toastMsg"></span></div>
+<!-- Price override modal -->
+<div class="modal-overlay" id="priceModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="priceModalTitle">Add Price Override</h3>
+      <button class="modal-close" onclick="closeModal('priceModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="poEditId">
+      <div class="form-group">
+        <label>Property</label>
+        <select id="poProperty">
+          <option value="">Select property...</option>
+          <option value="regent-villa">Regent Villa</option>
+          <option value="cozy-designer">Cozy Designer Suite</option>
+          <option value="lake-view">Gorgeous Luxury Lake View Suite</option>
+          <option value="designer-game">Designer Game Suite</option>
+          <option value="executive">Luxury Executive Living</option>
+          <option value="stunning-lake">Stunning Lake Views</option>
+          <option value="regent-skyline">Regent Skyline</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Override Price ($)</label><input type="number" id="poPrice" placeholder="200" step="0.01"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="form-group"><label>Start Date</label><input type="date" id="poStart"></div>
+        <div class="form-group"><label>End Date</label><input type="date" id="poEnd"></div>
+      </div>
+      <div class="form-group"><label>Label</label><input type="text" id="poLabel" placeholder="e.g. Holiday Rate, Summer Special"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('priceModal')">Cancel</button>
+      <button class="btn btn-copper" onclick="submitPriceOverride()">Save Override</button>
+    </div>
+  </div>
+</div>
+
+<!-- Property edit modal -->
+<div class="modal-overlay" id="propModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Edit Property</h3>
+      <button class="modal-close" onclick="closeModal('propModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="propEditSlug">
+      <div class="form-group"><label>Display Name Override</label><input type="text" id="propDisplayName" placeholder="Custom display name"></div>
+      <div class="form-group"><label>Description</label><textarea id="propDesc" placeholder="Property description..." rows="3"></textarea></div>
+      <div class="form-group"><label>Tagline</label><input type="text" id="propTagline" placeholder="Short tagline"></div>
+      <div class="form-group"><label>Featured Amenities (comma-separated)</label><input type="text" id="propAmenities" placeholder="WiFi, Pool, Lake View, Gym"></div>
+      <div class="form-group">
+        <label>Category Badge</label>
+        <select id="propCategory">
+          <option value="">None</option>
+          <option value="Luxury">Luxury</option>
+          <option value="Family">Family</option>
+          <option value="Romantic">Romantic</option>
+          <option value="Executive">Executive</option>
+          <option value="Lakefront">Lakefront</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Sort Order</label><input type="number" id="propSortOrder" placeholder="0" min="0"></div>
+      <div class="form-group">
+        <label>Visible</label>
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="propVisible" checked><span class="slider"></span></label>
+          <span style="font-size:.85rem;color:var(--text-2)">Show on website</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('propModal')">Cancel</button>
+      <button class="btn btn-copper" onclick="submitProperty()">Save Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image preview modal -->
+<div class="img-modal" id="imgModal" onclick="this.classList.remove('show')">
+  <img id="imgModalSrc" alt="Preview">
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-/* ── Shared utilities ── */
+/* ═══════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════ */
+let currentSection = 'overview';
+let authenticated = false;
+let currentUser = '';
+
+// Messages
+let allMessages = [];
+let msgFilterVal = 'all';
+let msgSearchVal = '';
+
+// Reviews
+let allReviews = [];
+let rvSelectedRating = 0;
+
+// Pricing
+let allListings = [];
+let allOverrides = [];
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+// Properties
+let allProperties = [];
+
+// Property name map
+const PROPERTY_NAMES = {
+  'regent-villa': 'Regent Villa',
+  'cozy-designer': 'Cozy Designer Suite',
+  'lake-view': 'Gorgeous Luxury Lake View Suite',
+  'designer-game': 'Designer Game Suite',
+  'executive': 'Luxury Executive Living',
+  'stunning-lake': 'Stunning Lake Views',
+  'regent-skyline': 'Regent Skyline'
+};
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════ */
 const $ = (id) => document.getElementById(id);
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+async function api(path, opts = {}) {
+  try {
+    const r = await fetch(path, { credentials: 'same-origin', ...opts });
+    if (r.status === 401) {
+      authenticated = false;
+      showLogin();
+      throw new Error('Unauthorized');
+    }
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({ error: r.statusText }));
+      throw new Error(err.error || r.statusText);
+    }
+    return r.json();
+  } catch (e) {
+    if (e.message === 'Unauthorized') throw e;
+    throw e;
+  }
+}
+
 function fmtDate(s) {
-  if (!s) return '—';
-  const d = new Date(s.replace(' ', 'T') + (s.includes('Z') || s.includes('+') ? '' : 'Z'));
+  if (!s) return '--';
+  const d = new Date(s.includes('T') || s.includes('Z') ? s : s.replace(' ', 'T') + 'Z');
   if (isNaN(d)) return s;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
+
 function fmtDateShort(s) {
-  if (!s) return '—';
+  if (!s) return '--';
   const d = new Date(s);
   if (isNaN(d)) return s;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
-async function api(path, opts = {}) {
-  const r = await fetch(path, opts);
-  return r.json();
-}
-let toastTimer;
-function showToast(msg) {
-  $('toastMsg').textContent = msg;
-  const t = $('toast');
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
-}
-function openModal(src) { $('modalImg').src = src; $('modal').classList.add('show'); }
-function closeModal() { $('modal').classList.remove('show'); }
-$('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-function emptyHtml(msg) {
-  return `<div class="empty"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p>${msg}</p></div>`;
+function relativeTime(s) {
+  if (!s) return '';
+  const d = new Date(s.includes('T') || s.includes('Z') ? s : s.replace(' ', 'T') + 'Z');
+  if (isNaN(d)) return s;
+  const now = Date.now();
+  const diff = now - d.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return days + 'd ago';
+  return fmtDateShort(s);
 }
 
-/* ── Tab switching ── */
-let activeTab = 'rewards';
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tab = btn.dataset.tab;
-    if (tab === activeTab) return;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    $('panel-' + tab).classList.add('active');
-    activeTab = tab;
-    if (tab === 'messages') loadMessages();
-    else if (tab === 'bookings') loadBookings();
-    else if (tab === 'rewards') loadData();
-  });
-});
+function fmtCurrency(n) {
+  return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
-/* ══════════════════════════════════════════════════
-   GIFT CARD REWARDS (existing functionality)
-   ══════════════════════════════════════════════════ */
-let currentFilter = 'all';
-let allRows = [];
-let searchTerm = '';
-
-document.querySelectorAll('#filters .fbtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#filters .fbtn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFilter = btn.dataset.f;
-    loadData();
-  });
-});
-
-$('searchInput').addEventListener('input', (e) => { searchTerm = e.target.value.trim().toLowerCase(); render(); });
-$('refreshBtn').addEventListener('click', () => {
-  if (activeTab === 'rewards') loadData();
-  else if (activeTab === 'messages') loadMessages();
-  else if (activeTab === 'bookings') loadBookings();
-});
-
-async function loadData() {
-  const btn = $('refreshBtn');
-  btn.classList.add('spin');
-  try {
-    const [stats, subs] = await Promise.all([
-      api('/api/admin/stats'),
-      api('/api/admin/submissions?status=' + currentFilter)
-    ]);
-    if (stats) {
-      $('sTotal').textContent = stats.total;
-      $('sPending').textContent = stats.pending;
-      $('sSent').textContent = stats.sent;
-      $('sRejected').textContent = stats.rejected;
-      const approved = stats.approved || 0;
-      $('cAll').textContent = stats.total;
-      $('cPending').textContent = stats.pending;
-      $('cApproved').textContent = approved;
-      $('cSent').textContent = stats.sent;
-      $('cRejected').textContent = stats.rejected;
+function starsHtml(rating, size = 16) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      html += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="var(--amber)" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    } else {
+      html += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
     }
-    allRows = Array.isArray(subs) ? subs : [];
-    render();
-  } catch (e) {
-    showToast('Could not load data');
+  }
+  return `<div class="stars" style="display:flex;gap:2px">${html}</div>`;
+}
+
+function propertyName(slug) {
+  return PROPERTY_NAMES[slug] || slug || '--';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+function showToast(msg, type = 'success') {
+  const container = $('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast t-${type}`;
+  const iconMap = {
+    success: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  toast.innerHTML = (iconMap[type] || '') + `<span>${esc(msg)}</span>`;
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 350);
+  }, 2800);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL SYSTEM
+   ═══════════════════════════════════════════════════════════ */
+function openModal(id) { $(id).classList.add('show'); }
+function closeModal(id) { $(id).classList.remove('show'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+    $('imgModal').classList.remove('show');
+  }
+});
+
+function openImgModal(src) {
+  $('imgModalSrc').src = src;
+  $('imgModal').classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════════════ */
+function showLogin() {
+  $('loginPage').style.display = 'flex';
+  $('dashboard').style.display = 'none';
+}
+
+function showDashboard() {
+  $('loginPage').style.display = 'none';
+  $('dashboard').style.display = 'block';
+}
+
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('loginBtn');
+  const errEl = $('loginError');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const data = await api('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: $('loginUser').value.trim(),
+        password: $('loginPass').value
+      })
+    });
+    if (data.success) {
+      authenticated = true;
+      currentUser = data.username || '';
+      showDashboard();
+      loadOverview();
+    } else {
+      errEl.textContent = data.error || 'Invalid credentials';
+      errEl.style.display = 'block';
+    }
+  } catch (err) {
+    if (err.message !== 'Unauthorized') {
+      errEl.textContent = 'Login failed. Please try again.';
+      errEl.style.display = 'block';
+    }
   } finally {
-    btn.classList.remove('spin');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+});
+
+async function checkAuth() {
+  try {
+    const data = await fetch('/api/admin/auth-check', { credentials: 'same-origin' });
+    const json = await data.json();
+    if (json.authenticated) {
+      authenticated = true;
+      currentUser = json.username || '';
+      showDashboard();
+      loadOverview();
+    } else {
+      showLogin();
+    }
+  } catch {
+    showLogin();
   }
 }
 
-function filteredRows() {
-  if (!searchTerm) return allRows;
-  return allRows.filter(s =>
-    (s.name || '').toLowerCase().includes(searchTerm) ||
-    (s.email || '').toLowerCase().includes(searchTerm)
-  );
+async function doLogout() {
+  try {
+    await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
+  } catch {}
+  authenticated = false;
+  showLogin();
+  $('loginUser').value = '';
+  $('loginPass').value = '';
 }
 
-function render() {
-  const rows = filteredRows();
-  const tbody = $('tbody');
-  const cards = $('cards');
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════ */
+const sectionMeta = {
+  overview: { title: 'Overview', subtitle: 'Dashboard summary and recent activity' },
+  messages: { title: 'Messages', subtitle: 'Manage guest inquiries and communications' },
+  reviews: { title: 'Reviews & Gift Cards', subtitle: 'Manage guest reviews and gift card rewards' },
+  pricing: { title: 'Pricing', subtitle: 'Manage pricing overrides and seasonal rates' },
+  properties: { title: 'Properties', subtitle: 'Configure property details and visibility' },
+  settings: { title: 'Settings', subtitle: 'System configuration and preferences' }
+};
 
-  if (!rows.length) {
-    const msg = searchTerm ? 'No matches for your search' : 'No submissions yet';
-    const eh = emptyHtml(msg);
-    tbody.innerHTML = `<tr><td colspan="7" style="padding:0">${eh}</td></tr>`;
-    cards.innerHTML = eh;
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const section = link.dataset.section;
+    if (section === currentSection) return;
+    switchSection(section);
+    // Close mobile sidebar
+    $('sidebar').classList.remove('open');
+    $('overlay').classList.remove('show');
+  });
+});
+
+function switchSection(section) {
+  currentSection = section;
+  // Update nav
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === section));
+  // Update sections
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  $('sec-' + section).classList.add('active');
+  // Update header
+  const meta = sectionMeta[section];
+  $('pageTitle').textContent = meta.title;
+  $('pageSubtitle').textContent = meta.subtitle;
+  // Load data
+  loadSectionData(section);
+}
+
+function loadSectionData(section) {
+  switch (section) {
+    case 'overview': loadOverview(); break;
+    case 'messages': loadMessages(); break;
+    case 'reviews': loadReviews(); break;
+    case 'pricing': loadPricing(); break;
+    case 'properties': loadProperties(); break;
+    case 'settings': loadSettings(); break;
+  }
+}
+
+function refreshCurrentSection() {
+  const btn = $('refreshBtn');
+  btn.classList.add('spin');
+  loadSectionData(currentSection);
+  setTimeout(() => btn.classList.remove('spin'), 800);
+}
+
+// Mobile sidebar
+$('hamburger').addEventListener('click', () => {
+  $('sidebar').classList.toggle('open');
+  $('overlay').classList.toggle('show');
+});
+$('overlay').addEventListener('click', () => {
+  $('sidebar').classList.remove('open');
+  $('overlay').classList.remove('show');
+});
+
+/* ═══════════════════════════════════════════════════════════
+   OVERVIEW
+   ═══════════════════════════════════════════════════════════ */
+async function loadOverview() {
+  try {
+    const data = await api('/api/admin/dashboard');
+    // Stats
+    $('ovMsgWeek').textContent = data.messages?.week ?? '--';
+    $('ovBookings').textContent = data.bookings?.total ?? '--';
+    $('ovRevenue').textContent = fmtCurrency(data.bookings?.revenue);
+    $('ovGiftCards').textContent = data.reviews?.pendingGiftCards ?? '--';
+
+    // Update message badge in nav
+    const unread = data.messages?.unread ?? 0;
+    const badge = $('navMsgBadge');
+    if (unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    // Recent activity
+    renderActivity(data.recent || {});
+  } catch (err) {
+    if (err.message !== 'Unauthorized') {
+      showToast('Could not load dashboard', 'error');
+    }
+  }
+}
+
+function renderActivity(recent) {
+  const feed = $('activityFeed');
+  const items = [];
+
+  (recent.messages || []).forEach(m => {
+    items.push({
+      type: 'message',
+      icon: 'ai-msg',
+      iconSvg: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      text: `<strong>${esc(m.name || 'Guest')}</strong> sent a message${m.property ? ' about <strong>' + esc(m.property) + '</strong>' : ''}`,
+      time: m.created_at || m.timestamp,
+      typeLabel: 'Message'
+    });
+  });
+
+  (recent.bookings || []).forEach(b => {
+    items.push({
+      type: 'booking',
+      icon: 'ai-booking',
+      iconSvg: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+      text: `<strong>${esc(b.name || b.guest_name || 'Guest')}</strong> booked ${b.property || b.property_name ? '<strong>' + esc(b.property || b.property_name) + '</strong>' : 'a property'}`,
+      time: b.created_at || b.timestamp,
+      typeLabel: 'Booking'
+    });
+  });
+
+  (recent.reviews || []).forEach(r => {
+    items.push({
+      type: 'review',
+      icon: 'ai-review',
+      iconSvg: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      text: `<strong>${esc(r.guest_name || 'Guest')}</strong> left a ${r.rating || '?'}-star review`,
+      time: r.created_at || r.timestamp,
+      typeLabel: 'Review'
+    });
+  });
+
+  // Sort by time descending
+  items.sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
+
+  if (!items.length) {
+    feed.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>No recent activity</p></div>';
     return;
   }
 
-  tbody.innerHTML = rows.map(s => `
-    <tr>
-      <td>${thumb(s)}</td>
-      <td class="cell-name">${esc(s.name) || '<span class="muted">—</span>'}</td>
-      <td class="cell-email">${esc(s.email)}</td>
-      <td class="cap">${esc(s.platform)}</td>
-      <td class="cell-date">${fmtDate(s.created_at)}</td>
-      <td><span class="badge ${s.status}">${s.status}</span></td>
-      <td>${rewardActions(s)}</td>
-    </tr>`).join('');
-
-  cards.innerHTML = rows.map(s => `
-    <div class="card">
-      ${thumb(s)}
-      <div class="card-body">
-        <div class="card-top">
-          <span class="card-name">${esc(s.name) || 'Anonymous'}</span>
-          <span class="badge ${s.status}">${s.status}</span>
-        </div>
-        <div class="card-email">${esc(s.email)}</div>
-        <div class="card-meta"><span class="cap">${esc(s.platform)}</span><span>${fmtDate(s.created_at)}</span></div>
-        ${rewardActions(s)}
-      </div>
-    </div>`).join('');
+  feed.innerHTML = items.slice(0, 15).map(item => `
+    <div class="activity-item">
+      <div class="activity-icon ${item.icon}">${item.iconSvg}</div>
+      <div class="activity-text">${item.text}</div>
+      <span class="activity-type">${item.typeLabel}</span>
+      <span class="activity-time">${relativeTime(item.time)}</span>
+    </div>
+  `).join('');
 }
 
-function thumb(s) {
-  if (s.proof_filename) {
-    const src = '/uploads/' + s.proof_filename;
-    return `<img class="thumb" src="${src}" alt="proof" onclick="openModal('${src}')">`;
-  }
-  return `<div class="no-thumb">N/A</div>`;
-}
-
-function rewardActions(s) {
-  const send = `<button class="act act-send" onclick="updateStatus(${s.id},'sent')" title="Mark gift card sent"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Send</button>`;
-  const reject = `<button class="act act-reject" onclick="updateStatus(${s.id},'rejected')" title="Reject"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject</button>`;
-  const undo = `<button class="act act-undo" onclick="updateStatus(${s.id},'pending')" title="Move back to pending"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Undo</button>`;
-  const del = `<button class="act act-del" onclick="deleteSub(${s.id})" title="Delete"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete</button>`;
-  let inner = '';
-  if (s.status === 'pending') inner = send + reject + del;
-  else inner = undo + del;
-  return `<div class="actions">${inner}</div>`;
-}
-
-async function updateStatus(id, status) {
-  await api('/api/admin/update', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, status })
-  });
-  const label = status === 'sent' ? 'Marked as sent' : status === 'rejected' ? 'Rejected' : 'Moved to pending';
-  showToast(label);
-  loadData();
-}
-
-async function deleteSub(id) {
-  if (!confirm('Delete this submission permanently?')) return;
-  await api('/api/admin/delete/' + id, { method: 'DELETE' });
-  showToast('Submission deleted');
-  loadData();
-}
-
-/* ══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    MESSAGES
-   ══════════════════════════════════════════════════ */
-let allMessages = [];
-let msgFilter = 'all';
-let msgSearch = '';
-
-document.querySelectorAll('#msgFilters .fbtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#msgFilters .fbtn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    msgFilter = btn.dataset.mf;
+   ═══════════════════════════════════════════════════════════ */
+document.querySelectorAll('#msgFilters .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#msgFilters .pill').forEach(b => b.classList.remove('active'));
+    p.classList.add('active');
+    msgFilterVal = p.dataset.mf;
     renderMessages();
   });
 });
 
-$('msgSearchInput').addEventListener('input', (e) => { msgSearch = e.target.value.trim().toLowerCase(); renderMessages(); });
+$('msgSearch').addEventListener('input', (e) => { msgSearchVal = e.target.value.trim().toLowerCase(); renderMessages(); });
 
 async function loadMessages() {
-  const btn = $('refreshBtn');
-  btn.classList.add('spin');
+  $('msgList').innerHTML = '<div class="loading-state"><span class="spinner"></span> Loading messages...</div>';
   try {
     const data = await api('/api/admin/messages');
     allMessages = Array.isArray(data) ? data : (data.messages || []);
     updateMsgStats();
     renderMessages();
-  } catch (e) {
-    showToast('Could not load messages');
-  } finally {
-    btn.classList.remove('spin');
+  } catch (err) {
+    if (err.message !== 'Unauthorized') {
+      $('msgList').innerHTML = '<div class="empty-state"><p>Could not load messages</p></div>';
+      showToast('Could not load messages', 'error');
+    }
   }
 }
 
@@ -631,27 +1167,22 @@ function updateMsgStats() {
   $('mUnread').textContent = unread;
   $('mReplied').textContent = replied;
   $('mArchived').textContent = archived;
-
-  const badge = $('msgBadge');
-  if (unread > 0) {
-    badge.textContent = unread;
-    badge.style.display = '';
-  } else {
-    badge.style.display = 'none';
-  }
+  // Nav badge
+  const badge = $('navMsgBadge');
+  if (unread > 0) { badge.textContent = unread; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
 }
 
 function filteredMessages() {
   let msgs = allMessages;
-  if (msgFilter !== 'all') {
-    msgs = msgs.filter(m => m.status === msgFilter);
-  }
-  if (msgSearch) {
+  if (msgFilterVal !== 'all') msgs = msgs.filter(m => m.status === msgFilterVal);
+  if (msgSearchVal) {
     msgs = msgs.filter(m =>
-      (m.name || '').toLowerCase().includes(msgSearch) ||
-      (m.email || '').toLowerCase().includes(msgSearch) ||
-      (m.message || '').toLowerCase().includes(msgSearch) ||
-      (m.property || '').toLowerCase().includes(msgSearch)
+      (m.name || '').toLowerCase().includes(msgSearchVal) ||
+      (m.email || '').toLowerCase().includes(msgSearchVal) ||
+      (m.subject || '').toLowerCase().includes(msgSearchVal) ||
+      (m.message || '').toLowerCase().includes(msgSearchVal) ||
+      (m.property || '').toLowerCase().includes(msgSearchVal)
     );
   }
   return msgs;
@@ -660,232 +1191,619 @@ function filteredMessages() {
 function renderMessages() {
   const msgs = filteredMessages();
   const list = $('msgList');
-
   if (!msgs.length) {
-    list.innerHTML = emptyHtml(msgSearch ? 'No messages match your search' : 'No messages yet');
+    list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>${msgSearchVal ? 'No messages match your search' : 'No messages yet'}</p></div>`;
     return;
   }
 
   list.innerHTML = msgs.map(m => {
     const isUnread = m.status === 'unread';
     return `
-    <div class="msg-item${isUnread ? ' is-unread' : ''}" id="msg-${m.id}">
-      <div class="msg-header">
-        <div class="msg-contact">
-          <div class="msg-name">${esc(m.name) || 'Guest'}</div>
-          <div class="msg-detail">
+    <div class="msg-card${isUnread ? ' unread' : ''}">
+      <div class="msg-top">
+        <div class="msg-sender">
+          <div class="msg-name">${esc(m.name || 'Guest')}</div>
+          <div class="msg-contact">
             <a href="mailto:${esc(m.email)}">${esc(m.email)}</a>
             ${m.phone ? ` &middot; ${esc(m.phone)}` : ''}
           </div>
-          ${m.property ? `<div class="msg-property"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${esc(m.property)}</div>` : ''}
+          ${m.property ? `<div class="msg-property-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${esc(m.property)}</div>` : ''}
         </div>
-        <div style="display:flex;align-items:center;gap:.5rem">
-          <span class="badge ${m.status}">${m.status}</span>
-        </div>
+        <span class="badge b-${m.status || 'unread'}">${m.status || 'unread'}</span>
       </div>
-      <div class="msg-body">${esc(m.message)}</div>
+      ${m.subject ? `<div class="msg-subject">${esc(m.subject)}</div>` : ''}
+      <div class="msg-body" onclick="this.classList.toggle('expanded')">${esc(m.message)}</div>
       <div class="msg-footer">
         <span class="msg-time">${fmtDate(m.created_at || m.timestamp)}</span>
         <div class="msg-actions">
-          ${isUnread ? `<button class="act act-read" onclick="markMsgRead(${m.id})" title="Mark as read"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Mark read</button>` : ''}
-          <button class="act act-reply" onclick="toggleReply(${m.id})" title="Reply"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>Reply</button>
-          ${m.status !== 'archived' ? `<button class="act act-archive" onclick="archiveMsg(${m.id})" title="Archive"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archive</button>` : `<button class="act act-undo" onclick="unarchiveMsg(${m.id})" title="Unarchive"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Unarchive</button>`}
-        </div>
-      </div>
-      <div class="reply-form" id="reply-${m.id}">
-        <textarea class="reply-textarea" id="replyText-${m.id}" placeholder="Type your reply..."></textarea>
-        <div class="reply-actions">
-          <button class="reply-cancel" onclick="toggleReply(${m.id})">Cancel</button>
-          <button class="reply-send" onclick="sendReply(${m.id})">
-            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Send reply
-          </button>
+          ${isUnread ? `<button class="act act-read" onclick="msgAction(${m.id},'read')"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Mark Read</button>` : ''}
+          <button class="act act-reply" onclick="msgReply(${m.id},'${esc(m.email)}','${esc(m.subject || '')}')"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>Reply</button>
+          ${m.status !== 'archived' ? `<button class="act act-archive" onclick="msgAction(${m.id},'archived')"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Archive</button>` : `<button class="act act-undo" onclick="msgAction(${m.id},'read')"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Unarchive</button>`}
+          <button class="act act-del" onclick="msgDelete(${m.id})"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function toggleReply(id) {
-  const form = $('reply-' + id);
-  if (form) form.classList.toggle('open');
-}
-
-async function markMsgRead(id) {
+async function msgAction(id, status) {
   try {
     await api('/api/admin/messages/' + id, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'read' })
+      body: JSON.stringify({ status })
     });
-    showToast('Marked as read');
+    const labels = { read: 'Marked as read', archived: 'Archived', replied: 'Marked as replied' };
+    showToast(labels[status] || 'Updated');
     loadMessages();
-  } catch (e) {
-    showToast('Failed to update message');
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Failed to update', 'error');
   }
 }
 
-async function archiveMsg(id) {
+function msgReply(id, email, subject) {
+  const sub = subject ? 'Re: ' + subject : '';
+  window.open(`mailto:${email}?subject=${encodeURIComponent(sub)}`, '_blank');
+  // Also mark as replied
+  msgAction(id, 'replied');
+}
+
+async function msgDelete(id) {
+  if (!confirm('Delete this message permanently? This cannot be undone.')) return;
   try {
-    await api('/api/admin/messages/' + id, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'archived' })
-    });
-    showToast('Message archived');
+    await api('/api/admin/messages/' + id, { method: 'DELETE' });
+    showToast('Message deleted');
     loadMessages();
-  } catch (e) {
-    showToast('Failed to archive message');
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Failed to delete', 'error');
   }
 }
 
-async function unarchiveMsg(id) {
-  try {
-    await api('/api/admin/messages/' + id, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'read' })
-    });
-    showToast('Message unarchived');
-    loadMessages();
-  } catch (e) {
-    showToast('Failed to unarchive message');
-  }
-}
-
-async function sendReply(id) {
-  const text = $('replyText-' + id);
-  if (!text || !text.value.trim()) {
-    showToast('Please enter a reply');
-    return;
-  }
-  try {
-    await api('/api/admin/messages/' + id, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'replied', reply: text.value.trim() })
-    });
-    showToast('Reply sent');
-    loadMessages();
-  } catch (e) {
-    showToast('Failed to send reply');
-  }
-}
-
-/* ══════════════════════════════════════════════════
-   BOOKINGS
-   ══════════════════════════════════════════════════ */
-let allBookings = [];
-let bookingFilter = 'all';
-let bookingSearch = '';
-
-document.querySelectorAll('#bookingFilters .fbtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#bookingFilters .fbtn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    bookingFilter = btn.dataset.bf;
-    renderBookings();
+/* ═══════════════════════════════════════════════════════════
+   REVIEWS & GIFT CARDS
+   ═══════════════════════════════════════════════════════════ */
+// Populate property filter dropdown
+(function() {
+  const sel = $('rvPropertyFilter');
+  Object.entries(PROPERTY_NAMES).forEach(([slug, name]) => {
+    const opt = document.createElement('option');
+    opt.value = slug;
+    opt.textContent = name;
+    sel.appendChild(opt);
   });
+})();
+
+$('rvPropertyFilter').addEventListener('change', () => renderReviews());
+$('rvRatingFilter').addEventListener('change', () => renderReviews());
+$('rvGiftFilter').addEventListener('change', () => renderReviews());
+
+$('rvGCSent').addEventListener('change', (e) => {
+  $('gcFields').style.display = e.target.checked ? 'block' : 'none';
 });
 
-$('bookingSearchInput').addEventListener('input', (e) => { bookingSearch = e.target.value.trim().toLowerCase(); renderBookings(); });
+// Star selector
+function initStarSelector() {
+  const container = $('rvStarSelector');
+  container.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'star-btn';
+    btn.innerHTML = `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="empty"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    btn.addEventListener('click', () => {
+      rvSelectedRating = i;
+      updateStarSelector();
+    });
+    container.appendChild(btn);
+  }
+}
+function updateStarSelector() {
+  const btns = $('rvStarSelector').querySelectorAll('.star-btn svg');
+  btns.forEach((svg, idx) => {
+    if (idx < rvSelectedRating) {
+      svg.classList.remove('empty');
+      svg.classList.add('filled');
+    } else {
+      svg.classList.remove('filled');
+      svg.classList.add('empty');
+    }
+  });
+}
+initStarSelector();
 
-async function loadBookings() {
-  const btn = $('refreshBtn');
-  btn.classList.add('spin');
+async function loadReviews() {
+  $('reviewList').innerHTML = '<div class="loading-state"><span class="spinner"></span> Loading reviews...</div>';
   try {
-    const data = await api('/api/admin/bookings');
-    allBookings = Array.isArray(data) ? data : (data.bookings || []);
-    updateBookingStats();
-    renderBookings();
-  } catch (e) {
-    showToast('Could not load bookings');
-  } finally {
-    btn.classList.remove('spin');
+    const data = await api('/api/admin/reviews');
+    allReviews = Array.isArray(data) ? data : (data.reviews || []);
+    updateReviewStats();
+    renderReviews();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') {
+      $('reviewList').innerHTML = '<div class="empty-state"><p>Could not load reviews</p></div>';
+      showToast('Could not load reviews', 'error');
+    }
   }
 }
 
-function updateBookingStats() {
-  const total = allBookings.length;
-  const requested = allBookings.filter(b => b.status === 'requested').length;
-  const confirmed = allBookings.filter(b => b.status === 'confirmed').length;
-  const cancelledFailed = allBookings.filter(b => b.status === 'cancelled' || b.status === 'failed').length;
-  $('bTotal').textContent = total;
-  $('bRequested').textContent = requested;
-  $('bConfirmed').textContent = confirmed;
-  $('bCancelled').textContent = cancelledFailed;
-
-  const badge = $('bookingBadge');
-  if (requested > 0) {
-    badge.textContent = requested;
-    badge.style.display = '';
-  } else {
-    badge.style.display = 'none';
-  }
+function updateReviewStats() {
+  $('rTotal').textContent = allReviews.length;
+  const ratings = allReviews.filter(r => r.rating).map(r => Number(r.rating));
+  $('rAvgRating').textContent = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : '--';
+  $('rGCSent').textContent = allReviews.filter(r => r.gift_card_sent).length;
+  $('rGCPending').textContent = allReviews.filter(r => !r.gift_card_sent).length;
 }
 
-function filteredBookings() {
-  let bookings = allBookings;
-  if (bookingFilter !== 'all') {
-    bookings = bookings.filter(b => b.status === bookingFilter);
-  }
-  if (bookingSearch) {
-    bookings = bookings.filter(b =>
-      (b.name || b.guest_name || '').toLowerCase().includes(bookingSearch) ||
-      (b.email || b.guest_email || '').toLowerCase().includes(bookingSearch) ||
-      (b.property || b.property_name || '').toLowerCase().includes(bookingSearch)
-    );
-  }
-  return bookings;
+function filteredReviews() {
+  let revs = allReviews;
+  const prop = $('rvPropertyFilter').value;
+  const rating = $('rvRatingFilter').value;
+  const gc = $('rvGiftFilter').value;
+  if (prop) revs = revs.filter(r => r.property_slug === prop);
+  if (rating) revs = revs.filter(r => String(r.rating) === rating);
+  if (gc === 'sent') revs = revs.filter(r => r.gift_card_sent);
+  if (gc === 'pending') revs = revs.filter(r => !r.gift_card_sent);
+  return revs;
 }
 
-function renderBookings() {
-  const bookings = filteredBookings();
-  const list = $('bookingList');
-
-  if (!bookings.length) {
-    list.innerHTML = emptyHtml(bookingSearch ? 'No bookings match your search' : 'No bookings yet');
+function renderReviews() {
+  const revs = filteredReviews();
+  const list = $('reviewList');
+  if (!revs.length) {
+    list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><p>No reviews found</p></div>';
     return;
   }
 
-  list.innerHTML = bookings.map(b => {
-    const name = b.name || b.guest_name || 'Guest';
-    const email = b.email || b.guest_email || '';
-    const phone = b.phone || b.guest_phone || '';
-    const property = b.property || b.property_name || '';
-    const checkin = b.check_in || b.checkin_date || '';
-    const checkout = b.check_out || b.checkout_date || '';
-    const nights = b.nights || '';
-    const totalPrice = b.total_price || b.total || '';
-    const currency = b.currency || 'EUR';
-    const status = b.status || 'requested';
-    const timestamp = b.created_at || b.timestamp || '';
-
-    return `
-    <div class="booking-item">
-      <div class="booking-guest">
-        <div class="booking-guest-name">${esc(name)}</div>
-        <div class="booking-guest-contact">
-          <a href="mailto:${esc(email)}">${esc(email)}</a>
-          ${phone ? ` &middot; ${esc(phone)}` : ''}
+  list.innerHTML = revs.map(r => `
+    <div class="review-card">
+      <div class="review-top">
+        <div class="review-guest">
+          <div class="review-guest-name">${esc(r.guest_name || 'Guest')}</div>
+          <div class="review-guest-email">${esc(r.guest_email || '')}</div>
         </div>
-        <div class="booking-details">
-          ${property ? `<span class="booking-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${esc(property)}</span>` : ''}
-          ${checkin ? `<span class="booking-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${fmtDateShort(checkin)} — ${fmtDateShort(checkout)}</span>` : ''}
-          ${nights ? `<span class="booking-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>${nights} night${nights > 1 ? 's' : ''}</span>` : ''}
-          ${totalPrice ? `<span class="booking-tag price">${Number(totalPrice).toLocaleString('en', { minimumFractionDigits: 2 })} ${esc(currency)}</span>` : ''}
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <span class="badge b-property">${esc(propertyName(r.property_slug))}</span>
         </div>
       </div>
-      <div class="booking-right">
-        <span class="badge ${status}">${status}</span>
-        <span class="booking-time">${fmtDate(timestamp)}</span>
+      ${starsHtml(r.rating || 0)}
+      <div class="review-text">${esc(r.review_text || '')}</div>
+      ${r.photo_url ? `<img src="${esc(r.photo_url)}" class="review-photo" onclick="openImgModal('${esc(r.photo_url)}')" alt="Review photo">` : ''}
+      <div class="gc-info">
+        <div class="gc-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M7.5 8V6.5a4.5 4.5 0 0 1 9 0V8"/></svg>
+          Gift Card: <span class="badge ${r.gift_card_sent ? 'b-sent' : 'b-pending'}" style="margin-left:.3rem">${r.gift_card_sent ? 'Sent' : 'Pending'}</span>
+        </div>
+        ${r.gift_card_sent ? `<div class="gc-detail"><span>${fmtCurrency(r.gift_card_amount)}</span><span>${esc(r.gift_card_type || '')}</span><span>${fmtDateShort(r.gift_card_date)}</span></div>` : ''}
+      </div>
+      <div style="display:flex;gap:.4rem;margin-top:.8rem;flex-wrap:wrap">
+        <button class="act act-edit" onclick="editReview(${r.id})"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+        <button class="act act-del" onclick="deleteReview(${r.id})"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openReviewModal(review) {
+  $('reviewModalTitle').textContent = review ? 'Edit Review' : 'Add Review';
+  $('rvEditId').value = review ? review.id : '';
+  $('rvName').value = review ? review.guest_name || '' : '';
+  $('rvEmail').value = review ? review.guest_email || '' : '';
+  $('rvProperty').value = review ? review.property_slug || '' : '';
+  rvSelectedRating = review ? (review.rating || 0) : 0;
+  updateStarSelector();
+  $('rvText').value = review ? review.review_text || '' : '';
+  $('rvGCSent').checked = review ? !!review.gift_card_sent : false;
+  $('gcFields').style.display = $('rvGCSent').checked ? 'block' : 'none';
+  $('rvGCAmount').value = review ? review.gift_card_amount || '' : '';
+  $('rvGCType').value = review ? review.gift_card_type || '' : '';
+  $('rvGCDate').value = review ? review.gift_card_date || '' : '';
+  openModal('reviewModal');
+}
+
+function editReview(id) {
+  const review = allReviews.find(r => r.id === id);
+  if (review) openReviewModal(review);
+}
+
+async function submitReview() {
+  const editId = $('rvEditId').value;
+  const formData = new FormData();
+  formData.append('guest_name', $('rvName').value.trim());
+  formData.append('guest_email', $('rvEmail').value.trim());
+  formData.append('property_slug', $('rvProperty').value);
+  formData.append('rating', rvSelectedRating);
+  formData.append('review_text', $('rvText').value.trim());
+  formData.append('gift_card_sent', $('rvGCSent').checked ? '1' : '0');
+  formData.append('gift_card_amount', $('rvGCAmount').value);
+  formData.append('gift_card_type', $('rvGCType').value);
+  formData.append('gift_card_date', $('rvGCDate').value);
+  const photoFile = $('rvPhoto').files[0];
+  if (photoFile) formData.append('photo', photoFile);
+
+  try {
+    if (editId) {
+      // For edit, use PATCH with JSON
+      const body = {};
+      formData.forEach((val, key) => { if (key !== 'photo') body[key] = val; });
+      await api('/api/admin/reviews/' + editId, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      showToast('Review updated');
+    } else {
+      await api('/api/admin/reviews', { method: 'POST', body: formData });
+      showToast('Review added');
+    }
+    closeModal('reviewModal');
+    loadReviews();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast(err.message || 'Failed to save review', 'error');
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm('Delete this review permanently? This cannot be undone.')) return;
+  try {
+    await api('/api/admin/reviews/' + id, { method: 'DELETE' });
+    showToast('Review deleted');
+    loadReviews();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Failed to delete', 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRICING
+   ═══════════════════════════════════════════════════════════ */
+// Populate pricing property dropdown
+(function() {
+  const sel = $('pricePropertySelect');
+  Object.entries(PROPERTY_NAMES).forEach(([slug, name]) => {
+    const opt = document.createElement('option');
+    opt.value = slug;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+})();
+
+$('pricePropertySelect').addEventListener('change', () => loadPricingForProperty());
+
+async function loadPricing() {
+  try {
+    const listings = await api('/api/admin/listings');
+    allListings = Array.isArray(listings) ? listings : [];
+    loadPricingForProperty();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Could not load listings', 'error');
+  }
+}
+
+async function loadPricingForProperty() {
+  const slug = $('pricePropertySelect').value;
+  if (!slug) return;
+
+  // Find listing info
+  const listing = allListings.find(l => l.slug === slug);
+  const basePrice = listing ? listing.basePrice || listing.base_price : null;
+  $('prBasePrice').textContent = basePrice ? fmtCurrency(basePrice) : '--';
+
+  // Load overrides
+  try {
+    const data = await api('/api/admin/price-overrides?property=' + slug);
+    allOverrides = Array.isArray(data) ? data : [];
+    renderOverrides();
+    renderCalendar();
+
+    // Current override
+    const today = new Date().toISOString().split('T')[0];
+    const current = allOverrides.find(o => o.start_date <= today && o.end_date >= today);
+    if (current) {
+      $('prOverridePrice').textContent = fmtCurrency(current.override_price);
+      $('prDiscountPrice').textContent = fmtCurrency(current.override_price * 0.95);
+    } else if (basePrice) {
+      $('prOverridePrice').textContent = 'None set';
+      $('prDiscountPrice').textContent = fmtCurrency(basePrice * 0.95);
+    } else {
+      $('prOverridePrice').textContent = 'None set';
+      $('prDiscountPrice').textContent = '--';
+    }
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Could not load price overrides', 'error');
+  }
+}
+
+function renderOverrides() {
+  const tbody = $('overrideBody');
+  if (!allOverrides.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--text-3)">No price overrides set</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allOverrides.map(o => `
+    <tr>
+      <td>${fmtDateShort(o.start_date)} - ${fmtDateShort(o.end_date)}</td>
+      <td style="font-weight:600">${fmtCurrency(o.override_price)}</td>
+      <td><span class="badge b-property">${esc(o.label || '--')}</span></td>
+      <td style="text-align:right">
+        <button class="act act-edit" onclick="editOverride(${o.id})"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+        <button class="act act-del" onclick="deleteOverride(${o.id})"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openPriceModal(override) {
+  $('priceModalTitle').textContent = override ? 'Edit Price Override' : 'Add Price Override';
+  $('poEditId').value = override ? override.id : '';
+  $('poProperty').value = override ? override.property_slug : ($('pricePropertySelect').value || '');
+  $('poPrice').value = override ? override.override_price : '';
+  $('poStart').value = override ? override.start_date : '';
+  $('poEnd').value = override ? override.end_date : '';
+  $('poLabel').value = override ? override.label || '' : '';
+  openModal('priceModal');
+}
+
+function editOverride(id) {
+  const o = allOverrides.find(x => x.id === id);
+  if (o) openPriceModal(o);
+}
+
+async function submitPriceOverride() {
+  const editId = $('poEditId').value;
+  const body = {
+    property_slug: $('poProperty').value,
+    override_price: parseFloat($('poPrice').value),
+    start_date: $('poStart').value,
+    end_date: $('poEnd').value,
+    label: $('poLabel').value.trim()
+  };
+
+  if (!body.property_slug || !body.override_price || !body.start_date || !body.end_date) {
+    showToast('Please fill all required fields', 'error');
+    return;
+  }
+
+  try {
+    if (editId) {
+      await api('/api/admin/price-overrides/' + editId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      showToast('Override updated');
+    } else {
+      await api('/api/admin/price-overrides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      showToast('Override added');
+    }
+    closeModal('priceModal');
+    loadPricingForProperty();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast(err.message || 'Failed to save', 'error');
+  }
+}
+
+async function deleteOverride(id) {
+  if (!confirm('Delete this price override?')) return;
+  try {
+    await api('/api/admin/price-overrides/' + id, { method: 'DELETE' });
+    showToast('Override deleted');
+    loadPricingForProperty();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Failed to delete', 'error');
+  }
+}
+
+/* ── Calendar ── */
+function renderCalendar() {
+  const grid = $('calGrid');
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  $('calTitle').textContent = monthNames[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = new Date().toISOString().split('T')[0];
+
+  // Build override date set
+  const overrideDates = new Set();
+  allOverrides.forEach(o => {
+    const start = new Date(o.start_date);
+    const end = new Date(o.end_date);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      overrideDates.add(d.toISOString().split('T')[0]);
+    }
+  });
+
+  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = dayLabels.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    html += '<div class="cal-day empty">&nbsp;</div>';
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const isToday = dateStr === today;
+    const hasOverride = overrideDates.has(dateStr);
+    const classes = ['cal-day'];
+    if (isToday) classes.push('today');
+    if (hasOverride) classes.push('has-override');
+    html += `<div class="${classes.join(' ')}">${d}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function calNav(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PROPERTIES
+   ═══════════════════════════════════════════════════════════ */
+async function loadProperties() {
+  $('propGrid').innerHTML = '<div class="loading-state" style="grid-column:1/-1"><span class="spinner"></span> Loading properties...</div>';
+  try {
+    const data = await api('/api/admin/properties');
+    allProperties = Array.isArray(data) ? data : [];
+    renderProperties();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') {
+      $('propGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Could not load properties</p></div>';
+      showToast('Could not load properties', 'error');
+    }
+  }
+}
+
+function renderProperties() {
+  const grid = $('propGrid');
+  if (!allProperties.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><p>No properties configured</p></div>';
+    return;
+  }
+
+  grid.innerHTML = allProperties.map(p => {
+    const isVisible = p.visible !== false && p.visible !== 0;
+    return `
+    <div class="prop-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.3rem">
+        <div>
+          <div class="prop-name">${esc(p.display_name || p.title || p.name || propertyName(p.slug))}</div>
+          <div class="prop-slug">${esc(p.slug)}</div>
+        </div>
+        ${p.category_badge ? `<span class="badge b-property">${esc(p.category_badge)}</span>` : ''}
+      </div>
+      <div class="prop-stats">
+        ${p.bedrooms != null ? `<div class="prop-stat">Beds: <span>${p.bedrooms}</span></div>` : ''}
+        ${p.bathrooms != null ? `<div class="prop-stat">Baths: <span>${p.bathrooms}</span></div>` : ''}
+        ${p.accommodates != null ? `<div class="prop-stat">Guests: <span>${p.accommodates}</span></div>` : ''}
+        ${p.basePrice || p.base_price ? `<div class="prop-stat">Base: <span>${fmtCurrency(p.basePrice || p.base_price)}</span></div>` : ''}
+      </div>
+      ${p.tagline ? `<div style="font-size:.82rem;color:var(--text-2);font-style:italic;margin-bottom:.6rem">"${esc(p.tagline)}"</div>` : ''}
+      <div class="prop-actions">
+        <button class="vis-toggle${isVisible ? '' : ' hidden'}" onclick="togglePropVisibility('${esc(p.slug)}',${isVisible ? 'false' : 'true'})">
+          ${isVisible
+            ? '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Visible'
+            : '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Hidden'}
+        </button>
+        <button class="btn btn-sm" onclick="editProperty('${esc(p.slug)}')">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit
+        </button>
       </div>
     </div>`;
   }).join('');
 }
 
-/* ── Initialize ── */
-loadData();
+function editProperty(slug) {
+  const p = allProperties.find(x => x.slug === slug);
+  if (!p) return;
+  $('propEditSlug').value = slug;
+  $('propDisplayName').value = p.display_name || '';
+  $('propDesc').value = p.description || '';
+  $('propTagline').value = p.tagline || '';
+  $('propAmenities').value = p.featured_amenities || '';
+  $('propCategory').value = p.category_badge || '';
+  $('propSortOrder').value = p.sort_order || 0;
+  $('propVisible').checked = p.visible !== false && p.visible !== 0;
+  openModal('propModal');
+}
+
+async function submitProperty() {
+  const slug = $('propEditSlug').value;
+  if (!slug) return;
+
+  const body = {
+    display_name: $('propDisplayName').value.trim(),
+    description: $('propDesc').value.trim(),
+    tagline: $('propTagline').value.trim(),
+    featured_amenities: $('propAmenities').value.trim(),
+    category_badge: $('propCategory').value,
+    sort_order: parseInt($('propSortOrder').value) || 0,
+    visible: $('propVisible').checked
+  };
+
+  try {
+    await api('/api/admin/properties/' + slug, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    showToast('Property updated');
+    closeModal('propModal');
+    loadProperties();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast(err.message || 'Failed to save', 'error');
+  }
+}
+
+async function togglePropVisibility(slug, visible) {
+  try {
+    await api('/api/admin/properties/' + slug, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visible: visible })
+    });
+    showToast(visible ? 'Property visible' : 'Property hidden');
+    loadProperties();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Failed to update visibility', 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SETTINGS
+   ═══════════════════════════════════════════════════════════ */
+$('setMaintenance').addEventListener('change', (e) => {
+  $('maintLabel').textContent = e.target.checked ? 'On' : 'Off';
+});
+
+async function loadSettings() {
+  try {
+    const data = await api('/api/admin/settings');
+    if (data) {
+      $('setEmail').value = data.contact_email || data.contactEmail || '';
+      $('setPhone').value = data.contact_phone || data.contactPhone || '';
+      $('setMaintenance').checked = !!data.maintenance_mode || !!data.maintenanceMode;
+      $('maintLabel').textContent = $('setMaintenance').checked ? 'On' : 'Off';
+      $('setAnnouncement').value = data.announcement_banner || data.announcementBanner || '';
+    }
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Could not load settings', 'error');
+  }
+}
+
+async function saveSettings() {
+  const body = {
+    contact_email: $('setEmail').value.trim(),
+    contact_phone: $('setPhone').value.trim(),
+    maintenance_mode: $('setMaintenance').checked,
+    announcement_banner: $('setAnnouncement').value.trim()
+  };
+
+  try {
+    await api('/api/admin/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    showToast('Settings saved');
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast(err.message || 'Failed to save settings', 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════ */
+checkAuth();
 </script>
 </body>
 </html>

@@ -87,6 +87,80 @@ db.exec(`
 // Migration: add subject column if not already present.
 try { db.exec("ALTER TABLE messages ADD COLUMN subject TEXT DEFAULT ''"); } catch (e) { /* column already exists */ }
 
+// ── Admin sessions ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS admin_sessions (
+    token TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    expires_at TEXT NOT NULL
+  )
+`);
+
+// ── Reviews ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    guest_name TEXT NOT NULL,
+    guest_email TEXT DEFAULT '',
+    property_slug TEXT DEFAULT '',
+    rating INTEGER DEFAULT 5 CHECK(rating BETWEEN 1 AND 5),
+    review_text TEXT DEFAULT '',
+    photo_path TEXT DEFAULT '',
+    gift_card_sent INTEGER DEFAULT 0,
+    gift_card_amount REAL DEFAULT 0,
+    gift_card_type TEXT DEFAULT '',
+    gift_card_date TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+// ── Price overrides ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS price_overrides (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    property_slug TEXT NOT NULL,
+    override_price REAL NOT NULL,
+    start_date TEXT NOT NULL,
+    end_date TEXT NOT NULL,
+    label TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+// ── Property display overrides ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS property_overrides (
+    property_slug TEXT PRIMARY KEY,
+    display_name TEXT DEFAULT '',
+    description TEXT DEFAULT '',
+    tagline TEXT DEFAULT '',
+    featured_amenities TEXT DEFAULT '',
+    category_badge TEXT DEFAULT '',
+    sort_order INTEGER DEFAULT 0,
+    visible INTEGER DEFAULT 1,
+    updated_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+// ── Site settings (key-value) ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT DEFAULT ''
+  )
+`);
+
+// Seed default settings if empty
+const settingsCount = db.prepare('SELECT COUNT(*) as c FROM settings').get().c;
+if (settingsCount === 0) {
+  const seedSettings = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
+  seedSettings.run('contact_email', '');
+  seedSettings.run('contact_phone', '');
+  seedSettings.run('maintenance_mode', 'false');
+  seedSettings.run('announcement_banner', '');
+}
+
 // Multer
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -109,6 +183,85 @@ const upload = multer({
 app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
+
+// ── Admin Authentication ──
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'regent2024';
+const SESSION_DURATION_HOURS = 24;
+
+function generateToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+function createAdminSession(username) {
+  const token = generateToken();
+  const expires = new Date(Date.now() + SESSION_DURATION_HOURS * 3600000).toISOString();
+  // Clean expired sessions
+  db.prepare("DELETE FROM admin_sessions WHERE expires_at < datetime('now')").run();
+  db.prepare('INSERT INTO admin_sessions (token, username, expires_at) VALUES (?, ?, ?)').run(token, username, expires);
+  return token;
+}
+
+function validateAdminSession(token) {
+  if (!token) return null;
+  const session = db.prepare("SELECT * FROM admin_sessions WHERE token = ? AND expires_at > datetime('now')").get(token);
+  return session || null;
+}
+
+function destroyAdminSession(token) {
+  if (token) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token);
+}
+
+function parseCookies(cookieHeader) {
+  const cookies = {};
+  if (!cookieHeader) return cookies;
+  cookieHeader.split(';').forEach(c => {
+    const [k, ...v] = c.trim().split('=');
+    if (k) cookies[k.trim()] = decodeURIComponent(v.join('='));
+  });
+  return cookies;
+}
+
+function requireAuth(req, res, next) {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies.admin_session;
+  const session = validateAdminSession(token);
+  if (!session) {
+    return res.status(401).json({ error: 'Unauthorized', login: '/admin' });
+  }
+  req.adminUser = session.username;
+  next();
+}
+
+// Serve admin page
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// ── Admin Login / Logout ──
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    const token = createAdminSession(username);
+    res.setHeader('Set-Cookie', `admin_session=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_DURATION_HOURS * 3600}`);
+    res.json({ success: true, username });
+  } else {
+    res.status(401).json({ error: 'Invalid credentials' });
+  }
+});
+
+app.post('/api/admin/logout', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  destroyAdminSession(cookies.admin_session);
+  res.setHeader('Set-Cookie', 'admin_session=; Path=/; HttpOnly; Max-Age=0');
+  res.json({ success: true });
+});
+
+app.get('/api/admin/auth-check', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const session = validateAdminSession(cookies.admin_session);
+  res.json({ authenticated: !!session, username: session?.username || null });
+});
 
 // Health check endpoint (also used for keep-alive pings)
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
@@ -635,7 +788,7 @@ app.post('/api/messages', (req, res) => {
 });
 
 // Admin: list messages, optionally filtered by ?status=
-app.get('/api/admin/messages', (req, res) => {
+app.get('/api/admin/messages', requireAuth, (req, res) => {
   try {
     const { status } = req.query;
     let q = 'SELECT * FROM messages';
@@ -653,7 +806,7 @@ app.get('/api/admin/messages', (req, res) => {
 });
 
 // Admin: update a message's status and/or reply.
-app.patch('/api/admin/messages/:id', (req, res) => {
+app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (!id || isNaN(id)) return res.status(400).json({ error: 'Invalid message id' });
@@ -699,17 +852,17 @@ app.patch('/api/admin/messages/:id', (req, res) => {
   }
 });
 
-// ── ADMIN (public, no auth) ──
-app.get('/api/admin/booking-requests', (req, res) => {
+// ── ADMIN ──
+app.get('/api/admin/booking-requests', requireAuth, (req, res) => {
   res.json(db.prepare('SELECT * FROM booking_requests ORDER BY created_at DESC').all());
 });
 
 // Alias so the bookings list is also available at /api/admin/bookings.
-app.get('/api/admin/bookings', (req, res) => {
+app.get('/api/admin/bookings', requireAuth, (req, res) => {
   res.json(db.prepare('SELECT * FROM booking_requests ORDER BY created_at DESC').all());
 });
 
-app.get('/api/admin/submissions', (req, res) => {
+app.get('/api/admin/submissions', requireAuth, (req, res) => {
   const { status } = req.query;
   let q = 'SELECT * FROM submissions';
   const p = [];
@@ -718,7 +871,7 @@ app.get('/api/admin/submissions', (req, res) => {
   res.json(db.prepare(q).all(...p));
 });
 
-app.post('/api/admin/update', (req, res) => {
+app.post('/api/admin/update', requireAuth, (req, res) => {
   const { id, status, notes } = req.body;
   if (!id || !status) return res.status(400).json({ error: 'id and status required' });
   db.prepare("UPDATE submissions SET status = ?, notes = COALESCE(?, notes), processed_at = datetime('now') WHERE id = ?")
@@ -726,7 +879,7 @@ app.post('/api/admin/update', (req, res) => {
   res.json({ success: true });
 });
 
-app.delete('/api/admin/delete/:id', (req, res) => {
+app.delete('/api/admin/delete/:id', requireAuth, (req, res) => {
   const sub = db.prepare('SELECT proof_filename FROM submissions WHERE id = ?').get(req.params.id);
   if (sub && sub.proof_filename) {
     const fp = path.join('uploads', sub.proof_filename);
@@ -736,10 +889,346 @@ app.delete('/api/admin/delete/:id', (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/api/admin/stats', (req, res) => {
+app.get('/api/admin/stats', requireAuth, (req, res) => {
   const total = db.prepare('SELECT COUNT(*) as c FROM submissions').get().c;
   const g = (s) => db.prepare('SELECT COUNT(*) as c FROM submissions WHERE status = ?').get(s).c;
   res.json({ total, pending: g('pending'), sent: g('sent'), rejected: g('rejected'), approved: g('approved') });
+});
+
+// ── ADMIN: Dashboard ──
+app.get('/api/admin/dashboard', requireAuth, async (req, res) => {
+  try {
+    const now = new Date();
+    const weekAgo = new Date(now - 7 * 86400000).toISOString();
+    const monthAgo = new Date(now - 30 * 86400000).toISOString();
+
+    const messagesWeek = db.prepare("SELECT COUNT(*) as c FROM messages WHERE created_at >= ?").get(weekAgo).c;
+    const messagesMonth = db.prepare("SELECT COUNT(*) as c FROM messages WHERE created_at >= ?").get(monthAgo).c;
+    const messagesUnread = db.prepare("SELECT COUNT(*) as c FROM messages WHERE status = 'unread'").get().c;
+    const totalMessages = db.prepare("SELECT COUNT(*) as c FROM messages").get().c;
+
+    const totalBookings = db.prepare("SELECT COUNT(*) as c FROM booking_requests").get().c;
+    const confirmedBookings = db.prepare("SELECT COUNT(*) as c FROM booking_requests WHERE status = 'confirmed'").get().c;
+    const pendingBookings = db.prepare("SELECT COUNT(*) as c FROM booking_requests WHERE status = 'requested'").get().c;
+    const revenue = db.prepare("SELECT COALESCE(SUM(total), 0) as r FROM booking_requests WHERE status = 'confirmed'").get().r;
+
+    const totalReviews = db.prepare("SELECT COUNT(*) as c FROM reviews").get().c;
+    const pendingGiftCards = db.prepare("SELECT COUNT(*) as c FROM reviews WHERE gift_card_sent = 0").get().c;
+
+    // Recent activity
+    const recentMessages = db.prepare("SELECT id, name, email, subject, property, status, created_at FROM messages ORDER BY created_at DESC LIMIT 5").all();
+    const recentBookings = db.prepare("SELECT id, guest_name, listing_name, check_in, check_out, total, status, created_at FROM booking_requests ORDER BY created_at DESC LIMIT 5").all();
+    const recentReviews = db.prepare("SELECT id, guest_name, property_slug, rating, gift_card_sent, created_at FROM reviews ORDER BY created_at DESC LIMIT 5").all();
+
+    res.json({
+      messages: { total: totalMessages, week: messagesWeek, month: messagesMonth, unread: messagesUnread },
+      bookings: { total: totalBookings, confirmed: confirmedBookings, pending: pendingBookings, revenue },
+      reviews: { total: totalReviews, pendingGiftCards },
+      recent: { messages: recentMessages, bookings: recentBookings, reviews: recentReviews }
+    });
+  } catch (err) {
+    console.error('Dashboard error:', err);
+    res.status(500).json({ error: 'Failed to load dashboard data' });
+  }
+});
+
+// ── ADMIN: Delete message ──
+app.delete('/api/admin/messages/:id', requireAuth, (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id || isNaN(id)) return res.status(400).json({ error: 'Invalid message id' });
+    db.prepare('DELETE FROM messages WHERE id = ?').run(id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Message delete error:', err);
+    res.status(500).json({ error: 'Failed to delete message' });
+  }
+});
+
+// ── ADMIN: Reviews CRUD ──
+app.get('/api/admin/reviews', requireAuth, (req, res) => {
+  try {
+    const { property, rating, gift_card } = req.query;
+    let q = 'SELECT * FROM reviews';
+    const conditions = [];
+    const params = [];
+    if (property) { conditions.push('property_slug = ?'); params.push(property); }
+    if (rating) { conditions.push('rating = ?'); params.push(parseInt(rating, 10)); }
+    if (gift_card === 'sent') { conditions.push('gift_card_sent = 1'); }
+    else if (gift_card === 'pending') { conditions.push('gift_card_sent = 0'); }
+    if (conditions.length) q += ' WHERE ' + conditions.join(' AND ');
+    q += ' ORDER BY created_at DESC';
+    res.json(db.prepare(q).all(...params));
+  } catch (err) {
+    console.error('Reviews list error:', err);
+    res.status(500).json({ error: 'Failed to load reviews' });
+  }
+});
+
+// Review photo upload
+const reviewUpload = multer({
+  storage: multer.diskStorage({
+    destination: './uploads/',
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase();
+      cb(null, `review-${Date.now()}-${crypto.randomBytes(4).toString('hex')}${ext}`);
+    }
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['.jpg','.jpeg','.png','.gif','.webp','.heic'].includes(path.extname(file.originalname).toLowerCase());
+    cb(null, ok);
+  }
+});
+
+app.post('/api/admin/reviews', requireAuth, reviewUpload.single('photo'), (req, res) => {
+  try {
+    const { guest_name, guest_email, property_slug, rating, review_text, gift_card_sent, gift_card_amount, gift_card_type, gift_card_date } = req.body || {};
+    if (!guest_name || !guest_name.trim()) return res.status(400).json({ error: 'Guest name is required' });
+
+    const photo_path = req.file ? req.file.filename : '';
+    const stmt = db.prepare(`
+      INSERT INTO reviews (guest_name, guest_email, property_slug, rating, review_text, photo_path, gift_card_sent, gift_card_amount, gift_card_type, gift_card_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    const r = stmt.run(
+      guest_name.trim(),
+      (guest_email || '').trim(),
+      (property_slug || '').trim(),
+      parseInt(rating, 10) || 5,
+      (review_text || '').trim(),
+      photo_path,
+      gift_card_sent === 'true' || gift_card_sent === '1' ? 1 : 0,
+      parseFloat(gift_card_amount) || 0,
+      (gift_card_type || '').trim(),
+      (gift_card_date || '').trim()
+    );
+    res.json({ success: true, id: r.lastInsertRowid });
+  } catch (err) {
+    console.error('Review create error:', err);
+    res.status(500).json({ error: 'Failed to create review' });
+  }
+});
+
+app.patch('/api/admin/reviews/:id', requireAuth, (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id || isNaN(id)) return res.status(400).json({ error: 'Invalid review id' });
+
+    const existing = db.prepare('SELECT * FROM reviews WHERE id = ?').get(id);
+    if (!existing) return res.status(404).json({ error: 'Review not found' });
+
+    const fields = ['guest_name', 'guest_email', 'property_slug', 'rating', 'review_text', 'gift_card_sent', 'gift_card_amount', 'gift_card_type', 'gift_card_date'];
+    const updates = [];
+    const params = [];
+
+    for (const f of fields) {
+      if (req.body[f] !== undefined) {
+        updates.push(`${f} = ?`);
+        if (f === 'rating') params.push(parseInt(req.body[f], 10) || 5);
+        else if (f === 'gift_card_sent') params.push(req.body[f] ? 1 : 0);
+        else if (f === 'gift_card_amount') params.push(parseFloat(req.body[f]) || 0);
+        else params.push(req.body[f]);
+      }
+    }
+
+    if (!updates.length) return res.status(400).json({ error: 'No fields to update' });
+
+    params.push(id);
+    db.prepare(`UPDATE reviews SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+    res.json({ success: true, review: db.prepare('SELECT * FROM reviews WHERE id = ?').get(id) });
+  } catch (err) {
+    console.error('Review update error:', err);
+    res.status(500).json({ error: 'Failed to update review' });
+  }
+});
+
+app.delete('/api/admin/reviews/:id', requireAuth, (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const review = db.prepare('SELECT photo_path FROM reviews WHERE id = ?').get(id);
+    if (review && review.photo_path) {
+      const fp = path.join('uploads', review.photo_path);
+      if (fs.existsSync(fp)) fs.unlinkSync(fp);
+    }
+    db.prepare('DELETE FROM reviews WHERE id = ?').run(id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Review delete error:', err);
+    res.status(500).json({ error: 'Failed to delete review' });
+  }
+});
+
+// ── ADMIN: Price Overrides ──
+app.get('/api/admin/price-overrides', requireAuth, (req, res) => {
+  try {
+    const { property } = req.query;
+    let q = 'SELECT * FROM price_overrides';
+    const params = [];
+    if (property) { q += ' WHERE property_slug = ?'; params.push(property); }
+    q += ' ORDER BY start_date ASC';
+    res.json(db.prepare(q).all(...params));
+  } catch (err) {
+    console.error('Price overrides list error:', err);
+    res.status(500).json({ error: 'Failed to load price overrides' });
+  }
+});
+
+app.post('/api/admin/price-overrides', requireAuth, (req, res) => {
+  try {
+    const { property_slug, override_price, start_date, end_date, label } = req.body || {};
+    if (!property_slug) return res.status(400).json({ error: 'Property is required' });
+    if (!override_price || isNaN(parseFloat(override_price))) return res.status(400).json({ error: 'Valid price is required' });
+    if (!start_date || !end_date) return res.status(400).json({ error: 'Start and end dates are required' });
+
+    const stmt = db.prepare('INSERT INTO price_overrides (property_slug, override_price, start_date, end_date, label) VALUES (?, ?, ?, ?, ?)');
+    const r = stmt.run(property_slug, parseFloat(override_price), start_date, end_date, (label || '').trim());
+    res.json({ success: true, id: r.lastInsertRowid });
+  } catch (err) {
+    console.error('Price override create error:', err);
+    res.status(500).json({ error: 'Failed to create price override' });
+  }
+});
+
+app.put('/api/admin/price-overrides/:id', requireAuth, (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id || isNaN(id)) return res.status(400).json({ error: 'Invalid override id' });
+
+    const { override_price, start_date, end_date, label } = req.body || {};
+    const updates = [];
+    const params = [];
+
+    if (override_price !== undefined) { updates.push('override_price = ?'); params.push(parseFloat(override_price)); }
+    if (start_date) { updates.push('start_date = ?'); params.push(start_date); }
+    if (end_date) { updates.push('end_date = ?'); params.push(end_date); }
+    if (label !== undefined) { updates.push('label = ?'); params.push(label); }
+
+    if (!updates.length) return res.status(400).json({ error: 'No fields to update' });
+
+    params.push(id);
+    db.prepare(`UPDATE price_overrides SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Price override update error:', err);
+    res.status(500).json({ error: 'Failed to update price override' });
+  }
+});
+
+app.delete('/api/admin/price-overrides/:id', requireAuth, (req, res) => {
+  try {
+    db.prepare('DELETE FROM price_overrides WHERE id = ?').run(parseInt(req.params.id, 10));
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Price override delete error:', err);
+    res.status(500).json({ error: 'Failed to delete price override' });
+  }
+});
+
+// ── ADMIN: Property Overrides ──
+app.get('/api/admin/properties', requireAuth, async (req, res) => {
+  try {
+    const guesty = require('./guesty');
+    const listings = await guesty.getListings();
+    const overrides = db.prepare('SELECT * FROM property_overrides').all();
+    const overrideMap = {};
+    overrides.forEach(o => { overrideMap[o.property_slug] = o; });
+
+    const properties = listings.map(l => ({
+      ...l,
+      overrides: overrideMap[l.slug] || null
+    }));
+    res.json(properties);
+  } catch (err) {
+    console.error('Properties list error:', err);
+    res.status(500).json({ error: 'Failed to load properties' });
+  }
+});
+
+app.put('/api/admin/properties/:slug', requireAuth, (req, res) => {
+  try {
+    const slug = req.params.slug;
+    const { display_name, description, tagline, featured_amenities, category_badge, sort_order, visible } = req.body || {};
+
+    const existing = db.prepare('SELECT * FROM property_overrides WHERE property_slug = ?').get(slug);
+    if (existing) {
+      db.prepare(`
+        UPDATE property_overrides SET
+          display_name = COALESCE(?, display_name),
+          description = COALESCE(?, description),
+          tagline = COALESCE(?, tagline),
+          featured_amenities = COALESCE(?, featured_amenities),
+          category_badge = COALESCE(?, category_badge),
+          sort_order = COALESCE(?, sort_order),
+          visible = COALESCE(?, visible),
+          updated_at = datetime('now')
+        WHERE property_slug = ?
+      `).run(
+        display_name ?? null, description ?? null, tagline ?? null,
+        featured_amenities ?? null, category_badge ?? null,
+        sort_order !== undefined ? sort_order : null,
+        visible !== undefined ? (visible ? 1 : 0) : null,
+        slug
+      );
+    } else {
+      db.prepare(`
+        INSERT INTO property_overrides (property_slug, display_name, description, tagline, featured_amenities, category_badge, sort_order, visible)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        slug,
+        display_name || '', description || '', tagline || '',
+        featured_amenities || '', category_badge || '',
+        sort_order || 0, visible !== undefined ? (visible ? 1 : 0) : 1
+      );
+    }
+    const updated = db.prepare('SELECT * FROM property_overrides WHERE property_slug = ?').get(slug);
+    res.json({ success: true, overrides: updated });
+  } catch (err) {
+    console.error('Property override update error:', err);
+    res.status(500).json({ error: 'Failed to update property' });
+  }
+});
+
+// ── ADMIN: Settings ──
+app.get('/api/admin/settings', requireAuth, (req, res) => {
+  try {
+    const rows = db.prepare('SELECT * FROM settings').all();
+    const settings = {};
+    rows.forEach(r => { settings[r.key] = r.value; });
+    res.json(settings);
+  } catch (err) {
+    console.error('Settings load error:', err);
+    res.status(500).json({ error: 'Failed to load settings' });
+  }
+});
+
+app.put('/api/admin/settings', requireAuth, (req, res) => {
+  try {
+    const updates = req.body || {};
+    const stmt = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
+    const allowed = ['contact_email', 'contact_phone', 'maintenance_mode', 'announcement_banner'];
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowed.includes(key)) {
+        stmt.run(key, String(value));
+      }
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Settings update error:', err);
+    res.status(500).json({ error: 'Failed to update settings' });
+  }
+});
+
+// ── ADMIN: Listings data for pricing page ──
+app.get('/api/admin/listings', requireAuth, async (req, res) => {
+  try {
+    const guesty = require('./guesty');
+    const listings = await guesty.getListings();
+    res.json(listings);
+  } catch (err) {
+    console.error('Admin listings error:', err);
+    res.status(500).json({ error: 'Failed to load listings' });
+  }
 });
 
 // ── EVENTS (Ticketmaster Discovery API proxy with 6-hour cache) ──
@@ -846,7 +1335,7 @@ function getSampleEvents(lat, lng) {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Regent Review Portal`);
   console.log(`  Local:  http://localhost:${PORT}`);
-  console.log(`  Admin:  http://localhost:${PORT}/admin.html\n`);
+  console.log(`  Admin:  http://localhost:${PORT}/admin\n`);
 
   // Keep-alive: ping own /health endpoint every 13 minutes to prevent Render free-tier sleep
   if (process.env.RENDER_EXTERNAL_URL) {
