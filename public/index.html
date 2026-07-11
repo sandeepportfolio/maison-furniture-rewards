@@ -820,6 +820,7 @@ ul{list-style:none}
 .detail-section:nth-child(1){animation-delay:.2s}
 .detail-section:nth-child(2){animation-delay:.35s}
 .detail-section:nth-child(3){animation-delay:.5s}
+.detail-section:nth-child(4){animation-delay:.65s}
 @keyframes detailContentFadeIn{to{opacity:1;transform:translateY(0)}}
 .detail-section{transform:translateY(12px)}
 .detail-desc{margin-bottom:36px}
@@ -2161,12 +2162,12 @@ const PROPERTIES = [
     name: 'Regent Villa',
     slug: 'regent-villa',
     category: 'villa',
-    city: 'Sugar Land',
+    city: 'Plano',
     state: 'Texas',
     hostingId: '1711340298974810369',
     guests: 14, beds: 4, baths: 3.5,
     rating: null, reviews: 0,
-    lat: 29.5967, lng: -95.6349,
+    lat: 33.08492089299817, lng: -96.81974105536938,
     amenities: [
       { label: 'Hot Tub', premium: true },
       { label: '85" TV', premium: true },
@@ -2259,12 +2260,12 @@ const PROPERTIES = [
     name: 'Regent Skyline',
     slug: 'regent-skyline',
     category: 'suite',
-    city: 'Houston',
+    city: 'Dallas',
     state: 'Texas',
     hostingId: '1725649500272518567',
     guests: 5, beds: 1, baths: 1,
     rating: null, reviews: 0,
-    lat: 29.7604, lng: -95.3698,
+    lat: 32.7772411, lng: -96.7956303,
     amenities: [
       { label: 'Skyline Views', premium: true },
       { label: 'Valet Parking', premium: true },
@@ -2341,12 +2342,12 @@ const PROPERTIES = [
     name: 'Cozy Designer Suite',
     slug: 'cozy-designer',
     category: 'suite',
-    city: 'Missouri City',
+    city: 'Irving',
     state: 'Texas',
     hostingId: '1656911479326581139',
     guests: 3, beds: 1, baths: 1,
     rating: 4.89, reviews: 9,
-    lat: 29.5636, lng: -95.5377,
+    lat: 32.8758610678049, lng: -96.937335804104,
     amenities: [
       { label: 'Soaking Tub', premium: true },
       { label: '65" TV', premium: true },
@@ -2393,12 +2394,12 @@ const PROPERTIES = [
     name: 'Designer Game Suite',
     slug: 'designer-game',
     category: 'suite',
-    city: 'Missouri City',
+    city: 'Irving',
     state: 'Texas',
     hostingId: '1691507762565991335',
     guests: 3, beds: 1, baths: 1,
     rating: null, reviews: 1,
-    lat: 29.5700, lng: -95.5200,
+    lat: 32.8751259, lng: -96.9369134,
     amenities: [
       { label: 'Sky Lounge', premium: true },
       { label: 'Mini Golf', premium: true },
@@ -2449,12 +2450,12 @@ const PROPERTIES = [
     name: 'Gorgeous Luxury Lake View Suite',
     slug: 'lake-view',
     category: 'suite',
-    city: 'Sugar Land',
+    city: 'Irving',
     state: 'Texas',
     hostingId: '1579365691674889946',
     guests: 3, beds: 1, baths: 1,
     rating: 4.92, reviews: 25,
-    lat: 29.5880, lng: -95.6250,
+    lat: 32.868187373138625, lng: -96.93422075361013,
     amenities: [
       { label: 'Lake View', premium: true },
       { label: '27" Monitor', premium: true },
@@ -2500,12 +2501,12 @@ const PROPERTIES = [
     name: 'Luxury Executive Living',
     slug: 'executive',
     category: 'suite',
-    city: 'Sugar Land',
+    city: 'Richardson',
     state: 'Texas',
     hostingId: '1622247533469388804',
     guests: 5, beds: 1, baths: 1,
     rating: 4.95, reviews: 21,
-    lat: 29.6100, lng: -95.6400,
+    lat: 32.984401, lng: -96.710101,
     amenities: [
       { label: '75" TV', premium: true },
       { label: 'EV Charger', premium: true },
@@ -2557,12 +2558,12 @@ const PROPERTIES = [
     name: 'Stunning Lake Views',
     slug: 'stunning-lake',
     category: 'suite',
-    city: 'Sugar Land',
+    city: 'Irving',
     state: 'Texas',
     hostingId: '862596563097784023',
     guests: 3, beds: 1, baths: 1,
     rating: 4.83, reviews: 23,
-    lat: 29.5850, lng: -95.6300,
+    lat: 32.8686393, lng: -96.9340601,
     amenities: [
       { label: 'Lake View', premium: true },
       { label: '1GB Fiber', premium: true },
@@ -3330,7 +3331,7 @@ function initMiniMap() {
     zoomControl: false, attributionControl: false,
     dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
     boxZoom: false, keyboard: false, tap: false, touchZoom: false
-  }).setView([29.59, -95.58], 11);
+  }).setView([32.89, -96.87], 11);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd', maxZoom: 19
@@ -4130,7 +4131,7 @@ function initExploreMap() {
   if (exploreMapInstance) return;
 
   exploreMapInstance = L.map('exploreMap', {
-    center: [29.59, -95.58],
+    center: [32.89, -96.87],
     zoom: 11,
     zoomControl: false,
     attributionControl: false,
