@@ -603,6 +603,8 @@ ul{list-style:none}
 .map-card-price span{font-weight:400;font-size:12px;color:var(--text-inv-muted)}
 .map-card-price .prop-price-original{font-size:12px;color:var(--text-inv-muted);text-decoration:line-through;margin-right:4px;font-weight:400}
 .map-card-price .prop-price-badge{font-family:var(--mono);font-size:9px;color:#fff;background:var(--accent);padding:2px 7px;border-radius:100px;margin-left:6px}
+.map-card-price-loading{font-size:12px;color:var(--text-inv-muted);font-weight:400;animation:pricePulse 1.5s ease-in-out infinite}
+@keyframes pricePulse{0%,100%{opacity:.4}50%{opacity:1}}
 .map-card-rating{font-family:var(--mono);font-size:12px;color:var(--brass-light);display:flex;align-items:center;gap:5px;margin-bottom:14px}
 .map-card-rating svg{width:13px;height:13px;fill:var(--brass);stroke:none}
 .map-card-specs{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-dark)}
@@ -648,6 +650,9 @@ ul{list-style:none}
 .map-prop-strip-loc svg{width:10px;height:10px;stroke:var(--brass-light);stroke-width:2;fill:none;flex-shrink:0}
 .map-prop-strip-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.12);border-radius:20px;padding:2px 8px;margin-top:3px;width:fit-content}
 .map-prop-strip-item.active .map-prop-strip-badge{color:#fff;background:var(--accent)}
+.map-prop-strip-price{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);margin-top:2px}
+.map-prop-strip-price strong{color:var(--text-inv);font-weight:600}
+.map-prop-strip-price span{font-size:9px;margin-left:1px}
 
 /* Events Section */
 .explore-events{margin-bottom:20px}
@@ -1069,6 +1074,8 @@ ul{list-style:none}
   .map-prop-strip-loc{font-size:10px}
   .map-prop-strip-badge{font-size:8px;padding:2px 6px;margin-top:2px}
   .map-prop-strip-dist{font-size:9px;white-space:nowrap;margin-top:1px}
+  .map-prop-strip-price{font-size:10px}
+  .map-prop-strip-price span{font-size:8px}
   .map-close-btn{width:42px;height:42px;top:14px;right:14px}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
@@ -2821,11 +2828,58 @@ async function fetchAndApplyPrices() {
         el.innerHTML = '';
       }
     });
+
+    // Update map card price if a property card is currently open
+    refreshMapCardPrice();
+
+    // Update strip item prices with live data
+    refreshStripPrices();
   } catch (err) {
     console.warn('Could not load live prices:', err.message);
     // Graceful degradation: remove loading shimmer, leave cards without price
     document.querySelectorAll('.prop-price-loading').forEach(el => el.remove());
   }
+}
+
+/* Refresh the map-card price panel when live prices arrive (or a card re-opens) */
+function refreshMapCardPrice() {
+  if (mapActiveProperty == null) return;
+  const prop = PROPERTIES[mapActiveProperty];
+  if (!prop) return;
+  const priceEl = document.getElementById('mapCardPrice');
+  if (!priceEl) return;
+  if (prop.basePrice != null) {
+    priceEl.innerHTML = renderDiscountedPrice(prop.basePrice, 'map');
+  } else {
+    priceEl.innerHTML = '<span>Check availability</span>';
+  }
+}
+
+/* Refresh every strip-item price chip with the latest Guesty data */
+function refreshStripPrices() {
+  const strip = document.getElementById('mapPropStrip');
+  if (!strip) return;
+  strip.querySelectorAll('.map-prop-strip-item').forEach(item => {
+    const idx = parseInt(item.dataset.idx, 10);
+    const prop = PROPERTIES[idx];
+    if (!prop) return;
+    let priceEl = item.querySelector('.map-prop-strip-price');
+    if (!priceEl) {
+      priceEl = document.createElement('div');
+      priceEl.className = 'map-prop-strip-price';
+      const info = item.querySelector('.map-prop-strip-info');
+      // Insert price before the badge
+      const badge = info && info.querySelector('.map-prop-strip-badge');
+      if (badge) info.insertBefore(priceEl, badge);
+      else if (info) info.appendChild(priceEl);
+    }
+    if (prop.basePrice != null) {
+      const discounted = Math.round(prop.basePrice * DIRECT_BOOKING_DISCOUNT);
+      priceEl.innerHTML = `<strong>$${discounted}</strong><span>/nt</span>`;
+    } else {
+      priceEl.innerHTML = '';
+    }
+  });
 }
 
 function carouselMove(slug, dir) {
@@ -4463,13 +4517,12 @@ function selectPropertyOnMap(idx) {
   // Distance from user
   showMapCardDistance(prop);
 
-  // Price (with 5% direct booking discount)
+  // Price (live from Guesty API, with 5% direct booking discount)
   if (priceEl) {
-    const priceData = prop.basePrice || prop.price;
-    if (priceData) {
-      priceEl.innerHTML = renderDiscountedPrice(priceData, 'map');
+    if (prop.basePrice != null) {
+      priceEl.innerHTML = renderDiscountedPrice(prop.basePrice, 'map');
     } else {
-      priceEl.innerHTML = `<span>Check availability</span>`;
+      priceEl.innerHTML = `<span class="map-card-price-loading">Loading price…</span>`;
     }
   }
 
@@ -4561,6 +4614,9 @@ function buildMapPropStrip() {
     const distHtml = userLat != null
       ? `<div class="map-prop-strip-dist">${Math.round(haversine(userLat, userLng, prop.lat, prop.lng))} mi</div>`
       : '';
+    const priceHtml = prop.basePrice != null
+      ? `<div class="map-prop-strip-price"><strong>$${Math.round(prop.basePrice * DIRECT_BOOKING_DISCOUNT)}</strong><span>/nt</span></div>`
+      : '<div class="map-prop-strip-price"></div>';
     return `
     <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 30}ms">
       <div class="map-prop-strip-thumb" style="background-image:url(${prop.photos && prop.photos[0] ? imgUrl(prop.hostingId, prop.photos[0]) : ''})"></div>
@@ -4571,6 +4627,7 @@ function buildMapPropStrip() {
           ${prop.city}, ${prop.state === 'Texas' ? 'TX' : prop.state}
         </div>
         ${distHtml}
+        ${priceHtml}
         <span class="map-prop-strip-badge">${prop.category === 'villa' ? 'Villa' : 'Suite'}</span>
       </div>
     </div>`;
