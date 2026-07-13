@@ -3800,8 +3800,8 @@ function openDetail(slug) {
       <div id="detailMap" style="width:100%;height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
     </div>
     <div class="detail-actions">
-      <button class="btn-book" onclick="closeDetail();openBooking('${prop.slug}')">Book This Property</button>
-      <button class="btn-contact" onclick="closeDetail();openContact('${prop.slug}')">Contact Host</button>
+      <button class="btn-book" onclick="closeDetail(true);openBooking('${prop.slug}')">Book This Property</button>
+      <button class="btn-contact" onclick="closeDetail(true);openContact('${prop.slug}')">Contact Host</button>
       <a href="https://www.airbnb.com/rooms/${prop.hostingId}" target="_blank" rel="noopener" class="btn-contact">View on Airbnb &rarr;</a>
     </div>`;
 
@@ -3813,23 +3813,39 @@ function openDetail(slug) {
   setTimeout(() => initDetailMap(prop), 100);
 }
 
-function closeDetail() {
+function closeDetail(skipMapReturn) {
+  // Check if we should return to the map (came from map via View Details)
+  const state = history.state || {};
+  const returnToMap = !skipMapReturn && state.fromMap === true;
+
   // Clean up detail map
   if (detailMapInstance) {
     detailMapInstance.remove();
     detailMapInstance = null;
   }
   const modal = document.getElementById('detailModal');
+  if (!modal) return;
   modal.style.opacity = '0';
-  modal.querySelector('.detail-body').style.transform = 'translateY(20px)';
-  modal.querySelector('.detail-body').style.opacity = '0';
+  const detailBody = modal.querySelector('.detail-body');
+  if (detailBody) {
+    detailBody.style.transform = 'translateY(20px)';
+    detailBody.style.opacity = '0';
+  }
   setTimeout(() => {
     modal.classList.remove('open');
     modal.style.opacity = '';
-    const body = modal.querySelector('.detail-body');
-    if (body) { body.style.transform = ''; body.style.opacity = ''; }
-    document.body.style.overflow = '';
+    if (detailBody) { detailBody.style.transform = ''; detailBody.style.opacity = ''; }
+    // Don't restore body overflow if returning to map (map keeps it hidden)
+    if (!returnToMap) document.body.style.overflow = '';
   }, 300);
+
+  if (returnToMap) {
+    // Navigate back — popstate handler will reopen the map with the same property
+    history.back();
+  } else if (state.fromMap) {
+    // Came from map but not returning (e.g. booking/contact) — clean up history
+    history.replaceState({}, '', window.location.pathname);
+  }
 }
 
 function detailGalleryMove(dir) {
@@ -4595,7 +4611,7 @@ function selectPropertyOnMap(idx) {
   if (detailBtn) {
     detailBtn.onclick = () => {
       const selectedSlug = prop.slug;
-      collapseMap();
+      collapseMap(true); // Skip history — keep #map state on the stack
       setTimeout(() => {
         // Scroll to property section or open detail
         if (typeof openDetail === 'function') {
@@ -4609,8 +4625,8 @@ function selectPropertyOnMap(idx) {
             setTimeout(() => { propCard.style.boxShadow = ''; }, 2000);
           }
         }
-        // Push state so back button returns to map with this property
-        history.pushState({ mapReturn: true, property: selectedSlug }, '', '#property/' + selectedSlug);
+        // Push detail state on top of map state — back goes to map with this property
+        history.pushState({ detail: true, property: selectedSlug, fromMap: true }, '', '#property/' + selectedSlug);
       }, 400);
     };
   }
@@ -5083,15 +5099,17 @@ window.addEventListener('popstate', (e) => {
     collapseMap(true); // skipHistory=true since popstate already changed history
     return;
   }
-  // Handle "View Details" back → return to map with same property
-  if (state.mapReturn && state.property) {
-    openMapModal();
-    const idx = PROPERTIES.findIndex(p => p.slug === state.property);
-    if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 350);
-    return;
-  }
-  // If hash says #map, re-open the map
+  // If navigating to #map (includes back from detail → map)
   if (location.hash.startsWith('#map')) {
+    // Close detail modal if it's still open (browser back from detail view)
+    const detailModal = document.getElementById('detailModal');
+    if (detailModal && detailModal.classList.contains('open')) {
+      if (detailMapInstance) { detailMapInstance.remove(); detailMapInstance = null; }
+      detailModal.classList.remove('open');
+      detailModal.style.opacity = '';
+      const db = detailModal.querySelector('.detail-body');
+      if (db) { db.style.transform = ''; db.style.opacity = ''; }
+    }
     if (!mapIsExpanded) {
       const hashParts = location.hash.split('/');
       const hashSlug = hashParts[1] || null;
