@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Regent Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -324,24 +324,96 @@ textarea{resize:vertical}
   .prop-grid{grid-template-columns:1fr}
 }
 @media(max-width:768px){
+  /* Prevent horizontal overflow */
+  html,body{overflow-x:hidden}
+
+  /* Sidebar & layout */
   .hamburger{display:flex}
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .main-content{margin-left:0;padding:1.2rem;padding-top:4rem}
-  .stat-grid{grid-template-columns:repeat(2,1fr)}
-  .toolbar{flex-direction:column;align-items:stretch}
-  .search-wrap{flex:1}
-  .prop-grid{grid-template-columns:1fr}
-  .override-table{font-size:.78rem}
-  .override-table thead th,.override-table tbody td{padding:.5rem .6rem}
   .main-header{flex-direction:column;align-items:flex-start}
+  .header-actions{width:100%}
+  .header-actions .btn{flex:1;justify-content:center}
+
+  /* iOS zoom prevention — inputs must be ≥16px */
+  input,textarea,select{font-size:16px!important}
+
+  /* Stat cards */
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+
+  /* Toolbar & filters */
+  .toolbar{flex-direction:column;align-items:stretch}
+  .search-wrap{flex:1;max-width:none}
+  .filters{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:.3rem;flex-wrap:nowrap}
+  .pill{flex-shrink:0;min-height:44px;display:inline-flex;align-items:center}
+
+  /* Toolbar inner flex containers (reviews, pricing) — stack vertically */
+  #sec-reviews .toolbar > div,
+  #sec-pricing .toolbar > div{flex-direction:column!important;align-items:stretch!important;width:100%}
+  #sec-reviews .toolbar select,
+  #sec-pricing .toolbar select{width:100%!important;min-width:0!important}
+  #sec-reviews .toolbar .btn,
+  #sec-pricing .toolbar .btn{width:100%;justify-content:center}
+
+  /* Table horizontal scroll */
+  .table-wrap{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  .override-table{font-size:.78rem;min-width:500px}
+  .override-table thead th,.override-table tbody td{padding:.5rem .6rem}
+
+  /* Properties grid */
+  .prop-grid{grid-template-columns:1fr}
+
+  /* Modals — slide up from bottom on mobile */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal-box{max-width:100%;max-height:92vh;border-radius:var(--radius-card) var(--radius-card) 0 0}
+  .modal-body{padding:1.2rem}
+  .modal-footer{padding:.8rem 1.2rem}
+
+  /* Force 2-col form grids in modals to 1-col on mobile */
+  #gcFields [style*="grid-template-columns"],
+  #priceModal [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+
+  /* Calendar */
+  .cal-day{padding:.4rem .2rem;font-size:.75rem}
+  .cal-day-label{font-size:.65rem}
+  .cal-header h3{font-size:.9rem}
+
+  /* Touch targets — minimum 44px */
+  .nav-link{padding:.85rem 1.4rem;min-height:44px}
+  .act{min-height:40px;padding:.45rem .7rem}
+  .btn{min-height:44px}
+  .modal-close{width:40px;height:40px}
+
+  /* Message cards */
+  .msg-footer{flex-direction:column;align-items:flex-start;gap:.5rem}
+  .msg-actions{width:100%;flex-wrap:wrap}
+
+  /* Activity feed */
+  .activity-item{flex-wrap:wrap;gap:.5rem}
+
+  /* Settings form full width */
+  .settings-form{max-width:100%}
+
+  /* Toast positioning for mobile */
+  .toast-container{left:1rem;right:1rem;bottom:1rem}
+  .toast{max-width:100%}
+
+  /* Image modal */
+  .img-modal img{max-width:96vw;max-height:80vh}
 }
 @media(max-width:480px){
   .stat-grid{grid-template-columns:1fr 1fr;gap:.6rem}
   .stat-card{padding:1rem}
   .stat-num{font-size:1.6rem}
   .msg-actions{gap:.25rem}
-  .act{padding:.3rem .5rem;font-size:.7rem}
+  .act{padding:.35rem .5rem;font-size:.72rem}
+  .activity-item{padding:.6rem .8rem}
+  .activity-icon{width:28px;height:28px}
+  .review-card{padding:1rem}
+  .review-top{flex-direction:column;gap:.5rem}
+  .login-card{padding:1.5rem}
+  .login-brand h1{font-size:1.4rem}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 </style>
@@ -542,7 +614,7 @@ textarea{resize:vertical}
         <div class="price-row"><span class="pl">5% Discount Price</span><span class="pv discount" id="prDiscountPrice">--</span></div>
       </div>
       <h3 style="font-size:1rem;font-weight:500;margin-bottom:1rem">Price Overrides</h3>
-      <div style="border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
+      <div class="table-wrap" style="border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
         <table class="override-table">
           <thead><tr><th>Date Range</th><th>Price</th><th>Label</th><th style="text-align:right">Actions</th></tr></thead>
           <tbody id="overrideBody"></tbody>
