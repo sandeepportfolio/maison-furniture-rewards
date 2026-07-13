@@ -816,7 +816,8 @@ function fmtDate(s) {
 
 function fmtDateShort(s) {
   if (!s) return '--';
-  const d = new Date(s);
+  // Append T00:00:00 to date-only strings so they parse as local time, not UTC
+  const d = new Date(s.includes('T') ? s : s + 'T00:00:00');
   if (isNaN(d)) return s;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -1607,13 +1608,16 @@ function renderCalendar() {
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const today = new Date().toISOString().split('T')[0];
 
-  // Build override date set
+  // Build override date set (parse as local time to avoid UTC off-by-one)
   const overrideDates = new Set();
   allOverrides.forEach(o => {
-    const start = new Date(o.start_date);
-    const end = new Date(o.end_date);
+    const start = new Date(o.start_date + 'T00:00:00');
+    const end = new Date(o.end_date + 'T00:00:00');
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      overrideDates.add(d.toISOString().split('T')[0]);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      overrideDates.add(`${yyyy}-${mm}-${dd}`);
     }
   });
 
