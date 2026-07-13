@@ -4790,16 +4790,16 @@ function initMapInteraction() {
 }
 
 /* ── Open map as instant modal overlay from anywhere ── */
-function openMapModal() {
+function openMapModal(skipHistory) {
   if (mapIsExpanded || mapExpandAnimating) return;
 
   // Initialize the map if not done yet
   if (!exploreMapInstance) initExploreMap();
 
-  expandMap();
+  expandMap(skipHistory);
 }
 
-function expandMap() {
+function expandMap(skipHistory) {
   const wrap = document.getElementById('mapWrap');
   if (!wrap || mapIsExpanded || mapExpandAnimating) return;
   mapExpandAnimating = true;
@@ -4829,8 +4829,10 @@ function expandMap() {
   // Show close button
   if (closeBtn) closeBtn.classList.add('visible');
 
-  // Push state to browser history and set hash
-  history.pushState({ map: true }, '', '#map');
+  // Push state to browser history and set hash (skip when restoring from popstate)
+  if (!skipHistory) {
+    history.pushState({ map: true }, '', '#map');
+  }
 
   // Finalize after animation
   requestAnimationFrame(() => {
@@ -5113,7 +5115,7 @@ window.addEventListener('popstate', (e) => {
     if (!mapIsExpanded) {
       const hashParts = location.hash.split('/');
       const hashSlug = hashParts[1] || null;
-      openMapModal();
+      openMapModal(true); // Skip history push — we're restoring from popstate
       if (hashSlug) {
         const idx = PROPERTIES.findIndex(p => p.slug === hashSlug);
         if (idx >= 0) setTimeout(() => selectPropertyOnMap(idx), 350);
