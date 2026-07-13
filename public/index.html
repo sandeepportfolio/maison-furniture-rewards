@@ -551,10 +551,8 @@ ul{list-style:none}
 @keyframes markerPulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.2);opacity:0}100%{transform:scale(2.2);opacity:0}}
 @keyframes markerFadeIn{from{transform:scale(0) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 @keyframes markerGlow{0%,100%{box-shadow:0 4px 14px rgba(199,107,66,.4)}50%{box-shadow:0 4px 20px rgba(199,107,66,.7),0 0 30px rgba(199,107,66,.2)}}
-@keyframes cardSlideInDesktop{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes cardSlideOutDesktop{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
-@keyframes cardSlideInMobile{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes cardSlideOutMobile{from{transform:translateY(0);opacity:1}to{transform:translateY(100%);opacity:0}}
+@keyframes sheetExpand{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sheetCollapse{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}
 @keyframes stripItemIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes closeBtnIn{from{transform:scale(0) rotate(-90deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
 /* Markers */
@@ -586,37 +584,48 @@ ul{list-style:none}
 /* Distance in map card */
 .map-card-distance{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--accent-light);font-family:var(--mono);letter-spacing:.04em;margin-top:4px}
 .map-card-distance svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
-/* Property card — desktop: right sidebar panel */
-.map-property-card{position:absolute;top:0;right:0;bottom:0;z-index:500;width:380px;background:rgba(28,28,28,.97);backdrop-filter:blur(12px);border-left:1px solid var(--border-dark);box-shadow:-8px 0 40px rgba(0,0,0,.4);overflow-y:auto;overflow-x:hidden;transform:translateX(100%);opacity:0;pointer-events:none;transition:none}
-.map-property-card.visible{pointer-events:auto;animation:cardSlideInDesktop .45s cubic-bezier(.22,1,.36,1) forwards}
-.map-property-card.closing{pointer-events:none;animation:cardSlideOutDesktop .3s cubic-bezier(.55,.06,.68,.19) forwards}
-.map-card-close{position:absolute;top:14px;right:14px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background .2s var(--ease),transform .2s var(--ease)}
-.map-card-close:hover{background:var(--accent);transform:scale(1.1)}
-.map-card-photo{width:100%;height:220px;background-size:cover;background-position:center;position:relative}
-.map-card-photo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,rgba(28,28,28,.97))}
-.map-card-body{padding:20px 22px 24px}
-.map-card-category{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-light);margin-bottom:8px}
-.map-card-name{font-family:var(--serif);font-size:24px;color:var(--text-inv);margin:0 0 6px;line-height:1.2}
-.map-card-location{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);margin:0 0 4px;display:flex;align-items:center;gap:5px}
-.map-card-location svg{width:12px;height:12px;stroke:var(--accent-light);fill:none;stroke-width:2;flex-shrink:0}
-.map-card-price{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--text-inv);margin:0 0 4px}
-.map-card-price span{font-weight:400;font-size:12px;color:var(--text-inv-muted)}
-.map-card-price .prop-price-original{font-size:12px;color:var(--text-inv-muted);text-decoration:line-through;margin-right:4px;font-weight:400}
-.map-card-price .prop-price-badge{font-family:var(--mono);font-size:9px;color:#fff;background:var(--accent);padding:2px 7px;border-radius:100px;margin-left:6px}
-.map-card-price-loading{font-size:12px;color:var(--text-inv-muted);font-weight:400;animation:pricePulse 1.5s ease-in-out infinite}
+
+/* ═══ BOTTOM SHEET — unified card + strip container ═══ */
+.map-bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;display:flex;flex-direction:column;max-height:55dvh;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease),max-height .35s var(--ease)}
+.map-expanded .map-bottom-sheet{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
+.map-bottom-sheet.strip-only{max-height:140px}
+/* Drag handle */
+.map-sheet-handle{display:flex;justify-content:center;padding:10px 0 6px;cursor:grab;flex-shrink:0}
+.map-sheet-handle-bar{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2)}
+/* Card section — scrolls if overflows */
+.map-card-section{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none}
+.map-bottom-sheet:not(.strip-only) .map-card-section{display:block;animation:sheetExpand .35s var(--ease) forwards}
+/* Strip section — always visible, pinned at bottom */
+.map-strip-section{flex-shrink:0;border-top:1px solid rgba(255,255,255,.08)}
+.map-bottom-sheet.strip-only .map-strip-section{border-top:none}
+
+/* Property card — compact horizontal layout inside bottom sheet */
+.map-property-card{display:flex;flex-direction:row;align-items:stretch;gap:0;padding:12px 16px 8px;background:transparent}
+.map-card-photo{width:110px;min-width:110px;height:110px;background-size:cover;background-position:center;border-radius:10px;flex-shrink:0;position:relative}
+.map-card-photo::after{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(180deg,transparent 60%,rgba(13,13,13,.4) 100%)}
+.map-card-body{padding:0 0 0 14px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.map-card-category{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);margin-bottom:2px}
+.map-card-name{font-family:var(--serif);font-size:20px;color:var(--text-inv);margin:0 0 2px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.map-card-location{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);margin:0;display:flex;align-items:center;gap:4px}
+.map-card-location svg{width:11px;height:11px;stroke:var(--accent-light);fill:none;stroke-width:2;flex-shrink:0}
+.map-card-price{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text-inv);margin:2px 0 0}
+.map-card-price span{font-weight:400;font-size:11px;color:var(--text-inv-muted)}
+.map-card-price .prop-price-original{font-size:11px;color:var(--text-inv-muted);text-decoration:line-through;margin-right:4px;font-weight:400}
+.map-card-price .prop-price-badge{font-family:var(--mono);font-size:8px;color:#fff;background:var(--accent);padding:2px 6px;border-radius:100px;margin-left:4px}
+.map-card-price-loading{font-size:11px;color:var(--text-inv-muted);font-weight:400;animation:pricePulse 1.5s ease-in-out infinite}
 @keyframes pricePulse{0%,100%{opacity:.4}50%{opacity:1}}
-.map-card-rating{font-family:var(--mono);font-size:12px;color:var(--brass-light);display:flex;align-items:center;gap:5px;margin-bottom:14px}
-.map-card-rating svg{width:13px;height:13px;fill:var(--brass);stroke:none}
-.map-card-specs{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border-dark)}
-.map-card-specs span{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);display:flex;align-items:center;gap:5px}
-.map-card-specs span svg{width:14px;height:14px;stroke:var(--brass-light);stroke-width:1.5;fill:none}
-.map-card-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-.map-card-amenities span{font-family:var(--sans);font-size:10px;color:var(--text-inv-muted);background:rgba(255,255,255,.06);border:1px solid var(--border-dark);border-radius:20px;padding:4px 12px}
-.map-card-actions{display:flex;gap:8px}
-.map-card-btn-primary{flex:1;padding:14px 0;min-height:44px;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease),transform .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:6px}
-.map-card-btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.map-card-btn-secondary{flex:1;padding:14px 0;min-height:44px;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.04em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease),transform .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:6px}
-.map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light);transform:translateY(-1px)}
+.map-card-rating{font-family:var(--mono);font-size:11px;color:var(--brass-light);display:flex;align-items:center;gap:4px;margin:0}
+.map-card-rating svg{width:12px;height:12px;fill:var(--brass);stroke:none}
+.map-card-specs{display:flex;gap:10px;margin:4px 0 0;flex-wrap:wrap}
+.map-card-specs span{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted);display:flex;align-items:center;gap:4px}
+.map-card-specs span svg{width:12px;height:12px;stroke:var(--brass-light);stroke-width:1.5;fill:none}
+.map-card-amenities{display:none}
+.map-card-actions{display:flex;gap:8px;margin-top:6px}
+.map-card-btn-primary{flex:1;padding:10px 0;min-height:40px;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.03em;color:#fff;background:var(--accent);border:none;border-radius:var(--radius);cursor:pointer;transition:background .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:5px}
+.map-card-btn-primary:hover{background:var(--accent-hover)}
+.map-card-btn-secondary{flex:1;padding:10px 0;min-height:40px;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.03em;color:var(--text-inv);background:transparent;border:1px solid var(--border-dark);border-radius:var(--radius);cursor:pointer;transition:border-color .2s var(--ease),color .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:5px}
+.map-card-btn-secondary:hover{border-color:var(--brass);color:var(--brass-light)}
+
 /* Nav dots hidden — using strip instead */
 .map-nav-dots{display:none}
 /* Click-capture overlay — sits above Leaflet when collapsed */
@@ -628,13 +637,12 @@ ul{list-style:none}
 .map-expand-btn svg{width:16px;height:16px;stroke:var(--text-inv);stroke-width:2;fill:none}
 .map-expanded .map-expand-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 /* Close button */
-.map-close-btn{position:absolute;top:20px;right:20px;z-index:600;width:48px;height:48px;border-radius:50%;background:rgba(17,17,17,.7);border:1px solid rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);opacity:0;transform:scale(0) rotate(-90deg);pointer-events:none;transition:background .2s var(--ease)}
+.map-close-btn{position:absolute;top:20px;right:20px;z-index:700;width:48px;height:48px;border-radius:50%;background:rgba(17,17,17,.7);border:1px solid rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);opacity:0;transform:scale(0) rotate(-90deg);pointer-events:none;transition:background .2s var(--ease)}
 .map-close-btn.visible{opacity:1;transform:scale(1) rotate(0deg);pointer-events:auto;animation:closeBtnIn .4s cubic-bezier(.34,1.56,.64,1) forwards}
 .map-close-btn:hover{background:var(--accent)}
 .map-close-btn svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
-/* Property strip — bottom thumbnails */
-.map-prop-strip{position:absolute;bottom:0;left:0;right:0;z-index:501;display:flex;align-items:stretch;gap:10px;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));overflow-x:auto;overflow-y:hidden;background:linear-gradient(transparent,rgba(17,17,17,.95) 30%);-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
-.map-expanded .map-prop-strip{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
+/* Property strip — inside bottom sheet */
+.map-prop-strip{display:flex;align-items:stretch;gap:10px;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
 .map-prop-strip::before,.map-prop-strip::after{content:'';min-width:4px;flex-shrink:0;pointer-events:none}
 .map-prop-strip::-webkit-scrollbar{height:4px}
 .map-prop-strip::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:10px}
@@ -737,6 +745,8 @@ ul{list-style:none}
   .form-row{grid-template-columns:1fr}
   .footer-links{flex-direction:column;align-items:center;gap:16px}
   .story-details{grid-template-columns:1fr}
+  .section-cta{padding:72px 20px}
+  .section-cta p{font-size:15px}
   .cal-bar{flex-direction:column}
   .cal-bar-div{width:100%;height:1px}
 }
@@ -969,6 +979,9 @@ ul{list-style:none}
 /* ── View Details Button ── */
 .btn-details{border:1px solid var(--border);color:var(--text-muted);background:transparent;cursor:pointer}
 .btn-details:hover{border-color:var(--text);color:var(--text)}
+.btn-map-view{border:1px solid var(--border);color:var(--text-muted);background:transparent;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.btn-map-view:hover{border-color:var(--accent);color:var(--accent)}
+.btn-map-view svg{flex-shrink:0}
 
 /* ── Enhanced Animations ── */
 .reveal-scale{opacity:0;transform:scale(.9);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
@@ -1044,34 +1057,30 @@ ul{list-style:none}
   .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
-  .map-property-card{position:absolute;right:0;left:0;width:100%;max-width:100%;max-height:45vh;max-height:45dvh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;border-left:none;border-top:1px solid var(--border-dark);overflow-y:auto;transform:translateY(100%);display:flex;flex-direction:column;z-index:510;bottom:164px;top:auto}
-  .map-property-card.visible{animation:cardSlideInMobile .4s cubic-bezier(.22,1,.36,1) forwards}
-  .map-property-card.closing{animation:cardSlideOutMobile .3s cubic-bezier(.55,.06,.68,.19) forwards}
-  .map-card-photo{width:calc(100% - 32px);min-width:unset;height:130px;min-height:unset;background-size:cover;background-position:center;border-radius:8px;flex-shrink:0;margin:12px 16px 0}
-  .map-card-photo::after{display:block}
-  .map-card-body{padding:12px 16px 14px;flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-  .map-card-category{font-size:9px;margin-bottom:2px}
-  .map-card-name{font-size:17px;margin-bottom:2px}
-  .map-card-location{font-size:11px;margin-bottom:1px}
-  .map-card-distance{margin-top:0;font-size:10px}
-  .map-card-price{font-size:14px;margin-bottom:2px}
-  .map-card-price span{font-size:11px}
-  .map-card-rating{font-size:11px;margin-bottom:4px}
-  .map-card-rating svg{width:11px;height:11px}
-  .map-card-specs{gap:8px;margin-bottom:6px;padding-bottom:6px}
+  .map-bottom-sheet{border-radius:14px 14px 0 0}
+  .map-bottom-sheet.strip-only{max-height:120px}
+  .map-property-card{padding:10px 14px 6px}
+  .map-card-photo{width:90px;min-width:90px;height:90px;border-radius:8px}
+  .map-card-body{padding:0 0 0 12px;gap:1px}
+  .map-card-name{font-size:17px}
+  .map-card-location{font-size:10px}
+  .map-card-distance{font-size:9px;margin-top:0}
+  .map-card-price{font-size:13px}
+  .map-card-price span{font-size:10px}
+  .map-card-rating{font-size:10px}
+  .map-card-rating svg{width:10px;height:10px}
+  .map-card-specs{gap:6px;margin:2px 0 0}
   .map-card-specs span{font-size:10px}
-  .map-card-amenities{display:none}
-  .map-card-actions{gap:8px;margin-top:2px;padding-bottom:env(safe-area-inset-bottom,0px)}
-  .map-card-btn-primary,.map-card-btn-secondary{font-size:13px;padding:12px 0;min-height:44px}
-  .map-card-close{display:none!important}
+  .map-card-actions{gap:6px;margin-top:4px}
+  .map-card-btn-primary,.map-card-btn-secondary{font-size:12px;padding:9px 0;min-height:38px}
   .map-my-loc-btn{bottom:auto;top:80px;left:12px}
   .map-zoom-controls{bottom:auto;top:130px;left:12px;right:auto}
-  .map-prop-strip{padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));gap:10px}
-  .map-prop-strip::before,.map-prop-strip::after{min-width:16px}
-  .map-prop-strip-item{width:160px;padding:10px;flex-direction:column;align-items:stretch;gap:6px}
-  .map-prop-strip-thumb{width:100%;height:48px;border-radius:8px}
-  .map-prop-strip-name{white-space:normal;font-size:12px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
-  .map-prop-strip-loc{font-size:10px}
+  .map-prop-strip{padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));gap:8px}
+  .map-prop-strip::before,.map-prop-strip::after{min-width:14px}
+  .map-prop-strip-item{width:150px;padding:8px;flex-direction:column;align-items:stretch;gap:5px}
+  .map-prop-strip-thumb{width:100%;height:44px;border-radius:8px}
+  .map-prop-strip-name{white-space:normal;font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+  .map-prop-strip-loc{font-size:9px}
   .map-prop-strip-badge{font-size:8px;padding:2px 6px;margin-top:2px}
   .map-prop-strip-dist{font-size:9px;white-space:nowrap;margin-top:1px}
   .map-prop-strip-price{font-size:10px}
@@ -1080,7 +1089,7 @@ ul{list-style:none}
   .explore-prop-selector{gap:8px}
   .explore-prop-pill{padding:8px 14px;font-size:10px}
   .explore-categories{gap:4px}
-  .explore-cat-tab{padding:8px 16px;font-size:12px}
+  .explore-cat-tab{padding:10px 16px;font-size:12px;min-height:44px}
   .explore-event-card{flex-direction:row}
   .event-date-block{min-width:70px;padding:16px 12px}
   .event-date-day{font-size:26px}
@@ -1088,13 +1097,14 @@ ul{list-style:none}
   .event-info{padding:12px 16px;gap:4px}
 }
 @media(max-width:480px){
+  .stats-bar{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:48px}
   .stat-item{padding:20px 12px}
   .stat-number{font-size:28px}
   .stat-label{font-size:9px;letter-spacing:.06em}
   .prop-name{font-size:18px}
   .prop-specs span{font-size:10px;padding:3px 0}
   .prop-actions{flex-wrap:wrap;gap:6px}
-  .prop-actions a,.prop-actions button{font-size:12px;padding:9px 14px}
+  .prop-actions a,.prop-actions button{font-size:12px;padding:9px 14px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
   .detail-specs{flex-direction:column;gap:2px}
   .detail-specs span{padding:3px 0;border-right:none}
   .detail-content{padding:20px 16px}
@@ -1122,19 +1132,19 @@ ul{list-style:none}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
   .explore-map-wrap{height:400px}
-  .map-property-card{max-height:42vh;max-height:42dvh;bottom:148px}
-  .map-card-photo{height:110px}
+  .map-bottom-sheet.strip-only{max-height:110px}
+  .map-card-photo{width:80px;min-width:80px;height:80px}
   .map-card-name{font-size:15px}
   .map-card-specs{display:none}
-  .map-card-amenities{display:none}
+  .map-card-actions{flex-direction:row}
   .map-marker{width:36px;height:36px}
   .map-marker-core{width:26px;height:26px}
   .map-marker-core svg{width:11px;height:11px}
-  .map-prop-strip{padding:10px 0;gap:8px}
-  .map-prop-strip::before,.map-prop-strip::after{min-width:14px}
-  .map-prop-strip-item{width:148px;padding:8px}
-  .map-prop-strip-thumb{width:100%;height:44px}
-  .map-prop-strip-name{font-size:11px}
+  .map-prop-strip{padding:8px 0;gap:6px}
+  .map-prop-strip::before,.map-prop-strip::after{min-width:12px}
+  .map-prop-strip-item{width:140px;padding:7px}
+  .map-prop-strip-thumb{width:100%;height:40px}
+  .map-prop-strip-name{font-size:10px}
   .map-prop-strip-loc{font-size:9px}
   .map-close-btn{width:40px;height:40px;top:12px;right:12px}
   .explore-events-title{font-size:24px}
@@ -1535,35 +1545,42 @@ ul{list-style:none}
           <button class="map-zoom-btn" id="mapZoomIn" aria-label="Zoom in">+</button>
           <button class="map-zoom-btn" id="mapZoomOut" aria-label="Zoom out">&minus;</button>
         </div>
-        <div class="map-property-card" id="mapPropertyCard">
-          <button class="map-card-close" id="mapCardClose" aria-label="Close">&times;</button>
-          <div class="map-card-photo" id="mapCardPhoto"></div>
-          <div class="map-card-body">
-            <div class="map-card-category" id="mapCardCategory"></div>
-            <h4 class="map-card-name" id="mapCardName"></h4>
-            <p class="map-card-location" id="mapCardLocation">
-              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span id="mapCardLocationText"></span>
-            </p>
-            <div class="map-card-distance" id="mapCardDistance" style="display:none">
-              <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span id="mapCardDistText"></span>
-            </div>
-            <div class="map-card-price" id="mapCardPrice"></div>
-            <div class="map-card-rating" id="mapCardRating"></div>
-            <div class="map-card-specs" id="mapCardSpecs"></div>
-            <div class="map-card-amenities" id="mapCardAmenities"></div>
-            <div class="map-card-actions">
-              <button class="map-card-btn-primary" id="mapCardBook"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Book Now</button>
-              <button class="map-card-btn-secondary" id="mapCardDetails"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View Details</button>
-            </div>
-          </div>
-        </div>
         <button class="map-my-loc-btn" id="mapMyLocBtn" aria-label="Go to my location" title="My Location">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="8"/></svg>
         </button>
         <div class="map-nav-dots" id="mapNavDots"></div>
-        <div class="map-prop-strip" id="mapPropStrip"></div>
+        <!-- Bottom Sheet: unified card + strip container -->
+        <div class="map-bottom-sheet strip-only" id="mapBottomSheet">
+          <div class="map-sheet-handle"><div class="map-sheet-handle-bar"></div></div>
+          <div class="map-card-section" id="mapCardSection">
+            <div class="map-property-card" id="mapPropertyCard">
+              <div class="map-card-photo" id="mapCardPhoto"></div>
+              <div class="map-card-body">
+                <div class="map-card-category" id="mapCardCategory"></div>
+                <h4 class="map-card-name" id="mapCardName"></h4>
+                <p class="map-card-location" id="mapCardLocation">
+                  <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span id="mapCardLocationText"></span>
+                </p>
+                <div class="map-card-distance" id="mapCardDistance" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span id="mapCardDistText"></span>
+                </div>
+                <div class="map-card-price" id="mapCardPrice"></div>
+                <div class="map-card-rating" id="mapCardRating"></div>
+                <div class="map-card-specs" id="mapCardSpecs"></div>
+                <div class="map-card-amenities" id="mapCardAmenities"></div>
+                <div class="map-card-actions">
+                  <button class="map-card-btn-primary" id="mapCardBook"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Book Now</button>
+                  <button class="map-card-btn-secondary" id="mapCardDetails"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="map-strip-section">
+            <div class="map-prop-strip" id="mapPropStrip"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2720,6 +2737,7 @@ function renderPropertyCard(p) {
       <div class="prop-actions" onclick="event.stopPropagation()">
         <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
         <button class="btn-details" onclick="openDetail('${p.slug}')">View Details</button>
+        <button class="btn-map-view" onclick="viewPropertyOnMap('${p.slug}')" title="View on Map"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
         <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">Airbnb &rarr;</a>
       </div>
     </div>
@@ -3601,7 +3619,7 @@ function handleCardClick(e, slug) {
   // Don't intercept clicks on interactive children (buttons, links, carousel)
   const target = e.target;
   if (target.closest('.btn-book') || target.closest('.btn-airbnb') || target.closest('.btn-details') ||
-      target.closest('.carousel-btn') || target.closest('.prop-actions') ||
+      target.closest('.btn-map-view') || target.closest('.carousel-btn') || target.closest('.prop-actions') ||
       target.closest('a[href]')) {
     return;
   }
@@ -4216,6 +4234,28 @@ function filterExplore(cat) {
   updateExploreMap();
 }
 
+/* Open map modal zoomed to an attraction or property coordinate */
+function openExploreAttraction(lat, lng, name) {
+  // Expand the map first
+  expandMap();
+  // After map expands, fly to the attraction
+  setTimeout(() => {
+    if (exploreMapInstance) {
+      exploreMapInstance.flyTo([lat, lng], 16, { duration: 1.2 });
+    }
+  }, 350);
+}
+
+/* Open map modal zoomed to a specific property from the properties section */
+function viewPropertyOnMap(slug) {
+  const idx = PROPERTIES.findIndex(p => p.slug === slug);
+  if (idx === -1) return;
+  expandMap();
+  setTimeout(() => {
+    selectPropertyOnMap(idx);
+  }, 400);
+}
+
 function renderExploreGrid() {
   const grid = document.getElementById('exploreGrid');
   if (!grid) return;
@@ -4236,7 +4276,7 @@ function renderExploreGrid() {
   }
 
   grid.innerHTML = items.map((a, i) => `
-    <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="if('${a.url || ''}')window.open('https://www.google.com/maps/search/${encodeURIComponent(a.name)}','_blank')">
+    <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="openExploreAttraction(${a.lat},${a.lng},'${a.name.replace(/'/g,"\\'")}')">
       <div class="explore-card-img">
         <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#1a1a1a 0%,#2d1f1a 50%,#1a1a1a 100%)'">
         <span class="explore-card-dist">
@@ -4356,8 +4396,12 @@ function initExploreMap() {
   buildMapPropStrip();
   initMapInteraction();
 
-  const closeBtn = document.getElementById('mapCardClose');
-  if (closeBtn) closeBtn.addEventListener('click', closeMapCard);
+  // Tap on map area closes the card (collapse bottom sheet)
+  if (exploreMapInstance) {
+    exploreMapInstance.on('click', function(e) {
+      if (mapActiveProperty != null) closeMapCard();
+    });
+  }
 
   // My Location button
   const myLocBtn = document.getElementById('mapMyLocBtn');
@@ -4571,17 +4615,10 @@ function selectPropertyOnMap(idx) {
     };
   }
 
-  // Close existing card first if open, then show new
-  if (card && card.classList.contains('visible') && mapActiveProperty !== idx) {
-    card.classList.add('closing');
-    card.classList.remove('visible');
-    setTimeout(() => {
-      card.classList.remove('closing');
-      card.classList.add('visible');
-    }, 200);
-  } else if (card) {
-    card.classList.remove('closing');
-    card.classList.add('visible');
+  // Expand the bottom sheet to show the card
+  const sheet = document.getElementById('mapBottomSheet');
+  if (sheet) {
+    sheet.classList.remove('strip-only');
   }
 
   updateMapPropStrip(idx);
@@ -4590,11 +4627,10 @@ function selectPropertyOnMap(idx) {
 }
 
 function closeMapCard() {
-  const card = document.getElementById('mapPropertyCard');
-  if (card && card.classList.contains('visible')) {
-    card.classList.add('closing');
-    card.classList.remove('visible');
-    setTimeout(() => card.classList.remove('closing'), 350);
+  // Collapse bottom sheet to strip-only
+  const sheet = document.getElementById('mapBottomSheet');
+  if (sheet) {
+    sheet.classList.add('strip-only');
   }
 
   mapPropertyMarkers.forEach(m => {
@@ -4633,11 +4669,15 @@ function buildMapPropStrip() {
     </div>`;
   }).join('');
 
-  // Wire click handlers
+  // Wire click handlers — tapping same item toggles card off
   strip.querySelectorAll('.map-prop-strip-item').forEach(item => {
     item.addEventListener('click', () => {
       const idx = parseInt(item.dataset.idx, 10);
-      selectPropertyOnMap(idx);
+      if (mapActiveProperty === idx) {
+        closeMapCard();
+      } else {
+        selectPropertyOnMap(idx);
+      }
     });
   });
 }
