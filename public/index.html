@@ -495,7 +495,7 @@ ul{list-style:none}
 .explore-cat-tab.active{background:rgba(199,107,66,.15);border-color:var(--accent);color:var(--accent-light)}
 
 /* Attraction Grid */
-.explore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:64px}
+.explore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:0}
 .explore-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);overflow:hidden;position:relative;cursor:pointer;transition:transform .5s var(--ease),box-shadow .5s var(--ease);opacity:0;transform:translateY(30px);border:1px solid rgba(255,255,255,.04)}
 .explore-card.visible{opacity:1;transform:translateY(0)}
 .explore-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.5)}
@@ -518,6 +518,19 @@ ul{list-style:none}
 .explore-card-overlay-text{font-family:var(--serif);font-size:20px;color:#fff;margin-bottom:8px;text-align:center}
 .explore-card-overlay-cta{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px}
 .explore-card-overlay-cta svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
+.explore-card-overlay-actions{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:6px}
+.explore-overlay-btn{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#fff;background:rgba(17,17,17,.35);border:1px solid rgba(255,255,255,.4);padding:10px 22px;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;transition:all .3s var(--ease);white-space:nowrap}
+.explore-overlay-btn:hover{background:rgba(17,17,17,.6);border-color:#fff;transform:translateY(-1px)}
+.explore-overlay-btn svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2}
+.explore-card-addr{font-family:var(--mono);font-size:10px;color:var(--text-inv-muted);letter-spacing:.03em;margin-bottom:12px;display:flex;align-items:center;gap:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.explore-card-addr svg{width:10px;height:10px;stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0}
+.explore-card-actions-row{display:flex;align-items:center;gap:8px;margin-top:14px}
+.explore-card-web-btn{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.1);border:1px solid rgba(199,107,66,.25);padding:9px 14px;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:all .3s var(--ease)}
+.explore-card-web-btn:hover{background:rgba(199,107,66,.2);border-color:var(--accent)}
+.explore-card-web-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.explore-card-map-btn{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-inv-muted);background:transparent;border:1px solid var(--border-dark);padding:9px 14px;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .3s var(--ease)}
+.explore-card-map-btn:hover{color:var(--text-inv);border-color:var(--text-inv-muted)}
+.explore-card-map-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
 
 /* ══ Explore Map — Rebuilt Interactive System ══ */
 .explore-map-container{margin-bottom:64px}
@@ -690,8 +703,10 @@ ul{list-style:none}
 .explore-empty p{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted)}
 
 /* Explore show more/less — hidden on desktop */
-.explore-show-more-wrap{display:none;text-align:center;margin-top:24px}
-.explore-show-more-btn{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.2);padding:14px 36px;border-radius:100px;cursor:pointer;transition:all .4s var(--ease);display:inline-flex;align-items:center;gap:8px}
+.explore-show-more-wrap{display:block;text-align:center;margin:20px 0 56px}
+.explore-grid:not(.expanded) .explore-card:nth-child(n+7){display:none}
+.explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+5){display:none}
+.explore-show-more-btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.25);padding:11px 28px;border-radius:100px;cursor:pointer;transition:all .4s var(--ease);display:inline-flex;align-items:center;gap:8px}
 .explore-show-more-btn:hover{background:rgba(199,107,66,.15);border-color:rgba(199,107,66,.35);transform:translateY(-2px)}
 .explore-show-more-btn svg{width:16px;height:16px;stroke:var(--accent-light);stroke-width:2;fill:none;transition:transform .3s var(--ease)}
 .explore-show-more-btn.expanded svg{transform:rotate(180deg)}
@@ -4075,39 +4090,40 @@ document.addEventListener('keydown', (e) => {
 
 /* ═══ EXPLORE THE AREA ═══ */
 
+/* Every url/booking link verified live (HTTP 200) July 2026. Images are real venue photos in /images/attractions/. */
 const ATTRACTIONS = [
   // ── IRVING / LAS COLINAS ──
-  { name:'Toyota Music Factory', desc:'Premier entertainment district with live music venues, restaurants, and the Pavilion amphitheater.', cat:'arts', lat:32.8775, lng:-96.9425, rating:4.6, img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Lake Carolyn', desc:'Scenic urban lake with gondola rides, waterfront trails, public art, and stunning Las Colinas skyline views.', cat:'outdoor', lat:32.8680, lng:-96.9350, rating:4.7, img:'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Mandalay Canal Walk', desc:'European-inspired canal promenade with cafes, boutiques, and tranquil waterways through Las Colinas.', cat:'outdoor', lat:32.8720, lng:-96.9380, rating:4.5, img:'https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Irving Arts Center', desc:'Cultural hub with two galleries, a sculpture garden, and 700-seat performing arts theater.', cat:'arts', lat:32.8530, lng:-96.9410, rating:4.5, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Mustangs of Las Colinas', desc:'World\'s largest equestrian sculpture — nine bronze mustangs charging through a granite stream.', cat:'arts', lat:32.8690, lng:-96.9320, rating:4.8, img:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Campion Trail', desc:'22-mile paved trail along the Elm Fork of the Trinity River, perfect for biking, running, and nature walks.', cat:'outdoor', lat:32.8400, lng:-96.9700, rating:4.7, img:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Alamo Drafthouse Cinema', desc:'Dine-in movie theater with craft food, cocktails, and a strict no-talking policy for the best film experience.', cat:'arts', lat:32.8760, lng:-96.9400, rating:4.7, img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&h=400&fit=crop', area:'irving' },
-  { name:'Water Street', desc:'Open-air dining and entertainment district along Lake Carolyn with waterfront patios and live music.', cat:'dining', lat:32.8710, lng:-96.9360, rating:4.5, img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop', area:'irving' },
+  { name:'Toyota Music Factory', desc:'Premier entertainment district with live music venues, restaurants, and the Pavilion amphitheater.', cat:'arts', lat:32.8775, lng:-96.9425, rating:4.6, img:'/images/attractions/toyota-music-factory.jpg', area:'irving', url:'https://www.toyotamusicfactory.com/', booking:'https://www.toyotamusicfactory.com/upcoming-events', address:'316 W Las Colinas Blvd, Irving, TX 75039' },
+  { name:'Gondola Adventures', desc:'Venetian-style gondola cruises on Lake Carolyn and the Mandalay Canal — dinner cruises, proposals, and private charters.', cat:'outdoor', lat:32.8686, lng:-96.9385, rating:4.9, img:'/images/attractions/gondola-adventures.jpg', area:'irving', url:'https://irving.gondola.com/', booking:'https://fareharbor.com/embeds/book/gondolaadventuresirving/', address:'357 West Fork, Irving, TX 75039' },
+  { name:'Lake Carolyn', desc:'Scenic urban lake with gondola rides, waterfront trails, public art, and stunning Las Colinas skyline views.', cat:'outdoor', lat:32.8680, lng:-96.9350, rating:4.7, img:'/images/attractions/lake-carolyn.jpg', area:'irving', url:'https://www.irvingtexas.com/blog/stories/post/five-ways-to-have-fun-at-lake-carolyn/', booking:null, address:'Lake Carolyn Pkwy, Irving, TX 75039' },
+  { name:'Mandalay Canal Walk', desc:'European-inspired canal promenade with cafes, boutiques, and tranquil waterways through Las Colinas.', cat:'outdoor', lat:32.8720, lng:-96.9380, rating:4.5, img:'/images/attractions/mandalay-canal.jpg', area:'irving', url:'https://www.irvingtexas.com/things-to-do/mandalay-canals/', booking:null, address:'215 Mandalay Canal, Irving, TX 75039' },
+  { name:'Irving Arts Center', desc:'Cultural hub with two galleries, a sculpture garden, and 700-seat performing arts theater.', cat:'arts', lat:32.8530, lng:-96.9410, rating:4.5, img:'/images/attractions/irving-arts-center.jpg', area:'irving', url:'https://www.irvingartscenter.com/', booking:'https://tickets.irvingartscenter.com/', address:'3333 N MacArthur Blvd, Irving, TX 75062' },
+  { name:'Mustangs of Las Colinas', desc:'World\'s largest equestrian sculpture — nine bronze mustangs charging through a granite stream.', cat:'arts', lat:32.8690, lng:-96.9320, rating:4.8, img:'/images/attractions/mustangs-las-colinas.jpg', area:'irving', url:'https://www.irvingarchivesandmuseum.com/mustangs-of-las-colinas', booking:null, address:'5221 N O\'Connor Blvd, Irving, TX 75039' },
+  { name:'Campion Trail', desc:'22-mile paved trail along the Elm Fork of the Trinity River, perfect for biking, running, and nature walks.', cat:'outdoor', lat:32.8400, lng:-96.9700, rating:4.7, img:'/images/attractions/campion-trail.jpg', area:'irving', url:'https://www.irvingtexas.com/things-to-do/outdoors/campion-trails/', booking:null, address:null },
+  { name:'Alamo Drafthouse Cinema', desc:'Dine-in movie theater with craft food, cocktails, and a strict no-talking policy for the best film experience.', cat:'arts', lat:32.8760, lng:-96.9400, rating:4.7, img:'/images/attractions/alamo-drafthouse-las-colinas.jpg', area:'irving', url:'https://drafthouse.com/dfw/theater/las-colinas', booking:null, address:'320 W Las Colinas Blvd, Irving, TX 75039' },
+  { name:'Water Street', desc:'Open-air dining and entertainment district along Lake Carolyn with waterfront patios and live music.', cat:'dining', lat:32.8710, lng:-96.9360, rating:4.5, img:'/images/attractions/water-street.jpg', area:'irving', url:'https://www.irvingtexas.com/things-to-do/attractions/water-street/', booking:null, address:'5250 N O\'Connor Blvd, Irving, TX 75039' },
 
-  // ── PLANO / RICHARDSON ──
-  { name:'Legacy West', desc:'Upscale mixed-use development with designer shopping, chef-driven restaurants, and luxury living.', cat:'shopping', lat:33.0770, lng:-96.8260, rating:4.7, img:'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=600&h=400&fit=crop', area:'plano' },
-  { name:'The Shops at Willow Bend', desc:'Premier shopping destination with Neiman Marcus, Dillard\'s, and 125+ specialty stores.', cat:'shopping', lat:33.0320, lng:-96.8380, rating:4.5, img:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop', area:'plano' },
-  { name:'Arbor Hills Nature Preserve', desc:'200-acre urban nature preserve with elevated boardwalks, prairie views, and challenging mountain bike trails.', cat:'outdoor', lat:33.0600, lng:-96.8470, rating:4.8, img:'https://images.unsplash.com/photo-1500829243541-74b677fecc30?w=600&h=400&fit=crop', area:'plano' },
-  { name:'CityLine', desc:'Vibrant mixed-use community in Richardson with dining, entertainment, and the State Farm campus.', cat:'shopping', lat:32.9850, lng:-96.7100, rating:4.4, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'plano' },
-  { name:'TopGolf Dallas', desc:'High-tech driving range with climate-controlled bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:33.0230, lng:-96.8310, rating:4.6, img:'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop', area:'plano' },
+  // ── PLANO / RICHARDSON / THE COLONY ──
+  { name:'Legacy West', desc:'Upscale mixed-use development with designer shopping, chef-driven restaurants, and luxury living.', cat:'shopping', lat:33.0770, lng:-96.8260, rating:4.7, img:'/images/attractions/legacy-west.jpg', area:'plano', url:'https://www.legacywest.com/', booking:null, address:'5908 Headquarters Dr, Plano, TX 75024' },
+  { name:'Arbor Hills Nature Preserve', desc:'200-acre urban nature preserve with elevated boardwalks, prairie views, and challenging mountain bike trails.', cat:'outdoor', lat:33.0600, lng:-96.8470, rating:4.8, img:'/images/attractions/arbor-hills.jpg', area:'plano', url:'https://www.visitplano.com/attractions/arbor-hills-nature-preserve/', booking:null, address:'6701 W Parker Rd, Plano, TX 75093' },
+  { name:'CityLine', desc:'Vibrant mixed-use community in Richardson with dining, entertainment, and the State Farm campus.', cat:'shopping', lat:32.9850, lng:-96.7100, rating:4.4, img:'/images/attractions/cityline.jpg', area:'richardson', url:'https://citylinedfw.com/', booking:null, address:'1201 State St, Richardson, TX 75082' },
+  { name:'Topgolf The Colony', desc:'High-tech driving range with climate-controlled bays, craft cocktails, and a rooftop terrace.', cat:'sports', lat:33.0885, lng:-96.8838, rating:4.6, img:'/images/attractions/topgolf-the-colony.jpg', area:'the colony', url:'https://topgolf.com/us/the-colony/', booking:'https://topgolf.com/us/the-colony/plan-a-visit/', address:'3760 Blair Oaks Dr, The Colony, TX 75056' },
 
-  // ── DALLAS ──
-  { name:'Deep Ellum', desc:'Eclectic arts and entertainment district with live music, street art, craft breweries, and vibrant nightlife.', cat:'dining', lat:32.7845, lng:-96.7834, rating:4.7, img:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Dallas Farmers Market', desc:'Historic market with local produce, artisan foods, chef-led cooking classes, and seasonal festivals.', cat:'dining', lat:32.7750, lng:-96.7960, rating:4.6, img:'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'AT&T Discovery District', desc:'Immersive downtown destination with media walls, public art, dining, and the AT&T flagship store.', cat:'arts', lat:32.7790, lng:-96.7980, rating:4.5, img:'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Reunion Tower', desc:'Iconic 561-ft observation tower with GeO-Deck offering 360-degree panoramic views of the Dallas skyline.', cat:'family', lat:32.7757, lng:-96.8088, rating:4.7, img:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Perot Museum of Nature and Science', desc:'World-class museum with interactive exhibits on dinosaurs, space, sports physics, and engineering.', cat:'family', lat:32.7868, lng:-96.8066, rating:4.8, img:'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Dallas Museum of Art', desc:'Free admission museum with 24,000+ works spanning 5,000 years from ancient to contemporary art.', cat:'arts', lat:32.7877, lng:-96.8010, rating:4.7, img:'https://images.unsplash.com/photo-1564399580075-5dfe19c205f3?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Klyde Warren Park', desc:'Deck park over a freeway with food trucks, yoga, concerts, games, and a children\'s park in downtown Dallas.', cat:'outdoor', lat:32.7893, lng:-96.8016, rating:4.8, img:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Globe Life Field', desc:'Home of the Texas Rangers — retractable-roof stadium with craft food, craft beer, and championship energy.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'https://images.unsplash.com/photo-1504016798967-59a258e9386d?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'AT&T Stadium', desc:'Home of the Dallas Cowboys — the iconic 80,000-seat venue with art collection, tours, and world-class events.', cat:'sports', lat:32.7473, lng:-97.0945, rating:4.7, img:'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Bishop Arts District', desc:'Charming walkable neighborhood in Oak Cliff with indie boutiques, galleries, cocktail bars, and brunch spots.', cat:'dining', lat:32.7478, lng:-96.8267, rating:4.6, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Dallas Arboretum', desc:'66-acre botanical garden on White Rock Lake with seasonal festivals, stunning gardens, and a children\'s adventure area.', cat:'outdoor', lat:32.8234, lng:-96.7168, rating:4.8, img:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Dallas Zoo', desc:'106-acre zoo with 2,000+ animals, Giants of the Savanna habitat, and a world-renowned conservation program.', cat:'family', lat:32.7410, lng:-96.8150, rating:4.6, img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Six Flags Over Texas', desc:'Legendary theme park with world-class roller coasters, family rides, and seasonal events in Arlington.', cat:'family', lat:32.7560, lng:-97.0700, rating:4.5, img:'https://images.unsplash.com/photo-1547234935-80c7145ec969?w=600&h=400&fit=crop', area:'dallas' },
-  { name:'Galleria Dallas', desc:'Luxury shopping mall with 200+ stores, an ice rink, Westin hotel, and upscale dining.', cat:'shopping', lat:32.9310, lng:-96.8210, rating:4.5, img:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop', area:'dallas' }
+  // ── DALLAS / ARLINGTON ──
+  { name:'Deep Ellum', desc:'Eclectic arts and entertainment district with live music, street art, craft breweries, and vibrant nightlife.', cat:'dining', lat:32.7845, lng:-96.7834, rating:4.7, img:'/images/attractions/deep-ellum.jpg', area:'dallas', url:'https://www.deepellumtexas.com/', booking:null, address:'Elm, Main & Commerce St, Dallas, TX 75226' },
+  { name:'Dallas Farmers Market', desc:'Historic market with local produce, artisan foods, chef-led cooking classes, and seasonal festivals.', cat:'dining', lat:32.7750, lng:-96.7960, rating:4.6, img:'/images/attractions/dallas-farmers-market.jpg', area:'dallas', url:'https://dallasfarmersmarket.org/', booking:null, address:'920 S Harwood St, Dallas, TX 75201' },
+  { name:'AT&T Discovery District', desc:'Immersive downtown destination with media walls, public art, dining, and the AT&T flagship store.', cat:'arts', lat:32.7790, lng:-96.7980, rating:4.5, img:'/images/attractions/att-discovery-district.jpg', area:'dallas', url:'https://discoverydistrictdallas.com/', booking:null, address:'208 S Akard St, Dallas, TX 75202' },
+  { name:'Reunion Tower', desc:'Iconic 561-ft observation tower with GeO-Deck offering 360-degree panoramic views of the Dallas skyline.', cat:'family', lat:32.7757, lng:-96.8088, rating:4.7, img:'/images/attractions/reunion-tower.jpg', area:'dallas', url:'https://reuniontower.com/', booking:'https://reuniontower.com/things-to-do/general-admission-tickets/', address:'300 Reunion Blvd E, Dallas, TX 75207' },
+  { name:'Perot Museum of Nature and Science', desc:'World-class museum with interactive exhibits on dinosaurs, space, sports physics, and engineering.', cat:'family', lat:32.7868, lng:-96.8066, rating:4.8, img:'/images/attractions/perot-museum.jpg', area:'dallas', url:'https://www.perotmuseum.org/', booking:'https://www.perotmuseum.org/tickets/', address:'2201 N Field St, Dallas, TX 75201' },
+  { name:'Dallas Museum of Art', desc:'Free admission museum with 24,000+ works spanning 5,000 years from ancient to contemporary art.', cat:'arts', lat:32.7877, lng:-96.8010, rating:4.7, img:'/images/attractions/dallas-museum-of-art.jpg', area:'dallas', url:'https://dma.org/', booking:'https://dma.org/visit', address:'1717 N Harwood St, Dallas, TX 75201' },
+  { name:'Klyde Warren Park', desc:'Deck park over a freeway with food trucks, yoga, concerts, games, and a children\'s park in downtown Dallas.', cat:'outdoor', lat:32.7893, lng:-96.8016, rating:4.8, img:'/images/attractions/klyde-warren-park.jpg', area:'dallas', url:'https://www.klydewarrenpark.org/', booking:null, address:'2012 Woodall Rodgers Fwy, Dallas, TX 75201' },
+  { name:'Globe Life Field', desc:'Home of the Texas Rangers — retractable-roof stadium with craft food, craft beer, and championship energy.', cat:'sports', lat:32.7473, lng:-97.0845, rating:4.7, img:'/images/attractions/globe-life-field.jpg', area:'arlington', url:'https://www.mlb.com/rangers/ballpark', booking:'https://www.mlb.com/rangers/ballpark/tours-and-events', address:'734 Stadium Dr, Arlington, TX 76011' },
+  { name:'AT&T Stadium', desc:'Home of the Dallas Cowboys — the iconic 80,000-seat venue with art collection, tours, and world-class events.', cat:'sports', lat:32.7473, lng:-97.0945, rating:4.7, img:'/images/attractions/att-stadium.jpg', area:'arlington', url:'https://attstadium.com/', booking:'https://attstadium.com/tours/', address:'1 AT&T Way, Arlington, TX 76011' },
+  { name:'Bishop Arts District', desc:'Charming walkable neighborhood in Oak Cliff with indie boutiques, galleries, cocktail bars, and brunch spots.', cat:'dining', lat:32.7478, lng:-96.8267, rating:4.6, img:'/images/attractions/bishop-arts.jpg', area:'dallas', url:'https://www.bishopartsdistrict.com/', booking:null, address:'N Bishop Ave & W Davis St, Dallas, TX 75208' },
+  { name:'Dallas Arboretum', desc:'66-acre botanical garden on White Rock Lake with seasonal festivals, stunning gardens, and a children\'s adventure area.', cat:'outdoor', lat:32.8234, lng:-96.7168, rating:4.8, img:'/images/attractions/dallas-arboretum.jpg', area:'dallas', url:'https://www.dallasarboretum.org/', booking:'https://www.dallasarboretum.org/visitor-information/hours-and-admission/', address:'8525 Garland Rd, Dallas, TX 75218' },
+  { name:'Dallas Zoo', desc:'106-acre zoo with 2,000+ animals, Giants of the Savanna habitat, and a world-renowned conservation program.', cat:'family', lat:32.7410, lng:-96.8150, rating:4.6, img:'/images/attractions/dallas-zoo.jpg', area:'dallas', url:'https://www.dallaszoo.com/', booking:'https://www.dallaszoo.com/plan-your-visit/buy-tickets/', address:'650 S R.L. Thornton Fwy, Dallas, TX 75203' },
+  { name:'Six Flags Over Texas', desc:'Legendary theme park with world-class roller coasters, family rides, and seasonal events in Arlington.', cat:'family', lat:32.7560, lng:-97.0700, rating:4.5, img:'/images/attractions/six-flags-over-texas.jpg', area:'arlington', url:'https://www.sixflags.com/overtexas', booking:'https://www.sixflags.com/overtexas/daily-tickets', address:'2201 E Road to Six Flags St, Arlington, TX 76011' },
+  { name:'Galleria Dallas', desc:'Luxury shopping mall with 200+ stores, an ice rink, Westin hotel, and upscale dining.', cat:'shopping', lat:32.9310, lng:-96.8210, rating:4.5, img:'/images/attractions/galleria-dallas.jpg', area:'dallas', url:'https://galleriadallas.com/', booking:null, address:'13350 Dallas Pkwy, Dallas, TX 75240' }
 ];
 
 
@@ -4298,7 +4314,7 @@ function renderExploreGrid() {
   }
 
   grid.innerHTML = items.map((a, i) => `
-    <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="openExploreAttraction(${a.lat},${a.lng},'${a.name.replace(/'/g,"\\'")}')">
+    <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="window.open('${a.url}','_blank','noopener')">
       <div class="explore-card-img">
         <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#1a1a1a 0%,#2d1f1a 50%,#1a1a1a 100%)'">
         <span class="explore-card-dist">
@@ -4310,19 +4326,44 @@ function renderExploreGrid() {
       <div class="explore-card-body">
         <div class="explore-card-name">${a.name}</div>
         <div class="explore-card-desc">${a.desc}</div>
+        ${a.address ? `<div class="explore-card-addr"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${a.address}</div>` : ''}
         <div class="explore-card-meta">
           <span class="explore-card-rating">
             <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             ${a.rating}
           </span>
-          <span class="explore-card-tag">${{irving:'IRVING',plano:'PLANO',dallas:'DALLAS',richardson:'RICHARDSON'}[a.area]||a.area.toUpperCase()}</span>
+          <span class="explore-card-tag">${{irving:'IRVING',plano:'PLANO',dallas:'DALLAS',richardson:'RICHARDSON',arlington:'ARLINGTON'}[a.area]||a.area.toUpperCase()}</span>
+        </div>
+        <div class="explore-card-actions-row">
+          <a class="explore-card-web-btn" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            ${a.booking ? 'Website' : 'Visit Website'}
+            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          ${a.booking ? `<a class="explore-card-web-btn" href="${a.booking}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#fff;background:var(--accent);border-color:var(--accent)">
+            Book
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </a>` : ''}
+          <button class="explore-card-map-btn" onclick="event.stopPropagation();openExploreAttraction(${a.lat},${a.lng},'${a.name.replace(/'/g,"\\'")}')" aria-label="View ${a.name.replace(/'/g,"\\'")} on map">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Map
+          </button>
         </div>
       </div>
       <div class="explore-card-overlay">
         <div class="explore-card-overlay-text">${a.name}</div>
-        <div class="explore-card-overlay-cta">
-          VIEW ON MAP
-          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <div class="explore-card-overlay-actions">
+          <a class="explore-overlay-btn" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            Visit Website
+            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          ${a.booking ? `<a class="explore-overlay-btn" href="${a.booking}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            Book Now
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </a>` : ''}
+          <button class="explore-overlay-btn" onclick="event.stopPropagation();openExploreAttraction(${a.lat},${a.lng},'${a.name.replace(/'/g,"\\'")}')">
+            View on Map
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -4335,30 +4376,63 @@ function renderExploreGrid() {
     });
   });
 
-  // Update show more button visibility & count on mobile
+  // Update show more button visibility & count
   const showMoreBtn = document.querySelector('#attractionsShowMore .explore-show-more-btn');
-  if (showMoreBtn && window.innerWidth <= 768) {
-    const hiddenCount = items.length - 4;
-    if (hiddenCount > 0 && !grid.classList.contains('expanded')) {
-      showMoreBtn.innerHTML = `Show More (${hiddenCount}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+  if (showMoreBtn) {
+    const hiddenCount = items.length - exploreVisibleCount('attractions');
+    if (hiddenCount > 0) {
+      if (!grid.classList.contains('expanded')) {
+        showMoreBtn.innerHTML = `Show More (${hiddenCount}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      }
       document.getElementById('attractionsShowMore').style.display = 'block';
-    } else if (hiddenCount <= 0) {
+    } else {
       document.getElementById('attractionsShowMore').style.display = 'none';
     }
   }
 }
 
+// How many cards are visible before "Show More" (must match the CSS nth-child rules)
+function exploreVisibleCount(section) {
+  const mobile = window.matchMedia('(max-width:768px)').matches;
+  if (section === 'attractions') return mobile ? 4 : 6;
+  return mobile ? 3 : 4; // events
+}
+
+// Keep "Show More (N)" labels accurate when the viewport crosses the mobile breakpoint
+function updateShowMoreCounts() {
+  [['exploreGrid', 'attractionsShowMore', '.explore-card', 'attractions'],
+   ['exploreEventsGrid', 'eventsShowMore', '.explore-event-card', 'events']].forEach(([gridId, wrapId, cardSel, section]) => {
+    const grid = document.getElementById(gridId);
+    const wrap = document.getElementById(wrapId);
+    if (!grid || !wrap) return;
+    const btn = wrap.querySelector('.explore-show-more-btn');
+    const total = grid.querySelectorAll(cardSel).length;
+    const hidden = total - exploreVisibleCount(section);
+    if (hidden <= 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    if (btn && !grid.classList.contains('expanded')) {
+      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+    }
+  });
+}
+let exploreResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(exploreResizeTimer);
+  exploreResizeTimer = setTimeout(updateShowMoreCounts, 200);
+});
+
 function toggleExploreExpand(section) {
   if (section === 'attractions') {
     const grid = document.getElementById('exploreGrid');
     const btn = document.querySelector('#attractionsShowMore .explore-show-more-btn');
+    const visible = exploreVisibleCount('attractions');
     const isExpanding = !grid.classList.contains('expanded');
     grid.classList.toggle('expanded');
     btn.classList.toggle('expanded');
     if (isExpanding) {
       btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
       // Animate newly visible cards
-      grid.querySelectorAll('.explore-card:nth-child(n+5)').forEach((card, i) => {
+      grid.querySelectorAll(`.explore-card:nth-child(n+${visible + 1})`).forEach((card, i) => {
         card.classList.remove('visible');
         requestAnimationFrame(() => {
           setTimeout(() => card.classList.add('visible'), i * 60);
@@ -4366,19 +4440,20 @@ function toggleExploreExpand(section) {
       });
     } else {
       const total = grid.querySelectorAll('.explore-card').length;
-      const hidden = total - 4;
+      const hidden = total - visible;
       btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
       grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   } else if (section === 'events') {
     const grid = document.getElementById('exploreEventsGrid');
     const btn = document.querySelector('#eventsShowMore .explore-show-more-btn');
+    const visible = exploreVisibleCount('events');
     const isExpanding = !grid.classList.contains('expanded');
     grid.classList.toggle('expanded');
     btn.classList.toggle('expanded');
     if (isExpanding) {
       btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
-      grid.querySelectorAll('.explore-event-card:nth-child(n+4)').forEach((card, i) => {
+      grid.querySelectorAll(`.explore-event-card:nth-child(n+${visible + 1})`).forEach((card, i) => {
         card.classList.remove('visible');
         requestAnimationFrame(() => {
           setTimeout(() => card.classList.add('visible'), i * 80);
@@ -4386,7 +4461,7 @@ function toggleExploreExpand(section) {
       });
     } else {
       const total = grid.querySelectorAll('.explore-event-card').length;
-      const hidden = total - 3;
+      const hidden = total - visible;
       btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
       document.getElementById('exploreEvents').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -4944,8 +5019,12 @@ function renderEvents(events) {
   const grid = document.getElementById('exploreEventsGrid');
   if (!grid) return;
 
+  // Only show events that link to a real page
+  events = (events || []).filter(ev => ev.url && /^https?:\/\//.test(ev.url));
+
   if (!events.length) {
     grid.innerHTML = '<div class="explore-empty" style="grid-column:1/-1"><p>No upcoming events found nearby. Check back soon!</p></div>';
+    updateShowMoreCounts();
     return;
   }
 
@@ -4994,19 +5073,8 @@ function renderEvents(events) {
     });
   });
 
-  // Update events show more button on mobile
-  const evShowMore = document.getElementById('eventsShowMore');
-  const evBtn = evShowMore ? evShowMore.querySelector('.explore-show-more-btn') : null;
-  if (evBtn && window.innerWidth <= 768) {
-    const totalEvents = events.slice(0, 8).length;
-    const hiddenCount = totalEvents - 3;
-    if (hiddenCount > 0 && !grid.classList.contains('expanded')) {
-      evBtn.innerHTML = `Show More (${hiddenCount}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
-      evShowMore.style.display = 'block';
-    } else if (hiddenCount <= 0) {
-      evShowMore.style.display = 'none';
-    }
-  }
+  // Sync the events "Show More (N)" button with what actually rendered
+  updateShowMoreCounts();
 }
 
 function initExploreReveals() {
