@@ -3074,6 +3074,12 @@ function calDayClick(ds) {
       document.getElementById('calValOut').textContent = 'Select date';
       renderCal(); return;
     }
+    // Validate no booked dates fall between check-in and check-out
+    const blocked = Object.keys(calAvail).filter(k => k > calCheckIn && k < ds && !calAvail[k].available);
+    if (blocked.length) {
+      showBookingMsg('Some dates in that range are unavailable. Please choose a different check-out date.', 'error');
+      return;
+    }
     calCheckOut = ds;
     document.getElementById('calValOut').textContent = fmtDate(ds);
     document.getElementById('quoteSection').style.display = 'block';
@@ -3144,7 +3150,18 @@ async function getQuote() {
       body: JSON.stringify({ listing: calSlug, checkIn: calCheckIn, checkOut: calCheckOut, guests: parseInt(guests) })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not get a quote');
+    if (!res.ok) {
+      // If the server tells us specific dates are unavailable, refresh the calendar
+      if (res.status === 409 && data.unavailableDates) {
+        data.unavailableDates.forEach(d => { calAvail[d] = { available: false, status: 'booked' }; });
+        calCheckIn = null; calCheckOut = null;
+        document.getElementById('calValIn').textContent = 'Select date';
+        document.getElementById('calValOut').textContent = 'Select date';
+        setCalMode('in');
+        renderCal();
+      }
+      throw new Error(data.error || 'Could not get a quote');
+    }
     const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
     const accom = data.accommodation || (data.perNight ? data.perNight * nights : null) || 0;
     // Cache quote data for the payment review step

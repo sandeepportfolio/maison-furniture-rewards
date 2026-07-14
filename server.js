@@ -356,10 +356,17 @@ app.post('/api/guesty/quote', async (req, res) => {
     if (!summary.total) return res.status(409).json({ error: 'No price available for those dates' });
     res.json(summary);
   } catch (err) {
-    const detail = err.body?.error?.message || err.body?.message;
+    const detail = err.body?.error?.message || err.body?.message || err.message;
     console.error('Guesty quote error:', err.status || '', err.message);
     // Surface Guesty's user-facing validation (e.g. min-nights) when present.
     if (err.status === 400 && detail) return res.status(400).json({ error: detail });
+    // Surface unavailable-date conflicts so the frontend can show a clear message.
+    if (err.status === 409) {
+      return res.status(409).json({
+        error: detail || 'Some dates are not available',
+        unavailableDates: err.body?.unavailableDates || [],
+      });
+    }
     res.status(502).json({ error: 'Could not get a price for those dates' });
   }
 });
