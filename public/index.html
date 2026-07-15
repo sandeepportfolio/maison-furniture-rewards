@@ -3102,7 +3102,12 @@ function renderCal() {
     if (ds === calCheckIn) cls += ' sel-start';
     if (ds === calCheckOut) cls += ' sel-end';
     if (calCheckIn && calCheckOut && ds > calCheckIn && ds < calCheckOut) cls += ' in-range';
-    const ok = !past && !booked && !belowMinNight;
+    let ok = !past && !booked && !belowMinNight;
+    // Guesty day rules: closed-to-arrival blocks check-in, closed-to-departure blocks check-out
+    if (ok && info) {
+      if (calMode === 'in' && info.cta) { cls += ' below-min'; ok = false; }
+      else if (calMode === 'out' && calCheckIn && ds > calCheckIn && info.ctd) { cls += ' below-min'; ok = false; }
+    }
     // Show min-night indicator on available days with minNights > 1
     let label2 = `${d}`;
     if (info && info.minNights > 1 && !past && !booked) {
@@ -3131,6 +3136,10 @@ function renderCal() {
 
 function calDayClick(ds) {
   if (calMode === 'in') {
+    if (calAvail[ds] && calAvail[ds].cta) {
+      showBookingMsg('Check-in is not available on that date. Please pick a different start date.', 'error');
+      return;
+    }
     calCheckIn = ds;
     calCheckOut = null;
     document.getElementById('calValIn').textContent = fmtDate(ds);
@@ -3142,6 +3151,10 @@ function calDayClick(ds) {
   } else {
     if (ds <= calCheckIn) {
       // Clicking an earlier or same date resets check-in
+      if (calAvail[ds] && calAvail[ds].cta) {
+        showBookingMsg('Check-in is not available on that date. Please pick a different start date.', 'error');
+        return;
+      }
       calCheckIn = ds; calCheckOut = null;
       document.getElementById('calValIn').textContent = fmtDate(ds);
       document.getElementById('calValOut').textContent = 'Select date';
@@ -3153,6 +3166,11 @@ function calDayClick(ds) {
     const minRequired = getMinNightsForCheckin(calCheckIn);
     if (nights < minRequired) {
       showBookingMsg(`This property requires a minimum ${minRequired}-night stay. You selected ${nights} night${nights > 1 ? 's' : ''}.`, 'error');
+      return;
+    }
+    // Guesty closed-to-departure rule
+    if (calAvail[ds] && calAvail[ds].ctd) {
+      showBookingMsg('Check-out is not available on that date. Please choose a different check-out date.', 'error');
       return;
     }
     // Validate no booked dates fall between check-in and check-out
