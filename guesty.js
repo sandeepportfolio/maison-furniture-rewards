@@ -225,6 +225,7 @@ async function getListings() {
       bathrooms: l.bathrooms,
     };
   });
+
   listingsCache = out;
   listingsCacheAt = Date.now();
   return out;
@@ -462,6 +463,54 @@ async function updateReservation(reservationId, body) {
   });
 }
 
+// ── Lowest available price per listing (cached 15 min) ───────────────────
+let lowestPricesCache = null;
+let lowestPricesCacheAt = 0;
+const LOWEST_PRICES_TTL = 15 * 60_000; // 15 minutes
+
+/**
+ * Fetch the lowest available nightly rate for each listing by scanning
+ * the next 90 days of calendar data. Returns a map of slug → { lowestPrice, currency }.
+ */
+async function getLowestPrices() {
+  if (lowestPricesCache && Date.now() - lowestPricesCacheAt < LOWEST_PRICES_TTL) {
+    return lowestPricesCache;
+  }
+
+  const today = new Date();
+  const from = today.toISOString().slice(0, 10);
+  const future = new Date(today);
+  future.setDate(future.getDate() + 90);
+  const to = future.toISOString().slice(0, 10);
+
+  const entries = Object.entries(LISTINGS);
+  const results = {};
+
+  // Fetch all calendars concurrently
+  const settled = await Promise.allSettled(
+    entries.map(async ([slug, meta]) => {
+      const days = await getCalendar(meta.id, from, to);
+      const available = days.filter(d => d.available && d.price > 0);
+      if (available.length === 0) return { slug, lowestPrice: null, currency: 'USD' };
+      const lowest = Math.min(...available.map(d => d.price));
+      return { slug, lowestPrice: lowest, currency: available[0].currency || 'USD' };
+    })
+  );
+
+  settled.forEach(r => {
+    if (r.status === 'fulfilled' && r.value) {
+      results[r.value.slug] = {
+        lowestPrice: r.value.lowestPrice,
+        currency: r.value.currency,
+      };
+    }
+  });
+
+  lowestPricesCache = results;
+  lowestPricesCacheAt = Date.now();
+  return results;
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────
 function countNights(checkIn, checkOut) {
   const a = new Date(checkIn + 'T00:00:00Z');
@@ -475,6 +524,7 @@ module.exports = {
   resolveListingId,
   getListings,
   getCalendar,
+  getLowestPrices,
   createQuote,
   getPaymentProvider,
   normalizePaymentProvider,

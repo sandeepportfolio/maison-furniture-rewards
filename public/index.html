@@ -454,6 +454,9 @@ ul{list-style:none}
 .cal-dot.a{background:var(--accent-light)}
 .cal-dot.b{background:var(--border)}
 .cal-dot.s{background:var(--accent)}
+.cal-cell.below-min{color:var(--border);cursor:not-allowed;opacity:.45}
+.cal-min-nights{position:absolute;bottom:2px;right:3px;font-size:8px;color:var(--text-muted);font-family:var(--mono);letter-spacing:-.02em;line-height:1}
+.min-night-notice{text-align:center;margin-top:8px;padding:8px 12px;background:var(--accent-pale);color:var(--accent);border-radius:8px;font-family:var(--sans);font-size:12px;font-weight:500}
 .cal-loading{text-align:center;padding:48px 16px;color:var(--text-muted);font-family:var(--sans);font-size:13px;grid-column:1/-1}
 
 /* ── Animations ── */
@@ -2157,6 +2160,7 @@ ul{list-style:none}
         <span><span class="cal-dot b"></span>Booked</span>
         <span><span class="cal-dot s"></span>Selected</span>
       </div>
+      <div id="minNightNotice" class="min-night-notice" style="display:none"></div>
     </div>
 
     <!-- Quote (appears after date selection) -->
@@ -2747,7 +2751,7 @@ function renderPropertyCard(p) {
       </div>
       <div class="prop-rating">${ratingHtml}</div>
       <div class="prop-amenities">${amenityHtml}</div>
-      <div class="prop-price" data-slug="${p.slug}">${p.basePrice ? renderDiscountedPrice(p.basePrice, 'card') : '<span class="prop-price-loading"></span>'}</div>
+      <div class="prop-price" data-slug="${p.slug}">${(p.basePrice || p.lowestPrice) ? renderDiscountedPrice(p.basePrice, 'card', p.lowestPrice) : '<span class="prop-price-loading"></span>'}</div>
       <div class="prop-divider"></div>
       <div class="prop-actions" onclick="event.stopPropagation()">
         <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
@@ -2800,9 +2804,11 @@ function renderProperties(cityFilter) {
 /* ═══ Direct Booking Discount ═══ */
 const DIRECT_BOOKING_DISCOUNT = 0.95; // 5% off Guesty base price
 
-function renderDiscountedPrice(basePrice, cssPrefix) {
-  const discounted = Math.round(basePrice * DIRECT_BOOKING_DISCOUNT);
-  const original = Math.round(basePrice);
+function renderDiscountedPrice(basePrice, cssPrefix, lowestPrice) {
+  // Use lowestPrice (from calendar scan) when available; fall back to basePrice
+  const displayPrice = lowestPrice != null ? lowestPrice : basePrice;
+  const discounted = Math.round(displayPrice * DIRECT_BOOKING_DISCOUNT);
+  const original = Math.round(displayPrice);
   if (cssPrefix === 'map') {
     return `<span class="prop-price-original">$${original}</span>$${discounted} <span>/ night</span> <span class="prop-price-badge">Save 5%</span>`;
   }
@@ -2812,10 +2818,21 @@ function renderDiscountedPrice(basePrice, cssPrefix) {
 /* ═══ Live pricing from Guesty API ═══ */
 async function fetchAndApplyPrices() {
   try {
-    const res = await fetch('/api/guesty/listings');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    // Fetch listings and lowest calendar prices concurrently
+    const [listingsRes, lowestRes] = await Promise.all([
+      fetch('/api/guesty/listings'),
+      fetch('/api/guesty/lowest-prices').catch(() => null),
+    ]);
+    if (!listingsRes.ok) throw new Error(`HTTP ${listingsRes.status}`);
+    const data = await listingsRes.json();
     const listings = data.listings || [];
+
+    // Parse lowest prices from calendar scan
+    let lowestPrices = {};
+    if (lowestRes && lowestRes.ok) {
+      const lpData = await lowestRes.json();
+      lowestPrices = lpData.prices || {};
+    }
 
     // Merge prices and coordinates into PROPERTIES
     let coordsUpdated = false;
@@ -2825,6 +2842,14 @@ async function fetchAndApplyPrices() {
       if (listing.basePrice != null) {
         prop.basePrice = listing.basePrice;
         prop.currency = listing.currency || 'USD';
+      }
+      if (listing.minNights != null) {
+        prop.minNights = listing.minNights;
+      }
+      // Store the lowest available nightly rate from calendar scan
+      const lp = lowestPrices[listing.slug];
+      if (lp && lp.lowestPrice != null) {
+        prop.lowestPrice = lp.lowestPrice;
       }
       // Update coordinates from Guesty if available
       if (listing.lat != null && listing.lng != null) {
@@ -2845,8 +2870,8 @@ async function fetchAndApplyPrices() {
     document.querySelectorAll('.prop-price[data-slug]').forEach(el => {
       const slug = el.dataset.slug;
       const prop = PROPERTIES.find(p => p.slug === slug);
-      if (prop && prop.basePrice != null) {
-        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card');
+      if (prop && (prop.basePrice != null || prop.lowestPrice != null)) {
+        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card', prop.lowestPrice);
       } else {
         el.innerHTML = '';
       }
@@ -2855,8 +2880,8 @@ async function fetchAndApplyPrices() {
     document.querySelectorAll('.detail-price[data-slug]').forEach(el => {
       const slug = el.dataset.slug;
       const prop = PROPERTIES.find(p => p.slug === slug);
-      if (prop && prop.basePrice != null) {
-        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card');
+      if (prop && (prop.basePrice != null || prop.lowestPrice != null)) {
+        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card', prop.lowestPrice);
       } else {
         el.innerHTML = '';
       }
@@ -2887,8 +2912,8 @@ function refreshMapCardPrice() {
   if (!prop) return;
   const priceEl = document.getElementById('mapCardPrice');
   if (!priceEl) return;
-  if (prop.basePrice != null) {
-    priceEl.innerHTML = renderDiscountedPrice(prop.basePrice, 'map');
+  if (prop.basePrice != null || prop.lowestPrice != null) {
+    priceEl.innerHTML = renderDiscountedPrice(prop.basePrice, 'map', prop.lowestPrice);
   } else {
     priceEl.innerHTML = '<span>Check availability</span>';
   }
@@ -2912,8 +2937,9 @@ function refreshStripPrices() {
       if (badge) info.insertBefore(priceEl, badge);
       else if (info) info.appendChild(priceEl);
     }
-    if (prop.basePrice != null) {
-      const discounted = Math.round(prop.basePrice * DIRECT_BOOKING_DISCOUNT);
+    if (prop.basePrice != null || prop.lowestPrice != null) {
+      const displayPrice = prop.lowestPrice != null ? prop.lowestPrice : prop.basePrice;
+      const discounted = Math.round(displayPrice * DIRECT_BOOKING_DISCOUNT);
       priceEl.innerHTML = `<strong>$${discounted}</strong><span>/nt</span>`;
     } else {
       priceEl.innerHTML = '';
@@ -3017,16 +3043,32 @@ function todayStr() {
   return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
 }
 
+function addDaysStr(ds, n) {
+  const d = new Date(ds + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
 async function fetchCalMonth(slug, y, m) {
   const from = `${y}-${String(m+1).padStart(2,'0')}-01`;
   const last = new Date(y, m+1, 0).getDate();
   const to = `${y}-${String(m+1).padStart(2,'0')}-${String(last).padStart(2,'0')}`;
   try {
-    const res = await fetch(`/api/guesty/calendar?listing=${slug}&from=${from}&to=${to}`);
+    // no-store: availability must reflect Guesty live, never a cached copy
+    const res = await fetch(`/api/guesty/calendar?listing=${slug}&from=${from}&to=${to}`, { cache: 'no-store' });
     if (!res.ok) return;
     const data = await res.json();
     (data.days || []).forEach(d => { calAvail[d.date] = d; });
   } catch(e) { console.warn('Calendar fetch:', e); }
+}
+
+function getMinNightsForCheckin(checkinDate) {
+  const info = calAvail[checkinDate];
+  return (info && info.minNights > 1) ? info.minNights : 1;
+}
+
+function countNightsBetween(a, b) {
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
 }
 
 function renderCal() {
@@ -3037,6 +3079,12 @@ function renderCal() {
   const firstDay = new Date(calYear, calMonth, 1).getDay();
   const dim = new Date(calYear, calMonth+1, 0).getDate();
   const tdy = todayStr();
+  // Calculate earliest valid checkout when a check-in is selected
+  let minCheckoutDate = null;
+  if (calCheckIn && calMode === 'out') {
+    // addDaysStr formats in local time — toISOString() would shift a day for UTC+ visitors
+    minCheckoutDate = addDaysStr(calCheckIn, getMinNightsForCheckin(calCheckIn));
+  }
   let html = '';
   for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell empty"></div>';
   for (let d = 1; d <= dim; d++) {
@@ -3044,17 +3092,41 @@ function renderCal() {
     const info = calAvail[ds];
     const past = ds < tdy;
     const booked = info ? !info.available : false;
+    // In checkout mode, grey out dates before minimum checkout
+    const belowMinNight = (calMode === 'out' && calCheckIn && minCheckoutDate && ds > calCheckIn && ds < minCheckoutDate);
     let cls = 'cal-cell';
     if (past) cls += ' off';
     else if (booked) cls += ' booked';
+    else if (belowMinNight) cls += ' below-min';
     if (ds === tdy) cls += ' today';
     if (ds === calCheckIn) cls += ' sel-start';
     if (ds === calCheckOut) cls += ' sel-end';
     if (calCheckIn && calCheckOut && ds > calCheckIn && ds < calCheckOut) cls += ' in-range';
-    const ok = !past && !booked;
-    html += `<div class="${cls}"${ok ? ` onclick="calDayClick('${ds}')"` : ''}>${d}</div>`;
+    const ok = !past && !booked && !belowMinNight;
+    // Show min-night indicator on available days with minNights > 1
+    let label2 = `${d}`;
+    if (info && info.minNights > 1 && !past && !booked) {
+      label2 += `<span class="cal-min-nights">${info.minNights}n</span>`;
+    }
+    html += `<div class="${cls}"${ok ? ` onclick="calDayClick('${ds}')"` : ''}${belowMinNight ? ` title="Minimum ${getMinNightsForCheckin(calCheckIn)}-night stay"` : ''}>${label2}</div>`;
   }
   grid.innerHTML = html;
+
+  // Show min-night notice when check-in is selected
+  const minNightNotice = document.getElementById('minNightNotice');
+  if (minNightNotice) {
+    if (calCheckIn && calMode === 'out') {
+      const mn = getMinNightsForCheckin(calCheckIn);
+      if (mn > 1) {
+        minNightNotice.textContent = `Minimum ${mn}-night stay required`;
+        minNightNotice.style.display = 'block';
+      } else {
+        minNightNotice.style.display = 'none';
+      }
+    } else {
+      minNightNotice.style.display = 'none';
+    }
+  }
 }
 
 function calDayClick(ds) {
@@ -3069,10 +3141,19 @@ function calDayClick(ds) {
     document.getElementById('bookingMsg').innerHTML = '';
   } else {
     if (ds <= calCheckIn) {
+      // Clicking an earlier or same date resets check-in
       calCheckIn = ds; calCheckOut = null;
       document.getElementById('calValIn').textContent = fmtDate(ds);
       document.getElementById('calValOut').textContent = 'Select date';
+      document.getElementById('bookingMsg').innerHTML = '';
       renderCal(); return;
+    }
+    // Validate minimum nights requirement
+    const nights = countNightsBetween(calCheckIn, ds);
+    const minRequired = getMinNightsForCheckin(calCheckIn);
+    if (nights < minRequired) {
+      showBookingMsg(`This property requires a minimum ${minRequired}-night stay. You selected ${nights} night${nights > 1 ? 's' : ''}.`, 'error');
+      return;
     }
     // Validate no booked dates fall between check-in and check-out
     const blocked = Object.keys(calAvail).filter(k => k > calCheckIn && k < ds && !calAvail[k].available);
@@ -3083,6 +3164,7 @@ function calDayClick(ds) {
     calCheckOut = ds;
     document.getElementById('calValOut').textContent = fmtDate(ds);
     document.getElementById('quoteSection').style.display = 'block';
+    document.getElementById('bookingMsg').innerHTML = '';
   }
   renderCal();
 }
@@ -3091,7 +3173,11 @@ function calMove(dir) {
   calMonth += dir;
   if (calMonth > 11) { calMonth = 0; calYear++; }
   if (calMonth < 0) { calMonth = 11; calYear--; }
+  // Fetch displayed month immediately, pre-fetch adjacent month in background
   fetchCalMonth(calSlug, calYear, calMonth).then(() => renderCal());
+  const adjM = dir > 0 ? (calMonth === 11 ? 0 : calMonth + 1) : (calMonth === 0 ? 11 : calMonth - 1);
+  const adjY = dir > 0 ? (calMonth === 11 ? calYear + 1 : calYear) : (calMonth === 0 ? calYear - 1 : calYear);
+  fetchCalMonth(calSlug, adjY, adjM); // pre-fetch silently
 }
 
 function openBooking(slug) {
@@ -3129,7 +3215,13 @@ function openBooking(slug) {
   document.getElementById('calGrid').innerHTML = '<div class="cal-loading">Loading availability&hellip;</div>';
   document.getElementById('bookingModal').classList.add('open');
   document.body.style.overflow = 'hidden';
-  fetchCalMonth(calSlug, calYear, calMonth).then(() => renderCal());
+  // Fetch current month + next month concurrently for seamless navigation
+  const nextM = calMonth === 11 ? 0 : calMonth + 1;
+  const nextY = calMonth === 11 ? calYear + 1 : calYear;
+  Promise.all([
+    fetchCalMonth(calSlug, calYear, calMonth),
+    fetchCalMonth(calSlug, nextY, nextM),
+  ]).then(() => renderCal());
 }
 
 function closeBooking() {
@@ -3814,7 +3906,7 @@ function openDetail(slug) {
             <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
             <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
           </div>
-          <div class="detail-price" data-slug="${prop.slug}">${prop.basePrice ? renderDiscountedPrice(prop.basePrice, 'card') : '<span class="prop-price-loading"></span>'}</div>
+          <div class="detail-price" data-slug="${prop.slug}">${(prop.basePrice || prop.lowestPrice) ? renderDiscountedPrice(prop.basePrice, 'card', prop.lowestPrice) : '<span class="prop-price-loading"></span>'}</div>
         </div>
         <div class="detail-header-right">${ratingHtml}</div>
       </div>
@@ -4677,8 +4769,8 @@ function selectPropertyOnMap(idx) {
 
   // Price (live from Guesty API, with 5% direct booking discount)
   if (priceEl) {
-    if (prop.basePrice != null) {
-      priceEl.innerHTML = renderDiscountedPrice(prop.basePrice, 'map');
+    if (prop.basePrice != null || prop.lowestPrice != null) {
+      priceEl.innerHTML = renderDiscountedPrice(prop.basePrice, 'map', prop.lowestPrice);
     } else if (window._pricesLoaded) {
       priceEl.innerHTML = '<span>Check availability</span>';
     } else {
@@ -4772,8 +4864,9 @@ function buildMapPropStrip() {
     const distHtml = userLat != null
       ? `<div class="map-prop-strip-dist">${Math.round(haversine(userLat, userLng, prop.lat, prop.lng))} mi</div>`
       : '';
-    const priceHtml = prop.basePrice != null
-      ? `<div class="map-prop-strip-price"><strong>$${Math.round(prop.basePrice * DIRECT_BOOKING_DISCOUNT)}</strong><span>/nt</span></div>`
+    const stripDisplayPrice = prop.lowestPrice != null ? prop.lowestPrice : prop.basePrice;
+    const priceHtml = stripDisplayPrice != null
+      ? `<div class="map-prop-strip-price"><strong>$${Math.round(stripDisplayPrice * DIRECT_BOOKING_DISCOUNT)}</strong><span>/nt</span></div>`
       : '<div class="map-prop-strip-price"></div>';
     return `
     <div class="map-prop-strip-item" data-idx="${idx}" style="animation-delay:${idx * 30}ms">

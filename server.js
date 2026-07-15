@@ -308,6 +308,17 @@ app.get('/api/guesty/listings', async (req, res) => {
   }
 });
 
+// Lowest available nightly prices for all listings (scans 90-day calendar).
+app.get('/api/guesty/lowest-prices', async (req, res) => {
+  try {
+    const prices = await guesty.getLowestPrices();
+    res.json({ prices });
+  } catch (err) {
+    console.error('Guesty lowest-prices error:', err.status || '', err.message);
+    res.status(502).json({ error: 'Could not load lowest prices' });
+  }
+});
+
 // Availability calendar for one listing.
 //   GET /api/guesty/calendar?listing=<slug|id>&from=YYYY-MM-DD&to=YYYY-MM-DD
 app.get('/api/guesty/calendar', async (req, res) => {
@@ -331,6 +342,8 @@ app.get('/api/guesty/calendar', async (req, res) => {
     }
 
     const days = await guesty.getCalendar(listingId, from, to);
+    // Availability must always be live — never let browsers or proxies cache it.
+    res.set('Cache-Control', 'no-store');
     res.json({ listingId, from, to, days });
   } catch (err) {
     console.error('Guesty calendar error:', err.status || '', err.message);
