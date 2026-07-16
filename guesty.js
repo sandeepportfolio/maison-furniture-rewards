@@ -74,6 +74,29 @@ let cachedToken = null;
 let tokenExpiry = 0; // epoch ms
 let inflight = null;  // de-dupe concurrent token fetches
 
+// ── Rate-limit circuit breaker ────────────────────────────────────────
+// When the Guesty auth/API endpoint returns 429, stop retrying for a
+// cooldown period. This prevents cascading failures where every incoming
+// request triggers another auth attempt, extending the rate limit window.
+let rateLimitedUntil = 0;          // epoch ms — don't hit Guesty before this
+let rateLimitBackoffMs = 60_000;   // starts at 1 min, doubles on repeat 429s
+const MAX_RATE_LIMIT_BACKOFF = 10 * 60_000; // cap at 10 minutes
+
+function isRateLimited() {
+  return Date.now() < rateLimitedUntil;
+}
+
+function enterRateLimit() {
+  rateLimitedUntil = Date.now() + rateLimitBackoffMs;
+  console.warn(`Guesty rate-limited — backing off for ${Math.round(rateLimitBackoffMs / 1000)}s (until ${new Date(rateLimitedUntil).toISOString()})`);
+  rateLimitBackoffMs = Math.min(rateLimitBackoffMs * 2, MAX_RATE_LIMIT_BACKOFF);
+}
+
+function clearRateLimit() {
+  rateLimitedUntil = 0;
+  rateLimitBackoffMs = 60_000; // reset backoff on success
+}
+
 function parseTokenExpiry(value) {
   if (!value) return 0;
   if (/^\d+$/.test(String(value))) return Number(value);
@@ -118,6 +141,13 @@ function persistToken() {
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 async function requestTokenWithBackoff(id, secret) {
+  // If we're in a rate-limit cooldown, fail fast instead of hitting Guesty again.
+  if (isRateLimited()) {
+    const e = new Error(`Guesty rate-limited — retry after ${new Date(rateLimitedUntil).toISOString()}`);
+    e.status = 429;
+    throw e;
+  }
+
   const delays = [0, 2_000, 5_000, 10_000, 20_000];
   let lastStatus = null;
   for (let attempt = 0; attempt < delays.length; attempt++) {
@@ -133,10 +163,19 @@ async function requestTokenWithBackoff(id, secret) {
       }),
     });
 
-    if (res.ok) return res.json();
+    if (res.ok) {
+      clearRateLimit(); // success — reset backoff
+      return res.json();
+    }
     lastStatus = res.status;
+
+    // On 429, activate the circuit breaker and stop retrying immediately.
+    if (res.status === 429) {
+      enterRateLimit();
+      break;
+    }
     // Do not surface the response body verbatim — it can echo request params.
-    if (![429, 500, 502, 503, 504].includes(res.status)) break;
+    if (![500, 502, 503, 504].includes(res.status)) break;
   }
   const e = new Error(`Guesty auth failed (${lastStatus})`);
   e.status = lastStatus;
@@ -179,6 +218,13 @@ async function getToken() {
 }
 
 async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true } = {}) {
+  // Fail fast if we're in a rate-limit cooldown.
+  if (isRateLimited()) {
+    const err = new Error(`Guesty rate-limited — retry after ${new Date(rateLimitedUntil).toISOString()}`);
+    err.status = 429;
+    throw err;
+  }
+
   const token = await getToken();
   const res = await fetch(API_BASE + pathname, {
     method,
@@ -203,12 +249,23 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
     return guestyFetch(pathname, { method, body, retryOnAuth: false });
   }
 
+  // Activate the circuit breaker on 429 to prevent cascading failures.
+  if (res.status === 429) {
+    enterRateLimit();
+    const err = new Error('Guesty rate-limited');
+    err.status = 429;
+    err.body = json;
+    throw err;
+  }
+
   if (!res.ok) {
     const err = new Error('Guesty API error');
     err.status = res.status;
     err.body = json;
     throw err;
   }
+
+  clearRateLimit(); // successful API call — reset backoff
   return json;
 }
 
@@ -219,6 +276,11 @@ let listingsCache = null;
 let listingsCacheAt = 0;
 async function getListings() {
   if (listingsCache && Date.now() - listingsCacheAt < 10 * 60_000) {
+    return listingsCache;
+  }
+  // Return stale cache when rate-limited instead of failing the request.
+  if (isRateLimited() && listingsCache) {
+    console.log('Guesty rate-limited — returning stale listings cache');
     return listingsCache;
   }
   const json = await guestyFetch('/listings?limit=25');
@@ -239,6 +301,7 @@ async function getListings() {
       lng: l.address?.lng || null,
       address: l.address?.full || l.address?.street || null,
       basePrice: l.prices?.basePrice,
+      cleaningFee: l.prices?.cleaningFee || 0,
       currency: l.prices?.currency || 'USD',
       minNights: l.terms?.minNights ?? l.defaultMinNights,
       accommodates: l.accommodates,
@@ -349,12 +412,19 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
   const baseAccommodation = stayDays.reduce((sum, d) => sum + (d.price || 0), 0);
   const currency = stayDays[0]?.currency || 'USD';
 
+  // Pull cleaning fee from cached listing data (if available).
+  let cleaningFee = 0;
+  if (listingsCache) {
+    const listing = listingsCache.find(l => l.id === listingId);
+    if (listing) cleaningFee = listing.cleaningFee || 0;
+  }
+
   // Apply 5% direct booking discount — matches the "Save 5%" badge on
   // property cards. Round to the nearest cent so the quote total is clean.
   const DIRECT_BOOKING_DISCOUNT_RATE = 0.05;
   const directBookingDiscount = Math.round(baseAccommodation * DIRECT_BOOKING_DISCOUNT_RATE * 100) / 100;
   const accommodation = baseAccommodation;  // keep original for line-item display
-  const total = baseAccommodation - directBookingDiscount;
+  const total = baseAccommodation - directBookingDiscount + cleaningFee;
   const perNight = nights ? Math.round(baseAccommodation / nights) : 0;
 
   // Generate a local quote ID for tracking
@@ -368,7 +438,7 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
       currency,
       nights,
       accommodation,
-      cleaningFee: 0,
+      cleaningFee,
       taxes: 0,
       directBookingDiscount,
       total,
@@ -553,6 +623,22 @@ async function getLowestPrices() {
     return lowestPricesCache;
   }
 
+  // If we're rate-limited, return stale cache or base prices instead of
+  // triggering 7 concurrent API calls that will all fail with 429.
+  if (isRateLimited()) {
+    if (lowestPricesCache) {
+      console.log('Guesty rate-limited — returning stale lowest prices cache');
+      return lowestPricesCache;
+    }
+    // No cache at all — return base prices from listing data as a fallback
+    console.log('Guesty rate-limited with no cache — returning base prices');
+    const fallback = {};
+    Object.entries(LISTINGS).forEach(([slug]) => {
+      fallback[slug] = { lowestPrice: null, currency: 'USD' };
+    });
+    return fallback;
+  }
+
   const today = new Date();
   const from = today.toISOString().slice(0, 10);
   const future = new Date(today);
@@ -573,17 +659,27 @@ async function getLowestPrices() {
     })
   );
 
+  let successCount = 0;
   settled.forEach(r => {
     if (r.status === 'fulfilled' && r.value) {
       results[r.value.slug] = {
         lowestPrice: r.value.lowestPrice,
         currency: r.value.currency,
       };
+      successCount++;
     }
   });
 
-  lowestPricesCache = results;
-  lowestPricesCacheAt = Date.now();
+  // Only update cache if we got at least some results. If all failed
+  // (e.g. rate limit hit mid-batch), keep the old cache alive.
+  if (successCount > 0) {
+    lowestPricesCache = results;
+    lowestPricesCacheAt = Date.now();
+  } else if (lowestPricesCache) {
+    console.warn('All lowest-price fetches failed — keeping stale cache');
+    return lowestPricesCache;
+  }
+
   return results;
 }
 
@@ -638,6 +734,7 @@ module.exports = {
   updateReservationStatus,
   updateReservation,
   countNights,
+  isRateLimited,
   // BEAPI extensions
   beapiAvailable,
   beapiGetQuote,

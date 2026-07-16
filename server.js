@@ -388,6 +388,9 @@ app.post('/api/guesty/quote', async (req, res) => {
         unavailableDates: err.body?.unavailableDates || [],
       });
     }
+    if (err.status === 429) {
+      return res.status(503).json({ error: 'Our pricing service is temporarily busy. Please try again in a few minutes.' });
+    }
     res.status(502).json({ error: 'Could not get a price for those dates' });
   }
 });
