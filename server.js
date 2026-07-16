@@ -709,7 +709,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
         });
         guestyReservationId = reservation._id || reservation.reservationId || reservation.id || null;
         if (guestyReservationId) {
-          db.prepare("UPDATE booking_requests SET guesty_reservation_id=?, status='inquiry' WHERE id=?")
+          db.prepare("UPDATE booking_requests SET guesty_reservation_id=?, status='confirmed' WHERE id=?")
             .run(guestyReservationId, requestId);
         }
       } catch (apiErr) {
@@ -718,7 +718,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
       }
     }
 
-    const finalStatus = guestyReservationId ? 'inquiry' : 'requested';
+    const finalStatus = guestyReservationId ? 'confirmed' : 'requested';
     res.json({
       success: true,
       status: finalStatus,
