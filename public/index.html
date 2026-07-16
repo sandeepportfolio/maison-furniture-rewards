@@ -1221,111 +1221,124 @@ ul{list-style:none}
 }
 
 /* ═══ REWARDS OVERLAY ═══ */
-.rewards-overlay{position:fixed;inset:0;z-index:9999;background:#0a0a0a;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+.rewards-overlay{position:fixed;inset:0;z-index:9999;background:#080808;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .45s cubic-bezier(.4,0,.2,1)}
 .rewards-overlay.open{opacity:1;pointer-events:auto}
-.rewards-page{max-width:620px;margin:0 auto;padding:0 24px 80px}
+.rewards-page{max-width:580px;margin:0 auto;padding:0 28px 80px}
 
 /* Top bar */
-.rewards-topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 0;position:sticky;top:0;background:#0a0a0a;z-index:10;border-bottom:1px solid rgba(255,255,255,.05)}
-.rewards-back{display:flex;align-items:center;gap:8px;background:none;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:8px 16px;color:var(--text-inv);font-family:var(--sans);font-size:13px;cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
-.rewards-back:hover{border-color:var(--accent);color:var(--accent-light)}
-.rewards-topbar-logo{font-family:var(--sans);font-size:13px;font-weight:300;letter-spacing:.25em;color:var(--text-inv-muted)}
+.rewards-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;position:sticky;top:0;background:rgba(8,8,8,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10;border-bottom:1px solid rgba(255,255,255,.04)}
+.rewards-back{display:flex;align-items:center;gap:8px;background:none;border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:7px 18px;color:rgba(255,255,255,.7);font-family:var(--sans);font-size:12px;letter-spacing:.02em;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.rewards-back:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.rewards-topbar-logo{font-family:var(--sans);font-size:12px;font-weight:300;letter-spacing:.3em;color:rgba(255,255,255,.35)}
 
 /* Hero */
-/* Hero — tight, punchy */
-.rewards-hero{text-align:center;padding:48px 0 8px}
-.rewards-hero .section-label{margin-bottom:10px}
-.rewards-title{font-family:var(--serif);font-size:clamp(30px,5vw,44px);font-weight:400;color:var(--text-inv);line-height:1.12;letter-spacing:-.02em;margin-bottom:10px}
+.rewards-hero{text-align:center;padding:56px 0 12px}
+.rewards-hero .section-label{margin-bottom:14px;font-size:10px;letter-spacing:.18em;color:var(--accent);opacity:.7}
+.rewards-title{font-family:var(--serif);font-size:clamp(32px,6vw,48px);font-weight:400;color:#fff;line-height:1.1;letter-spacing:-.025em;margin-bottom:14px}
 .rewards-title em{font-style:italic;color:var(--accent-light)}
-.rewards-subtitle{font-family:var(--sans);font-size:14px;color:var(--text-inv-muted);line-height:1.7;max-width:420px;margin:0 auto}
+.rewards-subtitle{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.42);line-height:1.65;max-width:380px;margin:0 auto}
 
-/* Amazon gift card banner */
-.rw-amazon-card{display:flex;align-items:center;gap:20px;background:linear-gradient(135deg,#1a1708 0%,#1c1a0e 100%);border:1px solid rgba(255,169,0,.1);border-radius:var(--radius-lg);padding:22px 28px;margin:24px 0 32px;position:relative;overflow:hidden}
-.rw-amazon-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 20%,rgba(255,169,0,.04) 0%,transparent 60%);pointer-events:none}
-.rw-amazon-logo{flex-shrink:0;display:flex;align-items:center}
-.rw-amazon-info{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px}
-.rw-amazon-amount{font-family:var(--serif);font-size:38px;font-weight:400;color:#fff;letter-spacing:-.02em;line-height:1}
-.rw-amazon-label{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.5);letter-spacing:.01em}
-.rw-amazon-tag{font-family:var(--sans);font-size:11px;color:rgba(255,169,0,.6);letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+/* ── Amazon Gift Card — floating card ── */
+.rw-gift-card{position:relative;margin:32px 0 36px;padding:1px;border-radius:16px;background:linear-gradient(160deg,rgba(255,169,0,.18) 0%,rgba(255,169,0,.04) 40%,rgba(255,255,255,.04) 100%)}
+.rw-gift-card-inner{display:flex;align-items:center;gap:24px;padding:28px 32px;border-radius:15px;background:linear-gradient(160deg,#141210 0%,#0f0e0c 50%,#0c0c0c 100%);position:relative;overflow:hidden}
+.rw-gift-card-inner::before{content:'';position:absolute;top:-30%;right:-10%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,169,0,.06) 0%,transparent 70%);pointer-events:none}
+.rw-gift-card-inner::after{content:'';position:absolute;bottom:-20%;left:10%;width:160px;height:160px;background:radial-gradient(circle,rgba(199,107,66,.04) 0%,transparent 70%);pointer-events:none}
+.rw-amazon-logo{flex-shrink:0;display:flex;align-items:center;opacity:.9}
+.rw-gift-card-content{flex:1;min-width:0;position:relative;z-index:1}
+.rw-gift-card-value{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.rw-gift-card-amount{font-family:var(--serif);font-size:42px;font-weight:400;color:#fff;letter-spacing:-.03em;line-height:1}
+.rw-gift-card-label{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.45);font-weight:300}
+.rw-gift-card-tag{font-family:var(--sans);font-size:10px;color:rgba(255,169,0,.55);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.rw-gift-card-badge{position:absolute;top:0;right:0;z-index:1;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:0 15px 0 12px;background:rgba(255,169,0,.06);border-left:1px solid rgba(255,169,0,.08);border-bottom:1px solid rgba(255,169,0,.08)}
+.rw-gift-card-badge svg{color:rgba(255,169,0,.5)}
+.rw-gift-card-badge span{font-family:var(--sans);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,169,0,.5);font-weight:600}
 
-/* Form — immediately after banner */
-.rewards-form-wrap{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);padding:32px 28px;margin-bottom:32px}
-.rewards-form-title{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--text-inv);margin-bottom:3px}
-.rewards-form-sub{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);margin-bottom:24px}
-.rw-field{margin-bottom:18px}
-.rw-field label{display:block;font-family:var(--sans);font-size:11px;font-weight:600;color:rgba(255,255,255,.38);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
-.rw-field input,.rw-field select{width:100%;padding:13px 16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:10px;color:var(--text-inv);font-family:var(--sans);font-size:14px;outline:none;transition:border-color .25s var(--ease),background .25s var(--ease)}
-.rw-field input:focus,.rw-field select:focus{border-color:var(--accent);background:rgba(199,107,66,.025)}
-.rw-field input::placeholder{color:rgba(255,255,255,.2)}
-.rw-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
-.rw-field select option{background:#151515;color:#fff}
-.rw-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* ── Form section ── */
+.rewards-form-wrap{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:36px 32px;margin-bottom:36px;position:relative}
+.rewards-form-title{font-family:var(--serif);font-size:22px;font-weight:400;color:#fff;margin-bottom:4px}
+.rewards-form-sub{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.35);margin-bottom:28px;line-height:1.5}
+.rw-field{margin-bottom:20px}
+.rw-field label{display:block;font-family:var(--sans);font-size:11px;font-weight:500;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.rw-field input,.rw-field select{width:100%;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;color:#fff;font-family:var(--sans);font-size:14px;outline:none;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.rw-field input:focus,.rw-field select:focus{border-color:rgba(199,107,66,.4);background:rgba(199,107,66,.03);box-shadow:0 0 0 3px rgba(199,107,66,.06)}
+.rw-field input::placeholder{color:rgba(255,255,255,.16)}
+.rw-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.rw-field select option{background:#131313;color:#fff}
+.rw-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
 /* Upload */
-.rw-upload{position:relative;border:1.5px dashed rgba(255,255,255,.09);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .25s var(--ease),background .25s var(--ease)}
-.rw-upload:hover,.rw-upload.dragover{border-color:var(--accent);background:rgba(199,107,66,.025)}
+.rw-upload{position:relative;border:1.5px dashed rgba(255,255,255,.07);border-radius:12px;padding:30px 20px;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.rw-upload:hover,.rw-upload.dragover{border-color:rgba(199,107,66,.3);background:rgba(199,107,66,.02)}
 .rw-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.rw-upload-icon{width:42px;height:42px;border-radius:50%;background:rgba(199,107,66,.07);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--accent-light)}
-.rw-upload-text{font-family:var(--sans);font-size:13px;color:var(--text-inv);margin-bottom:3px}
-.rw-upload-hint{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.28)}
-.rw-upload-preview{margin-top:12px;display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.035);border-radius:10px;text-align:left}
+.rw-upload-icon{width:44px;height:44px;border-radius:50%;background:rgba(199,107,66,.05);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--accent-light);opacity:.7}
+.rw-upload-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.6);margin-bottom:3px}
+.rw-upload-hint{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2)}
+.rw-upload-preview{margin-top:12px;display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:10px;text-align:left}
 .rw-upload-preview.visible{display:flex}
-.rw-upload-preview img{width:46px;height:46px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,.08)}
+.rw-upload-preview img{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.06)}
 .rw-upload-preview-info{flex:1;min-width:0}
-.rw-upload-preview-name{font-family:var(--sans);font-size:13px;color:var(--text-inv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rw-upload-preview-size{font-family:var(--sans);font-size:11px;color:var(--text-inv-muted)}
-.rw-upload-remove{background:none;border:none;color:var(--text-inv-muted);cursor:pointer;padding:4px;transition:color .2s}
+.rw-upload-preview-name{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rw-upload-preview-size{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.3)}
+.rw-upload-remove{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;padding:4px;transition:color .2s}
 .rw-upload-remove:hover{color:var(--accent-light)}
 
 /* Submit */
-.rw-submit{width:100%;padding:15px 24px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:500;letter-spacing:.03em;cursor:pointer;transition:background .25s var(--ease),transform .12s var(--ease),box-shadow .25s var(--ease)}
-.rw-submit:hover{background:#d4764a;box-shadow:0 4px 24px rgba(199,107,66,.2)}
-.rw-submit:active{transform:scale(.98)}
-.rw-submit:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.rw-submit{width:100%;padding:16px 24px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:var(--sans);font-size:14px;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.rw-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 50%);opacity:0;transition:opacity .3s}
+.rw-submit:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(199,107,66,.2)}.rw-submit:hover::before{opacity:1}
+.rw-submit:active{transform:translateY(0);box-shadow:0 2px 8px rgba(199,107,66,.15)}
+.rw-submit:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 .rw-submit .spinner-sm{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* How it works — below the form */
-.rw-how-label{font-family:var(--sans);font-size:11px;font-weight:600;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;text-align:center;margin-bottom:16px}
-.rewards-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px}
-.rewards-step{text-align:center;padding:18px 10px;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.04);border-radius:var(--radius);transition:border-color .25s}
-.rewards-step:hover{border-color:rgba(255,255,255,.08)}
-.rewards-step-num{font-family:var(--mono);font-size:10px;color:var(--accent);opacity:.45;letter-spacing:.1em;margin-bottom:6px}
-.rewards-step h4{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text-inv);margin-bottom:3px}
-.rewards-step p{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.32);line-height:1.5}
-.rewards-step-icon{width:36px;height:36px;border-radius:50%;background:rgba(199,107,66,.06);border:1px solid rgba(199,107,66,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--accent-light)}
+/* ── How it works — minimal timeline ── */
+.rw-how-section{margin-bottom:36px}
+.rw-how-label{font-family:var(--sans);font-size:10px;font-weight:600;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:20px}
+.rewards-steps{display:flex;gap:0;align-items:stretch;position:relative}
+.rewards-step{flex:1;text-align:center;padding:20px 12px;position:relative}
+.rewards-step::before{content:'';position:absolute;top:28px;left:calc(50% + 20px);right:calc(-50% + 20px);height:1px;background:rgba(255,255,255,.06)}
+.rewards-step:last-child::before{display:none}
+.rewards-step-icon{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:rgba(255,255,255,.4);transition:all .3s}
+.rewards-step:hover .rewards-step-icon{border-color:rgba(199,107,66,.15);color:var(--accent-light);background:rgba(199,107,66,.04)}
+.rewards-step-num{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.15);letter-spacing:.1em;margin-bottom:5px}
+.rewards-step h4{font-family:var(--sans);font-size:13px;font-weight:500;color:rgba(255,255,255,.7);margin-bottom:2px}
+.rewards-step p{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.22);line-height:1.5}
 
 /* Success */
-.rw-success{display:none;text-align:center;padding:48px 24px}
+.rw-success{display:none;text-align:center;padding:56px 24px}
 .rw-success.visible{display:block}
-.rw-success-icon{width:60px;height:60px;border-radius:50%;background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;color:#66bb6a}
-.rw-success h3{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--text-inv);margin-bottom:8px}
-.rw-success p{font-family:var(--sans);font-size:14px;color:var(--text-inv-muted);line-height:1.7;max-width:380px;margin:0 auto}
-.rw-success .rw-another{margin-top:20px;display:inline-block;padding:10px 24px;border:1px solid rgba(255,255,255,.08);border-radius:10px;color:var(--text-inv);font-family:var(--sans);font-size:13px;cursor:pointer;background:none;transition:border-color .25s,color .25s}
-.rw-success .rw-another:hover{border-color:var(--accent);color:var(--accent-light)}
+.rw-success-icon{width:64px;height:64px;border-radius:50%;background:rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:#66bb6a}
+.rw-success h3{font-family:var(--serif);font-size:28px;font-weight:400;color:#fff;margin-bottom:8px}
+.rw-success p{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:360px;margin:0 auto}
+.rw-success .rw-another{margin-top:24px;display:inline-block;padding:10px 28px;border:1px solid rgba(255,255,255,.07);border-radius:100px;color:rgba(255,255,255,.6);font-family:var(--sans);font-size:13px;cursor:pointer;background:none;transition:all .3s}
+.rw-success .rw-another:hover{border-color:rgba(255,255,255,.15);color:#fff}
 
 /* Fine print */
-.rw-fine{text-align:center;font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.18);line-height:1.7;max-width:400px;margin:0 auto}
+.rw-fine{text-align:center;font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.12);line-height:1.7;max-width:380px;margin:0 auto}
 
 /* Responsive */
 @media(max-width:768px){
-  .rewards-hero{padding:36px 0 4px}
-  .rewards-title{font-size:28px}
+  .rewards-page{padding:0 20px 60px}
+  .rewards-hero{padding:40px 0 8px}
+  .rewards-title{font-size:30px}
   .rewards-subtitle{font-size:13px}
-  .rw-amazon-card{flex-direction:column;text-align:center;gap:12px;padding:20px}
-  .rw-amazon-info{justify-content:center}
-  .rw-amazon-amount{font-size:32px}
-  .rewards-steps{grid-template-columns:1fr;gap:6px}
-  .rewards-step{display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px}
+  .rw-gift-card{margin:24px 0 28px}
+  .rw-gift-card-inner{flex-direction:column;text-align:center;gap:14px;padding:24px 20px}
+  .rw-gift-card-value{justify-content:center}
+  .rw-gift-card-amount{font-size:36px}
+  .rw-gift-card-tag{display:block;margin-top:2px}
+  .rw-gift-card-badge{position:static;border-radius:100px;background:rgba(255,169,0,.05);border:1px solid rgba(255,169,0,.08);justify-content:center;margin-top:4px}
+  .rewards-steps{flex-direction:column;gap:4px}
+  .rewards-step{display:flex;align-items:center;gap:14px;text-align:left;padding:12px 16px}
+  .rewards-step::before{display:none}
   .rewards-step-icon{margin:0;flex-shrink:0}
-  .rewards-step-num{margin-bottom:2px}
-  .rewards-form-wrap{padding:24px 20px}
+  .rewards-step-num{margin-bottom:1px}
+  .rewards-form-wrap{padding:28px 20px}
   .rw-row{grid-template-columns:1fr}
   .rw-upload{padding:24px 16px}
 }
 @media(min-width:769px) and (max-width:1024px){
-  .rewards-page{max-width:540px}
-  .rewards-steps{gap:8px}
+  .rewards-page{max-width:520px}
 }
 </style>
 </head>
@@ -1821,26 +1834,32 @@ ul{list-style:none}
       <p class="rewards-subtitle">Leave a review on Google or Airbnb, submit your proof, and we&rsquo;ll send you a gift card as a thank you.</p>
     </div>
 
-    <!-- Amazon gift card banner -->
-    <div class="rw-amazon-card">
-      <div class="rw-amazon-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 603 182" width="82">
-          <path fill="#FF9900" d="M374 142c-35 22-86 33-129 33-61 0-116-23-158-60-3-3 0-7 4-4 45 26 101 42 158 42 39 0 82-8 121-25 6-3 11 4 4 14z"/>
-          <path fill="#FF9900" d="M389 125c-5-6-30-3-42-1-3 0-4-3-1-5 20-14 54-10 57-5 4 5-1 40-20 57-3 2-5 1-4-2 4-9 12-38 10-44z"/>
-          <path fill="#fff" d="M348 22V7c0-2 2-4 4-4h64c2 0 4 2 4 4v13c0 2-2 5-5 9l-33 47c12 0 25 2 36 8 3 1 3 4 3 6v16c0 2-3 5-5 4-24-13-56-14-82 0-3 1-5-2-5-4V88c0-3 0-7 2-10l39-55h-18c-2 0-4-2-4-4z"/>
-          <path fill="#fff" d="M124 109h-19c-2-1-4-3-4-5V7c0-3 2-5 5-5h18c2 0 4 2 4 4v13h1c5-14 16-20 30-20s26 6 30 20c5-14 17-20 31-20 9 0 19 4 25 12 7 9 6 22 6 34v59c0 3-2 5-5 5h-19c-3-1-4-3-4-5V52c0-5 0-16-7-16-6 0-12 4-14 11-1 3-1 7-1 11v47c0 3-2 5-5 5h-19c-3-1-4-3-4-5V52c0-13 2-28-8-28s-14 14-14 28v53c0 3-2 5-5 5z"/>
-          <path fill="#fff" d="M498 0c14 0 27 5 32 19 6 16 5 41-7 54-10 12-25 16-36 16-15-1-27-6-32-20-5-14-5-39 6-53 10-13 24-16 37-16zm0 17c-8 0-8 10-8 17v20c0 7 0 22 8 22s8-12 8-19v-11c0-5 0-10-1-14-1-5-4-15-7-15z"/>
-          <path fill="#fff" d="M564 109h-19c-3-1-4-3-4-5V7c0-2 2-4 5-4h18c2 0 4 2 4 4v16h0c6-15 14-20 29-20 10 0 20 4 26 13 6 9 6 23 6 34v56c-1 2-3 4-5 4h-20c-2 0-4-2-5-4V50c0-13 2-27-8-27-6 0-13 5-15 12-2 4-2 8-2 15v54c0 3-2 5-5 5z"/>
-          <path fill="#fff" d="M310 62c0 9 0 17-4 25-4 7-10 11-16 11-9 0-14-7-14-17 0-20 18-23 34-23v4zm23 56c-2 1-4 1-5 0-7-6-8-10-12-16-11 11-19 15-34 15-17 0-31-11-31-32 0-17 9-28 22-34 12-5 28-6 40-7v-3c0-5 0-11-3-16-3-4-7-5-12-5-8 0-16 4-17 13-1 2-2 4-4 4l-22-2c-2-1-4-2-3-5C260 7 283 0 304 0c11 0 25 3 33 11 11 10 10 24 10 39v35c0 10 4 15 8 21 2 2 2 5 0 7l-12 10z"/>
-          <path fill="#fff" d="M60 62c0 9 0 17-4 25-4 7-10 11-17 11-9 0-14-7-14-17 0-20 18-23 35-23v4zm23 56c-1 1-4 1-5 0-7-6-8-10-12-16-11 11-19 15-34 15C15 117 0 106 0 85c0-17 9-28 22-34 12-5 28-6 41-7v-3c0-5 0-11-3-16-3-4-8-5-13-5-8 0-16 4-17 13-1 2-2 4-4 4L4 35c-2-1-4-2-3-5C8 7 31 0 53 0c11 0 25 3 33 11 11 10 10 24 10 39v35c0 10 4 15 9 21 1 2 1 5 0 7l-12 10z"/>
-        </svg>
-      </div>
-      <div style="flex:1;min-width:0">
-        <div class="rw-amazon-info">
-          <span class="rw-amazon-amount">$5</span>
-          <span class="rw-amazon-label">gift card</span>
+    <!-- Amazon gift card -->
+    <div class="rw-gift-card">
+      <div class="rw-gift-card-inner">
+        <div class="rw-gift-card-badge">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span>Verified</span>
         </div>
-        <div class="rw-amazon-tag">For every verified review</div>
+        <div class="rw-amazon-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 603 182" width="76">
+            <path fill="#FF9900" d="M374 142c-35 22-86 33-129 33-61 0-116-23-158-60-3-3 0-7 4-4 45 26 101 42 158 42 39 0 82-8 121-25 6-3 11 4 4 14z"/>
+            <path fill="#FF9900" d="M389 125c-5-6-30-3-42-1-3 0-4-3-1-5 20-14 54-10 57-5 4 5-1 40-20 57-3 2-5 1-4-2 4-9 12-38 10-44z"/>
+            <path fill="#fff" d="M348 22V7c0-2 2-4 4-4h64c2 0 4 2 4 4v13c0 2-2 5-5 9l-33 47c12 0 25 2 36 8 3 1 3 4 3 6v16c0 2-3 5-5 4-24-13-56-14-82 0-3 1-5-2-5-4V88c0-3 0-7 2-10l39-55h-18c-2 0-4-2-4-4z"/>
+            <path fill="#fff" d="M124 109h-19c-2-1-4-3-4-5V7c0-3 2-5 5-5h18c2 0 4 2 4 4v13h1c5-14 16-20 30-20s26 6 30 20c5-14 17-20 31-20 9 0 19 4 25 12 7 9 6 22 6 34v59c0 3-2 5-5 5h-19c-3-1-4-3-4-5V52c0-5 0-16-7-16-6 0-12 4-14 11-1 3-1 7-1 11v47c0 3-2 5-5 5h-19c-3-1-4-3-4-5V52c0-13 2-28-8-28s-14 14-14 28v53c0 3-2 5-5 5z"/>
+            <path fill="#fff" d="M498 0c14 0 27 5 32 19 6 16 5 41-7 54-10 12-25 16-36 16-15-1-27-6-32-20-5-14-5-39 6-53 10-13 24-16 37-16zm0 17c-8 0-8 10-8 17v20c0 7 0 22 8 22s8-12 8-19v-11c0-5 0-10-1-14-1-5-4-15-7-15z"/>
+            <path fill="#fff" d="M564 109h-19c-3-1-4-3-4-5V7c0-2 2-4 5-4h18c2 0 4 2 4 4v16h0c6-15 14-20 29-20 10 0 20 4 26 13 6 9 6 23 6 34v56c-1 2-3 4-5 4h-20c-2 0-4-2-5-4V50c0-13 2-27-8-27-6 0-13 5-15 12-2 4-2 8-2 15v54c0 3-2 5-5 5z"/>
+            <path fill="#fff" d="M310 62c0 9 0 17-4 25-4 7-10 11-16 11-9 0-14-7-14-17 0-20 18-23 34-23v4zm23 56c-2 1-4 1-5 0-7-6-8-10-12-16-11 11-19 15-34 15-17 0-31-11-31-32 0-17 9-28 22-34 12-5 28-6 40-7v-3c0-5 0-11-3-16-3-4-7-5-12-5-8 0-16 4-17 13-1 2-2 4-4 4l-22-2c-2-1-4-2-3-5C260 7 283 0 304 0c11 0 25 3 33 11 11 10 10 24 10 39v35c0 10 4 15 8 21 2 2 2 5 0 7l-12 10z"/>
+            <path fill="#fff" d="M60 62c0 9 0 17-4 25-4 7-10 11-17 11-9 0-14-7-14-17 0-20 18-23 35-23v4zm23 56c-1 1-4 1-5 0-7-6-8-10-12-16-11 11-19 15-34 15C15 117 0 106 0 85c0-17 9-28 22-34 12-5 28-6 41-7v-3c0-5 0-11-3-16-3-4-8-5-13-5-8 0-16 4-17 13-1 2-2 4-4 4L4 35c-2-1-4-2-3-5C8 7 31 0 53 0c11 0 25 3 33 11 11 10 10 24 10 39v35c0 10 4 15 9 21 1 2 1 5 0 7l-12 10z"/>
+          </svg>
+        </div>
+        <div class="rw-gift-card-content">
+          <div class="rw-gift-card-value">
+            <span class="rw-gift-card-amount">$5</span>
+            <span class="rw-gift-card-label">gift card</span>
+          </div>
+          <div class="rw-gift-card-tag">For every verified review</div>
+        </div>
       </div>
     </div>
 
@@ -1899,6 +1918,7 @@ ul{list-style:none}
     </div>
 
     <!-- How it works — below form -->
+    <div class="rw-how-section">
     <div class="rw-how-label">How it works</div>
     <div class="rewards-steps">
       <div class="rewards-step">
@@ -1925,6 +1945,7 @@ ul{list-style:none}
         <h4>Get Rewarded</h4>
         <p>Gift card within 7 days.</p>
       </div>
+    </div>
     </div>
 
     <!-- Success state -->
