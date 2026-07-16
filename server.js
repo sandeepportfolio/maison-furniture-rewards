@@ -351,7 +351,7 @@ function sendRewardSubmissionEmail({ name, email, platform, filename }) {
       subject: `Review Reward Request from ${name}`,
       from_name: 'Regent Rewards',
       email: email,
-      cc: 'jatinshekara@gmail.com',
+      cc: 'jatinshekara@gmail.com, sparx.sandeep@gmail.com',
       message: htmlBody
     });
 
@@ -915,7 +915,7 @@ function sendContactEmail({ name, email, phone, property, subject, message }) {
       subject: `New Contact: ${subject || 'General Inquiry'} from ${name || 'Guest'}`,
       from_name: name || 'Website Visitor',
       email: email,
-      cc: 'jatinshekara@gmail.com',
+      cc: 'jatinshekara@gmail.com, sparx.sandeep@gmail.com',
       message: htmlBody
     });
 
