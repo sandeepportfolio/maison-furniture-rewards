@@ -46,15 +46,43 @@ const TOKEN_FILE = path.join(__dirname, 'db', 'guesty-token.json');
 // only ever talks to Guesty about these listings, so the routes can't be
 // abused as an open proxy. Slugs match the `data-property` attributes used
 // by the front-end gallery/cards.
+//
+// Static fallback data (basePrice, cleaningFee, minNights, etc.) ensures
+// the site always works — even when Guesty's API is rate-limited or down.
+// These values are overridden by live API data when available.
 const LISTINGS = {
-  'regent-villa':   { id: '6a3874d5bcc80700147920ca', name: 'Regent Villa' },
-  'cozy-designer':  { id: '6a29dcff12cbdd0015a65a7d', name: 'Cozy Designer Suite' },
-  'lake-view':      { id: '6a29dcfa14fca300148799c2', name: 'Gorgeous Luxury Lake View Suite' },
-  'designer-game':  { id: '6a29dc9862094a0012dfda6f', name: 'Designer Game Suite' },
-  'executive':      { id: '6a29dc944052f30019465228', name: 'Luxury Executive Living' },
-  'stunning-lake':  { id: '6a29dc8f5f85640014dfe380', name: 'Stunning Lake Views' },
-  'regent-skyline': { id: '6a4edd9fab1bbe001491a4e4', name: 'Regent Skyline' },
+  'regent-villa':   { id: '6a3874d5bcc80700147920ca', name: 'Regent Villa',                       basePrice: 485, cleaningFee: 100, minNights: 2, accommodates: 14, bedrooms: 4, bathrooms: 3.5, city: 'Plano',  state: 'Texas' },
+  'cozy-designer':  { id: '6a29dcff12cbdd0015a65a7d', name: 'Cozy Designer Suite',                basePrice: 164, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 1,   city: 'Plano',  state: 'Texas' },
+  'lake-view':      { id: '6a29dcfa14fca300148799c2', name: 'Gorgeous Luxury Lake View Suite',     basePrice: 159, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Plano',  state: 'Texas' },
+  'designer-game':  { id: '6a29dc9862094a0012dfda6f', name: 'Designer Game Suite',                 basePrice: 159, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 1,   city: 'Plano',  state: 'Texas' },
+  'executive':      { id: '6a29dc944052f30019465228', name: 'Luxury Executive Living',             basePrice: 169, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Plano',  state: 'Texas' },
+  'stunning-lake':  { id: '6a29dc8f5f85640014dfe380', name: 'Stunning Lake Views',                 basePrice: 159, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Plano',  state: 'Texas' },
+  'regent-skyline': { id: '6a4edd9fab1bbe001491a4e4', name: 'Regent Skyline',                      basePrice: 155, cleaningFee: 50,  minNights: 1, accommodates: 5,  bedrooms: 1, bathrooms: 1,   city: 'Dallas', state: 'Texas' },
 };
+
+// Build static fallback listing data from LISTINGS — used when both
+// API and cache are unavailable (e.g. during prolonged rate limits).
+function buildStaticListings() {
+  return Object.entries(LISTINGS).map(([slug, meta]) => ({
+    slug,
+    id: meta.id,
+    title: meta.name,
+    nickname: null,
+    city: meta.city,
+    state: meta.state,
+    lat: null,
+    lng: null,
+    address: null,
+    basePrice: meta.basePrice,
+    cleaningFee: meta.cleaningFee || 0,
+    currency: 'USD',
+    minNights: meta.minNights || 1,
+    accommodates: meta.accommodates,
+    bedrooms: meta.bedrooms,
+    bathrooms: meta.bathrooms,
+    _static: true,  // flag so callers know this is fallback data
+  }));
+}
 
 const LISTING_IDS = new Set(Object.values(LISTINGS).map(l => l.id));
 
@@ -283,7 +311,25 @@ async function getListings() {
     console.log('Guesty rate-limited — returning stale listings cache');
     return listingsCache;
   }
-  const json = await guestyFetch('/listings?limit=25');
+  // If rate-limited and NO cache at all, return static fallback data so the
+  // site still shows listings with base prices instead of an error page.
+  if (isRateLimited()) {
+    console.log('Guesty rate-limited with no cache — returning static listings fallback');
+    return buildStaticListings();
+  }
+
+  let json;
+  try {
+    json = await guestyFetch('/listings?limit=25');
+  } catch (err) {
+    // If the API call fails (auth error, rate limit, etc.), return static
+    // fallback so the site never shows "Could not load listings".
+    console.warn('Guesty listings fetch failed:', err.status || '', err.message);
+    if (listingsCache) return listingsCache;
+    console.log('No listings cache — returning static listings fallback');
+    return buildStaticListings();
+  }
+
   const results = json.results || [];
   const byId = new Map(results.map(l => [l._id, l]));
 
@@ -388,35 +434,63 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
   }
 
   // ── Fallback: local calculation from Open API calendar ──
-  const calendar = await getCalendar(listingId, checkIn, checkOut);
-  // We need exactly `nights` stay-night entries (check-out date is departure, not a stay night)
-  const stayDays = calendar.slice(0, nights);
-
-  // Verify every stay night is available
-  const unavailable = stayDays.filter(d => !d.available);
-  if (unavailable.length) {
-    const err = new Error('Some dates are not available');
-    err.status = 409;
-    err.body = { unavailableDates: unavailable.map(d => d.date) };
-    throw err;
+  let stayDays = null;
+  let calendarAvailable = false;
+  try {
+    const calendar = await getCalendar(listingId, checkIn, checkOut);
+    // We need exactly `nights` stay-night entries (check-out date is departure, not a stay night)
+    stayDays = calendar.slice(0, nights);
+    calendarAvailable = stayDays.length > 0;
+  } catch (calErr) {
+    console.warn('Calendar fetch failed for local quote, using static base price:', calErr.message);
   }
 
-  // Check minimum nights
-  const maxMinNights = Math.max(...stayDays.map(d => d.minNights || 1));
-  if (nights < maxMinNights) {
-    const err = new Error(`Minimum stay is ${maxMinNights} nights`);
-    err.status = 400;
-    throw err;
+  if (calendarAvailable) {
+    // Verify every stay night is available
+    const unavailable = stayDays.filter(d => !d.available);
+    if (unavailable.length) {
+      const err = new Error('Some dates are not available');
+      err.status = 409;
+      err.body = { unavailableDates: unavailable.map(d => d.date) };
+      throw err;
+    }
+
+    // Check minimum nights
+    const maxMinNights = Math.max(...stayDays.map(d => d.minNights || 1));
+    if (nights < maxMinNights) {
+      const err = new Error(`Minimum stay is ${maxMinNights} nights`);
+      err.status = 400;
+      throw err;
+    }
   }
 
-  const baseAccommodation = stayDays.reduce((sum, d) => sum + (d.price || 0), 0);
-  const currency = stayDays[0]?.currency || 'USD';
+  // Use calendar prices when available, otherwise fall back to static base price.
+  let baseAccommodation;
+  let currency = 'USD';
+  if (calendarAvailable) {
+    baseAccommodation = stayDays.reduce((sum, d) => sum + (d.price || 0), 0);
+    currency = stayDays[0]?.currency || 'USD';
+  } else {
+    // Static base price fallback — find the listing's base price from LISTINGS.
+    const listingMeta = Object.values(LISTINGS).find(l => l.id === listingId);
+    const staticBase = listingMeta?.basePrice || 0;
+    if (!staticBase) {
+      throw Object.assign(new Error('Could not get a price for those dates'), { status: 502 });
+    }
+    baseAccommodation = staticBase * nights;
+    console.log(`Using static base price $${staticBase}/night × ${nights} nights = $${baseAccommodation}`);
+  }
 
-  // Pull cleaning fee from cached listing data (if available).
+  // Pull cleaning fee from cached listing data or static LISTINGS.
   let cleaningFee = 0;
   if (listingsCache) {
     const listing = listingsCache.find(l => l.id === listingId);
     if (listing) cleaningFee = listing.cleaningFee || 0;
+  }
+  if (!cleaningFee) {
+    // Fall back to static data
+    const listingMeta = Object.values(LISTINGS).find(l => l.id === listingId);
+    cleaningFee = listingMeta?.cleaningFee || 0;
   }
 
   // Apply 5% direct booking discount — matches the "Save 5%" badge on
@@ -630,11 +704,12 @@ async function getLowestPrices() {
       console.log('Guesty rate-limited — returning stale lowest prices cache');
       return lowestPricesCache;
     }
-    // No cache at all — return base prices from listing data as a fallback
-    console.log('Guesty rate-limited with no cache — returning base prices');
+    // No cache at all — return base prices from static listing data as fallback.
+    // This ensures property cards always show a "From $X" price instead of blank.
+    console.log('Guesty rate-limited with no cache — returning static base prices');
     const fallback = {};
-    Object.entries(LISTINGS).forEach(([slug]) => {
-      fallback[slug] = { lowestPrice: null, currency: 'USD' };
+    Object.entries(LISTINGS).forEach(([slug, meta]) => {
+      fallback[slug] = { lowestPrice: meta.basePrice || null, currency: 'USD' };
     });
     return fallback;
   }
@@ -717,6 +792,25 @@ async function beapiUpdateQuoteCoupons(quoteId, coupons) {
   if (!beapi || !beapi.isConfigured()) throw new Error('BEAPI not configured');
   return beapi.updateQuoteCoupons(quoteId, coupons);
 }
+
+// ── Background pre-warm ──────────────────────────────────────────────────
+// Try to populate listings + prices cache on startup (non-blocking).
+// If the API is rate-limited, the circuit breaker will catch it and the
+// static fallback data ensures the site still works.
+setTimeout(() => {
+  getListings()
+    .then(listings => {
+      console.log(`Startup: cached ${listings.length} listings (${listings[0]?._static ? 'static fallback' : 'live API'})`);
+      return getLowestPrices();
+    })
+    .then(prices => {
+      const count = Object.values(prices).filter(p => p.lowestPrice !== null).length;
+      console.log(`Startup: cached lowest prices for ${count} listings`);
+    })
+    .catch(err => {
+      console.warn('Startup pre-warm failed (will use static fallback):', err.message);
+    });
+}, 2_000); // delay 2s so the server is ready to accept requests first
 
 module.exports = {
   LISTINGS,
