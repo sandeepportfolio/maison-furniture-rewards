@@ -298,20 +298,25 @@ function isValidDate(s) {
 }
 function todayUTC() { return new Date().toISOString().slice(0, 10); }
 
-// List the bookable properties (live data from Guesty, cached).
+// List the bookable properties (live data from Guesty, cached 60 min server-side).
 app.get('/api/guesty/listings', async (req, res) => {
   try {
-    res.json({ listings: await guesty.getListings() });
+    const listings = await guesty.getListings();
+    // Allow browsers/CDNs to cache for 5 min (server cache is 60 min)
+    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    res.json({ listings });
   } catch (err) {
     console.error('Guesty listings error:', err.status || '', err.message);
     res.status(502).json({ error: 'Could not load listings' });
   }
 });
 
-// Lowest available nightly prices for all listings (scans 90-day calendar).
+// Lowest available nightly prices for all listings (scans 90-day calendar, cached 2h server-side).
 app.get('/api/guesty/lowest-prices', async (req, res) => {
   try {
     const prices = await guesty.getLowestPrices();
+    // Allow browsers/CDNs to cache for 10 min (server cache is 2 hours)
+    res.set('Cache-Control', 'public, max-age=600, stale-while-revalidate=1200');
     res.json({ prices });
   } catch (err) {
     console.error('Guesty lowest-prices error:', err.status || '', err.message);

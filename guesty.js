@@ -297,13 +297,69 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
   return json;
 }
 
+// ── In-flight request deduplication ──────────────────────────────────
+// Prevents duplicate API calls when multiple requests arrive for the
+// same resource simultaneously (e.g. multiple guests loading the page
+// at once). Each key maps to a pending Promise; subsequent callers get
+// the same Promise instead of firing a second API request.
+const inflightRequests = new Map();
+
+function deduplicatedFetch(key, fetchFn) {
+  if (inflightRequests.has(key)) {
+    return inflightRequests.get(key);
+  }
+  const promise = fetchFn().finally(() => {
+    inflightRequests.delete(key);
+  });
+  inflightRequests.set(key, promise);
+  return promise;
+}
+
+// ── Calendar cache (per-listing, 30 min TTL) ─────────────────────────
+// Calendar data changes infrequently — caching it prevents redundant
+// API calls from getLowestPrices, createQuote, and direct /calendar
+// requests. Key = `${listingId}:${from}:${to}`.
+const calendarCache = new Map();
+const CALENDAR_CACHE_TTL = 30 * 60_000; // 30 minutes
+
+function getCalendarCacheKey(listingId, from, to) {
+  return `${listingId}:${from}:${to}`;
+}
+
+function getCachedCalendar(listingId, from, to) {
+  const key = getCalendarCacheKey(listingId, from, to);
+  const entry = calendarCache.get(key);
+  if (entry && Date.now() - entry.ts < CALENDAR_CACHE_TTL) {
+    return entry.data;
+  }
+  return null;
+}
+
+function setCachedCalendar(listingId, from, to, data) {
+  const key = getCalendarCacheKey(listingId, from, to);
+  calendarCache.set(key, { ts: Date.now(), data });
+  // Prune stale entries periodically (keep cache bounded)
+  if (calendarCache.size > 100) {
+    const now = Date.now();
+    for (const [k, v] of calendarCache) {
+      if (now - v.ts > CALENDAR_CACHE_TTL) calendarCache.delete(k);
+    }
+  }
+}
+
+// ── Payment provider cache (per-listing, 60 min TTL) ─────────────────
+const paymentProviderCache = new Map();
+const PAYMENT_PROVIDER_CACHE_TTL = 60 * 60_000; // 60 minutes
+
 // ── Public operations ──────────────────────────────────────────────────
 
-/** Live listings (cached briefly) with normalized pricing/capacity. */
+/** Live listings (cached 60 min) with normalized pricing/capacity. */
 let listingsCache = null;
 let listingsCacheAt = 0;
+const LISTINGS_CACHE_TTL = 60 * 60_000; // 60 minutes (was 10 min)
+
 async function getListings() {
-  if (listingsCache && Date.now() - listingsCacheAt < 10 * 60_000) {
+  if (listingsCache && Date.now() - listingsCacheAt < LISTINGS_CACHE_TTL) {
     return listingsCache;
   }
   // Return stale cache when rate-limited instead of failing the request.
@@ -320,7 +376,7 @@ async function getListings() {
 
   let json;
   try {
-    json = await guestyFetch('/listings?limit=25');
+    json = await deduplicatedFetch('listings', () => guestyFetch('/listings?limit=25'));
   } catch (err) {
     // If the API call fails (auth error, rate limit, etc.), return static
     // fallback so the site never shows "Could not load listings".
@@ -361,13 +417,35 @@ async function getListings() {
   return out;
 }
 
-/** Availability calendar for one listing between two dates (YYYY-MM-DD). */
+/** Availability calendar for one listing between two dates (YYYY-MM-DD).
+ *  Cached for 30 min per listing+date-range. De-duplicated so concurrent
+ *  requests for the same calendar share a single API call. */
 async function getCalendar(listingId, from, to) {
-  const days = await guestyFetch(
-    `/availability-pricing/api/calendar/listings/${listingId}?startDate=${encodeURIComponent(from)}&endDate=${encodeURIComponent(to)}`
+  // Check cache first
+  const cached = getCachedCalendar(listingId, from, to);
+  if (cached) return cached;
+
+  // Return stale cache when rate-limited
+  if (isRateLimited()) {
+    const stale = calendarCache.get(getCalendarCacheKey(listingId, from, to));
+    if (stale) {
+      console.log(`Guesty rate-limited — returning stale calendar cache for ${listingId}`);
+      return stale.data;
+    }
+    const err = new Error('Guesty rate-limited — no calendar cache available');
+    err.status = 429;
+    throw err;
+  }
+
+  const fetchKey = `calendar:${listingId}:${from}:${to}`;
+  const days = await deduplicatedFetch(fetchKey, () =>
+    guestyFetch(
+      `/availability-pricing/api/calendar/listings/${listingId}?startDate=${encodeURIComponent(from)}&endDate=${encodeURIComponent(to)}`
+    )
   );
+
   const arr = Array.isArray(days) ? days : (days.data?.days || days.data || days.results || days.days || []);
-  return arr.map(d => ({
+  const result = arr.map(d => ({
     date: d.date,
     status: d.status,                 // 'available' | 'unavailable' | 'booked' | ...
     available: d.status === 'available',
@@ -377,6 +455,10 @@ async function getCalendar(listingId, from, to) {
     cta: !!d.cta,                     // closed to arrival
     ctd: !!d.ctd,                     // closed to departure
   }));
+
+  // Cache the processed result
+  setCachedCalendar(listingId, from, to, result);
+  return result;
 }
 
 /**
@@ -525,13 +607,24 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
 }
 
 /**
- * Get the payment provider connected to a listing.
+ * Get the payment provider connected to a listing (cached 60 min).
  * Guesty Pay needs the Guesty payment provider ID, not a Stripe publishable
  * key/account ID. The frontend passes this provider ID into Guesty's PCI-safe
  * tokenization iframe.
  */
 async function getPaymentProvider(listingId) {
-  return guestyFetch(`/payment-providers/provider-by-listing?listingId=${encodeURIComponent(listingId)}&includeInactiveProviders=false`);
+  // Check cache first — payment provider config changes very rarely
+  const cached = paymentProviderCache.get(listingId);
+  if (cached && Date.now() - cached.ts < PAYMENT_PROVIDER_CACHE_TTL) {
+    return cached.data;
+  }
+
+  const result = await deduplicatedFetch(`payment-provider:${listingId}`, () =>
+    guestyFetch(`/payment-providers/provider-by-listing?listingId=${encodeURIComponent(listingId)}&includeInactiveProviders=false`)
+  );
+
+  paymentProviderCache.set(listingId, { ts: Date.now(), data: result });
+  return result;
 }
 
 function normalizePaymentProvider(provider) {
@@ -683,14 +776,18 @@ async function updateReservation(reservationId, body) {
   });
 }
 
-// ── Lowest available price per listing (cached 15 min) ───────────────────
+// ── Lowest available price per listing (cached 2 hours) ──────────────────
 let lowestPricesCache = null;
 let lowestPricesCacheAt = 0;
-const LOWEST_PRICES_TTL = 15 * 60_000; // 15 minutes
+const LOWEST_PRICES_TTL = 120 * 60_000; // 120 minutes (was 15 min)
 
 /**
  * Fetch the lowest available nightly rate for each listing by scanning
  * the next 90 days of calendar data. Returns a map of slug → { lowestPrice, currency }.
+ *
+ * Calendar fetches are SERIALIZED with 2s delays between them to avoid
+ * bursting the 120 req/min rate limit. Each individual calendar call is
+ * also de-duplicated and cached for 30 min.
  */
 async function getLowestPrices() {
   if (lowestPricesCache && Date.now() - lowestPricesCacheAt < LOWEST_PRICES_TTL) {
@@ -698,7 +795,7 @@ async function getLowestPrices() {
   }
 
   // If we're rate-limited, return stale cache or base prices instead of
-  // triggering 7 concurrent API calls that will all fail with 429.
+  // triggering 7 API calls that will all fail with 429.
   if (isRateLimited()) {
     if (lowestPricesCache) {
       console.log('Guesty rate-limited — returning stale lowest prices cache');
@@ -714,48 +811,58 @@ async function getLowestPrices() {
     return fallback;
   }
 
-  const today = new Date();
-  const from = today.toISOString().slice(0, 10);
-  const future = new Date(today);
-  future.setDate(future.getDate() + 90);
-  const to = future.toISOString().slice(0, 10);
+  // Use deduplication so concurrent calls share the same fetch cycle
+  return deduplicatedFetch('lowest-prices', async () => {
+    const today = new Date();
+    const from = today.toISOString().slice(0, 10);
+    const future = new Date(today);
+    future.setDate(future.getDate() + 90);
+    const to = future.toISOString().slice(0, 10);
 
-  const entries = Object.entries(LISTINGS);
-  const results = {};
+    const entries = Object.entries(LISTINGS);
+    const results = {};
+    let successCount = 0;
 
-  // Fetch all calendars concurrently
-  const settled = await Promise.allSettled(
-    entries.map(async ([slug, meta]) => {
-      const days = await getCalendar(meta.id, from, to);
-      const available = days.filter(d => d.available && d.price > 0);
-      if (available.length === 0) return { slug, lowestPrice: null, currency: 'USD' };
-      const lowest = Math.min(...available.map(d => d.price));
-      return { slug, lowestPrice: lowest, currency: available[0].currency || 'USD' };
-    })
-  );
-
-  let successCount = 0;
-  settled.forEach(r => {
-    if (r.status === 'fulfilled' && r.value) {
-      results[r.value.slug] = {
-        lowestPrice: r.value.lowestPrice,
-        currency: r.value.currency,
-      };
-      successCount++;
+    // Serialize calendar fetches with 2s delays to avoid rate-limit bursts.
+    // Each getCalendar call is itself cached (30 min) and de-duplicated, so
+    // if the calendar was recently fetched for a listing, no API call is made.
+    for (let i = 0; i < entries.length; i++) {
+      const [slug, meta] = entries[i];
+      // Add a 2s delay between API calls (skip the first one)
+      if (i > 0 && !getCachedCalendar(meta.id, from, to)) {
+        await sleep(2_000);
+      }
+      try {
+        const days = await getCalendar(meta.id, from, to);
+        const available = days.filter(d => d.available && d.price > 0);
+        if (available.length > 0) {
+          const lowest = Math.min(...available.map(d => d.price));
+          results[slug] = { lowestPrice: lowest, currency: available[0].currency || 'USD' };
+        } else {
+          results[slug] = { lowestPrice: null, currency: 'USD' };
+        }
+        successCount++;
+      } catch (err) {
+        console.warn(`Lowest price fetch failed for ${slug}:`, err.message);
+        // If rate-limited mid-batch, stop fetching remaining listings
+        if (err.status === 429 || isRateLimited()) {
+          console.warn('Rate-limited mid-batch — stopping remaining lowest-price fetches');
+          break;
+        }
+      }
     }
+
+    // Only update cache if we got at least some results.
+    if (successCount > 0) {
+      lowestPricesCache = results;
+      lowestPricesCacheAt = Date.now();
+    } else if (lowestPricesCache) {
+      console.warn('All lowest-price fetches failed — keeping stale cache');
+      return lowestPricesCache;
+    }
+
+    return results;
   });
-
-  // Only update cache if we got at least some results. If all failed
-  // (e.g. rate limit hit mid-batch), keep the old cache alive.
-  if (successCount > 0) {
-    lowestPricesCache = results;
-    lowestPricesCacheAt = Date.now();
-  } else if (lowestPricesCache) {
-    console.warn('All lowest-price fetches failed — keeping stale cache');
-    return lowestPricesCache;
-  }
-
-  return results;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -794,23 +901,27 @@ async function beapiUpdateQuoteCoupons(quoteId, coupons) {
 }
 
 // ── Background pre-warm ──────────────────────────────────────────────────
-// Try to populate listings + prices cache on startup (non-blocking).
+// Populate listings + prices cache on startup (non-blocking, staggered).
+// Listings are fetched first, then lowest-prices (which serializes its own
+// calendar calls with 2s delays). Total startup API footprint is spread
+// over ~20s instead of firing 8+ calls in the first 2 seconds.
 // If the API is rate-limited, the circuit breaker will catch it and the
 // static fallback data ensures the site still works.
-setTimeout(() => {
-  getListings()
-    .then(listings => {
-      console.log(`Startup: cached ${listings.length} listings (${listings[0]?._static ? 'static fallback' : 'live API'})`);
-      return getLowestPrices();
-    })
-    .then(prices => {
-      const count = Object.values(prices).filter(p => p.lowestPrice !== null).length;
-      console.log(`Startup: cached lowest prices for ${count} listings`);
-    })
-    .catch(err => {
-      console.warn('Startup pre-warm failed (will use static fallback):', err.message);
-    });
-}, 2_000); // delay 2s so the server is ready to accept requests first
+setTimeout(async () => {
+  try {
+    const listings = await getListings();
+    console.log(`Startup: cached ${listings.length} listings (${listings[0]?._static ? 'static fallback' : 'live API'})`);
+
+    // Wait 5s before starting calendar fetches to spread the load
+    await sleep(5_000);
+
+    const prices = await getLowestPrices();
+    const count = Object.values(prices).filter(p => p.lowestPrice !== null).length;
+    console.log(`Startup: cached lowest prices for ${count} listings`);
+  } catch (err) {
+    console.warn('Startup pre-warm failed (will use static fallback):', err.message);
+  }
+}, 3_000); // delay 3s so the server is ready to accept requests first
 
 module.exports = {
   LISTINGS,
