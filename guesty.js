@@ -300,7 +300,17 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
         coupons,
       });
       const summary = beapi.normalizeQuoteSummary(beapiQuote);
-      return { quote: beapiQuote, summary };
+      // Guard: if BEAPI returned 200 but the quote has no rate plans / zero
+      // pricing (common when Booking Engine channel isn't configured for a
+      // listing), fall through to the local calendar calculation instead of
+      // returning a zero-total quote that the route handler rejects as "No
+      // price available".
+      if (summary.total > 0) {
+        return { quote: beapiQuote, summary };
+      }
+      console.warn(
+        'BEAPI returned a quote with total=0 (no rate plans?), falling back to local calculation'
+      );
     } catch (beapiErr) {
       // Fall back to local calculation for every BEAPI failure, including 4xx.
       // Booking Engine rate plans are not configured yet, so the BEAPI returns
