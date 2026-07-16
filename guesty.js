@@ -302,16 +302,15 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
       const summary = beapi.normalizeQuoteSummary(beapiQuote);
       return { quote: beapiQuote, summary };
     } catch (beapiErr) {
-      // If BEAPI fails with a client error, propagate it (don't silently fall back)
-      if (beapiErr.status >= 400 && beapiErr.status < 500) {
-        // Re-map BEAPI error to our expected error shape
-        const err = new Error(beapiErr.message || 'Quote request failed');
-        err.status = beapiErr.status;
-        err.body = beapiErr.body;
-        throw err;
-      }
-      // For server/network errors, fall back to local calculation
-      console.warn('BEAPI quote failed, falling back to local calculation:', beapiErr.message);
+      // Fall back to local calculation for every BEAPI failure, including 4xx.
+      // Booking Engine rate plans are not configured yet, so the BEAPI returns
+      // errors like "No price available for those dates" (409) and "All rate
+      // plans are not applicable" (400) for stays the local calendar can price.
+      // Accommodation-only pricing beats surfacing those errors to the guest.
+      console.warn(
+        `BEAPI quote failed (status ${beapiErr.status ?? 'n/a'}), falling back to local calculation:`,
+        beapiErr.message
+      );
     }
   }
 
