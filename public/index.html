@@ -3287,6 +3287,7 @@ async function getQuote() {
     if (data.cleaningFee) breakdownHtml += `<div class="quote-row"><span>Cleaning fee</span><span>$${data.cleaningFee.toFixed(2)}</span></div>`;
     if (data.totalFees && !data.cleaningFee) breakdownHtml += `<div class="quote-row"><span>Service fees</span><span>$${data.totalFees.toFixed(2)}</span></div>`;
     if (data.taxes) breakdownHtml += `<div class="quote-row"><span>Taxes</span><span>$${data.taxes.toFixed(2)}</span></div>`;
+    if (data.directBookingDiscount) breakdownHtml += `<div class="quote-row" style="color:var(--accent)"><span>Direct booking discount (5%)</span><span>-$${data.directBookingDiscount.toFixed(2)}</span></div>`;
     if (data.promotionDiscount) breakdownHtml += `<div class="quote-row" style="color:var(--accent)"><span>Promotion discount</span><span>-$${data.promotionDiscount.toFixed(2)}</span></div>`;
     breakdownHtml += `<div class="quote-row quote-total"><span>Total</span><span>$${(data.total||0).toFixed(2)} ${data.currency||'USD'}</span></div>`;
     document.getElementById('quoteResult').innerHTML = `<div class="booking-quote">${breakdownHtml}</div>`;
@@ -3410,6 +3411,7 @@ async function goToPaymentStep() {
     if (lastQuoteData && lastQuoteData.cleaningFee) reviewRows += `<div class="review-row"><span>Cleaning fee</span><span>$${lastQuoteData.cleaningFee.toFixed(2)}</span></div>`;
     if (lastQuoteData && lastQuoteData.totalFees && !lastQuoteData.cleaningFee) reviewRows += `<div class="review-row"><span>Service fees</span><span>$${lastQuoteData.totalFees.toFixed(2)}</span></div>`;
     if (lastQuoteData && lastQuoteData.taxes) reviewRows += `<div class="review-row"><span>Taxes</span><span>$${lastQuoteData.taxes.toFixed(2)}</span></div>`;
+    if (lastQuoteData && lastQuoteData.directBookingDiscount) reviewRows += `<div class="review-row" style="color:var(--accent)"><span>Direct booking discount (5%)</span><span>-$${lastQuoteData.directBookingDiscount.toFixed(2)}</span></div>`;
     if (lastQuoteData && lastQuoteData.promotionDiscount) reviewRows += `<div class="review-row" style="color:var(--accent)"><span>Promotion discount</span><span>-$${lastQuoteData.promotionDiscount.toFixed(2)}</span></div>`;
     reviewRows += `
       <div class="review-row review-total"><span>Total</span><span>${lastQuoteData ? '$'+lastQuoteData.total.toFixed(2)+' '+(lastQuoteData.currency||'USD') : ''}</span></div>

@@ -346,9 +346,16 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
     throw err;
   }
 
-  const accommodation = stayDays.reduce((sum, d) => sum + (d.price || 0), 0);
+  const baseAccommodation = stayDays.reduce((sum, d) => sum + (d.price || 0), 0);
   const currency = stayDays[0]?.currency || 'USD';
-  const perNight = nights ? Math.round(accommodation / nights) : 0;
+
+  // Apply 5% direct booking discount — matches the "Save 5%" badge on
+  // property cards. Round to the nearest cent so the quote total is clean.
+  const DIRECT_BOOKING_DISCOUNT_RATE = 0.05;
+  const directBookingDiscount = Math.round(baseAccommodation * DIRECT_BOOKING_DISCOUNT_RATE * 100) / 100;
+  const accommodation = baseAccommodation;  // keep original for line-item display
+  const total = baseAccommodation - directBookingDiscount;
+  const perNight = nights ? Math.round(baseAccommodation / nights) : 0;
 
   // Generate a local quote ID for tracking
   const quoteId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -363,7 +370,8 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
       accommodation,
       cleaningFee: 0,
       taxes: 0,
-      total: accommodation,
+      directBookingDiscount,
+      total,
       perNight,
       invoiceItems: [],
       expiresAt: new Date(Date.now() + 30 * 60_000).toISOString(), // 30 min

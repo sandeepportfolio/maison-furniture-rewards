@@ -545,7 +545,8 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
       status: 'reserved',
       // Keep the hold short so a failed/abandoned payment does not block the calendar indefinitely.
       reservedUntil: 0.5,
-      money: { fareAccommodation: summary.accommodation },
+      // Use total (includes 5% direct booking discount) so Guesty shows the actual charge
+      money: { fareAccommodation: summary.total },
     });
     const reservationId = reservation._id || reservation.reservationId || reservation.id;
 
@@ -666,9 +667,11 @@ app.post('/api/guesty/reservation', async (req, res) => {
     );
     const requestId = row.lastInsertRowid;
 
-    // When BEAPI is available and we have a real quoteId, create the inquiry
-    // through BEAPI's quote-based flow for tighter Guesty integration.
+    // Create the reservation in Guesty so dates are blocked and the host
+    // can see/manage it inside the Guesty dashboard.
     let guestyReservationId = null;
+
+    // Path A: BEAPI inquiry flow (preferred when BEAPI is configured)
     if (guesty.beapiAvailable() && summary.source === 'beapi' && summary.ratePlanId) {
       try {
         const beapiRes = await guesty.beapiCreateInquiryReservation(summary.quoteId, {
@@ -686,14 +689,39 @@ app.post('/api/guesty/reservation', async (req, res) => {
             .run(guestyReservationId, requestId);
         }
       } catch (beapiErr) {
-        // Log but don't fail — the booking request is already recorded locally.
-        console.warn('BEAPI inquiry creation failed (local record preserved):', beapiErr.message);
+        console.warn('BEAPI inquiry creation failed, trying Open API:', beapiErr.message);
       }
     }
 
+    // Path B: Open API reservation (fallback when BEAPI is unavailable or failed)
+    if (!guestyReservationId) {
+      try {
+        const guestResult = await guesty.createGuest(g);
+        const guestId = guestResult._id || guestResult.id;
+        const reservation = await guesty.createReservation({
+          listingId,
+          checkIn,
+          checkOut,
+          guests,
+          guestId,
+          status: 'inquiry',
+          money: { fareAccommodation: summary.total },
+        });
+        guestyReservationId = reservation._id || reservation.reservationId || reservation.id || null;
+        if (guestyReservationId) {
+          db.prepare("UPDATE booking_requests SET guesty_reservation_id=?, status='inquiry' WHERE id=?")
+            .run(guestyReservationId, requestId);
+        }
+      } catch (apiErr) {
+        // Log but don't fail — the booking request is already recorded locally.
+        console.warn('Open API reservation creation failed (local record preserved):', apiErr.message);
+      }
+    }
+
+    const finalStatus = guestyReservationId ? 'inquiry' : 'requested';
     res.json({
       success: true,
-      status: guestyReservationId ? 'confirmed' : 'requested',
+      status: finalStatus,
       requestId,
       reservationId: guestyReservationId,
       quote: summary,
