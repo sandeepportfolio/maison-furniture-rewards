@@ -900,28 +900,53 @@ async function beapiUpdateQuoteCoupons(quoteId, coupons) {
   return beapi.updateQuoteCoupons(quoteId, coupons);
 }
 
-// ── Background pre-warm ──────────────────────────────────────────────────
+// ── Background pre-warm with auto-retry ──────────────────────────────────
 // Populate listings + prices cache on startup (non-blocking, staggered).
-// Listings are fetched first, then lowest-prices (which serializes its own
-// calendar calls with 2s delays). Total startup API footprint is spread
-// over ~20s instead of firing 8+ calls in the first 2 seconds.
-// If the API is rate-limited, the circuit breaker will catch it and the
-// static fallback data ensures the site still works.
-setTimeout(async () => {
+// If the API is rate-limited on first attempt, retries with exponential
+// backoff (1m, 2m, 4m, 8m, 10m cap) up to 5 times. This ensures the site
+// recovers from Guesty 429s without manual intervention.
+let startupRetryCount = 0;
+const STARTUP_MAX_RETRIES = 5;
+
+async function doStartupPrewarm(isRetry = false) {
   try {
     const listings = await getListings();
-    console.log(`Startup: cached ${listings.length} listings (${listings[0]?._static ? 'static fallback' : 'live API'})`);
+    const isStatic = listings[0]?._static;
+    console.log(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup'}: cached ${listings.length} listings (${isStatic ? 'static fallback' : 'live API'})`);
 
-    // Wait 5s before starting calendar fetches to spread the load
+    // If we got static data, the API is still rate-limited — schedule retry
+    if (isStatic) {
+      scheduleStartupRetry();
+      return;
+    }
+
+    // Live data — fetch lowest prices too
     await sleep(5_000);
-
     const prices = await getLowestPrices();
     const count = Object.values(prices).filter(p => p.lowestPrice !== null).length;
-    console.log(`Startup: cached lowest prices for ${count} listings`);
+    console.log(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup'}: cached lowest prices for ${count} listings`);
   } catch (err) {
-    console.warn('Startup pre-warm failed (will use static fallback):', err.message);
+    console.warn(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup pre-warm'} failed:`, err.message);
+    scheduleStartupRetry();
   }
-}, 3_000); // delay 3s so the server is ready to accept requests first
+}
+
+function scheduleStartupRetry() {
+  startupRetryCount++;
+  if (startupRetryCount > STARTUP_MAX_RETRIES) {
+    console.warn(`Startup retry: giving up after ${STARTUP_MAX_RETRIES} attempts — using static data until next request clears the rate limit`);
+    return;
+  }
+  const delay = Math.min(60_000 * Math.pow(2, startupRetryCount - 1), 10 * 60_000);
+  console.log(`Startup retry: scheduling attempt ${startupRetryCount}/${STARTUP_MAX_RETRIES} in ${Math.round(delay / 1000)}s`);
+  setTimeout(() => {
+    // Reset circuit breaker before retry — the Guesty-side rate limit may have cleared
+    clearRateLimit();
+    doStartupPrewarm(true);
+  }, delay);
+}
+
+setTimeout(() => doStartupPrewarm(false), 3_000);
 
 /**
  * Clear all caches so the next request fetches fresh data from Guesty.
