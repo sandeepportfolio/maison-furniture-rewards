@@ -52,7 +52,33 @@ function persistToken() {
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
+// ── Rate-limit circuit breaker ────────────────────────────────────────
+let rateLimitedUntil = 0;
+let rateLimitBackoffMs = 60_000;
+const MAX_RATE_LIMIT_BACKOFF = 10 * 60_000;
+
+function isRateLimited() {
+  return Date.now() < rateLimitedUntil;
+}
+
+function enterRateLimit() {
+  rateLimitedUntil = Date.now() + rateLimitBackoffMs;
+  console.warn(`BEAPI rate-limited — backing off for ${Math.round(rateLimitBackoffMs / 1000)}s (until ${new Date(rateLimitedUntil).toISOString()})`);
+  rateLimitBackoffMs = Math.min(rateLimitBackoffMs * 2, MAX_RATE_LIMIT_BACKOFF);
+}
+
+function clearRateLimit() {
+  rateLimitedUntil = 0;
+  rateLimitBackoffMs = 60_000;
+}
+
 async function requestTokenWithBackoff(clientId, clientSecret) {
+  if (isRateLimited()) {
+    const e = new Error(`BEAPI rate-limited — retry after ${new Date(rateLimitedUntil).toISOString()}`);
+    e.status = 429;
+    throw e;
+  }
+
   const delays = [0, 2_000, 5_000, 10_000];
   let lastStatus = null;
   for (let attempt = 0; attempt < delays.length; attempt++) {
@@ -71,9 +97,16 @@ async function requestTokenWithBackoff(clientId, clientSecret) {
         client_secret: clientSecret,
       }),
     });
-    if (res.ok) return res.json();
+    if (res.ok) {
+      clearRateLimit();
+      return res.json();
+    }
     lastStatus = res.status;
-    if (![429, 500, 502, 503, 504].includes(res.status)) break;
+    if (res.status === 429) {
+      enterRateLimit();
+      break;
+    }
+    if (![500, 502, 503, 504].includes(res.status)) break;
   }
   const e = new Error(`BEAPI auth failed (${lastStatus})`);
   e.status = lastStatus;
@@ -111,6 +144,11 @@ async function getToken() {
  * Generic fetch wrapper for the Booking Engine API.
  */
 async function beapiFetch(pathname, { method = 'GET', body, query, retryOnAuth = true } = {}) {
+  if (isRateLimited()) {
+    const err = new Error(`BEAPI rate-limited — retry after ${new Date(rateLimitedUntil).toISOString()}`);
+    err.status = 429;
+    throw err;
+  }
   const token = await getToken();
   let url = BE_API_BASE + pathname;
   if (query) {
@@ -140,12 +178,21 @@ async function beapiFetch(pathname, { method = 'GET', body, query, retryOnAuth =
     return beapiFetch(pathname, { method, body, query, retryOnAuth: false });
   }
 
+  if (res.status === 429) {
+    enterRateLimit();
+    const err = new Error('BEAPI rate-limited');
+    err.status = 429;
+    err.body = json;
+    throw err;
+  }
+
   if (!res.ok) {
     const err = new Error(json?.error?.message || json?.message || `BEAPI error ${res.status}`);
     err.status = res.status;
     err.body = json;
     throw err;
   }
+  clearRateLimit();
   return json;
 }
 
