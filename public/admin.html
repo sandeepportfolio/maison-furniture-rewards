@@ -163,6 +163,10 @@ textarea{resize:vertical}
 .badge.b-sent::before{background:var(--green)}
 .badge.b-confirmed{background:rgba(76,175,80,.15);color:var(--green)}
 .badge.b-confirmed::before{background:var(--green)}
+.badge.b-approved{background:rgba(59,130,246,.15);color:var(--blue)}
+.badge.b-approved::before{background:var(--blue)}
+.badge.b-rejected{background:rgba(231,76,60,.15);color:var(--red)}
+.badge.b-rejected::before{background:var(--red)}
 .badge.b-property{background:var(--surface-2);color:var(--copper-soft);font-weight:500}
 .badge.b-property::before{display:none}
 
@@ -478,6 +482,11 @@ textarea{resize:vertical}
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         Reviews &amp; Gift Cards
       </a>
+      <a href="#" class="nav-link" data-section="submissions">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21"/><path d="M3 12h18"/><path d="M12 8c-2-3-6-3-6 0s4 0 6 0c2-3 6-3 6 0s-4 0-6 0"/></svg>
+        Reward Submissions
+        <span class="nav-badge" id="navSubBadge" style="display:none">0</span>
+      </a>
       <a href="#" class="nav-link" data-section="pricing">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Pricing
@@ -593,6 +602,37 @@ textarea{resize:vertical}
       </div>
       <div class="review-grid" id="reviewList">
         <div class="loading-state"><span class="spinner"></span> Loading reviews...</div>
+      </div>
+    </div>
+
+    <!-- ═══ REWARD SUBMISSIONS ═══ -->
+    <div class="section" id="sec-submissions">
+      <div class="stat-grid" id="subStats">
+        <div class="stat-card sc-copper"><div class="stat-num" id="subTotal">--</div><div class="stat-label">Total Submissions</div></div>
+        <div class="stat-card sc-amber"><div class="stat-num" id="subPending">--</div><div class="stat-label">Pending Review</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="subSent">--</div><div class="stat-label">Gift Cards Sent</div></div>
+        <div class="stat-card" style="background:var(--surface);border:1px solid var(--border)"><div class="stat-num" id="subRejected">--</div><div class="stat-label">Rejected</div></div>
+      </div>
+      <div class="toolbar">
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+          <select id="subStatusFilter" style="padding:.45rem .8rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-btn);font-size:.82rem;color:var(--text);outline:none;appearance:auto">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="sent">Gift Card Sent</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap" style="border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
+        <table class="override-table" id="subTable">
+          <thead>
+            <tr><th>Guest</th><th>Email</th><th>Platform</th><th>Submitted</th><th>Status</th><th>Proof</th><th style="width:160px">Actions</th></tr>
+          </thead>
+          <tbody id="subTableBody">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted)">Loading submissions...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -1056,6 +1096,7 @@ const sectionMeta = {
   overview: { title: 'Overview', subtitle: 'Dashboard summary and recent activity' },
   messages: { title: 'Messages', subtitle: 'Manage guest inquiries and communications' },
   reviews: { title: 'Reviews & Gift Cards', subtitle: 'Manage guest reviews and gift card rewards' },
+  submissions: { title: 'Reward Submissions', subtitle: 'Review proof submissions and send $5 Amazon gift cards' },
   pricing: { title: 'Pricing', subtitle: 'Manage pricing overrides and seasonal rates' },
   properties: { title: 'Properties', subtitle: 'Configure property details and visibility' },
   settings: { title: 'Settings', subtitle: 'System configuration and preferences' }
@@ -1093,6 +1134,7 @@ function loadSectionData(section) {
     case 'overview': loadOverview(); break;
     case 'messages': loadMessages(); break;
     case 'reviews': loadReviews(); break;
+    case 'submissions': loadSubmissions(); break;
     case 'pricing': loadPricing(); break;
     case 'properties': loadProperties(); break;
     case 'settings': loadSettings(); break;
@@ -1875,6 +1917,97 @@ async function saveSettings() {
     if (err.message !== 'Unauthorized') showToast(err.message || 'Failed to save settings', 'error');
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   REWARD SUBMISSIONS
+   ═══════════════════════════════════════════════════════════ */
+let allSubmissions = [];
+
+async function loadSubmissions() {
+  try {
+    const filter = $('subStatusFilter').value;
+    const url = filter ? `/api/admin/submissions?status=${filter}` : '/api/admin/submissions';
+    const data = await api(url);
+    allSubmissions = Array.isArray(data) ? data : [];
+    updateSubStats();
+    renderSubmissions();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Failed to load submissions', 'error');
+  }
+}
+
+function updateSubStats() {
+  api('/api/admin/stats').then(stats => {
+    $('subTotal').textContent = stats.total || 0;
+    $('subPending').textContent = stats.pending || 0;
+    $('subSent').textContent = stats.sent || 0;
+    $('subRejected').textContent = stats.rejected || 0;
+    const badge = $('navSubBadge');
+    if (stats.pending > 0) { badge.textContent = stats.pending; badge.style.display = 'inline-flex'; }
+    else { badge.style.display = 'none'; }
+  }).catch(() => {});
+}
+
+function renderSubmissions() {
+  const tbody = $('subTableBody');
+  if (!allSubmissions.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted)">No submissions found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allSubmissions.map(s => {
+    const statusColors = { pending: 'b-pending', approved: 'b-approved', sent: 'b-sent', rejected: 'b-rejected' };
+    const statusClass = statusColors[s.status] || '';
+    const platform = { google: 'Google', airbnb: 'Airbnb', vrbo: 'VRBO', other: 'Other' }[s.platform] || s.platform;
+    return `<tr>
+      <td style="font-weight:500">${esc(s.name || 'N/A')}</td>
+      <td><a href="mailto:${esc(s.email)}" style="color:var(--copper)">${esc(s.email)}</a></td>
+      <td>${esc(platform)}</td>
+      <td style="font-size:.82rem;color:var(--muted)">${fmtDateShort(s.created_at)}</td>
+      <td><span class="badge ${statusClass}">${esc(s.status)}</span></td>
+      <td>${s.proof_filename ? `<a href="/uploads/${esc(s.proof_filename)}" target="_blank" style="color:var(--copper);font-size:.82rem;display:inline-flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>View</a>` : '—'}</td>
+      <td>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          ${s.status === 'pending' ? `<button class="act act-edit" onclick="updateSubmission(${s.id},'approved')" title="Approve"><svg viewBox="0 0 24 24" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Approve</button>` : ''}
+          ${s.status === 'approved' ? `<button class="act act-edit" onclick="updateSubmission(${s.id},'sent')" title="Mark gift card sent" style="color:#4caf50"><svg viewBox="0 0 24 24" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21"/><path d="M3 12h18"/></svg>Send GC</button>` : ''}
+          ${s.status !== 'rejected' && s.status !== 'sent' ? `<button class="act act-del" onclick="updateSubmission(${s.id},'rejected')" title="Reject"><svg viewBox="0 0 24 24" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject</button>` : ''}
+          <button class="act act-del" onclick="deleteSubmission(${s.id})" title="Delete"><svg viewBox="0 0 24 24" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function updateSubmission(id, status) {
+  try {
+    await api('/api/admin/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status })
+    });
+    const label = { approved: 'Submission approved', sent: 'Gift card marked as sent', rejected: 'Submission rejected' }[status] || 'Updated';
+    showToast(label);
+    loadSubmissions();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast(err.message || 'Update failed', 'error');
+  }
+}
+
+async function deleteSubmission(id) {
+  if (!confirm('Delete this submission permanently?')) return;
+  try {
+    await api(`/api/admin/delete/${id}`, { method: 'DELETE' });
+    showToast('Submission deleted');
+    loadSubmissions();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast(err.message || 'Delete failed', 'error');
+  }
+}
+
+// Filter listener
+document.addEventListener('DOMContentLoaded', () => {
+  const filter = $('subStatusFilter');
+  if (filter) filter.addEventListener('change', () => loadSubmissions());
+});
 
 /* ═══════════════════════════════════════════════════════════
    INIT

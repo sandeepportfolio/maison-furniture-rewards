@@ -280,12 +280,119 @@ app.post('/api/submit', upload.single('proof'), (req, res) => {
 
     const stmt = db.prepare('INSERT INTO submissions (name, email, platform, proof_filename) VALUES (?, ?, ?, ?)');
     const r = stmt.run(name || '', email.trim().toLowerCase(), platform || 'google', req.file.filename);
+
+    // Fire-and-forget: send email notification for new reward submission
+    sendRewardSubmissionEmail({ name: name || 'Guest', email: email.trim(), platform: platform || 'google', filename: req.file.filename });
+
     res.json({ success: true, id: r.lastInsertRowid });
   } catch (err) {
     console.error('Submit error:', err);
     res.status(500).json({ error: 'Submission failed' });
   }
 });
+
+/**
+ * Send an email notification when a guest submits a review proof.
+ * Uses Web3Forms (same as contact form). Fire-and-forget.
+ */
+function sendRewardSubmissionEmail({ name, email, platform, filename }) {
+  return new Promise((resolve) => {
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      console.warn('WEB3FORMS_ACCESS_KEY not set – skipping reward submission email');
+      return resolve({ skipped: true });
+    }
+
+    const timestamp = new Date().toLocaleString('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: 'America/Chicago'
+    });
+
+    const platformLabel = { google: 'Google', airbnb: 'Airbnb', vrbo: 'VRBO', other: 'Other' }[platform] || platform;
+
+    const htmlBody = `
+      <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;color:#333;">
+        <div style="background:#1a1a2e;padding:20px 24px;border-radius:8px 8px 0 0;">
+          <h2 style="margin:0;color:#ffffff;font-size:20px;">New Review Submission &mdash; $5 Gift Card</h2>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+          <p style="margin:0 0 16px;color:#666;font-size:14px;">A guest submitted proof of a review and is requesting their $5 Amazon gift card.</p>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="padding:10px 0;font-weight:bold;color:#555;width:110px;vertical-align:top;border-bottom:1px solid #f0f0f0;">Guest:</td>
+              <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">${name}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;font-weight:bold;color:#555;vertical-align:top;border-bottom:1px solid #f0f0f0;">Email:</td>
+              <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;"><a href="mailto:${email}" style="color:#C76B42;">${email}</a></td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;font-weight:bold;color:#555;vertical-align:top;border-bottom:1px solid #f0f0f0;">Platform:</td>
+              <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">${platformLabel}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;font-weight:bold;color:#555;vertical-align:top;border-bottom:1px solid #f0f0f0;">Submitted:</td>
+              <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">${timestamp}</td>
+            </tr>
+          </table>
+          <div style="margin-top:20px;padding:16px;background:#FFF8F0;border-radius:8px;border-left:4px solid #C76B42;">
+            <p style="margin:0;font-size:13px;color:#666;">Log in to the <a href="https://www.bookwithregent.com/admin" style="color:#C76B42;font-weight:bold;">Admin Dashboard</a> to view the screenshot proof and send the gift card.</p>
+          </div>
+          <div style="text-align:center;padding:16px 0;color:#999;font-size:12px;">
+            Regent Capital Ventures LLC
+          </div>
+        </div>
+      </div>
+    `.trim();
+
+    const payload = JSON.stringify({
+      access_key: accessKey,
+      subject: `Review Reward Request from ${name}`,
+      from_name: 'Regent Rewards',
+      email: email,
+      cc: 'jatinshekara@gmail.com',
+      message: htmlBody
+    });
+
+    const https = require('https');
+    const options = {
+      hostname: 'api.web3forms.com',
+      path: '/submit',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (resp) => {
+      let body = '';
+      resp.on('data', (chunk) => { body += chunk; });
+      resp.on('end', () => {
+        try {
+          const result = JSON.parse(body);
+          if (result.success) {
+            console.log('Reward submission email sent successfully');
+          } else {
+            console.error('Reward email API error:', body);
+          }
+        } catch (e) {
+          console.error('Reward email parse error:', body);
+        }
+        resolve({ sent: true });
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error('Reward email request error:', err.message);
+      resolve({ error: err.message });
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
 
 // ── GUESTY (live availability + booking) ──
 
