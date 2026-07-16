@@ -107,8 +107,8 @@ let inflight = null;  // de-dupe concurrent token fetches
 // cooldown period. This prevents cascading failures where every incoming
 // request triggers another auth attempt, extending the rate limit window.
 let rateLimitedUntil = 0;          // epoch ms — don't hit Guesty before this
-let rateLimitBackoffMs = 60_000;   // starts at 1 min, doubles on repeat 429s
-const MAX_RATE_LIMIT_BACKOFF = 10 * 60_000; // cap at 10 minutes
+let rateLimitBackoffMs = 5 * 60_000;   // starts at 5 min, doubles on repeat 429s
+const MAX_RATE_LIMIT_BACKOFF = 30 * 60_000; // cap at 30 minutes
 
 function isRateLimited() {
   return Date.now() < rateLimitedUntil;
@@ -176,7 +176,9 @@ async function requestTokenWithBackoff(id, secret) {
     throw e;
   }
 
-  const delays = [0, 2_000, 5_000, 10_000, 20_000];
+  // Conservative retry: fewer attempts with longer delays to avoid extending
+  // Guesty's rate-limit window. The circuit breaker stops retries on first 429.
+  const delays = [0, 3_000, 10_000];
   let lastStatus = null;
   for (let attempt = 0; attempt < delays.length; attempt++) {
     if (delays[attempt]) await sleep(delays[attempt]);
@@ -900,15 +902,28 @@ async function beapiUpdateQuoteCoupons(quoteId, coupons) {
   return beapi.updateQuoteCoupons(quoteId, coupons);
 }
 
-// ── Background pre-warm with auto-retry ──────────────────────────────────
+// ── Background pre-warm with conservative retry ─────────────────────────
 // Populate listings + prices cache on startup (non-blocking, staggered).
-// If the API is rate-limited on first attempt, retries with exponential
-// backoff (1m, 2m, 4m, 8m, 10m cap) up to 5 times. This ensures the site
-// recovers from Guesty 429s without manual intervention.
+// ONLY attempts API calls if a valid (non-expired) token is already available
+// (from env vars or persisted file). If no valid token exists, skips pre-warm
+// entirely and serves static data — this avoids hammering Guesty's rate-limited
+// OAuth endpoint on every cold start / redeploy.
+//
+// If the API is rate-limited despite having a valid token, retries with long
+// exponential backoff (5m, 15m, 30m cap) up to 3 times. The delays are
+// intentionally long to let Guesty's rate limit window fully expire.
 let startupRetryCount = 0;
-const STARTUP_MAX_RETRIES = 5;
+const STARTUP_MAX_RETRIES = 3;
 
 async function doStartupPrewarm(isRetry = false) {
+  // Only attempt pre-warm if we have a valid cached token.
+  // If the token is expired or missing, don't hit OAuth — serve static data
+  // until a user request naturally triggers a token refresh.
+  if (!cachedToken || Date.now() >= tokenExpiry - 60_000) {
+    console.log('Startup: no valid token available — serving static data (token refresh will happen on first user request)');
+    return;
+  }
+
   try {
     const listings = await getListings();
     const isStatic = listings[0]?._static;
@@ -920,8 +935,8 @@ async function doStartupPrewarm(isRetry = false) {
       return;
     }
 
-    // Live data — fetch lowest prices too
-    await sleep(5_000);
+    // Live data — fetch lowest prices too (stagger to avoid burst)
+    await sleep(10_000);
     const prices = await getLowestPrices();
     const count = Object.values(prices).filter(p => p.lowestPrice !== null).length;
     console.log(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup'}: cached lowest prices for ${count} listings`);
@@ -934,11 +949,12 @@ async function doStartupPrewarm(isRetry = false) {
 function scheduleStartupRetry() {
   startupRetryCount++;
   if (startupRetryCount > STARTUP_MAX_RETRIES) {
-    console.warn(`Startup retry: giving up after ${STARTUP_MAX_RETRIES} attempts — using static data until next request clears the rate limit`);
+    console.warn(`Startup retry: giving up after ${STARTUP_MAX_RETRIES} attempts — serving static data until a user request triggers recovery`);
     return;
   }
-  const delay = Math.min(60_000 * Math.pow(2, startupRetryCount - 1), 10 * 60_000);
-  console.log(`Startup retry: scheduling attempt ${startupRetryCount}/${STARTUP_MAX_RETRIES} in ${Math.round(delay / 1000)}s`);
+  // Long delays: 5 min, 15 min, 30 min — gives Guesty's rate limit time to fully reset
+  const delay = Math.min(5 * 60_000 * Math.pow(3, startupRetryCount - 1), 30 * 60_000);
+  console.log(`Startup retry: scheduling attempt ${startupRetryCount}/${STARTUP_MAX_RETRIES} in ${Math.round(delay / 60_000)}m`);
   setTimeout(() => {
     // Reset circuit breaker before retry — the Guesty-side rate limit may have cleared
     clearRateLimit();
@@ -946,7 +962,9 @@ function scheduleStartupRetry() {
   }, delay);
 }
 
-setTimeout(() => doStartupPrewarm(false), 3_000);
+// Delay startup pre-warm by 10s to let the server fully boot and
+// give the token loading (env vars / persisted file) time to settle.
+setTimeout(() => doStartupPrewarm(false), 10_000);
 
 /**
  * Clear all caches so the next request fetches fresh data from Guesty.
