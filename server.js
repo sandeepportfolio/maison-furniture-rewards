@@ -352,10 +352,12 @@ app.get('/api/guesty/calendar', async (req, res) => {
 });
 
 // Live price quote for a stay.
-//   POST { listing, checkIn, checkOut, guests }
+//   POST { listing, checkIn, checkOut, guests, coupon? }
+// When BEAPI is configured, returns full pricing with cleaning fees, taxes,
+// promotions, and rate plans. Otherwise falls back to local calculation.
 app.post('/api/guesty/quote', async (req, res) => {
   try {
-    const { listing, checkIn, checkOut } = req.body || {};
+    const { listing, checkIn, checkOut, coupon } = req.body || {};
     const guests = Math.max(1, parseInt(req.body?.guests, 10) || 1);
     const listingId = guesty.resolveListingId(listing);
     if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
@@ -365,7 +367,13 @@ app.post('/api/guesty/quote', async (req, res) => {
     if (checkOut <= checkIn) return res.status(400).json({ error: 'Check-out must be after check-in' });
     if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
 
-    const { summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+    const { summary } = await guesty.createQuote({
+      listingId,
+      checkIn,
+      checkOut,
+      guests,
+      coupons: coupon || undefined,
+    });
     if (!summary.total) return res.status(409).json({ error: 'No price available for those dates' });
     res.json(summary);
   } catch (err) {
@@ -382,6 +390,11 @@ app.post('/api/guesty/quote', async (req, res) => {
     }
     res.status(502).json({ error: 'Could not get a price for those dates' });
   }
+});
+
+// BEAPI status — lets the frontend know whether BEAPI features are available.
+app.get('/api/guesty/beapi-status', (req, res) => {
+  res.json({ enabled: guesty.beapiAvailable() });
 });
 
 // Payment provider — returns the Guesty Pay provider connected to a listing.
@@ -618,6 +631,7 @@ app.post('/api/guesty/confirm-payment', async (req, res) => {
 
 // Request-to-book fallback without online payment.
 // Guesty Pay card payments use the two-step reservation-intent/confirm-payment flow above.
+// When BEAPI is configured, uses the BEAPI inquiry flow for better Guesty integration.
 //   POST { listing, checkIn, checkOut, guests, guest: { firstName, lastName, email, phone } }
 app.post('/api/guesty/reservation', async (req, res) => {
   try {
@@ -638,7 +652,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
     const meta = Object.values(guesty.LISTINGS).find(l => l.id === listingId);
 
     // Always re-quote server-side — never trust a price from the client.
-    const { summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+    const { quote, summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
 
     const row = db.prepare(`
       INSERT INTO booking_requests
@@ -650,8 +664,40 @@ app.post('/api/guesty/reservation', async (req, res) => {
       checkIn, checkOut, guests, summary.nights, summary.total, summary.currency,
       summary.quoteId, 'requested', (guest?.message || '').trim()
     );
+    const requestId = row.lastInsertRowid;
 
-    res.json({ success: true, status: 'requested', requestId: row.lastInsertRowid, quote: summary });
+    // When BEAPI is available and we have a real quoteId, create the inquiry
+    // through BEAPI's quote-based flow for tighter Guesty integration.
+    let guestyReservationId = null;
+    if (guesty.beapiAvailable() && summary.source === 'beapi' && summary.ratePlanId) {
+      try {
+        const beapiRes = await guesty.beapiCreateInquiryReservation(summary.quoteId, {
+          ratePlanId: summary.ratePlanId,
+          guest: {
+            firstName: g.firstName,
+            lastName: g.lastName,
+            phone: g.phone,
+            email: g.email,
+          },
+        });
+        guestyReservationId = beapiRes._id || beapiRes.reservationId || null;
+        if (guestyReservationId) {
+          db.prepare("UPDATE booking_requests SET guesty_reservation_id=?, status='confirmed' WHERE id=?")
+            .run(guestyReservationId, requestId);
+        }
+      } catch (beapiErr) {
+        // Log but don't fail — the booking request is already recorded locally.
+        console.warn('BEAPI inquiry creation failed (local record preserved):', beapiErr.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      status: guestyReservationId ? 'confirmed' : 'requested',
+      requestId,
+      reservationId: guestyReservationId,
+      quote: summary,
+    });
   } catch (err) {
     const detail = err.body?.error?.message || err.body?.message;
     console.error('Guesty booking request error:', err.status || '', err.message);

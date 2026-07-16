@@ -1,14 +1,35 @@
 /**
- * Guesty Open API client.
+ * Guesty Open API client — with Booking Engine API (BEAPI) integration.
  *
  * Uses the OAuth2 client_credentials grant against open-api.guesty.com.
  * Credentials are read from environment variables ONLY:
- *   GUESTY_CLIENT_ID, GUESTY_CLIENT_SECRET
- * They are never logged or returned to clients.
+ *   GUESTY_CLIENT_ID, GUESTY_CLIENT_SECRET       (Open API)
+ *   GUESTY_BE_CLIENT_ID, GUESTY_BE_CLIENT_SECRET  (Booking Engine API — optional)
+ *
+ * When BEAPI credentials are configured, createQuote() uses the BEAPI for
+ * accurate pricing that includes cleaning fees, taxes, promotions, and rate
+ * plans. When they are not configured, it falls back to the local calendar-
+ * based calculation.
+ *
+ * Credentials are never logged or returned to clients.
  */
 
 const fs = require('fs');
 const path = require('path');
+
+// ── Booking Engine API integration (optional) ─────────────────────────
+let beapi;
+try {
+  beapi = require('./guesty-beapi');
+  if (beapi.isConfigured()) {
+    console.log('  Guesty BEAPI: credentials detected — quote-based booking enabled');
+  } else {
+    console.log('  Guesty BEAPI: no credentials — using Open API with local quote calculation');
+  }
+} catch (e) {
+  console.warn('  Guesty BEAPI: module not available —', e.message);
+  beapi = null;
+}
 
 const TOKEN_URL = 'https://open-api.guesty.com/oauth2/token';
 const API_BASE = 'https://open-api.guesty.com/v1';
@@ -250,14 +271,51 @@ async function getCalendar(listingId, from, to) {
 }
 
 /**
- * Create a price quote by summing nightly rates from the calendar.
- * The Guesty Open API /quotes endpoint requires a higher-tier plan, so we
- * calculate pricing locally from the live calendar data instead.
+ * Create a price quote.
+ *
+ * When BEAPI credentials are configured, uses the Booking Engine API's quote
+ * endpoint which returns accurate pricing with cleaning fees, taxes, promotions,
+ * and rate plans. Falls back to local calendar-based calculation when BEAPI is
+ * not available.
+ *
+ * @param {Object} opts
+ * @param {string} opts.listingId
+ * @param {string} opts.checkIn
+ * @param {string} opts.checkOut
+ * @param {number} opts.guests
+ * @param {string} [opts.coupons] - Comma-separated coupon codes (BEAPI only)
  */
-async function createQuote({ listingId, checkIn, checkOut, guests }) {
+async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
   const nights = countNights(checkIn, checkOut);
   if (nights < 1) throw Object.assign(new Error('Invalid date range'), { status: 400 });
 
+  // ── Try BEAPI first (gives accurate cleaning fees, taxes, promotions) ──
+  if (beapi && beapi.isConfigured()) {
+    try {
+      const beapiQuote = await beapi.createQuote({
+        listingId,
+        checkIn,
+        checkOut,
+        guests,
+        coupons,
+      });
+      const summary = beapi.normalizeQuoteSummary(beapiQuote);
+      return { quote: beapiQuote, summary };
+    } catch (beapiErr) {
+      // If BEAPI fails with a client error, propagate it (don't silently fall back)
+      if (beapiErr.status >= 400 && beapiErr.status < 500) {
+        // Re-map BEAPI error to our expected error shape
+        const err = new Error(beapiErr.message || 'Quote request failed');
+        err.status = beapiErr.status;
+        err.body = beapiErr.body;
+        throw err;
+      }
+      // For server/network errors, fall back to local calculation
+      console.warn('BEAPI quote failed, falling back to local calculation:', beapiErr.message);
+    }
+  }
+
+  // ── Fallback: local calculation from Open API calendar ──
   const calendar = await getCalendar(listingId, checkIn, checkOut);
   // We need exactly `nights` stay-night entries (check-out date is departure, not a stay night)
   const stayDays = calendar.slice(0, nights);
@@ -300,6 +358,7 @@ async function createQuote({ listingId, checkIn, checkOut, guests }) {
       perNight,
       invoiceItems: [],
       expiresAt: new Date(Date.now() + 30 * 60_000).toISOString(), // 30 min
+      source: 'local',
     },
   };
 }
@@ -518,6 +577,34 @@ function countNights(checkIn, checkOut) {
   return Math.round((b - a) / 86_400_000);
 }
 
+// ── BEAPI-specific pass-through functions ──────────────────────────────
+// These are only available when BEAPI credentials are configured. The server
+// routes check beapiAvailable() before calling them.
+
+function beapiAvailable() {
+  return !!(beapi && beapi.isConfigured());
+}
+
+async function beapiGetQuote(quoteId) {
+  if (!beapi || !beapi.isConfigured()) throw new Error('BEAPI not configured');
+  return beapi.getQuote(quoteId);
+}
+
+async function beapiCreateInstantReservation(quoteId, opts) {
+  if (!beapi || !beapi.isConfigured()) throw new Error('BEAPI not configured');
+  return beapi.createInstantReservation(quoteId, opts);
+}
+
+async function beapiCreateInquiryReservation(quoteId, opts) {
+  if (!beapi || !beapi.isConfigured()) throw new Error('BEAPI not configured');
+  return beapi.createInquiryReservation(quoteId, opts);
+}
+
+async function beapiUpdateQuoteCoupons(quoteId, coupons) {
+  if (!beapi || !beapi.isConfigured()) throw new Error('BEAPI not configured');
+  return beapi.updateQuoteCoupons(quoteId, coupons);
+}
+
 module.exports = {
   LISTINGS,
   isAllowedListing,
@@ -534,4 +621,10 @@ module.exports = {
   updateReservationStatus,
   updateReservation,
   countNights,
+  // BEAPI extensions
+  beapiAvailable,
+  beapiGetQuote,
+  beapiCreateInstantReservation,
+  beapiCreateInquiryReservation,
+  beapiUpdateQuoteCoupons,
 };

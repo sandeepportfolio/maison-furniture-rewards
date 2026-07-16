@@ -2165,6 +2165,9 @@ ul{list-style:none}
 
     <!-- Quote (appears after date selection) -->
     <div id="quoteSection" style="display:none;margin-top:20px">
+      <div id="couponRow" style="display:flex;gap:8px;margin-bottom:10px">
+        <input type="text" id="bCoupon" placeholder="Coupon code (optional)" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text)">
+      </div>
       <button class="btn-primary btn-full" onclick="getQuote()">Check Availability &amp; Price</button>
       <div id="quoteResult"></div>
     </div>
@@ -3254,10 +3257,13 @@ async function getQuote() {
   document.getElementById('quoteResult').innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Checking price&hellip;</div>';
   try {
     const guests = document.getElementById('bGuests').value;
+    const coupon = (document.getElementById('bCoupon')?.value || '').trim();
+    const quoteBody = { listing: calSlug, checkIn: calCheckIn, checkOut: calCheckOut, guests: parseInt(guests) };
+    if (coupon) quoteBody.coupon = coupon;
     const res = await fetch('/api/guesty/quote', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ listing: calSlug, checkIn: calCheckIn, checkOut: calCheckOut, guests: parseInt(guests) })
+      body: JSON.stringify(quoteBody)
     });
     const data = await res.json();
     if (!res.ok) {
@@ -3276,13 +3282,14 @@ async function getQuote() {
     const accom = data.accommodation || (data.perNight ? data.perNight * nights : null) || 0;
     // Cache quote data for the payment review step
     lastQuoteData = { ...data, accommodation: accom, nights };
-    document.getElementById('quoteResult').innerHTML = `
-      <div class="booking-quote">
-        <div class="quote-row"><span>${nights} night${nights>1?'s':''}</span><span>$${accom.toFixed(2)}</span></div>
-        ${data.cleaningFee ? `<div class="quote-row"><span>Cleaning fee</span><span>$${data.cleaningFee.toFixed(2)}</span></div>` : ''}
-        ${data.taxes ? `<div class="quote-row"><span>Taxes &amp; fees</span><span>$${data.taxes.toFixed(2)}</span></div>` : ''}
-        <div class="quote-row quote-total"><span>Total</span><span>$${(data.total||0).toFixed(2)} ${data.currency||'USD'}</span></div>
-      </div>`;
+    // Build itemized price breakdown
+    let breakdownHtml = `<div class="quote-row"><span>${nights} night${nights>1?'s':''} ${data.perNight ? '@ $' + data.perNight.toFixed(0) + '/night' : ''}</span><span>$${accom.toFixed(2)}</span></div>`;
+    if (data.cleaningFee) breakdownHtml += `<div class="quote-row"><span>Cleaning fee</span><span>$${data.cleaningFee.toFixed(2)}</span></div>`;
+    if (data.totalFees && !data.cleaningFee) breakdownHtml += `<div class="quote-row"><span>Service fees</span><span>$${data.totalFees.toFixed(2)}</span></div>`;
+    if (data.taxes) breakdownHtml += `<div class="quote-row"><span>Taxes</span><span>$${data.taxes.toFixed(2)}</span></div>`;
+    if (data.promotionDiscount) breakdownHtml += `<div class="quote-row" style="color:var(--accent)"><span>Promotion discount</span><span>-$${data.promotionDiscount.toFixed(2)}</span></div>`;
+    breakdownHtml += `<div class="quote-row quote-total"><span>Total</span><span>$${(data.total||0).toFixed(2)} ${data.currency||'USD'}</span></div>`;
+    document.getElementById('quoteResult').innerHTML = `<div class="booking-quote">${breakdownHtml}</div>`;
     document.getElementById('guestFields').style.display = 'block';
   } catch (err) {
     document.getElementById('quoteResult').innerHTML = '';
@@ -3390,23 +3397,25 @@ async function goToPaymentStep() {
     document.getElementById('quoteSection').style.display = 'none';
     document.querySelector('.cal-bar').style.display = 'none';
 
-    // Build the payment review summary
+    // Build the payment review summary with full price breakdown
     const prop = PROPERTIES.find(p => p.slug === calSlug);
     const nights = Math.round((new Date(calCheckOut) - new Date(calCheckIn)) / 86400000);
-    const reviewHtml = `
+    let reviewRows = `
       <div class="review-header">Booking Summary</div>
       <div class="review-row"><span>${prop ? prop.name : calSlug}</span></div>
       <div class="review-row"><span>Check-in</span><span>${fmtDate(calCheckIn)}</span></div>
       <div class="review-row"><span>Check-out</span><span>${fmtDate(calCheckOut)}</span></div>
       <div class="review-row"><span>Guests</span><span>${document.getElementById('bGuests').value}</span></div>
-      <div class="review-row"><span>${nights} night${nights>1?'s':''}</span><span>${lastQuoteData ? '$'+(lastQuoteData.accommodation || 0).toFixed(2) : ''}</span></div>
-      ${lastQuoteData && lastQuoteData.cleaningFee ? `<div class="review-row"><span>Cleaning fee</span><span>$${lastQuoteData.cleaningFee.toFixed(2)}</span></div>` : ''}
-      ${lastQuoteData && lastQuoteData.taxes ? `<div class="review-row"><span>Taxes & fees</span><span>$${lastQuoteData.taxes.toFixed(2)}</span></div>` : ''}
+      <div class="review-row"><span>${nights} night${nights>1?'s':''} ${lastQuoteData && lastQuoteData.perNight ? '@ $' + lastQuoteData.perNight.toFixed(0) + '/night' : ''}</span><span>${lastQuoteData ? '$'+(lastQuoteData.accommodation || 0).toFixed(2) : ''}</span></div>`;
+    if (lastQuoteData && lastQuoteData.cleaningFee) reviewRows += `<div class="review-row"><span>Cleaning fee</span><span>$${lastQuoteData.cleaningFee.toFixed(2)}</span></div>`;
+    if (lastQuoteData && lastQuoteData.totalFees && !lastQuoteData.cleaningFee) reviewRows += `<div class="review-row"><span>Service fees</span><span>$${lastQuoteData.totalFees.toFixed(2)}</span></div>`;
+    if (lastQuoteData && lastQuoteData.taxes) reviewRows += `<div class="review-row"><span>Taxes</span><span>$${lastQuoteData.taxes.toFixed(2)}</span></div>`;
+    if (lastQuoteData && lastQuoteData.promotionDiscount) reviewRows += `<div class="review-row" style="color:var(--accent)"><span>Promotion discount</span><span>-$${lastQuoteData.promotionDiscount.toFixed(2)}</span></div>`;
+    reviewRows += `
       <div class="review-row review-total"><span>Total</span><span>${lastQuoteData ? '$'+lastQuoteData.total.toFixed(2)+' '+(lastQuoteData.currency||'USD') : ''}</span></div>
       <div class="review-row" style="padding-top:4px"><span>Guest</span><span>${guest.firstName} ${guest.lastName}</span></div>
-      <div class="review-row"><span>Email</span><span>${guest.email}</span></div>
-    `;
-    document.getElementById('paymentReview').innerHTML = reviewHtml;
+      <div class="review-row"><span>Email</span><span>${guest.email}</span></div>`;
+    document.getElementById('paymentReview').innerHTML = reviewRows;
 
     // Show payment step and mount Guesty Pay iframe
     const payStep = document.getElementById('paymentStep');
