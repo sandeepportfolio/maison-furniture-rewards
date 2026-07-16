@@ -320,7 +320,7 @@ function deduplicatedFetch(key, fetchFn) {
 // API calls from getLowestPrices, createQuote, and direct /calendar
 // requests. Key = `${listingId}:${from}:${to}`.
 const calendarCache = new Map();
-const CALENDAR_CACHE_TTL = 30 * 60_000; // 30 minutes
+const CALENDAR_CACHE_TTL = 5 * 60_000; // 5 minutes (was 30 min — reduced for faster sync)
 
 function getCalendarCacheKey(listingId, from, to) {
   return `${listingId}:${from}:${to}`;
@@ -356,7 +356,7 @@ const PAYMENT_PROVIDER_CACHE_TTL = 60 * 60_000; // 60 minutes
 /** Live listings (cached 60 min) with normalized pricing/capacity. */
 let listingsCache = null;
 let listingsCacheAt = 0;
-const LISTINGS_CACHE_TTL = 60 * 60_000; // 60 minutes (was 10 min)
+const LISTINGS_CACHE_TTL = 10 * 60_000; // 10 minutes (was 60 min — reduced for faster sync)
 
 async function getListings() {
   if (listingsCache && Date.now() - listingsCacheAt < LISTINGS_CACHE_TTL) {
@@ -779,7 +779,7 @@ async function updateReservation(reservationId, body) {
 // ── Lowest available price per listing (cached 2 hours) ──────────────────
 let lowestPricesCache = null;
 let lowestPricesCacheAt = 0;
-const LOWEST_PRICES_TTL = 120 * 60_000; // 120 minutes (was 15 min)
+const LOWEST_PRICES_TTL = 10 * 60_000; // 10 minutes (was 120 min — reduced for faster sync)
 
 /**
  * Fetch the lowest available nightly rate for each listing by scanning
@@ -923,6 +923,21 @@ setTimeout(async () => {
   }
 }, 3_000); // delay 3s so the server is ready to accept requests first
 
+/**
+ * Clear all caches so the next request fetches fresh data from Guesty.
+ * Useful when the property manager changes prices or availability in
+ * the Guesty dashboard and wants the website to reflect it immediately.
+ */
+function clearAllCaches() {
+  calendarCache.clear();
+  listingsCache = null;
+  listingsCacheAt = 0;
+  lowestPricesCache = null;
+  lowestPricesCacheAt = 0;
+  paymentProviderCache.clear();
+  console.log('All Guesty caches cleared');
+}
+
 module.exports = {
   LISTINGS,
   isAllowedListing,
@@ -940,6 +955,7 @@ module.exports = {
   updateReservation,
   countNights,
   isRateLimited,
+  clearAllCaches,
   // BEAPI extensions
   beapiAvailable,
   beapiGetQuote,

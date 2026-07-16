@@ -303,7 +303,7 @@ app.get('/api/guesty/listings', async (req, res) => {
   try {
     const listings = await guesty.getListings();
     // Allow browsers/CDNs to cache for 5 min (server cache is 60 min)
-    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    res.set('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
     res.json({ listings });
   } catch (err) {
     console.error('Guesty listings error:', err.status || '', err.message);
@@ -315,8 +315,8 @@ app.get('/api/guesty/listings', async (req, res) => {
 app.get('/api/guesty/lowest-prices', async (req, res) => {
   try {
     const prices = await guesty.getLowestPrices();
-    // Allow browsers/CDNs to cache for 10 min (server cache is 2 hours)
-    res.set('Cache-Control', 'public, max-age=600, stale-while-revalidate=1200');
+    // Allow browsers/CDNs to cache for 2 min (server cache is 10 min)
+    res.set('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
     res.json({ prices });
   } catch (err) {
     console.error('Guesty lowest-prices error:', err.status || '', err.message);
@@ -1331,6 +1331,14 @@ app.get('/api/admin/listings', requireAuth, async (req, res) => {
     console.error('Admin listings error:', err);
     res.status(500).json({ error: 'Failed to load listings' });
   }
+});
+
+// ── Cache refresh (admin only) ──
+// POST /api/admin/clear-cache — clears all Guesty caches so changes
+// made in the Guesty dashboard are reflected on the website immediately.
+app.post('/api/admin/clear-cache', requireAuth, (req, res) => {
+  guesty.clearAllCaches();
+  res.json({ ok: true, message: 'All Guesty caches cleared. Next request will fetch fresh data.' });
 });
 
 // ── EVENTS (Ticketmaster Discovery API proxy with 6-hour cache) ──
