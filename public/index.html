@@ -1129,8 +1129,8 @@ ul{list-style:none}
   .detail-body{margin:0;border-radius:0;min-height:100vh}
   .detail-close{top:12px;right:12px;width:40px;height:40px}
   .detail-content{padding:24px 20px}
-  .detail-header{flex-direction:column;gap:16px;padding-bottom:20px;margin-bottom:24px}
-  .detail-header-left h2{font-size:28px}
+  .detail-header{flex-direction:column;gap:8px;padding-bottom:12px;margin-bottom:8px}
+  .detail-header-left h2{font-size:26px;margin-bottom:2px}
   .detail-header-right{align-items:flex-start}
   .detail-specs{flex-wrap:wrap;gap:4px}
   .detail-specs span{padding:4px 10px 4px 0;border-right:none;font-size:13px}
@@ -1140,8 +1140,10 @@ ul{list-style:none}
   .amenity-category{padding:16px}
   .amenity-pills{gap:6px}
   .amenity-pill{font-size:11px;padding:5px 12px}
-  .detail-actions{flex-wrap:wrap;gap:8px}
-  .detail-actions button,.detail-actions a{flex:1;min-width:0;text-align:center;justify-content:center;padding:12px 16px;font-size:12px}
+  .detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px 0 8px}
+  .detail-actions .btn-book{grid-column:1/-1;justify-content:center;text-align:center;padding:14px 16px;font-size:14px}
+  .detail-actions button,.detail-actions a{font-size:12px;padding:11px 10px;justify-content:center;text-align:center;min-width:0}
+  .detail-actions svg{width:14px;height:14px}
   .detail-thumb{width:64px;height:44px}
   .contact-body{padding:24px}
   .contact-section{padding:64px 16px}
@@ -1212,8 +1214,9 @@ ul{list-style:none}
   .prop-specs span{font-size:10px;padding:3px 0}
   .prop-actions{flex-wrap:wrap;gap:6px}
   .prop-actions a,.prop-actions button{font-size:12px;padding:9px 14px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
-  .detail-specs{flex-direction:column;gap:2px}
-  .detail-specs span{padding:3px 0;border-right:none}
+  .detail-specs{flex-direction:row;flex-wrap:wrap;gap:0}
+  .detail-specs span{padding:3px 8px 3px 0;border-right:1px solid var(--border);font-size:12px}
+  .detail-specs span:last-child{border-right:none}
   .detail-content{padding:20px 16px}
   .detail-header-left h2{font-size:24px}
   .amenity-pill{font-size:11px;padding:5px 10px}
