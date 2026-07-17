@@ -1128,22 +1128,32 @@ ul{list-style:none}
   .detail-modal{padding:0}
   .detail-body{margin:0;border-radius:0;min-height:100vh}
   .detail-close{top:12px;right:12px;width:40px;height:40px}
-  .detail-content{padding:24px 20px}
-  .detail-header{flex-direction:column;gap:8px;padding-bottom:12px;margin-bottom:8px}
-  .detail-header-left h2{font-size:26px;margin-bottom:2px}
-  .detail-header-right{align-items:flex-start}
-  .detail-specs{flex-wrap:wrap;gap:4px}
-  .detail-specs span{padding:4px 10px 4px 0;border-right:none;font-size:13px}
-  .detail-desc h3,.detail-amenities h3{font-size:22px}
+  .detail-content{padding:20px 20px}
+  .detail-section:first-child{margin-bottom:0}
+  .detail-header{flex-direction:column;gap:6px;padding-bottom:0;margin-bottom:0;border-bottom:none}
+  .detail-header-left h2{font-size:24px;margin-bottom:0;letter-spacing:-.03em}
+  .detail-header-right{align-items:flex-start;margin-top:2px}
+  .detail-specs{flex-wrap:wrap;gap:0}
+  .detail-specs span{padding:2px 10px 2px 0;border-right:1px solid var(--border);font-size:12px;color:var(--text-muted)}
+  .detail-specs span:last-child{border-right:none}
+  .detail-price{margin-top:6px !important}
+  .detail-new-badge{margin-top:6px}
+  .detail-desc h3,.detail-amenities h3{font-size:20px}
   .amenity-highlights{gap:6px}
   .amenity-highlight-card{flex:none}
   .amenity-category{padding:16px}
   .amenity-pills{gap:6px}
   .amenity-pill{font-size:11px;padding:5px 12px}
-  .detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px 0 8px}
-  .detail-actions .btn-book{grid-column:1/-1;justify-content:center;text-align:center;padding:14px 16px;font-size:14px}
-  .detail-actions button,.detail-actions a{font-size:12px;padding:11px 10px;justify-content:center;text-align:center;min-width:0}
-  .detail-actions svg{width:14px;height:14px}
+  .detail-actions{display:flex;flex-direction:column;gap:0;padding:4px 0 0;margin:0}
+  .detail-actions .btn-book{width:100%;justify-content:center;text-align:center;padding:13px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;border-radius:8px;margin-bottom:8px}
+  .detail-actions .btn-contact{border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;padding:8px 0;justify-content:center;letter-spacing:.01em;box-shadow:none}
+  .detail-actions .btn-contact svg{opacity:.5}
+  .detail-actions .btn-contact:hover{border:none;transform:none;color:var(--text)}
+  .detail-actions .btn-book+.btn-contact{display:inline-flex}
+  .detail-actions{flex-direction:row;flex-wrap:wrap}
+  .detail-actions .btn-book{flex-basis:100%}
+  .detail-actions .btn-contact{flex:1}
+  .detail-actions svg{width:13px;height:13px}
   .detail-thumb{width:64px;height:44px}
   .contact-body{padding:24px}
   .contact-section{padding:64px 16px}
@@ -1215,10 +1225,10 @@ ul{list-style:none}
   .prop-actions{flex-wrap:wrap;gap:6px}
   .prop-actions a,.prop-actions button{font-size:12px;padding:9px 14px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
   .detail-specs{flex-direction:row;flex-wrap:wrap;gap:0}
-  .detail-specs span{padding:3px 8px 3px 0;border-right:1px solid var(--border);font-size:12px}
+  .detail-specs span{padding:2px 8px 2px 0;border-right:1px solid var(--border);font-size:11px}
   .detail-specs span:last-child{border-right:none}
-  .detail-content{padding:20px 16px}
-  .detail-header-left h2{font-size:24px}
+  .detail-content{padding:16px 16px}
+  .detail-header-left h2{font-size:22px}
   .amenity-pill{font-size:11px;padding:5px 10px}
   .amenity-category{padding:14px}
   .amenity-category-header h4{font-size:11px}
@@ -4235,7 +4245,7 @@ function openDetail(slug) {
         <div class="detail-header-left">
           <div class="detail-loc">${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}</div>
           <h2>${prop.name}</h2>
-          <div class="detail-specs" style="margin-top:10px">
+          <div class="detail-specs" style="margin-top:4px">
             <span>${prop.guests} guest${prop.guests>1?'s':''}</span>
             <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
             <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
