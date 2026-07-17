@@ -442,22 +442,30 @@ ul{list-style:none}
 /* ── Mobile ── */
 @media(max-width:900px){
   .gbe-split{flex-direction:column}
-  .gbe-showcase{width:100%;min-width:0;height:auto;max-height:240px;flex-shrink:0}
-  .gbe-showcase-img::after{background:linear-gradient(180deg,rgba(8,8,8,.1) 0%,rgba(8,8,8,.85) 70%,rgba(8,8,8,.98) 100%)}
-  .gbe-showcase-content{padding:16px 20px 16px}
-  .gbe-showcase-name{font-size:22px;margin-bottom:4px}
-  .gbe-showcase-badge{margin-bottom:8px;font-size:8px;padding:3px 8px}
-  .gbe-showcase-specs{gap:10px;margin-bottom:10px}
+  .gbe-showcase{width:100%;min-width:0;height:auto;max-height:140px;flex-shrink:0;border-radius:0}
+  .gbe-showcase-img::after{background:linear-gradient(180deg,rgba(8,8,8,.15) 0%,rgba(8,8,8,.92) 60%,#080808 100%)}
+  .gbe-showcase-content{padding:12px 18px 14px}
+  .gbe-showcase-name{font-size:18px;margin-bottom:2px}
+  .gbe-showcase-badge{margin-bottom:6px;font-size:7px;padding:2px 7px}
+  .gbe-showcase-loc{font-size:10px;margin-bottom:4px}
+  .gbe-showcase-specs{gap:8px;margin-bottom:0}
+  .gbe-showcase-spec{font-size:11px}
   .gbe-showcase-amenities{display:none}
   .gbe-showcase-trust{display:none}
-  .gbe-showcase-rating{margin-bottom:0}
-  .gbe-engine{min-height:0}
-  .gbe-close{top:12px;right:12px;width:38px;height:38px}
+  .gbe-showcase-rating{margin-bottom:4px}
+  .gbe-showcase-rating .gbe-showcase-stars{font-size:11px}
+  .gbe-showcase-rating .gbe-showcase-reviews{font-size:10px}
+  .gbe-engine{min-height:0;border-radius:0}
+  .gbe-engine-header{padding:10px 18px}
+  .gbe-engine-title{font-size:14px}
+  .gbe-engine-footer{padding:8px 18px}
+  .gbe-close{top:10px;right:10px;width:36px;height:36px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15)}
+  .gbe-close svg{stroke:#fff}
 }
 @media(max-width:480px){
-  .gbe-showcase{max-height:180px}
-  .gbe-showcase-name{font-size:20px}
-  .gbe-showcase-specs{gap:8px}
+  .gbe-showcase{max-height:110px}
+  .gbe-showcase-name{font-size:16px}
+  .gbe-showcase-specs{gap:6px}
   .gbe-showcase-spec{font-size:12px}
   .gbe-engine-header{padding:10px 16px}
   .gbe-engine-footer{padding:8px 16px}
@@ -988,14 +996,15 @@ ul{list-style:none}
 .amenity-pill:hover{background:var(--accent-pale);color:var(--accent);border-color:var(--accent-light);transform:translateY(-1px)}
 
 /* Action buttons */
-.detail-actions{display:flex;gap:12px;padding-top:28px;border-top:1px solid var(--border);margin-top:8px}
-.detail-actions button,.detail-actions a{font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:0;padding:14px 32px;border-radius:var(--radius);transition:all .3s var(--ease);cursor:pointer}
+.detail-actions{display:flex;gap:10px;padding:16px 0 8px;margin-bottom:4px}
+.detail-actions button,.detail-actions a{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.01em;padding:11px 22px;border-radius:var(--radius);transition:all .3s var(--ease);cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
 .detail-actions .btn-book{background:var(--accent);color:#fff;border:none;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(184,101,74,.2)}
 .detail-actions .btn-book::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.15));opacity:0;transition:opacity .3s}
 .detail-actions .btn-book:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 8px 30px rgba(184,101,74,.35)}
 .detail-actions .btn-book:hover::before{opacity:1}
 .detail-actions .btn-contact{border:1px solid var(--border);color:var(--text);background:transparent;font-weight:500}
 .detail-actions .btn-contact:hover{border-color:var(--text);transform:translateY(-1px)}
+.detail-actions svg{flex-shrink:0}
 .detail-new-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-pale);color:var(--accent);font-family:var(--sans);font-size:11px;letter-spacing:.02em;padding:5px 12px;border-radius:var(--radius);font-weight:600;border:1px solid var(--accent-light)}
 
 /* ── Contact Modal ── */
@@ -1131,8 +1140,8 @@ ul{list-style:none}
   .amenity-category{padding:16px}
   .amenity-pills{gap:6px}
   .amenity-pill{font-size:11px;padding:5px 12px}
-  .detail-actions{flex-direction:column;gap:10px}
-  .detail-actions button,.detail-actions a{width:100%;text-align:center;justify-content:center;padding:14px 24px}
+  .detail-actions{flex-wrap:wrap;gap:8px}
+  .detail-actions button,.detail-actions a{flex:1;min-width:0;text-align:center;justify-content:center;padding:12px 16px;font-size:12px}
   .detail-thumb{width:64px;height:44px}
   .contact-body{padding:24px}
   .contact-section{padding:64px 16px}
@@ -1303,114 +1312,112 @@ ul{list-style:none}
 /* ═══ REWARDS OVERLAY ═══ */
 .rewards-overlay{position:fixed;inset:0;z-index:9999;background:#080808;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .45s cubic-bezier(.4,0,.2,1)}
 .rewards-overlay.open{opacity:1;pointer-events:auto}
-.rewards-page{max-width:580px;margin:0 auto;padding:0 28px 80px}
+.rewards-page{max-width:620px;margin:0 auto;padding:0 32px 80px}
 
 /* Top bar */
-.rewards-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;position:sticky;top:0;background:rgba(8,8,8,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10;border-bottom:1px solid rgba(255,255,255,.04)}
-.rewards-back{display:flex;align-items:center;gap:8px;background:none;border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:7px 18px;color:rgba(255,255,255,.7);font-family:var(--sans);font-size:12px;letter-spacing:.02em;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1)}
-.rewards-back:hover{border-color:rgba(255,255,255,.2);color:#fff}
-.rewards-topbar-logo{font-family:var(--sans);font-size:12px;font-weight:300;letter-spacing:.3em;color:rgba(255,255,255,.35)}
+.rewards-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;position:sticky;top:0;background:rgba(8,8,8,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10;border-bottom:1px solid rgba(255,255,255,.04)}
+.rewards-back{display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 0;color:rgba(255,255,255,.5);font-family:var(--sans);font-size:13px;letter-spacing:.01em;cursor:pointer;transition:color .25s}
+.rewards-back:hover{color:#fff}
+.rewards-topbar-logo{font-family:var(--sans);font-size:11px;font-weight:300;letter-spacing:.3em;color:rgba(255,255,255,.2)}
 
-/* Hero */
-.rewards-hero{text-align:center;padding:56px 0 12px}
-.rewards-hero .section-label{margin-bottom:14px;font-size:10px;letter-spacing:.18em;color:var(--accent);opacity:.7}
-.rewards-title{font-family:var(--serif);font-size:clamp(32px,6vw,48px);font-weight:400;color:#fff;line-height:1.1;letter-spacing:-.025em;margin-bottom:14px}
+/* Hero — editorial left-align */
+.rewards-hero{text-align:left;padding:64px 0 0}
+.rewards-hero .section-label{margin-bottom:16px;font-size:10px;letter-spacing:.18em;color:var(--accent);opacity:.6}
+.rewards-title{font-family:var(--serif);font-size:clamp(34px,6vw,52px);font-weight:400;color:#fff;line-height:1.08;letter-spacing:-.03em;margin-bottom:18px}
 .rewards-title em{font-style:italic;color:var(--accent-light)}
-.rewards-subtitle{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.42);line-height:1.65;max-width:380px;margin:0 auto}
+.rewards-subtitle{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.38);line-height:1.7;max-width:440px;margin:0 0 48px}
 
-/* ── Amazon Gift Card — floating card ── */
-.rw-gift-card{position:relative;margin:32px 0 36px;padding:1px;border-radius:16px;background:linear-gradient(160deg,rgba(255,169,0,.18) 0%,rgba(255,169,0,.04) 40%,rgba(255,255,255,.04) 100%)}
-.rw-gift-card-inner{display:flex;align-items:center;gap:24px;padding:28px 32px;border-radius:15px;background:linear-gradient(160deg,#141210 0%,#0f0e0c 50%,#0c0c0c 100%);position:relative;overflow:hidden}
-.rw-gift-card-inner::before{content:'';position:absolute;top:-30%;right:-10%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,169,0,.06) 0%,transparent 70%);pointer-events:none}
-.rw-gift-card-inner::after{content:'';position:absolute;bottom:-20%;left:10%;width:160px;height:160px;background:radial-gradient(circle,rgba(199,107,66,.04) 0%,transparent 70%);pointer-events:none}
-.rw-amazon-logo{flex-shrink:0;display:flex;align-items:center;opacity:.9}
+/* ── Amazon Gift Card ── */
+.rw-gift-card{position:relative;margin:0 0 48px;border-radius:0;background:none;padding:0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.rw-gift-card-inner{display:flex;align-items:center;gap:28px;padding:28px 0;border-radius:0;background:none;position:relative;overflow:visible}
+.rw-gift-card-inner::before,.rw-gift-card-inner::after{display:none}
+.rw-amazon-logo{flex-shrink:0;display:flex;align-items:center;opacity:.85}
 .rw-gift-card-content{flex:1;min-width:0;position:relative;z-index:1}
-.rw-gift-card-value{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
-.rw-gift-card-amount{font-family:var(--serif);font-size:42px;font-weight:400;color:#fff;letter-spacing:-.03em;line-height:1}
-.rw-gift-card-label{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.45);font-weight:300}
-.rw-gift-card-tag{font-family:var(--sans);font-size:10px;color:rgba(255,169,0,.55);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
-.rw-gift-card-badge{position:absolute;top:0;right:0;z-index:1;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:0 15px 0 12px;background:rgba(255,169,0,.06);border-left:1px solid rgba(255,169,0,.08);border-bottom:1px solid rgba(255,169,0,.08)}
-.rw-gift-card-badge svg{color:rgba(255,169,0,.5)}
-.rw-gift-card-badge span{font-family:var(--sans);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,169,0,.5);font-weight:600}
+.rw-gift-card-value{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.rw-gift-card-amount{font-family:var(--serif);font-size:44px;font-weight:400;color:#fff;letter-spacing:-.03em;line-height:1}
+.rw-gift-card-label{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.35);font-weight:300}
+.rw-gift-card-tag{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.25);letter-spacing:.02em;font-weight:400}
+.rw-gift-card-badge{position:absolute;top:28px;right:0;z-index:1;display:flex;align-items:center;gap:5px;padding:0;border-radius:0;background:none;border:none}
+.rw-gift-card-badge svg{color:var(--accent-light);opacity:.5}
+.rw-gift-card-badge span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);font-weight:400}
 
 /* ── Form section ── */
-.rewards-form-wrap{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:36px 32px;margin-bottom:36px;position:relative}
-.rewards-form-title{font-family:var(--serif);font-size:22px;font-weight:400;color:#fff;margin-bottom:4px}
-.rewards-form-sub{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.35);margin-bottom:28px;line-height:1.5}
-.rw-field{margin-bottom:20px}
-.rw-field label{display:block;font-family:var(--sans);font-size:11px;font-weight:500;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-.rw-field input,.rw-field select{width:100%;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;color:#fff;font-family:var(--sans);font-size:14px;outline:none;transition:all .3s cubic-bezier(.4,0,.2,1)}
-.rw-field input:focus,.rw-field select:focus{border-color:rgba(199,107,66,.4);background:rgba(199,107,66,.03);box-shadow:0 0 0 3px rgba(199,107,66,.06)}
-.rw-field input::placeholder{color:rgba(255,255,255,.16)}
-.rw-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.rewards-form-wrap{background:none;border:none;border-radius:0;padding:0;margin-bottom:48px;position:relative;border-top:1px solid rgba(255,255,255,.06);padding-top:36px}
+.rewards-form-title{font-family:var(--serif);font-size:24px;font-weight:400;color:#fff;margin-bottom:6px}
+.rewards-form-sub{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.3);margin-bottom:32px;line-height:1.6}
+.rw-field{margin-bottom:22px}
+.rw-field label{display:block;font-family:var(--sans);font-size:11px;font-weight:500;color:rgba(255,255,255,.25);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.rw-field input,.rw-field select{width:100%;padding:13px 0;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);border-radius:0;color:#fff;font-family:var(--sans);font-size:15px;outline:none;transition:border-color .3s}
+.rw-field input:focus,.rw-field select:focus{border-bottom-color:var(--accent);background:none;box-shadow:none}
+.rw-field input::placeholder{color:rgba(255,255,255,.14)}
+.rw-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;padding-right:28px}
 .rw-field select option{background:#131313;color:#fff}
-.rw-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rw-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 
 /* Upload */
-.rw-upload{position:relative;border:1.5px dashed rgba(255,255,255,.07);border-radius:12px;padding:30px 20px;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1)}
-.rw-upload:hover,.rw-upload.dragover{border-color:rgba(199,107,66,.3);background:rgba(199,107,66,.02)}
+.rw-upload{position:relative;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .25s}
+.rw-upload:hover,.rw-upload.dragover{border-color:rgba(255,255,255,.12);background:none}
 .rw-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.rw-upload-icon{width:44px;height:44px;border-radius:50%;background:rgba(199,107,66,.05);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--accent-light);opacity:.7}
-.rw-upload-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.6);margin-bottom:3px}
-.rw-upload-hint{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2)}
-.rw-upload-preview{margin-top:12px;display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:10px;text-align:left}
+.rw-upload-icon{width:36px;height:36px;border-radius:0;background:none;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:rgba(255,255,255,.25);opacity:1}
+.rw-upload-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.45);margin-bottom:2px}
+.rw-upload-hint{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.15)}
+.rw-upload-preview{margin-top:12px;display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;text-align:left}
 .rw-upload-preview.visible{display:flex}
-.rw-upload-preview img{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.06)}
+.rw-upload-preview img{width:46px;height:46px;border-radius:4px;object-fit:cover;border:1px solid rgba(255,255,255,.06)}
 .rw-upload-preview-info{flex:1;min-width:0}
-.rw-upload-preview-name{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rw-upload-preview-size{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.3)}
-.rw-upload-remove{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;padding:4px;transition:color .2s}
-.rw-upload-remove:hover{color:var(--accent-light)}
+.rw-upload-preview-name{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rw-upload-preview-size{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25)}
+.rw-upload-remove{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;padding:4px;transition:color .2s}
+.rw-upload-remove:hover{color:#fff}
 
 /* Submit */
-.rw-submit{width:100%;padding:16px 24px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:var(--sans);font-size:14px;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
-.rw-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 50%);opacity:0;transition:opacity .3s}
-.rw-submit:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(199,107,66,.2)}.rw-submit:hover::before{opacity:1}
-.rw-submit:active{transform:translateY(0);box-shadow:0 2px 8px rgba(199,107,66,.15)}
-.rw-submit:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.rw-submit{width:100%;padding:15px 24px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:var(--sans);font-size:14px;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:opacity .25s;position:relative;overflow:hidden}
+.rw-submit::before{display:none}
+.rw-submit:hover{opacity:.85;transform:none;box-shadow:none}
+.rw-submit:active{opacity:.75;transform:none;box-shadow:none}
+.rw-submit:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
 .rw-submit .spinner-sm{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── How it works ── */
-.rw-how-section{margin-bottom:40px}
-.rw-how-label{font-family:var(--sans);font-size:11px;font-weight:600;color:rgba(255,255,255,.35);letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:24px}
-.rewards-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.rewards-step{text-align:center;padding:24px 16px 20px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;transition:all .3s cubic-bezier(.4,0,.2,1)}
-.rewards-step:hover{border-color:rgba(199,107,66,.15);background:rgba(199,107,66,.02)}
-.rewards-step-icon{width:40px;height:40px;border-radius:50%;background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--accent-light)}
-.rewards-step-num{font-family:var(--mono);font-size:10px;color:var(--accent);opacity:.5;letter-spacing:.08em;margin-bottom:6px}
-.rewards-step h4{font-family:var(--sans);font-size:14px;font-weight:500;color:rgba(255,255,255,.85);margin-bottom:4px}
-.rewards-step p{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+.rw-how-section{margin-bottom:48px;border-top:1px solid rgba(255,255,255,.06);padding-top:36px}
+.rw-how-label{font-family:var(--serif);font-size:20px;font-weight:400;color:#fff;letter-spacing:-.01em;text-transform:none;text-align:left;margin-bottom:28px}
+.rewards-steps{display:flex;flex-direction:column;gap:0}
+.rewards-step{text-align:left;padding:18px 0;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.04);border-radius:0;display:flex;align-items:flex-start;gap:16px;transition:none}
+.rewards-step:hover{border-color:rgba(255,255,255,.04);background:none}
+.rewards-step:last-child{border-bottom:none}
+.rewards-step-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;margin:0;flex-shrink:0;color:rgba(255,255,255,.35)}
+.rewards-step-num{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.08em;margin-bottom:3px}
+.rewards-step h4{font-family:var(--sans);font-size:14px;font-weight:500;color:rgba(255,255,255,.8);margin-bottom:2px}
+.rewards-step p{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.3);line-height:1.5}
 
 /* Success */
-.rw-success{display:none;text-align:center;padding:56px 24px}
+.rw-success{display:none;text-align:left;padding:56px 0}
 .rw-success.visible{display:block}
-.rw-success-icon{width:64px;height:64px;border-radius:50%;background:rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:#66bb6a}
+.rw-success-icon{width:48px;height:48px;border-radius:50%;background:rgba(76,175,80,.04);border:1px solid rgba(76,175,80,.08);display:flex;align-items:center;justify-content:center;margin:0 0 20px;color:#66bb6a}
 .rw-success h3{font-family:var(--serif);font-size:28px;font-weight:400;color:#fff;margin-bottom:8px}
-.rw-success p{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:360px;margin:0 auto}
-.rw-success .rw-another{margin-top:24px;display:inline-block;padding:10px 28px;border:1px solid rgba(255,255,255,.07);border-radius:100px;color:rgba(255,255,255,.6);font-family:var(--sans);font-size:13px;cursor:pointer;background:none;transition:all .3s}
+.rw-success p{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.35);line-height:1.7;max-width:400px;margin:0}
+.rw-success .rw-another{margin-top:24px;display:inline-block;padding:10px 24px;border:1px solid rgba(255,255,255,.07);border-radius:4px;color:rgba(255,255,255,.5);font-family:var(--sans);font-size:13px;cursor:pointer;background:none;transition:color .25s,border-color .25s}
 .rw-success .rw-another:hover{border-color:rgba(255,255,255,.15);color:#fff}
 
 /* Fine print */
-.rw-fine{text-align:center;font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.12);line-height:1.7;max-width:380px;margin:0 auto}
+.rw-fine{text-align:left;font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.1);line-height:1.7;max-width:100%;margin:0}
 
 /* Responsive */
 @media(max-width:768px){
   .rewards-page{padding:0 20px 60px}
-  .rewards-hero{padding:40px 0 8px}
+  .rewards-hero{padding:40px 0 0}
   .rewards-title{font-size:30px}
-  .rewards-subtitle{font-size:13px}
-  .rw-gift-card{margin:24px 0 28px}
-  .rw-gift-card-inner{flex-direction:column;text-align:center;gap:14px;padding:24px 20px}
-  .rw-gift-card-value{justify-content:center}
+  .rewards-subtitle{font-size:13px;margin-bottom:36px}
+  .rw-gift-card{margin:0 0 36px}
+  .rw-gift-card-inner{flex-direction:row;gap:20px;padding:22px 0}
   .rw-gift-card-amount{font-size:36px}
-  .rw-gift-card-tag{display:block;margin-top:2px}
-  .rw-gift-card-badge{position:static;border-radius:100px;background:rgba(255,169,0,.05);border:1px solid rgba(255,169,0,.08);justify-content:center;margin-top:4px}
-  .rewards-steps{grid-template-columns:1fr;gap:8px}
-  .rewards-step{display:flex;align-items:center;gap:14px;text-align:left;padding:16px 18px}
-  .rewards-step-icon{margin:0;flex-shrink:0}
+  .rw-gift-card-badge{display:none}
+  .rewards-steps{flex-direction:column;gap:0}
+  .rewards-step{padding:14px 0}
+  .rewards-step-icon{width:28px;height:28px}
   .rewards-step-num{margin-bottom:1px}
-  .rewards-form-wrap{padding:28px 20px}
+  .rewards-form-wrap{padding-top:28px}
   .rw-row{grid-template-columns:1fr}
   .rw-upload{padding:24px 16px}
 }
@@ -4235,6 +4242,11 @@ function openDetail(slug) {
         <div class="detail-header-right">${ratingHtml}</div>
       </div>
     </div>
+    <div class="detail-actions">
+      <button class="btn-book" onclick="closeDetail(true);openBooking('${prop.slug}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Book Now</button>
+      <button class="btn-contact" onclick="openContact('${prop.slug}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Contact Host</button>
+      <a href="https://www.airbnb.com/rooms/${prop.hostingId}" target="_blank" rel="noopener" class="btn-contact"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View on Airbnb</a>
+    </div>
     <div class="detail-section">
       <div class="detail-desc">
         <h3>About This Property</h3>
@@ -4252,11 +4264,6 @@ function openDetail(slug) {
       <h3>Location</h3>
       <p style="color:var(--text-muted);font-size:14px;margin:0 0 12px">${prop.city}, ${prop.state}</p>
       <div id="detailMap" style="width:100%;height:280px;border-radius:12px;overflow:hidden;border:1px solid var(--border)"></div>
-    </div>
-    <div class="detail-actions">
-      <button class="btn-book" onclick="closeDetail(true);openBooking('${prop.slug}')">Book This Property</button>
-      <button class="btn-contact" onclick="closeDetail(true);openContact('${prop.slug}')">Contact Host</button>
-      <a href="https://www.airbnb.com/rooms/${prop.hostingId}" target="_blank" rel="noopener" class="btn-contact">View on Airbnb &rarr;</a>
     </div>`;
 
   document.getElementById('detailModal').classList.add('open');
@@ -4334,7 +4341,10 @@ function openContact(slug) {
 
 function closeContact() {
   document.getElementById('contactModal').classList.remove('open');
-  document.body.style.overflow = '';
+  // Only restore scroll if no other overlay is open behind it
+  const detailOpen = document.getElementById('detailModal')?.classList.contains('open');
+  const gbeOpen = document.getElementById('gbeOverlay')?.classList.contains('open');
+  if (!detailOpen && !gbeOpen) document.body.style.overflow = '';
 }
 
 async function submitContact() {
