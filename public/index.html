@@ -383,35 +383,84 @@ ul{list-style:none}
 .cancellation-item .ci-dot.red{background:#E57373}
 .cancellation-note{font-family:var(--sans);font-size:11px;color:var(--text-muted);opacity:.7;margin-top:10px;line-height:1.5}
 
-/* ── Guesty Booking Engine Overlay ── */
-.gbe-overlay{position:fixed;inset:0;z-index:10002;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:none;flex-direction:column;opacity:0;transition:opacity .35s var(--ease)}
-.gbe-overlay.open{display:flex;animation:gbeFadeIn .4s var(--ease-out) forwards}
+/* ── Guesty Booking Engine Overlay (Split-View) ── */
+.gbe-overlay{position:fixed;inset:0;z-index:10002;background:rgba(8,8,8,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:none;opacity:0;transition:opacity .35s var(--ease)}
+.gbe-overlay.open{display:flex;animation:gbeFadeIn .45s var(--ease-out) forwards}
 @keyframes gbeFadeIn{from{opacity:0}to{opacity:1}}
-.gbe-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(17,17,17,.95);border-bottom:1px solid rgba(199,107,66,.15);flex-shrink:0;min-height:64px}
-.gbe-header-left{display:flex;align-items:center;gap:14px}
-.gbe-header-badge{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;background:rgba(199,107,66,.1);padding:4px 10px;border-radius:100px}
-.gbe-header-title{font-family:var(--serif);font-size:20px;color:var(--text-inv);font-weight:400;letter-spacing:-.01em}
-.gbe-header-sub{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--text-inv-muted);margin-top:2px}
-.gbe-close{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s var(--ease);flex-shrink:0}
-.gbe-close:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);transform:scale(1.05)}
-.gbe-close svg{width:16px;height:16px;stroke:rgba(255,255,255,.7);stroke-width:2;fill:none}
+.gbe-close{position:fixed;top:20px;right:20px;z-index:10004;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s var(--ease)}
+.gbe-close:hover{background:rgba(0,0,0,.7);border-color:rgba(255,255,255,.25);transform:scale(1.08)}
+.gbe-close svg{width:16px;height:16px;stroke:#fff;stroke-width:2;fill:none}
+/* ── Split Layout ── */
+.gbe-split{display:flex;width:100%;height:100%}
+/* ── Left: Property Showcase ── */
+.gbe-showcase{width:38%;min-width:360px;height:100%;position:relative;overflow:hidden;flex-shrink:0;transform:translateX(-40px);opacity:0;animation:gbeSlideRight .55s .1s var(--ease-out) forwards}
+@keyframes gbeSlideRight{to{transform:translateX(0);opacity:1}}
+.gbe-showcase-img{position:absolute;inset:0;z-index:0}
+.gbe-showcase-img img{width:100%;height:100%;object-fit:cover}
+.gbe-showcase-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,.15) 0%,rgba(8,8,8,.3) 40%,rgba(8,8,8,.92) 80%,rgba(8,8,8,.98) 100%)}
+.gbe-showcase-content{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:40px 36px 32px}
+.gbe-showcase-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--accent-light);text-transform:uppercase;margin-bottom:16px;background:rgba(199,107,66,.12);padding:5px 12px;border-radius:100px;border:1px solid rgba(199,107,66,.15)}
+.gbe-showcase-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent);animation:gbePulse 2s infinite}
+@keyframes gbePulse{0%,100%{opacity:1}50%{opacity:.4}}
+.gbe-showcase-name{font-family:var(--serif);font-size:clamp(26px,3vw,36px);color:#fff;font-weight:400;line-height:1.15;letter-spacing:-.02em;margin-bottom:6px;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.gbe-showcase-loc{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:rgba(255,255,255,.5);margin-bottom:20px}
+.gbe-showcase-specs{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.gbe-showcase-spec{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:5px}
+.gbe-showcase-spec svg{width:14px;height:14px;stroke:var(--accent-light);stroke-width:1.5;fill:none;opacity:.8}
+.gbe-showcase-divider{width:1px;height:14px;background:rgba(255,255,255,.15)}
+.gbe-showcase-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.gbe-showcase-amenity{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.6);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:4px 10px;border-radius:100px;letter-spacing:.02em}
+.gbe-showcase-amenity.premium{color:var(--accent-light);background:rgba(199,107,66,.08);border-color:rgba(199,107,66,.12)}
+.gbe-showcase-rating{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.gbe-showcase-stars{color:#E8B86D;font-size:13px;letter-spacing:1px}
+.gbe-showcase-reviews{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.45)}
+.gbe-showcase-trust{display:flex;gap:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}
+.gbe-showcase-trust-item{display:flex;align-items:center;gap:7px}
+.gbe-showcase-trust-item svg{width:14px;height:14px;stroke:var(--accent);stroke-width:1.5;fill:none;flex-shrink:0}
+.gbe-showcase-trust-item span{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.01em}
+/* ── Right: Booking Engine ── */
+.gbe-engine{flex:1;height:100%;display:flex;flex-direction:column;background:#FAFAF5;transform:translateX(40px);opacity:0;animation:gbeSlideLeft .55s .2s var(--ease-out) forwards}
+@keyframes gbeSlideLeft{to{transform:translateX(0);opacity:1}}
+.gbe-engine-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#fff;border-bottom:1px solid #eee;flex-shrink:0}
+.gbe-engine-title{font-family:var(--serif);font-size:18px;color:#111;font-weight:400;letter-spacing:-.01em}
+.gbe-engine-link{font-family:var(--sans);font-size:12px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:4px;transition:opacity .2s}
+.gbe-engine-link:hover{opacity:.7}
+.gbe-engine-link svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;fill:none}
 .gbe-iframe-wrap{flex:1;position:relative;overflow:hidden}
 .gbe-iframe-wrap iframe{width:100%;height:100%;border:none;background:#FAFAF5}
-.gbe-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(17,17,17,.98);z-index:2;transition:opacity .5s var(--ease)}
+.gbe-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#FAFAF5;z-index:2;transition:opacity .6s var(--ease)}
 .gbe-loading.loaded{opacity:0;pointer-events:none}
-.gbe-loading-spinner{width:36px;height:36px;border:2px solid rgba(199,107,66,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-.gbe-loading-text{font-family:var(--sans);font-size:14px;color:var(--text-inv-muted)}
-.gbe-loading-sub{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.3)}
-.gbe-footer{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 24px;background:rgba(17,17,17,.95);border-top:1px solid rgba(255,255,255,.05);flex-shrink:0}
-.gbe-footer-link{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);text-decoration:none;opacity:.6;transition:opacity .2s}
-.gbe-footer-link:hover{opacity:1}
-.gbe-footer-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2)}
-@media(max-width:768px){
-  .gbe-header{padding:12px 16px;min-height:56px}
-  .gbe-header-title{font-size:16px}
-  .gbe-header-badge{display:none}
-  .gbe-close{width:36px;height:36px}
-  .gbe-footer{padding:8px 16px}
+.gbe-loading-icon{width:48px;height:48px;position:relative}
+.gbe-loading-icon::before{content:'';position:absolute;inset:0;border:2px solid rgba(199,107,66,.12);border-radius:50%}
+.gbe-loading-icon::after{content:'';position:absolute;inset:0;border:2px solid transparent;border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
+.gbe-loading-text{font-family:var(--sans);font-size:14px;color:#6B6B6B;font-weight:400}
+.gbe-loading-sub{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:#bbb;text-transform:uppercase}
+.gbe-engine-footer{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 24px;background:#fff;border-top:1px solid #eee;flex-shrink:0}
+.gbe-engine-footer span{font-family:var(--sans);font-size:11px;color:#aaa;display:flex;align-items:center;gap:5px}
+.gbe-engine-footer svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.5;fill:none}
+.gbe-engine-footer .gbe-sep{width:3px;height:3px;border-radius:50%;background:#ddd}
+/* ── Mobile ── */
+@media(max-width:900px){
+  .gbe-split{flex-direction:column}
+  .gbe-showcase{width:100%;min-width:0;height:auto;max-height:240px;flex-shrink:0}
+  .gbe-showcase-img::after{background:linear-gradient(180deg,rgba(8,8,8,.1) 0%,rgba(8,8,8,.85) 70%,rgba(8,8,8,.98) 100%)}
+  .gbe-showcase-content{padding:16px 20px 16px}
+  .gbe-showcase-name{font-size:22px;margin-bottom:4px}
+  .gbe-showcase-badge{margin-bottom:8px;font-size:8px;padding:3px 8px}
+  .gbe-showcase-specs{gap:10px;margin-bottom:10px}
+  .gbe-showcase-amenities{display:none}
+  .gbe-showcase-trust{display:none}
+  .gbe-showcase-rating{margin-bottom:0}
+  .gbe-engine{min-height:0}
+  .gbe-close{top:12px;right:12px;width:38px;height:38px}
+}
+@media(max-width:480px){
+  .gbe-showcase{max-height:180px}
+  .gbe-showcase-name{font-size:20px}
+  .gbe-showcase-specs{gap:8px}
+  .gbe-showcase-spec{font-size:12px}
+  .gbe-engine-header{padding:10px 16px}
+  .gbe-engine-footer{padding:8px 16px}
 }
 
 /* ── Legal Modals (Terms / Privacy) ── */
@@ -2377,34 +2426,63 @@ ul{list-style:none}
   </div>
 </div>
 
-<!-- ═══ GUESTY BOOKING ENGINE OVERLAY ═══ -->
+<!-- ═══ GUESTY BOOKING ENGINE OVERLAY (Split-View) ═══ -->
 <div class="gbe-overlay" id="gbeOverlay">
-  <div class="gbe-header">
-    <div class="gbe-header-left">
-      <span class="gbe-header-badge">BOOK DIRECT</span>
-      <div>
-        <div class="gbe-header-title" id="gbeTitle">Book Your Stay</div>
-        <div class="gbe-header-sub" id="gbeSub"></div>
+  <div class="gbe-close" onclick="closeGBE()">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </div>
+  <div class="gbe-split">
+    <!-- Left: Property Showcase -->
+    <div class="gbe-showcase">
+      <div class="gbe-showcase-img"><img id="gbePhoto" alt="" src=""></div>
+      <div class="gbe-showcase-content">
+        <div class="gbe-showcase-badge" id="gbeBadge">BOOK DIRECT</div>
+        <h2 class="gbe-showcase-name" id="gbeName"></h2>
+        <div class="gbe-showcase-loc" id="gbeLoc"></div>
+        <div class="gbe-showcase-rating" id="gbeRating" style="display:none">
+          <span class="gbe-showcase-stars" id="gbeStars"></span>
+          <span class="gbe-showcase-reviews" id="gbeReviews"></span>
+        </div>
+        <div class="gbe-showcase-specs" id="gbeSpecs"></div>
+        <div class="gbe-showcase-amenities" id="gbeAmenities"></div>
+        <div class="gbe-showcase-trust">
+          <div class="gbe-showcase-trust-item">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Best rate guaranteed</span>
+          </div>
+          <div class="gbe-showcase-trust-item">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <span>Secure checkout</span>
+          </div>
+          <div class="gbe-showcase-trust-item">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Instant confirmation</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="gbe-close" onclick="closeGBE()">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <!-- Right: Booking Engine -->
+    <div class="gbe-engine">
+      <div class="gbe-engine-header">
+        <span class="gbe-engine-title">Select Dates &amp; Book</span>
+        <a id="gbeNewWindow" href="#" target="_blank" rel="noopener" class="gbe-engine-link">
+          Open in new window <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+      <div class="gbe-iframe-wrap">
+        <div class="gbe-loading" id="gbeLoading">
+          <div class="gbe-loading-icon"></div>
+          <div class="gbe-loading-text">Loading availability&hellip;</div>
+          <div class="gbe-loading-sub">Powered by Guesty</div>
+        </div>
+        <iframe id="gbeIframe" title="Regent Booking Engine" allow="payment *; clipboard-write *" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe>
+      </div>
+      <div class="gbe-engine-footer">
+        <span><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Secure payments by Stripe</span>
+        <span class="gbe-sep"></span>
+        <span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Powered by Guesty</span>
+      </div>
     </div>
-  </div>
-  <div class="gbe-iframe-wrap">
-    <div class="gbe-loading" id="gbeLoading">
-      <div class="gbe-loading-spinner"></div>
-      <div class="gbe-loading-text">Loading booking portal&hellip;</div>
-      <div class="gbe-loading-sub">POWERED BY GUESTY</div>
-    </div>
-    <iframe id="gbeIframe" title="Regent Booking Engine" allow="payment *; clipboard-write *" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe>
-  </div>
-  <div class="gbe-footer">
-    <a href="https://regent.guestybookings.com" target="_blank" rel="noopener" class="gbe-footer-link">Open in new window</a>
-    <span class="gbe-footer-sep"></span>
-    <span class="gbe-footer-link" style="cursor:default">Secure payments by Stripe</span>
-    <span class="gbe-footer-sep"></span>
-    <span class="gbe-footer-link" style="cursor:default">Powered by Guesty</span>
   </div>
 </div>
 
@@ -3388,33 +3466,67 @@ function openBooking(slug) {
   const guestyId = GUESTY_IDS[slug];
   if (!guestyId) { console.warn('No Guesty ID for', slug); return; }
 
-  // Set overlay header info
-  document.getElementById('gbeTitle').textContent = prop.name;
-  document.getElementById('gbeSub').textContent = `${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}`;
+  // ── Populate showcase panel ──
+  // Hero photo
+  const photoImg = document.getElementById('gbePhoto');
+  if (prop.photos && prop.photos.length > 0) {
+    photoImg.src = imgUrl(prop.hostingId, prop.photos[0]);
+    photoImg.alt = prop.name;
+  }
+  // Badge
+  document.getElementById('gbeBadge').textContent = 'BOOK DIRECT';
+  // Name & location
+  document.getElementById('gbeName').textContent = prop.name;
+  document.getElementById('gbeLoc').textContent = `${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}`;
+  // Rating
+  const ratingEl = document.getElementById('gbeRating');
+  if (prop.rating && prop.reviews > 0) {
+    ratingEl.style.display = 'flex';
+    document.getElementById('gbeStars').textContent = '★'.repeat(Math.round(prop.rating));
+    document.getElementById('gbeReviews').textContent = `${prop.rating} (${prop.reviews} review${prop.reviews > 1 ? 's' : ''})`;
+  } else if (prop.reviews > 0) {
+    ratingEl.style.display = 'flex';
+    document.getElementById('gbeStars').textContent = '★';
+    document.getElementById('gbeReviews').textContent = `(${prop.reviews} review${prop.reviews > 1 ? 's' : ''})`;
+  } else {
+    ratingEl.style.display = 'none';
+  }
+  // Specs
+  const specsEl = document.getElementById('gbeSpecs');
+  specsEl.innerHTML = `
+    <span class="gbe-showcase-spec"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${prop.guests} guest${prop.guests > 1 ? 's' : ''}</span>
+    <span class="gbe-showcase-divider"></span>
+    <span class="gbe-showcase-spec"><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 012 2v10"/><path d="M2 17h20"/></svg>${prop.beds} bed${prop.beds > 1 ? 's' : ''}</span>
+    <span class="gbe-showcase-divider"></span>
+    <span class="gbe-showcase-spec"><svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 011 1v3a4 4 0 01-4 4H7a4 4 0 01-4-4v-3a1 1 0 011-1z"/><path d="M6 12V5a2 2 0 012-2h3v2.25"/></svg>${prop.baths} bath${prop.baths > 1 ? 's' : ''}</span>`;
+  // Amenities
+  const amenEl = document.getElementById('gbeAmenities');
+  amenEl.innerHTML = (prop.amenities || []).slice(0, 5).map(a =>
+    `<span class="gbe-showcase-amenity${a.premium ? ' premium' : ''}">${a.label}</span>`
+  ).join('');
 
-  // Show loading state
+  // ── Load booking engine ──
   const loading = document.getElementById('gbeLoading');
   loading.classList.remove('loaded');
 
-  // Load the Guesty Booking Engine property page in iframe
   const iframe = document.getElementById('gbeIframe');
   const url = GBE_BASE + guestyId;
   iframe.src = url;
 
   // Update "Open in new window" link
-  const footerLink = document.querySelector('.gbe-footer-link[href]');
-  if (footerLink) footerLink.href = url;
+  const newWinLink = document.getElementById('gbeNewWindow');
+  if (newWinLink) newWinLink.href = url;
 
   // Hide loading once iframe loads
   iframe.onload = () => {
-    setTimeout(() => loading.classList.add('loaded'), 400);
+    setTimeout(() => loading.classList.add('loaded'), 300);
   };
 
   // Show overlay
   document.getElementById('gbeOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Safety timeout: hide loading after 8s even if onload doesn't fire
+  // Safety timeout
   setTimeout(() => loading.classList.add('loaded'), 8000);
 }
 
@@ -3422,10 +3534,9 @@ function closeGBE() {
   const overlay = document.getElementById('gbeOverlay');
   overlay.classList.remove('open');
   document.body.style.overflow = '';
-  // Clear iframe after animation
   setTimeout(() => {
     document.getElementById('gbeIframe').src = 'about:blank';
-  }, 400);
+  }, 500);
 }
 
 // Keep legacy closeBooking for any remaining references
