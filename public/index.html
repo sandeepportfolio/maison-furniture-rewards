@@ -4115,11 +4115,16 @@ function handleCardClick(e, slug) {
 let detailSlug = '';
 let detailIdx = 0;
 
-function openDetail(slug) {
+function openDetail(slug, skipHistory) {
   const prop = PROPERTIES.find(p => p.slug === slug);
   if (!prop) return;
   detailSlug = slug;
   detailIdx = 0;
+
+  // Update URL hash for shareable deep links (skip when called from map or popstate)
+  if (!skipHistory) {
+    history.pushState({ detail: true, property: slug }, '', '#property/' + slug);
+  }
 
   // Gallery
   const gallery = document.getElementById('detailGallery');
@@ -4332,6 +4337,9 @@ function closeDetail(skipMapReturn) {
   } else if (state.fromMap) {
     // Came from map but not returning (e.g. booking/contact) — clean up history
     history.replaceState({}, '', window.location.pathname);
+  } else if (location.hash.startsWith('#property/')) {
+    // Clear the deep link hash when closing detail opened from main page
+    history.pushState({}, '', window.location.pathname);
   }
 }
 
@@ -5188,7 +5196,7 @@ function selectPropertyOnMap(idx) {
       setTimeout(() => {
         // Scroll to property section or open detail
         if (typeof openDetail === 'function') {
-          openDetail(selectedSlug);
+          openDetail(selectedSlug, true); // skipHistory — we push our own state below with fromMap
         } else {
           // Fallback: scroll to the property card on the main page
           const propCard = document.querySelector(`.prop-card[data-slug="${selectedSlug}"]`);
@@ -5762,6 +5770,17 @@ window.addEventListener('popstate', (e) => {
     }
     return;
   }
+  // Handle detail modal back navigation (deep link)
+  const detailModal = document.getElementById('detailModal');
+  if (detailModal && detailModal.classList.contains('open') && !location.hash.startsWith('#property/')) {
+    if (detailMapInstance) { detailMapInstance.remove(); detailMapInstance = null; }
+    detailModal.classList.remove('open');
+    detailModal.style.opacity = '';
+    const db = detailModal.querySelector('.detail-body');
+    if (db) { db.style.transform = ''; db.style.opacity = ''; }
+    document.body.style.overflow = '';
+    return;
+  }
   // Handle rewards overlay
   if (document.getElementById('rewardsOverlay').classList.contains('open')) hideRewards();
 });
@@ -5786,6 +5805,19 @@ function initMapHash() {
   }, 300);
 }
 
+// Open property detail if URL has #property/{slug} on load
+function initDetailHash() {
+  if (!location.hash.startsWith('#property/')) return;
+  const slug = location.hash.split('/')[1];
+  if (!slug) return;
+  const prop = PROPERTIES.find(p => p.slug === slug);
+  if (!prop) return;
+  // Replace current state so back goes to main page (not a duplicate entry)
+  history.replaceState({ detail: true, property: slug }, '', '#property/' + slug);
+  // Short delay to ensure DOM is ready
+  setTimeout(() => openDetail(slug, true), 200);
+}
+
 /* ═══ Init ═══ */
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
@@ -5803,6 +5835,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initDetailGallerySwipe();
   initRewardsHash();
   initMapHash();
+  initDetailHash();
 });
 </script>
 </body>
