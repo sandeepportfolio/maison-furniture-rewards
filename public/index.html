@@ -639,7 +639,7 @@ ul{list-style:none}
 .explore-map-wrap .map-click-hint svg{width:14px;height:14px;stroke:var(--accent-light);fill:none;stroke-width:2}
 .explore-map-wrap:hover .map-click-hint{color:var(--accent-light)}
 /* Map wrapper — expanded state */
-.explore-map-wrap.map-expanded{position:fixed;top:0!important;right:0!important;left:0!important;width:auto!important;height:100vh!important;height:100dvh!important;height:-webkit-fill-available!important;z-index:1000;border-radius:0;border:none;cursor:default}
+.explore-map-wrap.map-expanded{position:fixed;top:0!important;right:0!important;bottom:0!important;left:0!important;width:auto!important;height:auto!important;z-index:1000;border-radius:0;border:none;cursor:default;overflow:hidden}
 .explore-map-wrap.map-expanded .map-click-hint{opacity:0}
 /* Map element */
 #exploreMap{flex:1;min-height:0;width:100%;z-index:1}
@@ -692,7 +692,7 @@ ul{list-style:none}
 /* ═══ BOTTOM SHEET — unified card + strip container ═══ */
 .map-bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;display:flex;flex-direction:column;max-height:55dvh;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease),max-height .35s var(--ease)}
 .map-expanded .map-bottom-sheet{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
-.map-bottom-sheet.strip-only{max-height:calc(200px + env(safe-area-inset-bottom,34px));padding-bottom:env(safe-area-inset-bottom,20px)}
+.map-bottom-sheet.strip-only{max-height:calc(250px + env(safe-area-inset-bottom,34px));padding-bottom:0}
 /* Drag handle */
 .map-sheet-handle{display:flex;justify-content:center;padding:8px 0 4px;cursor:grab;flex-shrink:0}
 .map-sheet-handle-bar{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2)}
@@ -746,7 +746,7 @@ ul{list-style:none}
 .map-close-btn:hover{background:var(--accent)}
 .map-close-btn svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
 /* Property strip — inside bottom sheet */
-.map-prop-strip{display:flex;align-items:stretch;gap:10px;padding:10px 20px calc(40px + env(safe-area-inset-bottom,34px));overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+.map-prop-strip{display:flex;align-items:stretch;gap:10px;padding:10px 20px calc(54px + env(safe-area-inset-bottom,34px));overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
 .map-prop-strip::before,.map-prop-strip::after{content:'';min-width:4px;flex-shrink:0;pointer-events:none}
 .map-prop-strip::-webkit-scrollbar{height:4px}
 .map-prop-strip::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:10px}
@@ -1198,7 +1198,7 @@ ul{list-style:none}
   .map-card-btn-primary,.map-card-btn-secondary{font-size:12px;padding:9px 0;min-height:38px}
   .map-my-loc-btn{bottom:auto;top:80px;left:12px}
   .map-zoom-controls{bottom:auto;top:130px;left:12px;right:auto}
-  .map-prop-strip{padding:8px 0 calc(36px + env(safe-area-inset-bottom,34px));gap:8px}
+  .map-prop-strip{padding:8px 0 calc(54px + env(safe-area-inset-bottom,34px));gap:8px}
   .map-prop-strip::before,.map-prop-strip::after{min-width:14px}
   .map-prop-strip-item{width:150px;padding:8px;flex-direction:column;align-items:stretch;gap:5px}
   .map-prop-strip-thumb{width:100%;height:44px;border-radius:8px}
@@ -1256,7 +1256,7 @@ ul{list-style:none}
   .explore-card-img{height:160px}
   .explore-card-name{font-size:18px}
   .explore-map-wrap{height:400px}
-  .map-bottom-sheet.strip-only{max-height:calc(170px + env(safe-area-inset-bottom,34px))}
+  .map-bottom-sheet.strip-only{max-height:calc(230px + env(safe-area-inset-bottom,34px))}
   .map-card-photo{width:80px;min-width:80px;height:80px}
   .map-card-name{font-size:15px}
   .map-card-specs{display:none}
@@ -1264,7 +1264,7 @@ ul{list-style:none}
   .map-marker{width:36px;height:36px}
   .map-marker-core{width:26px;height:26px}
   .map-marker-core svg{width:11px;height:11px}
-  .map-prop-strip{padding:8px 0 calc(36px + env(safe-area-inset-bottom,34px));gap:6px}
+  .map-prop-strip{padding:8px 0 calc(54px + env(safe-area-inset-bottom,34px));gap:6px}
   .map-prop-strip::before,.map-prop-strip::after{min-width:12px}
   .map-prop-strip-item{width:140px;padding:7px}
   .map-prop-strip-thumb{width:100%;height:40px}
