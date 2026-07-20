@@ -152,14 +152,20 @@ db.exec(`
 `);
 
 // Seed default settings if empty
-const settingsCount = db.prepare('SELECT COUNT(*) as c FROM settings').get().c;
-if (settingsCount === 0) {
-  const seedSettings = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
-  seedSettings.run('contact_email', '');
-  seedSettings.run('contact_phone', '');
-  seedSettings.run('maintenance_mode', 'false');
-  seedSettings.run('announcement_banner', '');
-}
+const seedSettings = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
+seedSettings.run('contact_email', '');
+seedSettings.run('contact_phone', '');
+seedSettings.run('maintenance_mode', 'false');
+seedSettings.run('announcement_banner', '');
+seedSettings.run('hero_headline', '');
+seedSettings.run('hero_subheadline', '');
+seedSettings.run('footer_text', '');
+seedSettings.run('social_instagram', '');
+seedSettings.run('social_facebook', '');
+seedSettings.run('social_tiktok', '');
+seedSettings.run('booking_cta_text', '');
+seedSettings.run('min_nights_override', '');
+seedSettings.run('checkout_message', '');
 
 // Multer
 const storage = multer.diskStorage({
@@ -1215,11 +1221,110 @@ app.get('/api/admin/dashboard', requireAuth, async (req, res) => {
     const recentBookings = db.prepare("SELECT id, guest_name, listing_name, check_in, check_out, total, status, created_at FROM booking_requests ORDER BY created_at DESC LIMIT 5").all();
     const recentReviews = db.prepare("SELECT id, guest_name, property_slug, rating, gift_card_sent, created_at FROM reviews ORDER BY created_at DESC LIMIT 5").all();
 
+    // Guesty live revenue data (best-effort — doesn't block the dashboard)
+    let guestyRevenue = null;
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const yearStart = today.slice(0, 4) + '-01-01';
+      const monthStart = today.slice(0, 7) + '-01';
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const monthEnd = new Date(nextMonth - 86400000).toISOString().slice(0, 10);
+      const yearEnd = today.slice(0, 4) + '-12-31';
+
+      // Fetch confirmed/checked-in reservations for the year
+      const yearData = await guesty.getReservations({
+        from: yearStart, to: yearEnd, limit: 100,
+      });
+      const allRes = yearData.reservations || [];
+
+      // Aggregate
+      let totalRevYTD = 0, totalRevMonth = 0;
+      let totalPaidYTD = 0, totalPaidMonth = 0;
+      let upcomingCheckins = 0, activeStays = 0;
+      let occupiedNightsMonth = 0;
+      const upcomingList = [];
+      const resByProperty = {};
+
+      for (const r of allRes) {
+        const ci = r.checkInDateLocalized || '';
+        const co = r.checkOutDateLocalized || '';
+        const payout = r.money?.hostPayout || r.money?.fareAccommodation || 0;
+        const paid = r.money?.totalPaid || 0;
+        const status = r.status || '';
+        const listingTitle = r.listing?.title || r.listing?.nickname || 'Unknown';
+        const isConfirmed = ['confirmed', 'checked_in', 'checked_out'].includes(status);
+
+        if (isConfirmed) {
+          totalRevYTD += payout;
+          totalPaidYTD += paid;
+
+          if (ci >= monthStart && ci <= monthEnd) {
+            totalRevMonth += payout;
+            totalPaidMonth += paid;
+            occupiedNightsMonth += r.nightsCount || 0;
+          }
+
+          // Aggregate by property
+          if (!resByProperty[listingTitle]) resByProperty[listingTitle] = { revenue: 0, bookings: 0, nights: 0 };
+          resByProperty[listingTitle].revenue += payout;
+          resByProperty[listingTitle].bookings += 1;
+          resByProperty[listingTitle].nights += r.nightsCount || 0;
+        }
+
+        // Upcoming check-ins (next 7 days)
+        if (ci >= today && ci <= new Date(now.getTime() + 7 * 86400000).toISOString().slice(0, 10) && status !== 'canceled') {
+          upcomingCheckins++;
+          upcomingList.push({
+            guest: r.guest ? `${r.guest.firstName || ''} ${r.guest.lastName || ''}`.trim() : 'Guest',
+            guestEmail: r.guest?.email || '',
+            guestPhone: r.guest?.phone || '',
+            property: listingTitle,
+            checkIn: ci,
+            checkOut: co,
+            nights: r.nightsCount || 0,
+            guests: r.guestsCount || 0,
+            payout,
+            paid,
+            balanceDue: r.money?.balanceDue || 0,
+            status,
+            confirmationCode: r.confirmationCode || '',
+          });
+        }
+
+        // Currently active
+        if (ci <= today && co > today && ['confirmed', 'checked_in'].includes(status)) {
+          activeStays++;
+        }
+      }
+
+      // Occupancy rate: (occupied nights / total possible nights this month)
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const totalPossibleNights = Object.keys(guesty.LISTINGS).length * daysInMonth;
+      const occupancyRate = totalPossibleNights > 0 ? Math.round((occupiedNightsMonth / totalPossibleNights) * 100) : 0;
+
+      guestyRevenue = {
+        yearToDate: totalRevYTD,
+        monthToDate: totalRevMonth,
+        paidYTD: totalPaidYTD,
+        paidMonth: totalPaidMonth,
+        outstandingBalance: totalRevYTD - totalPaidYTD,
+        upcomingCheckins,
+        activeStays,
+        upcoming: upcomingList.sort((a, b) => a.checkIn.localeCompare(b.checkIn)),
+        occupancyRate,
+        totalReservations: allRes.filter(r => ['confirmed', 'checked_in', 'checked_out'].includes(r.status)).length,
+        byProperty: Object.entries(resByProperty).map(([name, d]) => ({ name, ...d })).sort((a, b) => b.revenue - a.revenue),
+      };
+    } catch (gErr) {
+      console.warn('Dashboard Guesty revenue fetch failed (non-fatal):', gErr.message);
+    }
+
     res.json({
       messages: { total: totalMessages, week: messagesWeek, month: messagesMonth, unread: messagesUnread },
       bookings: { total: totalBookings, confirmed: confirmedBookings, pending: pendingBookings, revenue },
       reviews: { total: totalReviews, pendingGiftCards },
-      recent: { messages: recentMessages, bookings: recentBookings, reviews: recentReviews }
+      recent: { messages: recentMessages, bookings: recentBookings, reviews: recentReviews },
+      guesty: guestyRevenue,
     });
   } catch (err) {
     console.error('Dashboard error:', err);
@@ -1501,7 +1606,12 @@ app.put('/api/admin/settings', requireAuth, (req, res) => {
   try {
     const updates = req.body || {};
     const stmt = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
-    const allowed = ['contact_email', 'contact_phone', 'maintenance_mode', 'announcement_banner'];
+    const allowed = [
+      'contact_email', 'contact_phone', 'maintenance_mode', 'announcement_banner',
+      'hero_headline', 'hero_subheadline', 'footer_text',
+      'social_instagram', 'social_facebook', 'social_tiktok',
+      'booking_cta_text', 'min_nights_override', 'checkout_message',
+    ];
     for (const [key, value] of Object.entries(updates)) {
       if (allowed.includes(key)) {
         stmt.run(key, String(value));
@@ -1532,6 +1642,30 @@ app.get('/api/admin/listings', requireAuth, async (req, res) => {
 app.post('/api/admin/clear-cache', requireAuth, (req, res) => {
   guesty.clearAllCaches();
   res.json({ ok: true, message: 'All Guesty caches cleared. Next request will fetch fresh data.' });
+});
+
+// ── PUBLIC: Site settings (non-sensitive fields only) ──
+// The main site fetches these to reflect admin-configured values.
+app.get('/api/site-settings', (req, res) => {
+  try {
+    const rows = db.prepare('SELECT * FROM settings').all();
+    const all = {};
+    rows.forEach(r => { all[r.key] = r.value; });
+    // Only expose non-sensitive keys
+    const publicKeys = [
+      'contact_email', 'contact_phone', 'maintenance_mode', 'announcement_banner',
+      'hero_headline', 'hero_subheadline', 'footer_text',
+      'social_instagram', 'social_facebook', 'social_tiktok',
+      'booking_cta_text', 'min_nights_override', 'checkout_message',
+    ];
+    const result = {};
+    publicKeys.forEach(k => { if (all[k]) result[k] = all[k]; });
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    res.json(result);
+  } catch (err) {
+    console.error('Public settings error:', err);
+    res.status(500).json({});
+  }
 });
 
 // ── EVENTS (Ticketmaster Discovery API proxy with 6-hour cache) ──

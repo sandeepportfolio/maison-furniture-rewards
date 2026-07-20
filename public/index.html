@@ -1816,7 +1816,7 @@ ul{list-style:none}
           </div>
           <div class="contact-card-text">
             <span class="contact-card-label">Call or Text</span>
-            <span class="contact-card-value"><a href="tel:+12813071280">(281) 307-1280</a></span>
+            <span class="contact-card-value"><a href="tel:+12813071280"><span data-site="phone">(281) 307-1280</span></a></span>
           </div>
         </div>
 
@@ -1826,7 +1826,7 @@ ul{list-style:none}
           </div>
           <div class="contact-card-text">
             <span class="contact-card-label">Email</span>
-            <span class="contact-card-value"><a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a></span>
+            <span class="contact-card-value"><a href="mailto:hello@bookwithregent.com"><span data-site="email">hello@bookwithregent.com</span></a></span>
           </div>
         </div>
 
@@ -5877,9 +5877,87 @@ function initDetailHash() {
 }
 
 /* ═══ Init ═══ */
+// ── Site settings from admin portal ──
+async function fetchSiteSettings() {
+  try {
+    const res = await fetch('/api/site-settings');
+    if (!res.ok) return;
+    const s = await res.json();
+
+    // Contact info
+    if (s.contact_phone) {
+      const phoneEls = document.querySelectorAll('[data-site="phone"]');
+      const raw = s.contact_phone.replace(/[^+\d]/g, '');
+      phoneEls.forEach(el => {
+        el.textContent = s.contact_phone;
+        if (el.closest('a')) el.closest('a').href = 'tel:' + raw;
+      });
+    }
+    if (s.contact_email) {
+      const emailEls = document.querySelectorAll('[data-site="email"]');
+      emailEls.forEach(el => {
+        el.textContent = s.contact_email;
+        if (el.closest('a')) el.closest('a').href = 'mailto:' + s.contact_email;
+      });
+    }
+
+    // Hero content
+    const heroH1 = document.querySelector('.bento-headline');
+    if (s.hero_headline && heroH1) heroH1.innerHTML = s.hero_headline;
+    const heroSub = document.querySelector('.bento-sub');
+    if (s.hero_subheadline && heroSub) heroSub.textContent = s.hero_subheadline;
+
+    // Booking CTA
+    if (s.booking_cta_text) {
+      const cta = document.querySelector('.btn-primary');
+      if (cta) cta.textContent = s.booking_cta_text;
+    }
+
+    // Footer text
+    if (s.footer_text) {
+      const ft = document.querySelector('.footer-copy');
+      if (ft) ft.innerHTML = s.footer_text;
+    }
+
+    // Social links
+    const socials = { instagram: s.social_instagram, facebook: s.social_facebook, tiktok: s.social_tiktok };
+    Object.entries(socials).forEach(([platform, url]) => {
+      if (url) {
+        const el = document.querySelector(`[data-social="${platform}"]`);
+        if (el) { el.href = url; el.style.display = ''; }
+      }
+    });
+
+    // Announcement banner
+    if (s.announcement_banner) {
+      let banner = document.getElementById('announcementBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'announcementBanner';
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:10px 20px;background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;text-align:center;font-weight:500;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:8px;';
+        banner.innerHTML = '<span>' + s.announcement_banner + '</span><button onclick="this.parentElement.remove();document.body.style.paddingTop=\'0\'" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0 4px;line-height:1">&times;</button>';
+        document.body.prepend(banner);
+        document.body.style.paddingTop = '38px';
+      }
+    }
+
+    // Maintenance mode
+    if (s.maintenance_mode === 'true') {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff;font-family:var(--sans);';
+      overlay.innerHTML = '<svg viewBox="0 0 24 24" width="48" height="48" stroke="#C76B42" fill="none" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><h2 style="font-size:24px;font-weight:600">Under Maintenance</h2><p style="color:#999;font-size:14px">We\'ll be back shortly. Thank you for your patience.</p>';
+      document.body.innerHTML = '';
+      document.body.appendChild(overlay);
+    }
+  } catch (e) {
+    // Non-critical — site works fine with defaults
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
   fetchAndApplyPrices(); // async, non-blocking — updates cards when prices arrive
+  fetchSiteSettings(); // async, non-blocking — applies admin settings
   initMiniMap();
   initScrollReveal();
   initPropertyReveal();

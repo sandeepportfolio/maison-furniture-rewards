@@ -322,9 +322,43 @@ textarea{resize:vertical}
 .star-selector .star-btn svg.empty{fill:none}
 .star-selector .star-btn:hover svg{transform:scale(1.2)}
 
+/* ── Overview dashboard ── */
+#sec-overview .stat-grid{grid-template-columns:repeat(3,1fr)}
+.ov-section{margin-bottom:2rem}
+.ov-section-title{font-size:1rem;font-weight:500;margin-bottom:1rem;color:var(--text-2);display:flex;align-items:center;gap:.5rem}
+.ov-section-title svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.revenue-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;box-shadow:var(--shadow)}
+.checkin-cards{display:flex;flex-direction:column;gap:.6rem}
+.checkin-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;box-shadow:var(--shadow);flex-wrap:wrap;transition:transform .2s,box-shadow .2s}
+.checkin-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.checkin-card .ci-guest{font-weight:600;font-size:.9rem}
+.checkin-card .ci-property{font-size:.82rem;color:var(--text-2);margin-top:.1rem}
+.checkin-card .ci-dates{font-size:.82rem;color:var(--text-2)}
+.checkin-card .ci-amount{font-weight:600;font-size:.9rem;color:var(--copper-soft)}
+.alerts-list{display:flex;flex-direction:column;gap:.5rem}
+.alert-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem;border-radius:var(--radius-btn);font-size:.84rem;line-height:1.4}
+.alert-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.alert-item.al-warn{background:rgba(243,156,18,.08);color:var(--amber);border:1px solid rgba(243,156,18,.15)}
+.alert-item.al-danger{background:rgba(231,76,60,.08);color:var(--red);border:1px solid rgba(231,76,60,.15)}
+.alert-item.al-info{background:rgba(59,130,246,.08);color:var(--blue);border:1px solid rgba(59,130,246,.15)}
+
+/* ── Invoice callout ── */
+.callout-box{padding:1rem 1.2rem;border-radius:var(--radius-btn);margin-bottom:1.5rem;font-size:.85rem;line-height:1.6}
+.callout-box.cb-info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);color:var(--text-2)}
+.callout-box .cb-title{font-weight:600;margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem;color:var(--blue)}
+.callout-box .cb-steps{margin-top:.5rem;padding-left:1.2rem}
+.callout-box .cb-steps li{margin-bottom:.25rem}
+.form-group.invalid input,.form-group.invalid select,.form-group.invalid textarea{border-color:var(--red)!important;box-shadow:0 0 0 2px rgba(231,76,60,.2)!important}
+
+/* ── Settings groups ── */
+.settings-group{margin-bottom:2rem}
+.settings-group-title{font-weight:600;color:var(--copper-soft);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;text-transform:uppercase;letter-spacing:.06em;font-size:.76rem}
+.settings-group-title svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
 /* ── Responsive ── */
 @media(max-width:1100px){
   .stat-grid{grid-template-columns:repeat(2,1fr)}
+  #sec-overview .stat-grid{grid-template-columns:repeat(2,1fr)}
   .prop-grid{grid-template-columns:1fr}
 }
 @media(max-width:768px){
@@ -345,6 +379,8 @@ textarea{resize:vertical}
 
   /* Stat cards */
   .stat-grid{grid-template-columns:repeat(2,1fr)}
+  #sec-overview .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .checkin-card{flex-direction:column;align-items:flex-start}
 
   /* Toolbar & filters */
   .toolbar{flex-direction:column;align-items:stretch}
@@ -535,14 +571,52 @@ textarea{resize:vertical}
     <!-- ═══ OVERVIEW ═══ -->
     <div class="section active" id="sec-overview">
       <div class="stat-grid" id="overviewStats">
-        <div class="stat-card sc-copper"><div class="stat-num" id="ovMsgWeek">--</div><div class="stat-label">Messages This Week</div></div>
-        <div class="stat-card sc-green"><div class="stat-num" id="ovBookings">--</div><div class="stat-label">Total Bookings</div></div>
-        <div class="stat-card sc-green"><div class="stat-num" id="ovRevenue">--</div><div class="stat-label">Revenue</div></div>
-        <div class="stat-card sc-amber"><div class="stat-num" id="ovGiftCards">--</div><div class="stat-label">Pending Gift Cards</div></div>
+        <div class="stat-card sc-copper"><div class="stat-num" id="ovRevenueYTD">--</div><div class="stat-label">Revenue YTD</div></div>
+        <div class="stat-card sc-copper"><div class="stat-num" id="ovRevenueMonth">--</div><div class="stat-label">Revenue This Month</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="ovOccupancy">--</div><div class="stat-label">Occupancy Rate</div></div>
+        <div class="stat-card sc-blue"><div class="stat-num" id="ovActiveStays">--</div><div class="stat-label">Active Stays</div></div>
+        <div class="stat-card sc-amber"><div class="stat-num" id="ovUpcomingCheckins">--</div><div class="stat-label">Upcoming Check-ins</div></div>
+        <div class="stat-card sc-copper"><div class="stat-num" id="ovUnreadMsgs">--</div><div class="stat-label">Unread Messages</div></div>
       </div>
-      <h3 style="font-size:1rem;font-weight:500;margin-bottom:1rem;color:var(--text-2)">Recent Activity</h3>
-      <div class="activity-feed" id="activityFeed">
-        <div class="loading-state"><span class="spinner"></span> Loading activity...</div>
+
+      <div class="ov-section">
+        <h3 class="ov-section-title">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Revenue by Property
+        </h3>
+        <div class="revenue-table-wrap">
+          <table class="override-table" id="ovPropertyRevTable">
+            <thead><tr><th>Property</th><th>Revenue</th><th>Bookings</th><th>Avg/Night</th></tr></thead>
+            <tbody id="ovPropertyRevBody">
+              <tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-3)">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <h3 class="ov-section-title">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Upcoming Check-ins
+        </h3>
+        <div class="checkin-cards" id="ovCheckinCards">
+          <div class="loading-state"><span class="spinner"></span> Loading...</div>
+        </div>
+      </div>
+
+      <div class="ov-section" id="ovAlertsSection" style="display:none">
+        <h3 class="ov-section-title">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Alerts
+        </h3>
+        <div class="alerts-list" id="ovAlertsList"></div>
+      </div>
+
+      <div class="ov-section">
+        <h3 class="ov-section-title">Recent Activity</h3>
+        <div class="activity-feed" id="activityFeed">
+          <div class="loading-state"><span class="spinner"></span> Loading activity...</div>
+        </div>
       </div>
     </div>
 
@@ -684,10 +758,19 @@ textarea{resize:vertical}
     <!-- ═══ CUSTOM INVOICE ═══ -->
     <div class="section" id="sec-invoices">
       <div class="settings-form" style="max-width:640px">
-        <div style="margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
-          <p style="font-size:.85rem;color:var(--text-2);line-height:1.5">Create a reservation in Guesty with custom pricing. After creation, send the Guest Invoice from the Guesty dashboard to collect payment.</p>
+        <div class="callout-box cb-info">
+          <div class="cb-title">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            How Custom Invoicing Works
+          </div>
+          <ol class="cb-steps">
+            <li>Set the total price for the stay below</li>
+            <li>Create the invoice -- a reservation is created in Guesty</li>
+            <li>Guesty sends a payment link to the guest</li>
+            <li>The guest pays online -- no manual collection needed</li>
+          </ol>
         </div>
-        <div class="form-group">
+        <div class="form-group" id="fg-invListing">
           <label>Property</label>
           <select id="invListing">
             <option value="">Select property...</option>
@@ -701,19 +784,19 @@ textarea{resize:vertical}
           </select>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div class="form-group"><label>Guest First Name</label><input type="text" id="invFirstName" placeholder="John"></div>
-          <div class="form-group"><label>Guest Last Name</label><input type="text" id="invLastName" placeholder="Smith"></div>
+          <div class="form-group" id="fg-invFirstName"><label>Guest First Name</label><input type="text" id="invFirstName" placeholder="John"></div>
+          <div class="form-group" id="fg-invLastName"><label>Guest Last Name</label><input type="text" id="invLastName" placeholder="Smith"></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div class="form-group"><label>Guest Email</label><input type="email" id="invEmail" placeholder="guest@email.com"></div>
+          <div class="form-group" id="fg-invEmail"><label>Guest Email</label><input type="email" id="invEmail" placeholder="guest@email.com"></div>
           <div class="form-group"><label>Guest Phone</label><input type="tel" id="invPhone" placeholder="+1 555-0123"></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
-          <div class="form-group"><label>Check-in</label><input type="date" id="invCheckIn"></div>
-          <div class="form-group"><label>Check-out</label><input type="date" id="invCheckOut"></div>
+          <div class="form-group" id="fg-invCheckIn"><label>Check-in</label><input type="date" id="invCheckIn"></div>
+          <div class="form-group" id="fg-invCheckOut"><label>Check-out</label><input type="date" id="invCheckOut"></div>
           <div class="form-group"><label>Guests</label><input type="number" id="invGuests" value="1" min="1" max="16"></div>
         </div>
-        <div class="form-group">
+        <div class="form-group" id="fg-invPrice">
           <label>Total Price ($)</label>
           <input type="number" id="invPrice" placeholder="500.00" step="0.01" min="1">
           <span style="font-size:.76rem;color:var(--text-3);margin-top:.3rem;display:block">Set the total accommodation price for this reservation</span>
@@ -728,30 +811,104 @@ textarea{resize:vertical}
           Create Invoice
         </button>
       </div>
+
+      <div style="margin-top:2.5rem">
+        <h3 style="font-size:1rem;font-weight:500;margin-bottom:1rem;color:var(--text-2)">Recent Invoices</h3>
+        <div class="table-wrap" style="border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden;background:var(--surface);box-shadow:var(--shadow)">
+          <table class="override-table" id="recentInvoicesTable">
+            <thead>
+              <tr><th>Guest</th><th>Property</th><th>Dates</th><th>Amount</th><th>Status</th><th>Created</th></tr>
+            </thead>
+            <tbody id="recentInvoicesBody">
+              <tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-3)">Loading invoices...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- ═══ SETTINGS ═══ -->
     <div class="section" id="sec-settings">
       <div class="settings-form">
-        <div class="form-group">
-          <label>Contact Email</label>
-          <input type="email" id="setEmail" placeholder="admin@bookwithregent.com">
-        </div>
-        <div class="form-group">
-          <label>Contact Phone</label>
-          <input type="tel" id="setPhone" placeholder="+1 555-0123">
-        </div>
-        <div class="form-group">
-          <label>Maintenance Mode</label>
-          <div class="toggle-wrap">
-            <label class="toggle"><input type="checkbox" id="setMaintenance"><span class="slider"></span></label>
-            <span style="font-size:.85rem;color:var(--text-2)" id="maintLabel">Off</span>
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Contact Information
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" id="setEmail" placeholder="admin@bookwithregent.com">
+          </div>
+          <div class="form-group">
+            <label>Contact Phone</label>
+            <input type="tel" id="setPhone" placeholder="+1 555-0123">
           </div>
         </div>
-        <div class="form-group">
-          <label>Announcement Banner</label>
-          <textarea id="setAnnouncement" placeholder="Leave blank for no banner..."></textarea>
+
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Website Content
+          </div>
+          <div class="form-group">
+            <label>Hero Headline</label>
+            <input type="text" id="setHeroHeadline" placeholder="Your luxury getaway awaits">
+          </div>
+          <div class="form-group">
+            <label>Hero Subheadline</label>
+            <input type="text" id="setHeroSub" placeholder="Book your perfect stay today">
+          </div>
+          <div class="form-group">
+            <label>Booking CTA Text</label>
+            <input type="text" id="setBookingCta" placeholder="Book Now">
+          </div>
+          <div class="form-group">
+            <label>Footer Text</label>
+            <textarea id="setFooterText" placeholder="Footer copyright and info..." rows="2" style="min-height:60px"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Checkout Message</label>
+            <textarea id="setCheckoutMsg" placeholder="Message shown during checkout..." rows="2" style="min-height:60px"></textarea>
+          </div>
         </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            Social Media
+          </div>
+          <div class="form-group">
+            <label>Instagram URL</label>
+            <input type="url" id="setSocialIG" placeholder="https://instagram.com/yourpage">
+          </div>
+          <div class="form-group">
+            <label>Facebook URL</label>
+            <input type="url" id="setSocialFB" placeholder="https://facebook.com/yourpage">
+          </div>
+          <div class="form-group">
+            <label>TikTok URL</label>
+            <input type="url" id="setSocialTT" placeholder="https://tiktok.com/@yourpage">
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            System
+          </div>
+          <div class="form-group">
+            <label>Maintenance Mode</label>
+            <div class="toggle-wrap">
+              <label class="toggle"><input type="checkbox" id="setMaintenance"><span class="slider"></span></label>
+              <span style="font-size:.85rem;color:var(--text-2)" id="maintLabel">Off</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Announcement Banner</label>
+            <textarea id="setAnnouncement" placeholder="Leave blank for no banner..."></textarea>
+          </div>
+        </div>
+
         <button class="btn btn-copper" onclick="saveSettings()" style="padding:.65rem 1.5rem;font-size:.9rem">
           <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Save Settings
@@ -1191,7 +1348,7 @@ function loadSectionData(section) {
     case 'submissions': loadSubmissions(); break;
     case 'pricing': loadPricing(); break;
     case 'properties': loadProperties(); break;
-    case 'invoices': break; // static form, no data to load
+    case 'invoices': loadInvoices(); break;
     case 'settings': loadSettings(); break;
   }
 }
@@ -1219,11 +1376,15 @@ $('overlay').addEventListener('click', () => {
 async function loadOverview() {
   try {
     const data = await api('/api/admin/dashboard');
-    // Stats
-    $('ovMsgWeek').textContent = data.messages?.week ?? '--';
-    $('ovBookings').textContent = data.bookings?.total ?? '--';
-    $('ovRevenue').textContent = fmtCurrency(data.bookings?.revenue);
-    $('ovGiftCards').textContent = data.reviews?.pendingGiftCards ?? '--';
+    const g = data.guesty || {};
+
+    // Stat cards
+    $('ovRevenueYTD').textContent = fmtCurrency(g.yearToDate || data.bookings?.revenue);
+    $('ovRevenueMonth').textContent = fmtCurrency(g.monthToDate);
+    $('ovOccupancy').textContent = g.occupancyRate != null ? g.occupancyRate + '%' : '--';
+    $('ovActiveStays').textContent = g.activeStays ?? '--';
+    $('ovUpcomingCheckins').textContent = g.upcomingCheckins ?? '--';
+    $('ovUnreadMsgs').textContent = data.messages?.unread ?? '--';
 
     // Update message badge in nav
     const unread = data.messages?.unread ?? 0;
@@ -1233,6 +1394,73 @@ async function loadOverview() {
       badge.style.display = '';
     } else {
       badge.style.display = 'none';
+    }
+
+    // Revenue by property table
+    const byProp = g.byProperty || [];
+    const revBody = $('ovPropertyRevBody');
+    if (byProp.length) {
+      revBody.innerHTML = byProp.map(p => {
+        const avgNight = p.nights > 0 ? p.revenue / p.nights : 0;
+        return `<tr>
+          <td style="font-weight:500">${esc(p.name)}</td>
+          <td>${fmtCurrency(p.revenue)}</td>
+          <td style="text-align:center">${p.bookings}</td>
+          <td>${fmtCurrency(avgNight)}</td>
+        </tr>`;
+      }).join('');
+    } else {
+      revBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-3)">No revenue data available</td></tr>';
+    }
+
+    // Upcoming check-ins
+    const upcoming = g.upcoming || [];
+    const ciContainer = $('ovCheckinCards');
+    if (upcoming.length) {
+      ciContainer.innerHTML = upcoming.slice(0, 10).map(u => `
+        <div class="checkin-card">
+          <div style="flex:1;min-width:0">
+            <div class="ci-guest">${esc(u.guest)}</div>
+            <div class="ci-property">${esc(u.property)}</div>
+          </div>
+          <div class="ci-dates">${fmtDateShort(u.checkIn)} - ${fmtDateShort(u.checkOut)} (${u.nights || '?'}n)</div>
+          <div class="ci-amount">${u.balanceDue > 0 ? fmtCurrency(u.balanceDue) + ' due' : fmtCurrency(u.payout)}</div>
+          <span class="badge b-${u.status === 'confirmed' ? 'confirmed' : 'pending'}">${esc(u.status || 'pending')}</span>
+        </div>
+      `).join('');
+    } else {
+      ciContainer.innerHTML = '<div class="empty-state"><p>No upcoming check-ins</p></div>';
+    }
+
+    // Alerts
+    const alerts = [];
+    const outstanding = g.outstandingBalance || 0;
+    if (outstanding > 0) {
+      alerts.push({ type: 'warn', text: `Outstanding balance: ${fmtCurrency(outstanding)} across reservations` });
+    }
+    const today = new Date().toISOString().split('T')[0];
+    const todayCheckins = (upcoming).filter(u => u.checkIn && u.checkIn.startsWith(today));
+    if (todayCheckins.length) {
+      alerts.push({ type: 'info', text: `${todayCheckins.length} check-in${todayCheckins.length > 1 ? 's' : ''} today: ${todayCheckins.map(c => esc(c.guest)).join(', ')}` });
+    }
+    const pendingGC = data.reviews?.pendingGiftCards ?? 0;
+    if (pendingGC > 0) {
+      alerts.push({ type: 'warn', text: `${pendingGC} gift card${pendingGC > 1 ? 's' : ''} pending -- review and send to guests` });
+    }
+
+    const alertSection = $('ovAlertsSection');
+    if (alerts.length) {
+      alertSection.style.display = '';
+      $('ovAlertsList').innerHTML = alerts.map(a => `
+        <div class="alert-item al-${a.type}">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${a.type === 'info'
+            ? '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
+            : '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'}</svg>
+          ${a.text}
+        </div>
+      `).join('');
+    } else {
+      alertSection.style.display = 'none';
     }
 
     // Recent activity
@@ -1944,6 +2172,14 @@ async function loadSettings() {
     if (data) {
       $('setEmail').value = data.contact_email || data.contactEmail || '';
       $('setPhone').value = data.contact_phone || data.contactPhone || '';
+      $('setHeroHeadline').value = data.hero_headline || '';
+      $('setHeroSub').value = data.hero_subheadline || '';
+      $('setBookingCta').value = data.booking_cta_text || '';
+      $('setFooterText').value = data.footer_text || '';
+      $('setCheckoutMsg').value = data.checkout_message || '';
+      $('setSocialIG').value = data.social_instagram || '';
+      $('setSocialFB').value = data.social_facebook || '';
+      $('setSocialTT').value = data.social_tiktok || '';
       $('setMaintenance').checked = !!data.maintenance_mode || !!data.maintenanceMode;
       $('maintLabel').textContent = $('setMaintenance').checked ? 'On' : 'Off';
       $('setAnnouncement').value = data.announcement_banner || data.announcementBanner || '';
@@ -1957,6 +2193,14 @@ async function saveSettings() {
   const body = {
     contact_email: $('setEmail').value.trim(),
     contact_phone: $('setPhone').value.trim(),
+    hero_headline: $('setHeroHeadline').value.trim(),
+    hero_subheadline: $('setHeroSub').value.trim(),
+    booking_cta_text: $('setBookingCta').value.trim(),
+    footer_text: $('setFooterText').value.trim(),
+    checkout_message: $('setCheckoutMsg').value.trim(),
+    social_instagram: $('setSocialIG').value.trim(),
+    social_facebook: $('setSocialFB').value.trim(),
+    social_tiktok: $('setSocialTT').value.trim(),
     maintenance_mode: $('setMaintenance').checked,
     announcement_banner: $('setAnnouncement').value.trim()
   };
@@ -2067,7 +2311,15 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ═══════════════════════════════════════════════════════════
    CUSTOM INVOICE
    ═══════════════════════════════════════════════════════════ */
+function clearInvValidation() {
+  ['fg-invListing','fg-invFirstName','fg-invLastName','fg-invEmail','fg-invCheckIn','fg-invCheckOut','fg-invPrice'].forEach(id => {
+    const el = $(id);
+    if (el) el.classList.remove('invalid');
+  });
+}
+
 async function submitInvoice() {
+  clearInvValidation();
   const btn = $('invSubmitBtn');
   const result = $('invResult');
   const listing = $('invListing').value;
@@ -2081,12 +2333,20 @@ async function submitInvoice() {
   const totalPrice = $('invPrice').value;
   const notes = $('invNotes').value.trim();
 
-  // Validate
-  if (!listing) { showToast('Select a property', 'error'); return; }
-  if (!firstName || !lastName) { showToast('Guest first and last name required', 'error'); return; }
-  if (!email.includes('@')) { showToast('Valid guest email required', 'error'); return; }
-  if (!checkIn || !checkOut || checkOut <= checkIn) { showToast('Valid check-in/check-out dates required', 'error'); return; }
-  if (!totalPrice || parseFloat(totalPrice) <= 0) { showToast('Valid total price required', 'error'); return; }
+  // Validate with visual highlights
+  let valid = true;
+  if (!listing) { $('fg-invListing').classList.add('invalid'); valid = false; }
+  if (!firstName) { $('fg-invFirstName').classList.add('invalid'); valid = false; }
+  if (!lastName) { $('fg-invLastName').classList.add('invalid'); valid = false; }
+  if (!email.includes('@')) { $('fg-invEmail').classList.add('invalid'); valid = false; }
+  if (!checkIn) { $('fg-invCheckIn').classList.add('invalid'); valid = false; }
+  if (!checkOut || checkOut <= checkIn) { $('fg-invCheckOut').classList.add('invalid'); valid = false; }
+  if (!totalPrice || parseFloat(totalPrice) <= 0) { $('fg-invPrice').classList.add('invalid'); valid = false; }
+
+  if (!valid) {
+    showToast('Please fill all required fields', 'error');
+    return;
+  }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px"></span> Creating...';
@@ -2106,7 +2366,7 @@ async function submitInvoice() {
     result.style.background = 'rgba(76,175,80,.1)';
     result.style.color = 'var(--green)';
     result.style.border = '1px solid rgba(76,175,80,.2)';
-    result.innerHTML = `<strong>Invoice created.</strong> Reservation ID: ${esc(data.reservationId || 'N/A')}<br>${data.nights} night${data.nights !== 1 ? 's' : ''}, $${data.total.toFixed(2)}<br><span style="color:var(--text-2);font-size:.8rem">Send the Guest Invoice from Guesty to collect payment.</span>`;
+    result.innerHTML = `<strong>Invoice created.</strong> Reservation ID: ${esc(data.reservationId || 'N/A')}<br>${data.nights} night${data.nights !== 1 ? 's' : ''}, $${data.total.toFixed(2)}<br><span style="color:var(--text-2);font-size:.8rem">The guest will receive a payment link via Guesty.</span>`;
     showToast('Invoice created successfully');
     // Clear form
     $('invListing').value = '';
@@ -2119,6 +2379,8 @@ async function submitInvoice() {
     $('invGuests').value = '1';
     $('invPrice').value = '';
     $('invNotes').value = '';
+    // Reload invoice list
+    loadInvoices();
   } catch (err) {
     if (err.message === 'Unauthorized') return;
     result.style.display = 'block';
@@ -2131,6 +2393,44 @@ async function submitInvoice() {
     btn.disabled = false;
     btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Create Invoice';
   }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INVOICE LIST
+   ═══════════════════════════════════════════════════════════ */
+let allInvoiceBookings = [];
+
+async function loadInvoices() {
+  try {
+    const data = await api('/api/admin/bookings');
+    const bookings = Array.isArray(data) ? data : (data.bookings || []);
+    allInvoiceBookings = bookings.filter(b => b.quote_id === 'custom-invoice');
+    renderInvoiceList();
+  } catch (err) {
+    if (err.message !== 'Unauthorized') {
+      $('recentInvoicesBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-3)">Could not load invoices</td></tr>';
+    }
+  }
+}
+
+function renderInvoiceList() {
+  const tbody = $('recentInvoicesBody');
+  if (!allInvoiceBookings.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-3)">No custom invoices yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allInvoiceBookings.map(b => {
+    const guest = b.guest_name || [b.guest_first_name, b.guest_last_name].filter(Boolean).join(' ') || '--';
+    const statusClass = b.status === 'confirmed' ? 'b-confirmed' : 'b-pending';
+    return `<tr>
+      <td style="font-weight:500">${esc(guest)}</td>
+      <td>${esc(propertyName(b.property_slug || b.listing) || b.property || '--')}</td>
+      <td style="font-size:.82rem">${fmtDateShort(b.check_in || b.checkIn)} - ${fmtDateShort(b.check_out || b.checkOut)}</td>
+      <td style="font-weight:600">${fmtCurrency(b.total_price || b.totalPrice || b.amount)}</td>
+      <td><span class="badge ${statusClass}">${esc(b.status || 'requested')}</span></td>
+      <td style="font-size:.82rem;color:var(--text-3)">${fmtDateShort(b.created_at)}</td>
+    </tr>`;
+  }).join('');
 }
 
 /* ═══════════════════════════════════════════════════════════

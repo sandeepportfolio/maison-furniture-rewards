@@ -778,6 +778,68 @@ async function updateReservation(reservationId, body) {
   });
 }
 
+// ── Fetch reservations with financial data ─────────────────────────────
+/**
+ * Fetch reservations from Guesty with financial fields for revenue dashboard.
+ * Supports filtering by date range, status, and listing.
+ * @param {Object} opts
+ * @param {string} [opts.from] - checkIn date filter (YYYY-MM-DD)
+ * @param {string} [opts.to]   - checkOut date filter (YYYY-MM-DD)
+ * @param {string} [opts.status] - reservation status filter
+ * @param {string} [opts.listingId] - filter by listing
+ * @param {number} [opts.limit] - max results (default 100)
+ * @param {number} [opts.skip]  - offset for pagination
+ */
+async function getReservations(opts = {}) {
+  const fields = [
+    '_id', 'confirmationCode', 'status',
+    'checkInDateLocalized', 'checkOutDateLocalized',
+    'nightsCount', 'guestsCount', 'source',
+    'listing._id', 'listing.title', 'listing.nickname',
+    'guest.firstName', 'guest.lastName', 'guest.email', 'guest.phone',
+    'money.hostPayout', 'money.totalPaid', 'money.balanceDue',
+    'money.fareAccommodation', 'money.currency',
+    'money.invoiceItems', 'money.totalTaxes',
+    'money.payments.status', 'money.payments.amount', 'money.payments.paidAt',
+    'createdAt', 'confirmedAt', 'lastUpdatedAt',
+  ].join(' ');
+
+  const params = new URLSearchParams();
+  params.set('fields', fields);
+  params.set('limit', String(opts.limit || 100));
+  params.set('skip', String(opts.skip || 0));
+  params.set('sort', '-checkInDateLocalized');
+
+  // Build filters array
+  const filters = [];
+  if (opts.status) {
+    filters.push({ operator: '$eq', field: 'status', value: opts.status });
+  }
+  if (opts.from && opts.to) {
+    filters.push({
+      operator: '$between',
+      field: 'checkInDateLocalized',
+      from: opts.from,
+      to: opts.to,
+    });
+  }
+  if (opts.listingId) {
+    filters.push({ operator: '$eq', field: 'listingId', value: opts.listingId });
+  }
+  if (filters.length) {
+    params.set('filters', JSON.stringify(filters));
+  }
+
+  const result = await guestyFetch(`/reservations?${params.toString()}`);
+  // API returns { results: [...], count, limit, skip }
+  return {
+    reservations: result.results || [],
+    count: result.count || 0,
+    limit: result.limit || opts.limit || 100,
+    skip: result.skip || 0,
+  };
+}
+
 // ── Lowest available price per listing (cached 2 hours) ──────────────────
 let lowestPricesCache = null;
 let lowestPricesCacheAt = 0;
@@ -996,6 +1058,7 @@ module.exports = {
   createReservation,
   updateReservationStatus,
   updateReservation,
+  getReservations,
   countNights,
   isRateLimited,
   clearAllCaches,
