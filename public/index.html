@@ -297,7 +297,7 @@ ul{list-style:none}
 .lightbox-close:hover{background:rgba(255,255,255,.2)}
 .lightbox-close svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
 .lightbox-main{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:60px 80px;position:relative}
-.lightbox-main img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.lightbox-main img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;background:#111}
 .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .3s}
 .lightbox-nav:hover{background:rgba(255,255,255,.2)}
 .lightbox-nav svg{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none}
@@ -922,12 +922,12 @@ ul{list-style:none}
 .detail-share-toast.show{opacity:1;transform:translateY(0)}
 
 /* Hero gallery */
-.detail-gallery{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg-dark)}
-.detail-gallery img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .6s var(--ease),transform 12s ease-out;transform:scale(1.0)}
-.detail-gallery img.active{opacity:1;transform:scale(1.03)}
+.detail-gallery{position:relative;aspect-ratio:3/2;overflow:hidden;background:var(--bg-dark);cursor:pointer}
+.detail-gallery img{width:100%;height:100%;object-fit:contain;object-position:center;position:absolute;inset:0;opacity:0;transition:opacity .6s var(--ease);background:var(--bg-dark)}
+.detail-gallery img.active{opacity:1}
 
-/* Gradient on gallery */
-.detail-gallery::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(to top,rgba(26,23,20,.5),transparent);pointer-events:none;z-index:1}
+/* Gradient on gallery — minimal, only behind counter */
+.detail-gallery::after{content:'';position:absolute;bottom:0;left:0;right:0;height:15%;background:linear-gradient(to top,rgba(26,23,20,.35),transparent);pointer-events:none;z-index:1}
 
 /* Gallery nav */
 .detail-gallery-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s var(--ease);backdrop-filter:blur(8px);z-index:2}
@@ -936,6 +936,8 @@ ul{list-style:none}
 .detail-gallery-prev{left:20px}
 .detail-gallery-next{right:20px}
 .detail-gallery-counter{position:absolute;bottom:20px;right:20px;background:rgba(26,23,20,.7);color:#fff;font-family:var(--sans);font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--radius);backdrop-filter:blur(8px);z-index:2;letter-spacing:.02em}
+.detail-gallery-expand{position:absolute;bottom:20px;left:20px;background:rgba(26,23,20,.7);color:#fff;font-family:var(--sans);font-size:11px;font-weight:500;padding:7px 12px;border-radius:var(--radius);backdrop-filter:blur(8px);z-index:2;display:flex;align-items:center;gap:5px;pointer-events:none;opacity:.7}
+.detail-gallery-expand svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
 
 /* Thumbnail filmstrip */
 .detail-thumbs{display:flex;gap:4px;padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bg-dark)}
@@ -2531,7 +2533,9 @@ ul{list-style:none}
    ═══ PROPERTY DATA — All photos synced from Airbnb (75 Regent Villa, 59 Regent Skyline, 29 Cozy Designer, 33 Designer Game, 28 Lake View, 34 Executive, 28 Stunning Lake) ═══
    ═══════════════════════════════════════════════════════════════ */
 const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
-const imgUrl = (hid, uuid) => `${CDN}${hid}/original/${uuid}?im_w=720`;
+const imgUrl = (hid, uuid, w) => `${CDN}${hid}/original/${uuid}?im_w=${w||720}`;
+const imgUrlHD = (hid, uuid) => imgUrl(hid, uuid, 1200);
+const imgUrlFull = (hid, uuid) => imgUrl(hid, uuid, 1440);
 
 /* ── Guesty Booking Engine: slug → listing ID mapping ── */
 const GBE_BASE = 'https://regent.guestybookings.com/en/properties/';
@@ -3282,7 +3286,7 @@ let lbIndex = 0;
 function openLightbox(slug, startIdx) {
   const prop = PROPERTIES.find(p => p.slug === slug);
   if (!prop) return;
-  lbPhotos = prop.photos.map(ph => imgUrl(prop.hostingId, ph));
+  lbPhotos = prop.photos.map(ph => imgUrlFull(prop.hostingId, ph));
   lbIndex = startIdx || 0;
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
@@ -4139,11 +4143,17 @@ function openDetail(slug, skipHistory) {
   // Gallery
   const gallery = document.getElementById('detailGallery');
   gallery.innerHTML = prop.photos.map((ph, i) =>
-    `<img src="${imgUrl(prop.hostingId, ph)}" alt="${prop.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<3?'eager':'lazy'}">`
+    `<img src="${imgUrlHD(prop.hostingId, ph)}" alt="${prop.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<3?'eager':'lazy'}">`
   ).join('') +
-  `<div class="detail-gallery-nav detail-gallery-prev" onclick="detailGalleryMove(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>` +
-  `<div class="detail-gallery-nav detail-gallery-next" onclick="detailGalleryMove(1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></div>` +
+  `<div class="detail-gallery-nav detail-gallery-prev" onclick="event.stopPropagation();detailGalleryMove(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>` +
+  `<div class="detail-gallery-nav detail-gallery-next" onclick="event.stopPropagation();detailGalleryMove(1)"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></div>` +
+  `<div class="detail-gallery-expand"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>Tap to expand</div>` +
   `<div class="detail-gallery-counter">1 / ${prop.photos.length}</div>`;
+  // Click gallery to open full-size lightbox
+  gallery.onclick = function(e) {
+    if (e.target.closest('.detail-gallery-nav') || e.target.closest('.detail-gallery-counter')) return;
+    openLightbox(slug, detailIdx);
+  };
 
   // Thumbs - filmstrip of all 20 photos
   const thumbs = document.getElementById('detailThumbs');
