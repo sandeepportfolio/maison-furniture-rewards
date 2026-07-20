@@ -2379,6 +2379,7 @@ async function submitInvoice() {
     $('invGuests').value = '1';
     $('invPrice').value = '';
     $('invNotes').value = '';
+    clearInvValidation();
     // Reload invoice list
     loadInvoices();
   } catch (err) {
@@ -2424,9 +2425,9 @@ function renderInvoiceList() {
     const statusClass = b.status === 'confirmed' ? 'b-confirmed' : 'b-pending';
     return `<tr>
       <td style="font-weight:500">${esc(guest)}</td>
-      <td>${esc(propertyName(b.property_slug || b.listing) || b.property || '--')}</td>
+      <td>${esc(b.listing_name || propertyName(b.property_slug || b.listing_id || b.listing) || b.property || '--')}</td>
       <td style="font-size:.82rem">${fmtDateShort(b.check_in || b.checkIn)} - ${fmtDateShort(b.check_out || b.checkOut)}</td>
-      <td style="font-weight:600">${fmtCurrency(b.total_price || b.totalPrice || b.amount)}</td>
+      <td style="font-weight:600">${fmtCurrency(b.total || b.total_price || b.totalPrice || b.amount)}</td>
       <td><span class="badge ${statusClass}">${esc(b.status || 'requested')}</span></td>
       <td style="font-size:.82rem;color:var(--text-3)">${fmtDateShort(b.created_at)}</td>
     </tr>`;
