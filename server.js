@@ -2271,7 +2271,11 @@ app.get('/property/:slug', (req, res) => {
   const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
   const ogUrl = `https://bookwithregent.com/property/${slug}`;
 
-  const propertyJson = JSON.stringify(prop);
+  // Escape for safe embedding in JS single-quoted string literal
+  const propertyJson = JSON.stringify(prop)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/<\//g, '<\\/');
 
   html = html
     .replace(/\{\{PROPERTY_JSON\}\}/g, propertyJson)
