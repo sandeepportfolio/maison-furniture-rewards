@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{{NAME}} | Regent — Luxury Short-Term Rentals</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{OG_URL}}">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{NAME}} — Regent Luxury Rentals">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:image" content="{{COVER_IMAGE}}">
+<meta property="og:url" content="{{OG_URL}}">
+<meta property="og:site_name" content="Regent">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{NAME}} — Regent Luxury Rentals">
+<meta name="twitter:description" content="{{DESCRIPTION}}">
+<meta name="twitter:image" content="{{COVER_IMAGE}}">
+
+<!-- Favicon -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "{{NAME}}",
+  "description": "{{DESCRIPTION}}",
+  "url": "{{OG_URL}}",
+  "image": "{{COVER_IMAGE}}",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "{{CITY}}",
+    "addressRegion": "{{STATE}}",
+    "addressCountry": "US"
+  },
+  "numberOfRooms": {{BEDS}},
+  "amenityFeature": [
+    { "@type": "LocationFeatureSpecification", "name": "Guests", "value": "{{GUESTS}}" },
+    { "@type": "LocationFeatureSpecification", "name": "Bedrooms", "value": "{{BEDS}}" },
+    { "@type": "LocationFeatureSpecification", "name": "Bathrooms", "value": "{{BATHS}}" }
+  ],
+  "brand": {
+    "@type": "Brand",
+    "name": "Regent"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "Regent Capital Ventures LLC",
+    "url": "https://bookwithregent.com"
+  }
+}
+</script>
+
+<style>
+/* ── CSS Variables ── */
+:root {
+  --bg: #0d0d0d;
+  --bg-card: #161616;
+  --bg-elevated: #1a1a1a;
+  --bg-surface: #111111;
+  --accent: #C76B42;
+  --accent-hover: #D4794F;
+  --accent-glow: rgba(199, 107, 66, 0.15);
+  --accent-subtle: rgba(199, 107, 66, 0.08);
+  --copper-light: #E0A88A;
+  --copper-pale: rgba(199, 107, 66, 0.06);
+  --gold: #C5A572;
+  --gold-light: #D9C49A;
+  --text: #F5F5F3;
+  --text-secondary: #A8A8A3;
+  --text-muted: #6B6B67;
+  --text-dim: #4A4A47;
+  --border: #2A2A28;
+  --border-light: #333331;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 16px 64px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 40px rgba(199, 107, 66, 0.1);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0.7, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
+body { font-family: var(--sans); color: var(--text); background: var(--bg); line-height: 1.6; overflow-x: hidden; }
+::selection { background: var(--accent); color: #fff; }
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+button { border: none; background: none; cursor: pointer; font-family: inherit; }
+ul { list-style: none; }
+
+/* ── Film Grain Overlay ── */
+.grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat; background-size: 200px;
+}
+
+/* ── Navigation ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 48px;
+  transition: background 0.5s var(--ease), box-shadow 0.5s var(--ease), padding 0.3s var(--ease);
+}
+.nav.scrolled {
+  background: rgba(13, 13, 13, 0.92);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 1px 0 var(--border);
+  padding: 16px 48px;
+}
+.nav-logo {
+  font-family: var(--sans); font-size: 15px; font-weight: 700;
+  letter-spacing: 0.3em; color: var(--text);
+  transition: color 0.3s var(--ease);
+}
+.nav-logo:hover { color: var(--accent); }
+.nav-links { display: flex; align-items: center; gap: 36px; }
+.nav-links a {
+  font-family: var(--sans); font-size: 14px; font-weight: 400;
+  letter-spacing: 0.02em; color: var(--text-secondary);
+  transition: color 0.3s var(--ease);
+  position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+  background: var(--accent); transition: width 0.3s var(--ease);
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta {
+  color: var(--accent) !important; font-weight: 600 !important;
+  padding: 10px 24px; border: 1px solid rgba(199, 107, 66, 0.3);
+  border-radius: 100px; transition: all 0.3s var(--ease) !important;
+}
+.nav-cta::after { display: none !important; }
+.nav-cta:hover {
+  background: var(--accent) !important; color: #fff !important;
+  border-color: var(--accent) !important;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative; width: 100%; height: 100vh; min-height: 600px; max-height: 1000px;
+  overflow: hidden;
+}
+.hero-image-wrap {
+  position: absolute; inset: 0; overflow: hidden;
+}
+.hero-image {
+  width: 100%; height: 120%; object-fit: cover;
+  transform: translateY(0); will-change: transform;
+  transition: opacity 0.6s var(--ease);
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 13, 13, 0.2) 0%,
+    rgba(13, 13, 13, 0.1) 30%,
+    rgba(13, 13, 13, 0.4) 60%,
+    rgba(13, 13, 13, 0.92) 100%
+  );
+}
+.hero-content {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 0 48px 72px; z-index: 2;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 100px;
+  font-family: var(--sans); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.8s var(--ease-out) 0.2s both;
+}
+.hero-badge.villa {
+  background: rgba(197, 165, 114, 0.15); color: var(--gold-light);
+  border: 1px solid rgba(197, 165, 114, 0.3);
+}
+.hero-badge.suite {
+  background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #6FCF97; animation: pulse 2s ease-in-out infinite;
+}
+.hero-title {
+  font-family: var(--serif); font-size: clamp(40px, 6vw, 72px);
+  font-weight: 400; line-height: 1.08; letter-spacing: -0.02em;
+  color: #fff; margin-bottom: 16px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  animation: fadeInUp 0.8s var(--ease-out) 0.3s both;
+}
+.hero-location {
+  font-family: var(--sans); font-size: 16px; font-weight: 300;
+  color: rgba(255, 255, 255, 0.7); letter-spacing: 0.06em;
+  animation: fadeInUp 0.8s var(--ease-out) 0.4s both;
+}
+.hero-location svg {
+  width: 14px; height: 14px; stroke: var(--accent); fill: none;
+  stroke-width: 2; vertical-align: -2px; margin-right: 6px;
+}
+
+/* ── Quick Stats Bar ── */
+.stats-bar {
+  position: sticky; top: 0; z-index: 900;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  transition: top 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.stats-bar.stuck {
+  top: 0; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+.stats-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 48px;
+}
+.stats-left { display: flex; align-items: center; gap: 36px; }
+.stat-item { display: flex; align-items: center; gap: 10px; }
+.stat-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--accent-subtle);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.stat-item:hover .stat-icon {
+  background: var(--accent-glow); transform: scale(1.06);
+}
+.stat-icon svg {
+  width: 18px; height: 18px; stroke: var(--accent);
+  fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.stat-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.stat-value {
+  font-size: 18px; font-weight: 600; color: var(--text);
+  letter-spacing: -0.01em; line-height: 1;
+}
+.stat-divider {
+  width: 1px; height: 32px; background: var(--border);
+}
+.stats-book-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent); color: #fff;
+  font-size: 14px; font-weight: 500; padding: 12px 28px;
+  border-radius: 100px; letter-spacing: 0.01em;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.stats-book-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(199, 107, 66, 0.3);
+}
+
+/* ── Content Container ── */
+.content { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+
+/* ── Section Common ── */
+.section {
+  padding: 96px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-of-type { border-bottom: none; }
+.section-label {
+  display: block; font-family: var(--sans); font-size: 11px;
+  font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 20px;
+}
+.section-title {
+  font-family: var(--serif); font-size: clamp(32px, 4vw, 48px);
+  font-weight: 400; color: var(--text); line-height: 1.15;
+  letter-spacing: -0.02em; margin-bottom: 48px;
+}
+.section-title em { font-style: italic; color: var(--accent); }
+
+/* ── Reveal Animations ── */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+.reveal.visible {
+  opacity: 1; transform: translateY(0);
+}
+.reveal-stagger { transition-delay: var(--delay, 0s); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Photo Gallery ── */
+.gallery-section { padding-top: 80px; }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 200px);
+  gap: 8px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.gallery-item {
+  position: relative; overflow: hidden; cursor: pointer;
+  background: var(--bg-elevated);
+}
+.gallery-item::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.3s var(--ease);
+}
+.gallery-item:hover::after { background: rgba(0, 0, 0, 0.15); }
+.gallery-item:hover img { transform: scale(1.06); }
+.gallery-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+.gallery-item.large {
+  grid-column: span 2; grid-row: span 2;
+}
+.gallery-item .gallery-count {
+  position: absolute; bottom: 16px; right: 16px; z-index: 2;
+  background: rgba(13, 13, 13, 0.8); backdrop-filter: blur(8px);
+  color: var(--text); font-size: 13px; font-weight: 500;
+  padding: 8px 16px; border-radius: 100px;
+  display: flex; align-items: center; gap: 6px;
+  pointer-events: none;
+}
+.gallery-item .gallery-count svg {
+  width: 14px; height: 14px; stroke: var(--text-secondary);
+  fill: none; stroke-width: 2;
+}
+.gallery-placeholder {
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-card) 50%, var(--bg-elevated) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+
+/* ── Lightbox ── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0, 0, 0, 0.96);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s var(--ease), visibility 0.4s;
+}
+.lightbox.open { opacity: 1; visibility: visible; }
+.lightbox-close {
+  position: absolute; top: 24px; right: 24px; z-index: 3;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+.lightbox-close svg { width: 20px; height: 20px; stroke: #fff; stroke-width: 2; fill: none; }
+.lightbox-image-wrap {
+  position: relative; max-width: 90vw; max-height: 85vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.lightbox-image {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain; border-radius: 4px;
+  transition: opacity 0.3s var(--ease);
+  user-select: none; -webkit-user-drag: none;
+}
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+  z-index: 3;
+}
+.lightbox-nav:hover { background: rgba(255, 255, 255, 0.15); }
+.lightbox-nav svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2; fill: none; }
+.lightbox-prev { left: 24px; }
+.lightbox-next { right: 24px; }
+.lightbox-counter {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  font-size: 14px; color: rgba(255, 255, 255, 0.6);
+  font-weight: 400; letter-spacing: 0.05em;
+}
+
+/* ── Description ── */
+.description-section .description-text {
+  font-family: var(--sans); font-size: 18px; line-height: 1.8;
+  color: var(--text-secondary); font-weight: 300;
+  max-width: 800px; letter-spacing: 0.01em;
+}
+.description-section .description-text::first-letter {
+  font-family: var(--serif); font-size: 56px; float: left;
+  line-height: 1; margin-right: 12px; margin-top: 4px;
+  color: var(--accent); font-weight: 400;
+}
+
+/* ── Amenities ── */
+.amenities-section .amenity-categories {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+.amenity-category {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.amenity-category:hover {
+  border-color: rgba(199, 107, 66, 0.2);
+  box-shadow: var(--shadow-glow);
+}
+.amenity-cat-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.amenity-cat-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--accent-subtle);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.amenity-cat-icon svg {
+  width: 16px; height: 16px; stroke: var(--accent);
+  fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.amenity-cat-name {
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.01em; flex: 1;
+}
+.amenity-cat-count {
+  font-family: var(--sans); font-size: 11px; font-weight: 500;
+  color: var(--text-muted); background: var(--bg-elevated);
+  padding: 3px 10px; border-radius: 100px;
+}
+.amenity-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.amenity-pill {
+  font-size: 13px; font-weight: 400; color: var(--text-secondary);
+  padding: 6px 14px; border-radius: 100px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease), background 0.3s var(--ease);
+}
+.amenity-pill:hover {
+  border-color: var(--accent); color: var(--text);
+  background: var(--accent-subtle);
+}
+
+/* ── Building Amenities Callout ── */
+.building-amenities-callout {
+  background: linear-gradient(135deg, rgba(199, 107, 66, 0.06), rgba(199, 107, 66, 0.02));
+  border: 1px solid rgba(199, 107, 66, 0.18);
+  border-radius: var(--radius-xl);
+  padding: 40px 44px;
+  position: relative; overflow: hidden;
+  margin-top: 48px;
+}
+.building-amenities-callout::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 4px; height: 100%; background: var(--accent);
+  border-radius: 4px 0 0 4px;
+}
+.building-callout-label {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 24px;
+  display: flex; align-items: center; gap: 8px;
+}
+.building-callout-label svg {
+  width: 16px; height: 16px; stroke: var(--accent);
+  fill: none; stroke-width: 2;
+}
+.building-amenity-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.building-amenity-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; background: rgba(199, 107, 66, 0.04);
+  border-radius: var(--radius); border: 1px solid rgba(199, 107, 66, 0.1);
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.building-amenity-item:hover {
+  border-color: rgba(199, 107, 66, 0.3);
+  transform: translateY(-2px);
+}
+.building-amenity-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(199, 107, 66, 0.1);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.building-amenity-icon svg {
+  width: 22px; height: 22px; stroke: var(--accent);
+  fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.building-amenity-text strong {
+  display: block; font-size: 15px; font-weight: 600;
+  color: var(--text); margin-bottom: 2px;
+}
+.building-amenity-text span {
+  font-size: 12px; color: var(--text-muted); font-weight: 400;
+}
+
+/* ── Location ── */
+.location-section .location-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 48px;
+  display: flex; align-items: center; gap: 48px;
+}
+.location-icon-wrap {
+  width: 80px; height: 80px; border-radius: 20px;
+  background: var(--accent-subtle);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.location-icon-wrap svg {
+  width: 36px; height: 36px; stroke: var(--accent);
+  fill: none; stroke-width: 1.5;
+}
+.location-info h3 {
+  font-family: var(--serif); font-size: 28px; font-weight: 400;
+  color: var(--text); margin-bottom: 8px;
+}
+.location-info p {
+  font-size: 16px; color: var(--text-secondary); line-height: 1.7;
+  font-weight: 300; max-width: 600px;
+}
+
+/* ── Booking CTA ── */
+.booking-section {
+  padding: 96px 0; border-bottom: none;
+  text-align: center;
+}
+.booking-inner {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 72px 48px;
+  position: relative; overflow: hidden;
+}
+.booking-inner::before {
+  content: ''; position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at center, rgba(199, 107, 66, 0.04), transparent 60%);
+  pointer-events: none;
+}
+.booking-title {
+  font-family: var(--serif); font-size: clamp(32px, 4vw, 48px);
+  font-weight: 400; color: var(--text); margin-bottom: 16px;
+  letter-spacing: -0.02em; position: relative;
+}
+.booking-title em { font-style: italic; color: var(--accent); }
+.booking-subtitle {
+  font-size: 16px; color: var(--text-secondary); font-weight: 300;
+  margin-bottom: 40px; position: relative;
+}
+.booking-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--accent); color: #fff;
+  font-family: var(--sans); font-size: 16px; font-weight: 600;
+  padding: 18px 48px; border-radius: 100px;
+  letter-spacing: 0.02em;
+  transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  position: relative;
+}
+.booking-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(199, 107, 66, 0.35);
+}
+.booking-btn svg {
+  width: 18px; height: 18px; stroke: currentColor;
+  fill: none; stroke-width: 2; transition: transform 0.3s var(--ease);
+}
+.booking-btn:hover svg { transform: translateX(4px); }
+.booking-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 20px; font-size: 13px; font-weight: 500;
+  color: var(--accent); letter-spacing: 0.02em;
+  position: relative;
+}
+.booking-badge svg {
+  width: 16px; height: 16px; stroke: var(--accent);
+  fill: none; stroke-width: 2;
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 48px; border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-logo {
+  font-family: var(--sans); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.3em; color: var(--text-muted);
+  margin-bottom: 16px; display: block;
+  transition: color 0.3s var(--ease);
+}
+.footer-logo:hover { color: var(--accent); }
+.footer-links { display: flex; justify-content: center; gap: 28px; margin-bottom: 16px; }
+.footer-links a {
+  font-size: 13px; color: var(--text-muted);
+  transition: color 0.3s var(--ease);
+}
+.footer-links a:hover { color: var(--accent); }
+.footer-copy {
+  font-size: 12px; color: var(--text-dim);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .nav { padding: 20px 32px; }
+  .nav.scrolled { padding: 14px 32px; }
+  .hero-content { padding: 0 32px 56px; }
+  .stats-inner { padding: 14px 32px; }
+  .content { padding: 0 32px; }
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 180px);
+  }
+  .amenities-section .amenity-categories {
+    grid-template-columns: 1fr;
+  }
+  .building-amenity-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .location-section .location-card {
+    flex-direction: column; text-align: center;
+    padding: 36px;
+  }
+  .location-info p { max-width: none; }
+}
+
+@media (max-width: 768px) {
+  .nav { padding: 16px 20px; }
+  .nav.scrolled { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .nav-mobile-btn { display: flex; }
+  .hero { min-height: 500px; max-height: 700px; }
+  .hero-content { padding: 0 20px 48px; }
+  .hero-title { font-size: clamp(32px, 8vw, 48px); }
+  .stats-inner {
+    padding: 14px 20px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .stats-left { gap: 16px; flex-wrap: wrap; }
+  .stat-divider { display: none; }
+  .stats-book-btn { display: none; }
+  .content { padding: 0 20px; }
+  .section { padding: 64px 0; }
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 160px);
+    gap: 6px; border-radius: var(--radius-lg);
+  }
+  .gallery-item.large { grid-column: span 2; grid-row: span 2; }
+  .description-section .description-text { font-size: 16px; }
+  .building-amenity-grid { grid-template-columns: 1fr; }
+  .building-amenities-callout { padding: 28px; }
+  .booking-inner { padding: 48px 24px; }
+  .lightbox-prev { left: 12px; }
+  .lightbox-next { right: 12px; }
+  .lightbox-nav { width: 44px; height: 44px; }
+  .footer { padding: 32px 20px; }
+}
+
+@media (max-width: 480px) {
+  .stat-label { display: none; }
+  .stat-item { gap: 8px; }
+  .stat-icon { width: 34px; height: 34px; }
+}
+
+/* ── Mobile Nav Button ── */
+.nav-mobile-btn {
+  display: none; flex-direction: column; gap: 5px; padding: 4px;
+  cursor: pointer;
+}
+.nav-mobile-btn span {
+  display: block; width: 22px; height: 1.5px; background: var(--text);
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+}
+.nav-mobile-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-mobile-btn.open span:nth-child(2) { opacity: 0; }
+.nav-mobile-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── Mobile Menu ── */
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 32px;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s var(--ease), visibility 0.4s;
+}
+.mobile-menu.open { opacity: 1; visibility: visible; }
+.mobile-menu a {
+  font-family: var(--sans); font-size: 28px; font-weight: 500;
+  color: var(--text); letter-spacing: -0.01em;
+  transition: color 0.3s var(--ease);
+}
+.mobile-menu a:hover { color: var(--accent); }
+</style>
+</head>
+
+<body>
+<!-- Grain Overlay -->
+<div class="grain"></div>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <a href="https://bookwithregent.com" class="nav-logo">REGENT</a>
+  <div class="nav-links">
+    <a href="https://bookwithregent.com#properties">Back to Properties</a>
+    <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="nav-cta">Book Now</a>
+  </div>
+  <button class="nav-mobile-btn" id="navBurger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="https://bookwithregent.com" onclick="toggleMobileMenu()">All Properties</a>
+  <a href="#gallery" onclick="toggleMobileMenu()">Gallery</a>
+  <a href="#amenities" onclick="toggleMobileMenu()">Amenities</a>
+  <a href="#location" onclick="toggleMobileMenu()">Location</a>
+  <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" style="color:var(--accent)">Book Now</a>
+</div>
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+  <div class="hero-image-wrap">
+    <img class="hero-image" id="heroImage" src="{{COVER_IMAGE}}" alt="{{NAME}}">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge" id="heroBadge">
+      <span class="hero-badge-dot"></span>
+      <span id="heroBadgeText">Suite</span>
+    </div>
+    <h1 class="hero-title">{{NAME}}</h1>
+    <div class="hero-location">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      {{CITY}}, {{STATE}}
+    </div>
+  </div>
+</section>
+
+<!-- Quick Stats Bar -->
+<div class="stats-bar" id="statsBar">
+  <div class="stats-inner">
+    <div class="stats-left">
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <div class="stat-label">Guests</div>
+          <div class="stat-value">{{GUESTS}}</div>
+        </div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+        </div>
+        <div>
+          <div class="stat-label">Bedrooms</div>
+          <div class="stat-value">{{BEDS}}</div>
+        </div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>
+        </div>
+        <div>
+          <div class="stat-label">Bathrooms</div>
+          <div class="stat-value">{{BATHS}}</div>
+        </div>
+      </div>
+    </div>
+    <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="stats-book-btn">
+      Book Now
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</div>
+
+<!-- Photo Gallery -->
+<section class="section gallery-section" id="gallery">
+  <div class="content">
+    <div class="reveal">
+      <span class="section-label">Gallery</span>
+      <h2 class="section-title">A glimpse <em>inside</em></h2>
+    </div>
+    <div class="gallery-grid reveal" id="galleryGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Description -->
+<section class="section description-section" id="description">
+  <div class="content">
+    <div class="reveal">
+      <span class="section-label">About This Property</span>
+      <h2 class="section-title">The <em>experience</em></h2>
+    </div>
+    <div class="reveal">
+      <p class="description-text">{{DESCRIPTION}}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Amenities -->
+<section class="section amenities-section" id="amenities">
+  <div class="content">
+    <div class="reveal">
+      <span class="section-label">Amenities</span>
+      <h2 class="section-title">Everything <em>you need</em></h2>
+    </div>
+    <div class="amenity-categories reveal" id="amenityGrid">
+      <!-- Populated by JS -->
+    </div>
+    <div id="buildingAmenitiesCallout"></div>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="section location-section" id="location">
+  <div class="content">
+    <div class="reveal">
+      <span class="section-label">Location</span>
+      <h2 class="section-title">Where you'll <em>be</em></h2>
+    </div>
+    <div class="location-card reveal" id="locationCard">
+      <div class="location-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div class="location-info">
+        <h3 id="locationTitle">{{CITY}}, {{STATE}}</h3>
+        <p id="locationDesc"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Booking CTA -->
+<section class="section booking-section" id="booking">
+  <div class="content">
+    <div class="booking-inner reveal">
+      <h2 class="booking-title">Ready to <em>experience</em> it?</h2>
+      <p class="booking-subtitle">Secure your dates and enjoy a curated luxury stay</p>
+      <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="booking-btn">
+        Book Your Stay
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <div class="booking-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Save 5% booking direct
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <a href="https://bookwithregent.com" class="footer-logo">REGENT</a>
+  <div class="footer-links">
+    <a href="https://bookwithregent.com">Home</a>
+    <a href="https://bookwithregent.com#properties">Properties</a>
+    <a href="https://bookwithregent.com#contact">Contact</a>
+  </div>
+  <p class="footer-copy">Regent Capital Ventures LLC. All rights reserved.</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="lightbox-image-wrap">
+    <img class="lightbox-image" id="lightboxImage" src="" alt="">
+  </div>
+  <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">
+    <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+  </button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<script>
+// ── Parse Property Data ──
+const PROPERTY = JSON.parse('{{PROPERTY_JSON}}');
+const HOSTING_ID = '{{HOSTING_ID}}';
+const IS_VILLA = '{{IS_VILLA}}' === 'true';
+const SLUG = '{{SLUG}}';
+
+// ── Image URL Helpers ──
+function imgUrl(uuid, width) {
+  return 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/' + uuid + '?im_w=' + (width || 720);
+}
+function imgUrlFull(uuid) {
+  return imgUrl(uuid, 1200);
+}
+
+// ── Hero Badge ──
+(function() {
+  var badge = document.getElementById('heroBadge');
+  var badgeText = document.getElementById('heroBadgeText');
+  if (IS_VILLA) {
+    badge.classList.add('villa');
+    badgeText.textContent = 'Villa';
+  } else {
+    badge.classList.add('suite');
+    badgeText.textContent = 'Suite';
+  }
+})();
+
+// ── Parallax Hero ──
+(function() {
+  var heroImg = document.getElementById('heroImage');
+  var hero = document.getElementById('hero');
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        var scrollY = window.pageYOffset;
+        var heroH = hero.offsetHeight;
+        if (scrollY < heroH) {
+          heroImg.style.transform = 'translateY(' + (scrollY * 0.35) + 'px)';
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+})();
+
+// ── Navigation Scroll Effect ──
+(function() {
+  var nav = document.getElementById('nav');
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    var scrollY = window.pageYOffset;
+    if (scrollY > 80) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = scrollY;
+  }, { passive: true });
+})();
+
+// ── Mobile Menu ──
+function toggleMobileMenu() {
+  var burger = document.getElementById('navBurger');
+  var menu = document.getElementById('mobileMenu');
+  burger.classList.toggle('open');
+  menu.classList.toggle('open');
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+
+// ── Photo Gallery ──
+(function() {
+  var photos = PROPERTY.photos || [];
+  var grid = document.getElementById('galleryGrid');
+  var maxPhotos = Math.min(photos.length, 12);
+  var html = '';
+
+  for (var i = 0; i < maxPhotos; i++) {
+    var isLarge = (i === 0);
+    var isLast = (i === maxPhotos - 1) && photos.length > maxPhotos;
+    var extraCount = photos.length - maxPhotos;
+
+    html += '<div class="gallery-item' + (isLarge ? ' large' : '') + '" onclick="openLightbox(' + i + ')">';
+    html += '<img src="' + imgUrl(photos[i], isLarge ? 1200 : 720) + '" alt="' + (PROPERTY.name || 'Property') + ' photo ' + (i + 1) + '" loading="' + (i < 3 ? 'eager' : 'lazy') + '">';
+    if (isLast && extraCount > 0) {
+      html += '<div class="gallery-count"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>+' + extraCount + ' more</div>';
+    }
+    html += '</div>';
+  }
+
+  grid.innerHTML = html;
+})();
+
+// ── Lightbox ──
+var lbPhotos = [];
+var lbIndex = 0;
+var touchStartX = 0;
+var touchEndX = 0;
+
+function openLightbox(startIdx) {
+  var photos = PROPERTY.photos || [];
+  lbPhotos = photos.map(function(ph) { return imgUrlFull(ph); });
+  lbIndex = startIdx || 0;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function lightboxNav(dir) {
+  lbIndex = (lbIndex + dir + lbPhotos.length) % lbPhotos.length;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  var img = document.getElementById('lightboxImage');
+  img.style.opacity = '0';
+  setTimeout(function() {
+    img.src = lbPhotos[lbIndex];
+    img.alt = (PROPERTY.name || 'Property') + ' photo ' + (lbIndex + 1);
+    img.style.opacity = '1';
+  }, 150);
+  document.getElementById('lightboxCounter').textContent = (lbIndex + 1) + ' / ' + lbPhotos.length;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  var lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lightboxNav(-1);
+  if (e.key === 'ArrowRight') lightboxNav(1);
+});
+
+// Touch swipe
+(function() {
+  var lb = document.getElementById('lightbox');
+  lb.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  lb.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    var diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) lightboxNav(1);
+      else lightboxNav(-1);
+    }
+  }, { passive: true });
+})();
+
+// Click backdrop to close
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this || e.target.classList.contains('lightbox-image-wrap')) {
+    closeLightbox();
+  }
+});
+
+// ── Amenities ──
+(function() {
+  var amenities = PROPERTY.fullAmenities;
+  if (!amenities) return;
+
+  var categoryIcons = {
+    'Bathroom': '<svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>',
+    'Bedroom & Laundry': '<svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>',
+    'Heating & Cooling': '<svg viewBox="0 0 24 24"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9"/><circle cx="12" cy="12" r="10"/></svg>',
+    'Entertainment': '<svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>',
+    'Kitchen & Dining': '<svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
+    'Work & Tech': '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    'Outdoor': '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+    'Parking & Facilities': '<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/></svg>',
+    'Family': '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    'Home Highlights': '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+  };
+  var defaultIcon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg>';
+
+  var grid = document.getElementById('amenityGrid');
+  var html = '';
+  var delay = 0;
+
+  var categories = Object.entries(amenities);
+  for (var c = 0; c < categories.length; c++) {
+    var cat = categories[c][0];
+    var items = categories[c][1];
+    var icon = categoryIcons[cat] || defaultIcon;
+
+    html += '<div class="amenity-category reveal reveal-stagger" style="--delay: ' + (delay * 0.08) + 's">';
+    html += '<div class="amenity-cat-header">';
+    html += '<div class="amenity-cat-icon">' + icon + '</div>';
+    html += '<span class="amenity-cat-name">' + cat + '</span>';
+    html += '<span class="amenity-cat-count">' + items.length + '</span>';
+    html += '</div>';
+    html += '<div class="amenity-list">';
+    for (var j = 0; j < items.length; j++) {
+      html += '<span class="amenity-pill">' + items[j] + '</span>';
+    }
+    html += '</div></div>';
+    delay++;
+  }
+
+  grid.innerHTML = html;
+
+  // Building amenities callout for non-villa properties
+  if (!IS_VILLA) {
+    var callout = document.getElementById('buildingAmenitiesCallout');
+    callout.innerHTML = '<div class="building-amenities-callout reveal">' +
+      '<div class="building-callout-label">' +
+        '<svg viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>' +
+        'Building Amenities' +
+      '</div>' +
+      '<div class="building-amenity-grid">' +
+        '<div class="building-amenity-item">' +
+          '<div class="building-amenity-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/><path d="M14 12h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-6z"/><path d="M2 2h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2z"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
+          '<div class="building-amenity-text"><strong>Swimming Pool</strong><span>Resort-style pool with lounge area</span></div>' +
+        '</div>' +
+        '<div class="building-amenity-item">' +
+          '<div class="building-amenity-icon"><svg viewBox="0 0 24 24"><path d="M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14"/><path d="M2 20h20"/><path d="M14 12v.01"/></svg></div>' +
+          '<div class="building-amenity-text"><strong>24/7 Fitness Center</strong><span>Fully equipped gym, always open</span></div>' +
+        '</div>' +
+        '<div class="building-amenity-item">' +
+          '<div class="building-amenity-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>' +
+          '<div class="building-amenity-text"><strong>Workspaces</strong><span>Business center & co-working areas</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+})();
+
+// ── Location Description ──
+(function() {
+  var city = '{{CITY}}';
+  var state = '{{STATE}}';
+  var desc = document.getElementById('locationDesc');
+
+  var cityDescriptions = {
+    'Plano': 'Situated in the heart of Plano, you\'ll be minutes from Legacy West, world-class dining, and the vibrant shops at The Shops at Willow Bend. Excellent access to the Dallas North Tollway puts all of DFW within easy reach.',
+    'Dallas': 'Located in the pulse of Downtown Dallas, steps from the Dallas Farmers Market, Deep Ellum entertainment district, and the Arts District. Walk to restaurants, nightlife, and cultural landmarks with the energy of the city at your doorstep.',
+    'Irving': 'Nestled in the upscale Las Colinas area of Irving, enjoy proximity to Toyota Music Factory, Lake Carolyn waterfront trails, and convenient DART rail access to DFW Airport and Downtown Dallas. A perfect blend of urban convenience and lakeside tranquility.',
+    'Richardson': 'Set in the thriving heart of Richardson near the CityLine development, with direct DART rail access and walkable dining and entertainment. Minutes from the University of Texas at Dallas and the Richardson Telecom Corridor.'
+  };
+
+  desc.textContent = cityDescriptions[city] || 'Experience the best of ' + city + ', ' + state + '. Conveniently located near local dining, entertainment, and major attractions. A perfect home base for exploring the area.';
+})();
+
+// ── Scroll Reveal (IntersectionObserver) ──
+(function() {
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    reveals.forEach(function(el) { observer.observe(el); });
+  } else {
+    // Fallback: show everything
+    reveals.forEach(function(el) { el.classList.add('visible'); });
+  }
+})();
+
+// ── Stats Bar Sticky Detection ──
+(function() {
+  var statsBar = document.getElementById('statsBar');
+  if ('IntersectionObserver' in window) {
+    var sentinel = document.createElement('div');
+    sentinel.style.height = '1px';
+    sentinel.style.position = 'absolute';
+    sentinel.style.top = '0';
+    sentinel.style.left = '0';
+    sentinel.style.width = '100%';
+    sentinel.style.pointerEvents = 'none';
+    statsBar.parentNode.insertBefore(sentinel, statsBar);
+
+    // Position sentinel at the natural position of the stats bar
+    function positionSentinel() {
+      sentinel.style.top = statsBar.offsetTop + 'px';
+    }
+    positionSentinel();
+    window.addEventListener('load', positionSentinel);
+
+    var stickyObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) {
+          statsBar.classList.add('stuck');
+        } else {
+          statsBar.classList.remove('stuck');
+        }
+      });
+    }, { threshold: 0 });
+
+    stickyObserver.observe(sentinel);
+  }
+})();
+</script>
+</body>
+</html>
