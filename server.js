@@ -1061,6 +1061,92 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
   }
 });
 
+// ── ADMIN: Custom Invoice ──
+// Creates a reservation in Guesty with admin-specified pricing. Guesty's Guest
+// Invoice feature is then used to send a payment link to the guest.
+//   POST { listing, checkIn, checkOut, guests, totalPrice, cleaningFee?,
+//          guest: { firstName, lastName, email, phone }, notes? }
+app.post('/api/admin/custom-invoice', requireAuth, async (req, res) => {
+  try {
+    const { listing, checkIn, checkOut, totalPrice, cleaningFee, notes, guest } = req.body || {};
+    const guests = Math.max(1, parseInt(req.body?.guests, 10) || 1);
+    const listingId = guesty.resolveListingId(listing);
+    if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
+    if (!isValidDate(checkIn) || !isValidDate(checkOut) || checkOut <= checkIn) {
+      return res.status(400).json({ error: 'Invalid dates' });
+    }
+    const price = parseFloat(totalPrice);
+    if (!price || price <= 0) return res.status(400).json({ error: 'A valid total price is required' });
+
+    const g = sanitizeGuestPayload(guest || {});
+    if (!g.email.includes('@')) return res.status(400).json({ error: 'A valid guest email is required' });
+    if (!g.firstName) return res.status(400).json({ error: 'Guest first name is required' });
+    if (!g.lastName) return res.status(400).json({ error: 'Guest last name is required' });
+
+    const meta = Object.values(guesty.LISTINGS).find(l => l.id === listingId);
+    const nights = guesty.countNights(checkIn, checkOut);
+
+    // 1. Create guest in Guesty
+    const guestResult = await guesty.createGuest(g);
+    const guestId = guestResult._id || guestResult.id;
+
+    // 2. Create reservation with custom pricing (status: reserved = booking request,
+    //    guest will pay via Guesty's Guest Invoice which triggers auto-confirm)
+    const moneyObj = { fareAccommodation: price };
+    const reservation = await guesty.createReservation({
+      listingId,
+      checkIn,
+      checkOut,
+      guests,
+      guestId,
+      status: 'reserved',
+      money: moneyObj,
+    });
+    const reservationId = reservation._id || reservation.reservationId || reservation.id;
+
+    // 3. Save to local DB for admin tracking
+    const row = db.prepare(`
+      INSERT INTO booking_requests
+        (listing_id, listing_name, guest_name, guest_email, guest_phone,
+         check_in, check_out, guests, nights, total, currency, quote_id,
+         guesty_reservation_id, status, message)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    `).run(
+      listingId,
+      meta ? meta.name : '',
+      `${g.firstName} ${g.lastName}`.trim(),
+      g.email,
+      g.phone,
+      checkIn,
+      checkOut,
+      guests,
+      nights,
+      price,
+      'USD',
+      'custom-invoice',
+      reservationId || null,
+      'requested',
+      (notes || 'Custom invoice created from admin').trim()
+    );
+
+    res.json({
+      success: true,
+      requestId: row.lastInsertRowid,
+      reservationId,
+      guestId,
+      nights,
+      total: price,
+      note: 'Reservation created in Guesty. Send the Guest Invoice from Guesty dashboard to collect payment.',
+    });
+  } catch (err) {
+    const detail = err.body?.error?.message || err.body?.message || err.message;
+    console.error('Custom invoice error:', err.status || '', err.message);
+    if (err.status === 400 && detail) return res.status(400).json({ error: detail });
+    if (err.status === 409) return res.status(409).json({ error: detail || 'Dates are not available' });
+    res.status(502).json({ error: detail || 'Could not create custom invoice' });
+  }
+});
+
 // ── ADMIN ──
 app.get('/api/admin/booking-requests', requireAuth, (req, res) => {
   res.json(db.prepare('SELECT * FROM booking_requests ORDER BY created_at DESC').all());

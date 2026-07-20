@@ -915,6 +915,11 @@ ul{list-style:none}
 .detail-close{position:fixed;top:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(26,23,20,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;border:1px solid rgba(255,255,255,.15);transition:all .3s var(--ease)}
 .detail-close:hover{transform:scale(1.1);background:rgba(26,23,20,.9);border-color:rgba(255,255,255,.3)}
 .detail-close svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none}
+.detail-share{position:fixed;top:20px;right:74px;width:44px;height:44px;border-radius:50%;background:rgba(26,23,20,.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;border:1px solid rgba(255,255,255,.15);transition:all .3s var(--ease)}
+.detail-share:hover{transform:scale(1.1);background:rgba(26,23,20,.9);border-color:rgba(255,255,255,.3)}
+.detail-share svg{width:17px;height:17px;stroke:#fff;stroke-width:2;fill:none}
+.detail-share-toast{position:fixed;top:72px;right:20px;padding:8px 14px;background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;font-weight:500;border-radius:8px;z-index:11;opacity:0;transform:translateY(-6px);transition:opacity .25s,transform .25s;pointer-events:none}
+.detail-share-toast.show{opacity:1;transform:translateY(0)}
 
 /* Hero gallery */
 .detail-gallery{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg-dark)}
@@ -1132,6 +1137,8 @@ ul{list-style:none}
   .detail-modal{padding:0}
   .detail-body{margin:0;border-radius:0;min-height:100vh}
   .detail-close{top:12px;right:12px;width:40px;height:40px}
+  .detail-share{top:12px;right:60px;width:40px;height:40px}
+  .detail-share-toast{top:60px;right:12px}
   .detail-content{padding:20px 20px}
   .detail-section:first-child{margin-bottom:0}
   .detail-header{flex-direction:column;gap:6px;padding-bottom:0;margin-bottom:0;border-bottom:none}
@@ -2084,6 +2091,9 @@ ul{list-style:none}
   <div class="detail-body">
     <div class="detail-close" onclick="closeDetail()">
       <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="detail-share" id="detailShareBtn" onclick="shareDetailLink()" title="Copy link">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
     </div>
     <div class="detail-gallery" id="detailGallery"></div>
     <div class="detail-thumbs" id="detailThumbs"></div>
@@ -4303,6 +4313,44 @@ function openDetail(slug, skipHistory) {
 
   // Initialize the detail map after modal is shown
   setTimeout(() => initDetailMap(prop), 100);
+}
+
+function shareDetailLink() {
+  if (!detailSlug) return;
+  const url = window.location.origin + '/#property/' + detailSlug;
+  const share = document.getElementById('detailShareBtn');
+  // Anchor the toast to the share button's own parent: .detail-body creates a
+  // containing block, so position:fixed resolves against the card, not the
+  // viewport. Appending elsewhere strands the toast in the page corner.
+  const toast = document.getElementById('shareToast') || (() => {
+    const t = document.createElement('div');
+    t.className = 'detail-share-toast';
+    t.id = 'shareToast';
+    share.parentElement.appendChild(t);
+    return t;
+  })();
+  const flash = msg => {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(shareDetailLink._t);
+    shareDetailLink._t = setTimeout(() => toast.classList.remove('show'), 2000);
+  };
+  if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+    navigator.share({ title: 'Book with Regent', url }).catch(() => {});
+    return;
+  }
+  navigator.clipboard.writeText(url)
+    .then(() => flash('Link copied!'))
+    .catch(() => {
+      // Fallback for older browsers / denied clipboard permission
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      flash(ok ? 'Link copied!' : 'Copy failed');
+    });
 }
 
 function closeDetail(skipMapReturn) {
