@@ -2180,7 +2180,7 @@ async function loadSettings() {
       $('setSocialIG').value = data.social_instagram || '';
       $('setSocialFB').value = data.social_facebook || '';
       $('setSocialTT').value = data.social_tiktok || '';
-      $('setMaintenance').checked = !!data.maintenance_mode || !!data.maintenanceMode;
+      $('setMaintenance').checked = data.maintenance_mode === 'true' || data.maintenance_mode === true;
       $('maintLabel').textContent = $('setMaintenance').checked ? 'On' : 'Off';
       $('setAnnouncement').value = data.announcement_banner || data.announcementBanner || '';
     }

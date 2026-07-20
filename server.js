@@ -1659,7 +1659,7 @@ app.get('/api/site-settings', (req, res) => {
       'booking_cta_text', 'min_nights_override', 'checkout_message',
     ];
     const result = {};
-    publicKeys.forEach(k => { if (all[k]) result[k] = all[k]; });
+    publicKeys.forEach(k => { if (all[k] !== undefined) result[k] = all[k]; });
     res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
     res.json(result);
   } catch (err) {
