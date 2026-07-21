@@ -647,6 +647,36 @@ ul { list-style: none; }
   font-size: 12px; color: var(--text-dim);
 }
 
+/* ── Mobile Nav Button ── */
+.nav-mobile-btn {
+  display: none; flex-direction: column; gap: 5px; padding: 4px;
+  cursor: pointer;
+}
+.nav-mobile-btn span {
+  display: block; width: 22px; height: 1.5px; background: var(--text);
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+}
+.nav-mobile-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-mobile-btn.open span:nth-child(2) { opacity: 0; }
+.nav-mobile-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── Mobile Menu ── */
+.mobile-menu {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 32px;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s var(--ease), visibility 0.4s;
+}
+.mobile-menu.open { opacity: 1; visibility: visible; }
+.mobile-menu a {
+  font-family: var(--sans); font-size: 28px; font-weight: 500;
+  color: var(--text); letter-spacing: -0.01em;
+  transition: color 0.3s var(--ease);
+}
+.mobile-menu a:hover { color: var(--accent); }
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .nav { padding: 20px 32px; }
@@ -710,35 +740,6 @@ ul { list-style: none; }
   .stat-icon { width: 34px; height: 34px; }
 }
 
-/* ── Mobile Nav Button ── */
-.nav-mobile-btn {
-  display: none; flex-direction: column; gap: 5px; padding: 4px;
-  cursor: pointer;
-}
-.nav-mobile-btn span {
-  display: block; width: 22px; height: 1.5px; background: var(--text);
-  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
-}
-.nav-mobile-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-.nav-mobile-btn.open span:nth-child(2) { opacity: 0; }
-.nav-mobile-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-
-/* ── Mobile Menu ── */
-.mobile-menu {
-  position: fixed; inset: 0; z-index: 999;
-  background: var(--bg);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 32px;
-  opacity: 0; visibility: hidden;
-  transition: opacity 0.4s var(--ease), visibility 0.4s;
-}
-.mobile-menu.open { opacity: 1; visibility: visible; }
-.mobile-menu a {
-  font-family: var(--sans); font-size: 28px; font-weight: 500;
-  color: var(--text); letter-spacing: -0.01em;
-  transition: color 0.3s var(--ease);
-}
-.mobile-menu a:hover { color: var(--accent); }
 </style>
 </head>
 
