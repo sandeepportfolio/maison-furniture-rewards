@@ -23,6 +23,7 @@ const { isDirectRegentBookingCandidate, DEFAULT_ALLOWED_DOMAINS } = require('./g
 })();
 
 const guesty = require('./guesty');
+const truvi = require('./guesty-truvi-provider');
 
 const app = express();
 const PORT = process.env.PORT || 3456;
@@ -30,7 +31,8 @@ const PORT = process.env.PORT || 3456;
 ['db', 'uploads'].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
 
 // Database
-const db = new Database('./db/reviews.db');
+const DB_PATH = process.env.TRUVI_DB_PATH || './db/reviews.db';
+const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
 db.exec(`
   CREATE TABLE IF NOT EXISTS submissions (
@@ -105,10 +107,60 @@ const TRUVI_BOOKING_MIGRATIONS = [
   "ALTER TABLE booking_requests ADD COLUMN protection_source TEXT",
   "ALTER TABLE booking_requests ADD COLUMN protection_domain TEXT",
   "ALTER TABLE booking_requests ADD COLUMN protection_reason TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN truvi_provider_policy_id TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN truvi_provider_status TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN truvi_provider_error TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN truvi_last_action TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN truvi_last_action_at TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN truvi_reconciled_at TEXT",
 ];
 for (const migration of TRUVI_BOOKING_MIGRATIONS) {
   try { db.exec(migration); } catch (e) { /* already exists */ }
 }
+
+// ── Truvi lifecycle infrastructure ──
+const TRUVI_WORKER_BATCH_SIZE = Number(process.env.TRUVI_WORKER_BATCH_SIZE || 10);
+const TRUVI_WORKER_INTERVAL_MS = Number(process.env.TRUVI_WORKER_INTERVAL_MS || 8000);
+const TRUVI_REQUIRE_CANONICAL_MARKER = String(process.env.TRUVI_REQUIRE_CANONICAL_MARKER || 'true') !== 'false';
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS truvi_action_queue (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_request_id INTEGER NOT NULL,
+    action TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    attempts INTEGER NOT NULL DEFAULT 0,
+    max_attempts INTEGER NOT NULL DEFAULT 5,
+    next_attempt_at TEXT NOT NULL DEFAULT (datetime('now')),
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    last_error TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS truvi_webhook_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_request_id INTEGER,
+    event_id TEXT UNIQUE,
+    event_type TEXT,
+    payload_json TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS truvi_audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_request_id INTEGER NOT NULL,
+    action TEXT NOT NULL,
+    status TEXT NOT NULL,
+    details TEXT,
+    payload_json TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
 
 // ── Admin sessions ──
 db.exec(`
@@ -668,7 +720,7 @@ function getRequestOrigin(req) {
 
 function inferTruviSourceHint(req, sourceHint) {
   const normalized = String(sourceHint || '').trim().toLowerCase();
-  if (normalized && normalized !== 'beapi') return sourceHint;
+  if (normalized && !['beapi', 'local'].includes(normalized)) return sourceHint;
 
   // Local API payload does not reliably preserve a durable Regent-only source field.
   // If the request is arriving on a canonical Regent direct domain, infer a trusted
@@ -733,6 +785,429 @@ function persistTruviProtectionDecision(requestId, decision, sourceHint) {
   );
 }
 
+function parseJsonSafely(value) {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return null;
+  try {
+    return JSON.parse(value);
+  } catch (_e) {
+    return null;
+  }
+}
+
+function logTruviAudit(bookingRequestId, action, status, details, payload = null) {
+  db.prepare(`
+    INSERT INTO truvi_audit_log (booking_request_id, action, status, details, payload_json)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(
+    bookingRequestId,
+    action,
+    status,
+    details ? String(details) : null,
+    payload ? JSON.stringify(payload) : null
+  );
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function getTruviBackoff(attempt) {
+  const base = Number(process.env.TRUVI_RETRY_BASE_SECONDS || 8);
+  const max = Number(process.env.TRUVI_RETRY_MAX_SECONDS || 1800);
+  const delay = Math.min(max, base * Math.pow(2, Math.max(0, attempt - 1)));
+  return Math.max(8, delay);
+}
+
+function scheduleNextAttempt(stmt) {
+  const attempts = Number(stmt.attempts || 0) + 1;
+  const nextDelay = getTruviBackoff(attempts);
+  return {
+    attempts,
+    nextAttemptIso: new Date(Date.now() + nextDelay * 1000).toISOString(),
+  };
+}
+
+function normalizeCanonicalSource(source, bookingReq) {
+  if (!source) return null;
+  if (typeof source === 'string') return source.trim();
+  if (source.name) return String(source.name);
+  if (bookingReq && bookingReq.protection_source) return String(bookingReq.protection_source);
+  return null;
+}
+
+function isCanonicalRegentMarker(reservation, bookingReq) {
+  if (!bookingReq || !bookingReq.direct_booking) return false;
+  const source = normalizeCanonicalSource(reservation?.source || reservation?.bookingSource || null, bookingReq);
+  if (!source) return false;
+  return source.toLowerCase() === 'guesty booking engine';
+}
+
+function buildTruviPayloadFromRequest(bookingReq, reservation) {
+  return {
+    reservationId: bookingReq.guesty_reservation_id,
+    requestId: bookingReq.id,
+    checkIn: reservation?.checkInDateLocalized || bookingReq.check_in,
+    checkOut: reservation?.checkOutDateLocalized || bookingReq.check_out,
+    guests: reservation?.guestsCount || bookingReq.guests,
+    total: reservation?.money?.totalPaid != null ? Number(reservation.money.totalPaid) : null,
+    currency: reservation?.money?.currency || null,
+    status: reservation?.status || null,
+    source: reservation?.source || bookingReq.protection_source || null,
+    listingId: reservation?.listing?._id || bookingReq.listing_id || reservation?.listingId || null,
+    hostPayout: reservation?.money?.hostPayout || null,
+    canonical: {
+      source: reservation?.source || null,
+      confirmedAt: reservation?.confirmedAt || null,
+    },
+    planAmount: bookingReq.protection_plan_amount,
+    planName: bookingReq.protection_plan_name,
+  };
+}
+
+function getByRequestId(requestId) {
+  return db.prepare(`
+    SELECT *
+      FROM booking_requests
+     WHERE id = ?
+  `).get(requestId);
+}
+
+function getByReservationId(reservationId) {
+  return db.prepare(`
+    SELECT *
+      FROM booking_requests
+     WHERE guesty_reservation_id = ?
+     LIMIT 1
+  `).get(String(reservationId));
+}
+
+async function getCanonicalReservationRow(bookingReq) {
+  if (!bookingReq || !bookingReq.guesty_reservation_id) {
+    const err = new Error('No Guesty reservation id is available');
+    err.code = 'MISSING_RESERVATION';
+    throw err;
+  }
+
+  const reservation = await guesty.getReservationById(bookingReq.guesty_reservation_id);
+  if (!reservation) {
+    const err = new Error('Canonical reservation fetch returned no payload');
+    err.code = 'MISSING_CANONICAL_RESERVATION';
+    throw err;
+  }
+
+  return reservation;
+}
+
+function upsertTruviQueue(bookingRequestId, action, payload = {}, maxAttempts = 6) {
+  const existing = db.prepare(`
+    SELECT id, status
+      FROM truvi_action_queue
+     WHERE booking_request_id = ? AND action = ? AND status IN ('pending','processing')
+     LIMIT 1
+  `).get(bookingRequestId, action);
+
+  const payloadJson = JSON.stringify(payload || {});
+
+  if (existing) {
+    db.prepare(`
+      UPDATE truvi_action_queue
+         SET payload_json = ?, attempts = 0, updated_at = datetime('now'), status = 'pending', next_attempt_at = datetime('now')
+       WHERE id = ?
+    `).run(payloadJson, existing.id);
+    return existing.id;
+  }
+
+  return db.prepare(`
+    INSERT INTO truvi_action_queue (booking_request_id, action, payload_json, max_attempts)
+    VALUES (?, ?, ?, ?)
+  `).run(bookingRequestId, action, payloadJson, maxAttempts).lastInsertRowid;
+}
+
+function markTruviQueueFailed(queueId, message) {
+  db.prepare(`
+    UPDATE truvi_action_queue
+       SET status = 'failed', last_error = ?, updated_at = datetime('now')
+     WHERE id = ?
+  `).run(message ? String(message).slice(0, 2000) : null, queueId);
+}
+
+function markTruviQueueSuccess(queueId, message) {
+  db.prepare(`
+    UPDATE truvi_action_queue
+       SET status = 'completed', last_error = ?, updated_at = datetime('now')
+     WHERE id = ?
+  `).run(message ? String(message).slice(0, 2000) : null, queueId);
+}
+
+function setTruviRequestState(requestId, data = {}) {
+  const cols = [];
+  const vals = [];
+
+  for (const [k, v] of Object.entries(data)) {
+    cols.push(`${k} = ?`);
+    vals.push(v);
+  }
+
+  if (!cols.length) return;
+
+  db.prepare(`
+    UPDATE booking_requests
+    SET ${cols.join(', ')}, truvi_last_action_at = datetime('now')
+    WHERE id = ?
+  `).run(...vals, requestId);
+}
+
+async function loadCanonicalAndRequireDirect(bookingReq) {
+  if (!bookingReq || !bookingReq.id) {
+    const err = new Error('Booking request not found');
+    err.code = 'MISSING_REQUEST';
+    throw err;
+  }
+
+  if (!TRUVI_REQUIRE_CANONICAL_MARKER) {
+    return bookingReq;
+  }
+
+  const canonical = await getCanonicalReservationRow(bookingReq);
+  if (!isCanonicalRegentMarker(canonical, bookingReq)) {
+    const reason = 'non-canonical source marker';
+    setTruviRequestState(bookingReq.id, {
+      truvi_provider_status: 'not_applicable',
+      truvi_provider_error: reason,
+      truvi_last_action: 'skip',
+    });
+
+    throw Object.assign(new Error(reason), { code: 'NON_CANONICAL_SOURCE' });
+  }
+
+  return canonical;
+}
+
+async function reconcileTruviBooking(bookingReq) {
+  if (!bookingReq) return { ok: false, skipped: 'missing' };
+
+  if (!bookingReq.guesty_reservation_id || Number(bookingReq.direct_booking) !== 1) {
+    return { ok: false, skipped: 'not_applicable' };
+  }
+
+  try {
+    const canonical = TRUVI_REQUIRE_CANONICAL_MARKER ? await getCanonicalReservationRow(bookingReq) : bookingReq;
+
+    if (TRUVI_REQUIRE_CANONICAL_MARKER && !isCanonicalRegentMarker(canonical, bookingReq)) {
+      return { ok: false, skipped: 'non_canonical' };
+    }
+
+    if (String(canonical.status || '').toLowerCase() === 'canceled') {
+      upsertTruviQueue(bookingReq.id, 'cancel', { reason: 'reconcile-cancel' });
+      return { ok: true, action: 'queued_cancel' };
+    }
+
+    if (Number(bookingReq.direct_booking) !== 1 || Number(bookingReq.protection_plan_amount) <= 0) {
+      return { ok: false, skipped: 'not_eligible' };
+    }
+
+    if (!bookingReq.truvi_provider_policy_id) {
+      upsertTruviQueue(bookingReq.id, 'enroll', { reason: 'reconcile-enroll' });
+      return { ok: true, action: 'queued_enroll' };
+    }
+
+    return { ok: true, action: 'already_has_policy' };
+  } catch (err) {
+    setTruviRequestState(bookingReq.id, {
+      truvi_provider_status: 'error',
+      truvi_provider_error: `reconcile ${err.code || 'error'}: ${err.message}`,
+    });
+    return { ok: false, error: err.message };
+  }
+}
+
+function recoverProcessingQueueRows(staleSeconds = Number(process.env.TRUVI_PROCESSING_TTL_SECONDS || 900)) {
+  const ttl = Number.isFinite(staleSeconds) && staleSeconds > 0 ? staleSeconds : 900;
+  const threshold = new Date(Date.now() - ttl * 1000).toISOString();
+
+  try {
+    const res = db
+      .prepare(`
+        UPDATE truvi_action_queue
+           SET status = 'pending',
+               next_attempt_at = datetime('now')
+         WHERE status = 'processing'
+           AND updated_at IS NOT NULL
+           AND updated_at < ?
+      `)
+      .run(threshold);
+    return Number(res?.changes || 0);
+  } catch (_err) {
+    return 0;
+  }
+}
+
+async function processTruviQueue(limit = TRUVI_WORKER_BATCH_SIZE) {
+  recoverProcessingQueueRows();
+
+  const dueActions = db.prepare(`
+    SELECT *
+      FROM truvi_action_queue
+     WHERE status = 'pending'
+       AND next_attempt_at <= datetime('now')
+     ORDER BY created_at ASC
+     LIMIT ?
+  `).all(limit);
+
+  let processed = 0;
+  let failed = 0;
+
+  for (const action of dueActions) {
+    const queueId = action.id;
+    const req = getByRequestId(action.booking_request_id);
+
+    if (!req) {
+      markTruviQueueFailed(queueId, 'booking request missing');
+      failed += 1;
+      continue;
+    }
+
+    try {
+      db.prepare(`
+        UPDATE truvi_action_queue
+           SET status = 'processing', updated_at = datetime('now')
+         WHERE id = ?
+      `).run(queueId);
+
+      const payload = parseJsonSafely(action.payload_json) || {};
+
+      if (action.action === 'enroll') {
+        const canonical = await loadCanonicalAndRequireDirect(req);
+        const apiPayload = buildTruviPayloadFromRequest(req, canonical);
+
+        if (req.truvi_provider_policy_id) {
+          markTruviQueueSuccess(queueId, 'already_enrolled');
+          continue;
+        }
+
+        const providerResponse = await truvi.enroll(apiPayload, {
+          idempotencyKey: `truvix:${req.guesty_reservation_id}`,
+        });
+        const policyId = truvi.normalizePolicyId(providerResponse.policyId || providerResponse.id || null);
+
+        setTruviRequestState(req.id, {
+          truvi_provider_policy_id: policyId || null,
+          truvi_provider_status: truvi.normalizeStatus(providerResponse.status || 'enrolled'),
+          truvi_provider_error: null,
+          truvi_last_action: 'enroll',
+        });
+
+        db.prepare(`
+          INSERT OR REPLACE INTO truvi_webhook_events (booking_request_id, event_id, event_type, payload_json)
+          VALUES (?, ?, ?, ?)
+        `).run(req.id, providerResponse.eventId || `enroll-${req.id}-${Date.now()}`, 'internal.enroll', JSON.stringify(providerResponse));
+
+        logTruviAudit(req.id, 'enroll', 'success', 'provider enrolled', providerResponse);
+        markTruviQueueSuccess(queueId, 'enrolled');
+      } else if (action.action === 'update') {
+        const canonical = await loadCanonicalAndRequireDirect(req);
+        const policyId = truvi.normalizePolicyId(req.truvi_provider_policy_id);
+
+        if (!policyId) {
+          upsertTruviQueue(req.id, 'enroll', { reason: payload.reason || 'update->enroll' });
+          markTruviQueueSuccess(queueId, 'queued_enroll');
+          continue;
+        }
+
+        const canonicalUpdated = buildTruviPayloadFromRequest(req, canonical);
+        const response = await truvi.update(policyId, {
+          reservation: canonicalUpdated,
+          requestId: req.id,
+          reason: payload.reason || null,
+        }, { idempotencyKey: `truvix:${req.guesty_reservation_id}` });
+
+        setTruviRequestState(req.id, {
+          truvi_provider_status: truvi.normalizeStatus(response.status || 'updated'),
+          truvi_provider_error: null,
+          truvi_last_action: 'update',
+        });
+        logTruviAudit(req.id, 'update', 'success', 'provider updated', response);
+        markTruviQueueSuccess(queueId, 'updated');
+      } else if (action.action === 'cancel') {
+        const canonical = await loadCanonicalAndRequireDirect(req);
+        if (!req.truvi_provider_policy_id) {
+          markTruviQueueSuccess(queueId, 'no_policy');
+          continue;
+        }
+
+        await truvi.cancel(truvi.normalizePolicyId(req.truvi_provider_policy_id), {
+          reason: payload.reason || null,
+          status: canonical.status || null,
+        }, { idempotencyKey: `truvix:${req.guesty_reservation_id}:cancel` });
+
+        setTruviRequestState(req.id, {
+          truvi_provider_status: 'cancelled',
+          truvi_provider_error: null,
+          truvi_last_action: 'cancel',
+        });
+        markTruviQueueSuccess(queueId, 'cancelled');
+      } else if (action.action === 'refund') {
+        const policyId = truvi.normalizePolicyId(req.truvi_provider_policy_id);
+        if (!policyId) {
+          markTruviQueueSuccess(queueId, 'nothing_to_refund');
+          continue;
+        }
+
+        const refundResp = await truvi.refund(policyId, {
+          amount: payload.amount || null,
+          reason: payload.reason || null,
+          requestId: req.id,
+        }, { idempotencyKey: `truvix:${req.guesty_reservation_id}:refund` });
+
+        setTruviRequestState(req.id, {
+          truvi_provider_status: truvi.normalizeStatus(refundResp.status || 'refunded'),
+          truvi_provider_error: null,
+          truvi_last_action: 'refund',
+        });
+        logTruviAudit(req.id, 'refund', 'success', 'provider refund', refundResp);
+        markTruviQueueSuccess(queueId, 'refunded');
+      } else {
+        throw new Error(`Unsupported Truvi action: ${action.action}`);
+      }
+
+      processed += 1;
+    } catch (err) {
+      const attempt = scheduleNextAttempt(action);
+      if (attempt.attempts >= action.max_attempts) {
+        markTruviQueueFailed(queueId, err.message || 'provider failure');
+        failed += 1;
+        setTruviRequestState(req.id, {
+          truvi_provider_status: 'error',
+          truvi_provider_error: String(err.message || err).slice(0, 2000),
+          truvi_last_action: `failed:${action.action}`,
+        });
+      } else {
+        db.prepare(`
+          UPDATE truvi_action_queue
+             SET status = 'pending', attempts = ?, next_attempt_at = ?, last_error = ?, updated_at = datetime('now')
+           WHERE id = ?
+        `).run(
+          attempt.attempts,
+          attempt.nextAttemptIso,
+          String(err.message || err).slice(0, 2000),
+          queueId
+        );
+        failed += 1;
+
+        setTruviRequestState(req.id, {
+          truvi_provider_status: 'retrying',
+          truvi_provider_error: String(err.message || err).slice(0, 2000),
+          truvi_last_action: `retry:${action.action}`,
+        });
+      }
+    }
+  }
+
+  return { processed, failed };
+}
+
 // Create a short-lived Guesty reservation intent for Guesty Pay tokenization.
 // The frontend tokenizes against this reservationId using Guesty's PCI-safe iframe.
 //   POST { listing, checkIn, checkOut, guests, guest: { firstName, lastName, email, phone } }
@@ -793,6 +1268,11 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
 
     db.prepare("UPDATE booking_requests SET guesty_reservation_id=? WHERE id=?")
       .run(reservationId || null, requestId);
+
+    const createdReq = getByRequestId(requestId);
+    if (createdReq && Number(createdReq.direct_booking) === 1 && reservationId) {
+      upsertTruviQueue(requestId, 'enroll', { source: 'reservation-intent-create' });
+    }
 
     res.json({
       success: true,
@@ -860,6 +1340,11 @@ app.post('/api/guesty/confirm-payment', async (req, res) => {
     const resId = reservation._id || reservation.reservationId || reservation.id || reservationId;
     db.prepare("UPDATE booking_requests SET status='confirmed', guesty_reservation_id=? WHERE id=?")
       .run(resId, requestId);
+
+    const reqRow = getByRequestId(requestId);
+    if (reqRow && Number(reqRow.direct_booking) === 1) {
+      upsertTruviQueue(requestId, 'enroll', { source: 'confirm-payment-success' });
+    }
 
     res.json({
       success: true,
@@ -970,6 +1455,14 @@ app.post('/api/guesty/reservation', async (req, res) => {
     }
 
     const finalStatus = guestyReservationId ? 'confirmed' : 'requested';
+
+    if (guestyReservationId) {
+      const row = getByRequestId(requestId);
+      if (row && Number(row.direct_booking) === 1) {
+        upsertTruviQueue(requestId, 'enroll', { source: 'reservation-route', status: finalStatus });
+      }
+    }
+
     res.json({
       success: true,
       status: finalStatus,
@@ -1209,6 +1702,373 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
 // Invoice feature is then used to send a payment link to the guest.
 //   POST { listing, checkIn, checkOut, guests, totalPrice, cleaningFee?,
 //          guest: { firstName, lastName, email, phone }, notes? }
+app.post('/api/guesty/modify-reservation', async (req, res) => {
+  let reqRow = null;
+  try {
+    const {
+      requestId,
+      reservationId,
+      checkIn,
+      checkOut,
+      guests,
+      cancelOnly,
+      amount,
+      currency,
+    } = req.body || {};
+
+    const id = Number(requestId);
+
+    if (id) {
+      reqRow = getByRequestId(id);
+    } else if (reservationId) {
+      reqRow = getByReservationId(reservationId);
+    }
+
+    if (!reqRow) return res.status(404).json({ error: 'Booking request not found' });
+
+    if (!reqRow.guesty_reservation_id) {
+      return res.status(400).json({ error: 'No Guesty reservation id on this booking request' });
+    }
+
+    const canonical = TRUVI_REQUIRE_CANONICAL_MARKER
+      ? await getCanonicalReservationRow(reqRow)
+      : null;
+    const canonicalStatus = String(
+      TRUVI_REQUIRE_CANONICAL_MARKER
+        ? canonical?.status || ''
+        : reqRow.status || '',
+    )
+      .trim()
+      .toLowerCase();
+    const isCanceled = canonicalStatus === 'canceled' || canonicalStatus === 'cancelled';
+    const shouldSyncGuesty = canonicalStatus === 'confirmed';
+    if (isCanceled) {
+      return res.status(409).json({ error: 'Cannot modify a canceled reservation' });
+    }
+
+    const updates = {};
+    if (checkIn) updates.checkInDateLocalized = checkIn;
+    if (checkOut) updates.checkOutDateLocalized = checkOut;
+    if (guests) updates.guestsCount = Number(guests);
+    if (typeof amount === 'number') updates.total = Number(amount);
+    if (typeof currency === 'string') updates.currency = currency.trim().toUpperCase();
+
+    let updatedGuestyReservation = null;
+
+    if (!cancelOnly && (checkIn || checkOut || guests)) {
+      if (shouldSyncGuesty) {
+        if (process.env.TRUVI_DEBUG === 'true') {
+          console.log('Modify reservation payload', {
+            reservationId: reqRow.guesty_reservation_id,
+            updates,
+          });
+        }
+
+        updatedGuestyReservation = await guesty.updateReservation(reqRow.guesty_reservation_id, {
+          ...updates,
+        });
+      }
+      db.prepare(`
+        UPDATE booking_requests
+           SET check_in = COALESCE(?, check_in),
+               check_out = COALESCE(?, check_out),
+               guests = COALESCE(?, guests),
+               total = COALESCE(?, total)
+         WHERE id = ?
+      `).run(
+        checkIn || null,
+        checkOut || null,
+        guests ? Number(guests) : null,
+        typeof amount === 'number' ? Number(amount) : null,
+        reqRow.id
+      );
+    }
+
+    upsertTruviQueue(reqRow.id, 'update', {
+      reason: 'guesty-modify-request',
+      source: 'api.modify',
+    });
+
+    res.json({
+      success: true,
+      requestId: reqRow.id,
+      reservationId: reqRow.guesty_reservation_id,
+      modification: updatedGuestyReservation || null,
+      queueQueued: true,
+    });
+  } catch (err) {
+    const detail =
+      err.body?.raw ||
+      err.body?.error?.message ||
+      err.body?.message ||
+      err.message;
+    const targetId = reqRow && reqRow.id ? reqRow.id : Number(req.body?.requestId || 0);
+    if (targetId) {
+      setTruviRequestState(targetId, {
+        truvi_provider_status: 'error',
+        truvi_provider_error: detail || String(err),
+        truvi_last_action: 'modify-error',
+      });
+    }
+    if (err.code === 'NON_CANONICAL_SOURCE') {
+      return res.status(400).json({ error: detail || 'Invalid source for protection enrollment', code: 'non_canonical' });
+    }
+    console.error('Modify reservation error:', err.status || '', err.message, JSON.stringify(err.body || err));
+    res.status(502).json({ error: detail || 'Could not modify reservation' });
+  }
+});
+
+// Cancel a Guesty reservation and queue Truvi cancellation/refund actions.
+app.post('/api/guesty/cancel', async (req, res) => {
+  try {
+    const { requestId, reservationId, reason = 'guest_cancel', requestRefund = true } = req.body || {};
+
+    const id = Number(requestId);
+    let reqRow = null;
+    if (id) reqRow = getByRequestId(id);
+    else if (reservationId) reqRow = getByReservationId(reservationId);
+
+    if (!reqRow) return res.status(404).json({ error: 'Booking request not found' });
+    if (!reqRow.guesty_reservation_id) return res.status(400).json({ error: 'No Guesty reservation id on this booking request' });
+
+    const canonical = TRUVI_REQUIRE_CANONICAL_MARKER
+      ? await getCanonicalReservationRow(reqRow)
+      : null;
+    const canonicalStatus = String(
+      TRUVI_REQUIRE_CANONICAL_MARKER
+        ? canonical?.status || ''
+        : reqRow.status || '',
+    )
+      .trim()
+      .toLowerCase();
+    const isCanceled = canonicalStatus === 'canceled' || canonicalStatus === 'cancelled';
+    if (isCanceled) {
+      return res.json({ success: true, status: 'already_canceled', requestId: reqRow.id });
+    }
+
+    try {
+      await guesty.updateReservationStatus(reqRow.guesty_reservation_id, { status: 'canceled' });
+      db.prepare("UPDATE booking_requests SET status='cancelled' WHERE id=?").run(reqRow.id);
+    } catch (guestyErr) {
+      console.warn('Guesty cancel returned error, continuing with provider cancellation:', guestyErr.message);
+      db.prepare("UPDATE booking_requests SET status='cancelled' WHERE id=?").run(reqRow.id);
+    }
+
+    if (requestRefund && Number(reqRow.direct_booking) === 1) {
+      upsertTruviQueue(reqRow.id, 'refund', { reason, requestRefund });
+    } else {
+      upsertTruviQueue(reqRow.id, 'cancel', { reason, requestRefund: false });
+    }
+
+    res.json({
+      success: true,
+      requestId: reqRow.id,
+      reservationId: reqRow.guesty_reservation_id,
+      requestedRefund: !!requestRefund,
+    });
+  } catch (err) {
+    const detail = err.body?.error?.message || err.body?.message || err.message;
+    console.error('Cancel reservation error:', err.status || '', err.message);
+    res.status(502).json({ error: detail || 'Could not cancel reservation' });
+  }
+});
+
+// Truvi webhook sink. Keeps provider event stream idempotent and auditable.
+app.post('/api/truvi/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const raw =
+      Buffer.isBuffer(req.body)
+        ? req.body.toString('utf8')
+        : req.body
+            ? typeof req.body === 'string'
+              ? req.body
+              : JSON.stringify(req.body)
+            : '';
+    const signature = req.get('x-truvi-signature');
+    if (!raw) return res.status(400).json({ error: 'Missing webhook payload' });
+
+    const verified = truvi.verifyWebhookSignature(raw, signature, process.env.TRUVI_WEBHOOK_SECRET || '');
+    if (!verified.ok) {
+      if (process.env.TRUVI_DEBUG === 'true') {
+        console.error('Webhook signature check failed', {
+          header: signature,
+          secret: process.env.TRUVI_WEBHOOK_SECRET || '',
+          bodyPreview: raw.slice(0, 200),
+        });
+      }
+      return res.status(401).json({ error: 'Invalid webhook signature', reason: verified.reason });
+    }
+
+    const payload = parseJsonSafely(raw);
+    if (!payload) return res.status(400).json({ error: 'Invalid JSON payload' });
+
+    const eventId = truvi.extractEventId(payload) || `no-id-${Date.now()}`;
+    const eventType = payload.type || payload.eventType || 'unknown';
+    const reservationId = payload.data?.reservationId || payload.reservationId;
+    const policyId = payload.data?.policyId || payload.policyId;
+
+    const reqRow = reservationId ? getByReservationId(reservationId) : null;
+    const bookingRequestId = reqRow ? reqRow.id : payload.data?.requestId || null;
+
+    const inserted = db.prepare(`
+      INSERT OR IGNORE INTO truvi_webhook_events (booking_request_id, event_id, event_type, payload_json)
+      VALUES (?, ?, ?, ?)
+    `).run(bookingRequestId, eventId, eventType, raw);
+
+    if (!inserted.changes) {
+      return res.json({ success: true, duplicate: true, eventId });
+    }
+
+    if (bookingRequestId && reqRow) {
+      if (eventType.startsWith('policy.')) {
+        if (eventType.includes('activated') || eventType.includes('created') || eventType.includes('updated')) {
+          setTruviRequestState(reqRow.id, {
+            truvi_provider_status: truvi.normalizeStatus('activated'),
+            truvi_provider_error: null,
+            truvi_last_action: eventType,
+          });
+        }
+        if (eventType.includes('cancel')) {
+          if (TRUVI_REQUIRE_CANONICAL_MARKER) {
+            const canonical = await getCanonicalReservationRow(reqRow);
+            if (canonical && String(canonical.status || '').toLowerCase() === 'canceled') {
+              setTruviRequestState(reqRow.id, {
+                truvi_provider_status: 'cancelled',
+                truvi_last_action: eventType,
+              });
+            }
+          } else {
+            setTruviRequestState(reqRow.id, {
+              truvi_provider_status: 'cancelled',
+              truvi_last_action: eventType,
+            });
+          }
+        }
+        if (eventType.includes('refund')) {
+          const canonical = await getCanonicalReservationRow(reqRow);
+          setTruviRequestState(reqRow.id, {
+            truvi_provider_status: 'refunded',
+            truvi_last_action: eventType,
+            truvi_provider_error: null,
+          });
+        }
+        if (eventType.includes('failed')) {
+          upsertTruviQueue(reqRow.id, 'enroll', { reason: 'webhook_failure_retry', source: eventId });
+        }
+      }
+
+      if (policyId) {
+        db.prepare('UPDATE booking_requests SET truvi_provider_policy_id = ? WHERE id = ?').run(policyId, reqRow.id);
+      }
+
+      db.prepare(`
+        INSERT INTO truvi_audit_log (booking_request_id, action, status, details, payload_json)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(reqRow.id, 'webhook', 'received', eventType, raw);
+    }
+
+    res.json({ success: true, eventId, eventType });
+  } catch (err) {
+    console.error('Truvi webhook error:', err.message);
+    res.status(400).json({ error: err.message || 'Webhook processing failed' });
+  }
+});
+
+app.get('/api/admin/truvi/queue', requireAuth, (req, res) => {
+  const limit = Math.max(1, Math.min(500, parseInt(req.query.limit, 10) || 100));
+  const rows = db.prepare(`
+    SELECT q.*, br.guesty_reservation_id, br.guest_name, br.guest_email, br.listing_id, br.status AS booking_status
+      FROM truvi_action_queue q
+      LEFT JOIN booking_requests br ON br.id = q.booking_request_id
+     ORDER BY q.created_at DESC
+     LIMIT ?
+  `).all(limit);
+
+  const events = db.prepare(`
+    SELECT e.*, br.guesty_reservation_id, br.guest_name
+      FROM truvi_webhook_events e
+      LEFT JOIN booking_requests br ON br.id = e.booking_request_id
+     ORDER BY e.created_at DESC
+     LIMIT ?
+  `).all(limit);
+
+  res.json({
+    queue: rows,
+    events,
+  });
+});
+
+app.post('/api/admin/truvi/retry', requireAuth, async (req, res) => {
+  try {
+    const limit = Math.max(1, Math.min(100, parseInt(req.body?.limit || 20, 10) || TRUVI_WORKER_BATCH_SIZE));
+    const result = await processTruviQueue(limit);
+    res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('Truvi retry error:', err);
+    res.status(500).json({ error: err.message || 'Retry processing failed' });
+  }
+});
+
+app.post('/api/admin/truvi/reconcile', requireAuth, async (req, res) => {
+  try {
+    const limit = Math.max(1, Math.min(200, parseInt(req.body?.limit || 200, 10) || 200));
+    const rows = db.prepare(`
+      SELECT *
+        FROM booking_requests
+       WHERE direct_booking = 1
+         AND protection_plan_amount IS NOT NULL
+         AND guesty_reservation_id IS NOT NULL
+       ORDER BY created_at DESC
+       LIMIT ?
+    `).all(limit);
+
+    const results = [];
+    for (const row of rows) {
+      results.push({ requestId: row.id, request: await reconcileTruviBooking(row) });
+    }
+
+    const queued = db.prepare(`
+      SELECT COUNT(*) as c FROM truvi_action_queue WHERE status = 'pending'
+    `).get().c;
+
+    res.json({ success: true, processed: rows.length, queued, results });
+  } catch (err) {
+    console.error('Truvi reconcile error:', err);
+    res.status(500).json({ error: err.message || 'Reconciliation failed' });
+  }
+});
+
+app.get('/api/admin/truvi/audit/:requestId', requireAuth, (req, res) => {
+  try {
+    const requestId = Number(req.params.requestId);
+    if (!requestId) return res.status(400).json({ error: 'Invalid request id' });
+    const reqRow = getByRequestId(requestId);
+    if (!reqRow) return res.status(404).json({ error: 'Booking request not found' });
+
+    const audit = db.prepare(`
+      SELECT * FROM truvi_audit_log
+       WHERE booking_request_id = ?
+       ORDER BY created_at DESC
+    `).all(requestId);
+
+    const queue = db.prepare(`
+      SELECT * FROM truvi_action_queue
+       WHERE booking_request_id = ?
+       ORDER BY created_at DESC
+    `).all(requestId);
+
+    res.json({ request: reqRow, audit, queue });
+  } catch (err) {
+    console.error('Truvi audit read error:', err);
+    res.status(500).json({ error: 'Failed to load Truvi audit data' });
+  }
+});
+
+// ── ADMIN: Custom Invoice ──
+// Creates a reservation in Guesty with admin-specified pricing. Guesty's Guest
+// Invoice feature is then used to send a payment link to the guest.
+//   POST { listing, checkIn, checkOut, guests, totalPrice, cleaningFee?,
+//          guest: { firstName, lastName, email, phone }, notes? }
 app.post('/api/admin/custom-invoice', requireAuth, async (req, res) => {
   try {
     const { listing, checkIn, checkOut, totalPrice, cleaningFee, notes, guest } = req.body || {};
@@ -1234,7 +2094,7 @@ app.post('/api/admin/custom-invoice', requireAuth, async (req, res) => {
     const guestId = guestResult._id || guestResult.id;
 
     // 2. Create reservation with custom pricing (status: reserved = booking request,
-    //    guest will pay via Guesty's Guest Invoice which triggers auto-confirm)
+    //    guest will pay via Guesty Invoice which triggers auto-confirm)
     const moneyObj = { fareAccommodation: price };
     const reservation = await guesty.createReservation({
       listingId,
@@ -1272,14 +2132,30 @@ app.post('/api/admin/custom-invoice', requireAuth, async (req, res) => {
       (notes || 'Custom invoice created from admin').trim()
     );
 
+    const requestId = row.lastInsertRowid;
+    const truviDecision = getTruviProtectionDecision(req, 'manual-admin');
+    persistTruviProtectionDecision(requestId, truviDecision, truviDecision.inferredSource);
+
+    const bookingReq = getByRequestId(requestId);
+    if (bookingReq && Number(bookingReq.direct_booking) === 1 && reservationId) {
+      upsertTruviQueue(requestId, 'enroll', { source: 'custom-invoice-created' });
+    }
+
     res.json({
       success: true,
-      requestId: row.lastInsertRowid,
+      requestId,
       reservationId,
       guestId,
       nights,
       total: price,
       note: 'Reservation created in Guesty. Send the Guest Invoice from Guesty dashboard to collect payment.',
+      truviProtection: {
+        enabled: truviDecision.eligible,
+        amount: truviDecision.eligible ? TRUVI_PLAN_AMOUNT : null,
+        planName: truviDecision.eligible ? TRUVI_PLAN_NAME : null,
+        reason: truviDecision.reason,
+        domain: truviDecision.host,
+      },
     });
   } catch (err) {
     const detail = err.body?.error?.message || err.body?.message || err.message;
@@ -2450,4 +3326,12 @@ app.listen(PORT, '0.0.0.0', () => {
     }, 13 * 60 * 1000);
     console.log(`  Keep-alive: pinging ${pingUrl} every 13 min`);
   }
+
+  // Background Truvi worker.
+  setInterval(() => {
+    processTruviQueue(TRUVI_WORKER_BATCH_SIZE)
+      .catch((err) => {
+        console.error('Truvi worker error:', err.message);
+      });
+  }, TRUVI_WORKER_INTERVAL_MS);
 });

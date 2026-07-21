@@ -112,63 +112,30 @@ ul{list-style:none}
 .mini-map{width:100%;height:100%;z-index:400}
 .mini-map .leaflet-control-container{display:none}
 
-/* ── Why Book Direct — Compact Modern Strip ── */
-@keyframes wbdPulse{0%,100%{opacity:.6}50%{opacity:1}}
-@keyframes wbdSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes wbdCountUp{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-@keyframes wbdScanline{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-@keyframes wbdGradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+/* ── Why Book Direct — Minimal Ticker ── */
+@keyframes wbdFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wbdShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .wbd-section{position:relative;background:#0d0d0d;overflow:hidden;padding:0}
-.wbd-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.2),transparent)}
-.wbd-section::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.2),transparent)}
-.wbd-inner{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:48px 48px 52px}
-.wbd-strip{display:flex;align-items:center;gap:0}
-.wbd-label{flex-shrink:0;display:flex;align-items:center;gap:14px;padding-right:40px;border-right:1px solid rgba(255,255,255,.08)}
-.wbd-label-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:wbdPulse 2s ease-in-out infinite}
-.wbd-label span{font-family:var(--serif);font-size:clamp(18px,2vw,24px);color:var(--text-inv);font-weight:400;white-space:nowrap;letter-spacing:-.01em}
-.wbd-label em{font-style:italic;color:var(--accent)}
-.wbd-pills{display:flex;gap:10px;padding:0 36px;flex:1;justify-content:center}
-.wbd-pill{position:relative;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:60px;padding:10px 20px 10px 14px;transition:all .4s cubic-bezier(.4,0,.2,1);cursor:default;overflow:hidden;opacity:0;transform:translateY(16px)}
-.wbd-pill.wbd-visible{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease}
-.wbd-pill::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);transform:translateX(-100%);pointer-events:none}
-.wbd-pill:hover{border-color:rgba(199,107,66,.3);background:rgba(199,107,66,.06);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
-.wbd-pill:hover::after{animation:wbdScanline .6s ease forwards}
-.wbd-pill-icon{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(199,107,66,.18),rgba(199,107,66,.06));display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .4s ease,box-shadow .4s ease}
-.wbd-pill:hover .wbd-pill-icon{transform:scale(1.1) rotate(-6deg);box-shadow:0 0 16px rgba(199,107,66,.2)}
-.wbd-pill-icon svg{width:14px;height:14px;stroke:var(--accent);stroke-width:1.8;fill:none}
-.wbd-pill-text{display:flex;flex-direction:column;gap:1px}
-.wbd-pill-val{font-family:var(--serif);font-size:18px;color:var(--accent);line-height:1;display:flex;align-items:baseline;gap:1px}
-.wbd-pill-val .wbd-counter{display:inline}
-.wbd-pill-desc{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.04em;text-transform:uppercase;line-height:1;white-space:nowrap}
-.wbd-cta-wrap{flex-shrink:0;padding-left:40px;border-left:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:16px}
-.wbd-cta-text{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.3);max-width:140px;line-height:1.5;font-weight:300}
-.wbd-cta-text strong{color:rgba(255,255,255,.6);font-weight:500}
-.wbd-cta{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(199,107,66,.3);color:var(--accent);font-family:var(--sans);font-size:13px;font-weight:500;padding:12px 24px;border-radius:100px;letter-spacing:.02em;transition:all .4s cubic-bezier(.4,0,.2,1);white-space:nowrap;position:relative;overflow:hidden;text-decoration:none}
-.wbd-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),#d4845c);opacity:0;transition:opacity .4s ease;border-radius:inherit}
-.wbd-cta:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 28px rgba(199,107,66,.25);color:#fff}
-.wbd-cta:hover::before{opacity:1}
-.wbd-cta span,.wbd-cta svg{position:relative;z-index:1}
-.wbd-cta svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;transition:transform .3s ease}
-.wbd-cta:hover svg{transform:translateX(4px)}
-@media(max-width:1024px){
-  .wbd-inner{padding:36px 28px 40px}
-  .wbd-strip{flex-wrap:wrap;gap:20px}
-  .wbd-label{border-right:none;padding-right:0;width:100%;justify-content:center}
-  .wbd-pills{padding:0;width:100%;justify-content:center;flex-wrap:wrap}
-  .wbd-cta-wrap{border-left:none;padding-left:0;width:100%;justify-content:center;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
-  .wbd-cta-text{display:none}
-}
+.wbd-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(199,107,66,.15) 50%,transparent 95%)}
+.wbd-section::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(199,107,66,.15) 50%,transparent 95%)}
+.wbd-inner{max-width:1200px;margin:0 auto;padding:20px 32px}
+.wbd-row{display:flex;align-items:center;justify-content:center;gap:0}
+.wbd-stat{display:flex;align-items:baseline;gap:6px;padding:0 28px;position:relative;opacity:0;animation:wbdFadeIn .5s ease forwards}
+.wbd-stat:nth-child(2){animation-delay:.1s}
+.wbd-stat:nth-child(3){animation-delay:.2s}
+.wbd-stat:nth-child(4){animation-delay:.3s}
+.wbd-stat + .wbd-stat::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:1px;height:14px;background:rgba(255,255,255,.1)}
+.wbd-num{font-family:var(--serif);font-size:18px;color:var(--accent);letter-spacing:-.02em;line-height:1}
+.wbd-unit{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.03em;text-transform:uppercase;line-height:1}
+.wbd-tag{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.05em;text-transform:uppercase;line-height:1;padding:0 28px;opacity:0;animation:wbdFadeIn .5s ease .35s forwards}
+.wbd-tag a{color:var(--accent);text-decoration:none;transition:color .3s ease;font-weight:500}
+.wbd-tag a:hover{color:#d4845c}
 @media(max-width:768px){
-  .wbd-inner{padding:28px 16px 32px}
-  .wbd-strip{gap:16px}
-  .wbd-label span{font-size:17px}
-  .wbd-pills{gap:8px}
-  .wbd-pill{padding:8px 14px 8px 10px}
-  .wbd-pill-icon{width:28px;height:28px}
-  .wbd-pill-icon svg{width:12px;height:12px}
-  .wbd-pill-val{font-size:16px}
-  .wbd-pill-desc{font-size:9px}
-  .wbd-cta{padding:10px 20px;font-size:12px}
+  .wbd-inner{padding:16px 16px}
+  .wbd-stat{padding:0 16px;gap:4px}
+  .wbd-num{font-size:15px}
+  .wbd-unit{font-size:9px}
+  .wbd-tag{padding:0 16px;font-size:9px}
 }
 
 /* ── Sections ── */
@@ -1592,38 +1559,11 @@ ul{list-style:none}
 <!-- ═══ WHY BOOK DIRECT ═══ -->
 <section class="wbd-section" id="whyBookDirect">
   <div class="wbd-inner">
-    <div class="wbd-strip">
-      <div class="wbd-label">
-        <span class="wbd-label-dot"></span>
-        <span>Book <em>direct</em> &amp; save</span>
-      </div>
-      <div class="wbd-pills">
-        <div class="wbd-pill" data-wbd-reveal data-wbd-delay="0">
-          <div class="wbd-pill-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
-          <div class="wbd-pill-text">
-            <div class="wbd-pill-val"><span class="wbd-counter" data-wbd-target="15">15</span>%</div>
-            <div class="wbd-pill-desc">Avg. savings</div>
-          </div>
-        </div>
-        <div class="wbd-pill" data-wbd-reveal data-wbd-delay="120">
-          <div class="wbd-pill-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-          <div class="wbd-pill-text">
-            <div class="wbd-pill-val">&lt;<span class="wbd-counter" data-wbd-target="1">1</span> hr</div>
-            <div class="wbd-pill-desc">Response time</div>
-          </div>
-        </div>
-        <div class="wbd-pill" data-wbd-reveal data-wbd-delay="240">
-          <div class="wbd-pill-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
-          <div class="wbd-pill-text">
-            <div class="wbd-pill-val"><span class="wbd-counter" data-wbd-target="3">3</span>x</div>
-            <div class="wbd-pill-desc">Rewards points</div>
-          </div>
-        </div>
-      </div>
-      <div class="wbd-cta-wrap">
-        <div class="wbd-cta-text"><strong>Support small business</strong>&mdash;not platform fees</div>
-        <a href="#properties" class="wbd-cta"><span>Browse</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-      </div>
+    <div class="wbd-row">
+      <div class="wbd-stat"><span class="wbd-num">15%</span><span class="wbd-unit">avg. savings</span></div>
+      <div class="wbd-stat"><span class="wbd-num">&lt;1 hr</span><span class="wbd-unit">response</span></div>
+      <div class="wbd-stat"><span class="wbd-num">3x</span><span class="wbd-unit">rewards</span></div>
+      <div class="wbd-tag"><a href="#properties">Book direct &rarr;</a></div>
     </div>
   </div>
 </section>
@@ -4738,52 +4678,6 @@ function initPremiumReveals() {
   cards.forEach(card => revealObserver.observe(card));
 }
 
-/* ═══ Why Book Direct — Compact Strip Animations ═══ */
-function initWbdSection() {
-  const section = document.getElementById('whyBookDirect');
-  if (!section) return;
-  const pills = section.querySelectorAll('[data-wbd-reveal]');
-  const revealObs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const delay = parseInt(entry.target.dataset.wbdDelay) || 0;
-      setTimeout(() => entry.target.classList.add('wbd-visible'), delay);
-      revealObs.unobserve(entry.target);
-    });
-  }, { threshold: 0.1 });
-  pills.forEach(el => revealObs.observe(el));
-
-  const counters = section.querySelectorAll('.wbd-counter');
-  if (!counters.length) return;
-  let counted = false;
-  const counterObs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting || counted) return;
-      counted = true;
-      counters.forEach((el, i) => {
-        const target = parseFloat(el.dataset.wbdTarget);
-        const duration = 1200;
-        const delay = i * 150 + 300;
-        el.textContent = '0';
-        setTimeout(() => {
-          const start = performance.now();
-          function tick(now) {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-            el.textContent = Math.round(eased * target);
-            if (progress < 1) requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-        }, delay);
-      });
-      counterObs.unobserve(entry.target);
-    });
-  }, { threshold: 0.3 });
-  const pillsContainer = section.querySelector('.wbd-pills');
-  if (pillsContainer) counterObs.observe(pillsContainer);
-}
-
 /* ═══ Keyboard ═══ */
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeGBE(); closeDetail(); closeContact(); closeTerms(); closePrivacy(); closeMobile(); hideRewards(); }
@@ -6254,7 +6148,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initModalBackdropClose();
   initCounters();
   initPremiumReveals();
-  initWbdSection();
   initExplore();
   initCarouselSwipe();
   initDetailGallerySwipe();

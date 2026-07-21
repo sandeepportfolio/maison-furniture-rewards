@@ -25,6 +25,7 @@ Your requirement is stricter than the native Truvi + Guesty integration filters 
 - Request-level domain restriction:
   - `bookwithregent.com`
   - `regent.guestybookings.com`
+  - `regent.guestbookings.com`
 - Any booking not matching both source+domain rules is marked as `direct_booking=false` and excluded.
 
 ## What changed in code

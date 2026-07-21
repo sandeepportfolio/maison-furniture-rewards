@@ -256,6 +256,11 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
   }
 
   const token = await getToken();
+
+  if (process.env.GUESTY_DEBUG === 'true') {
+    console.log('Guesty request', method, API_BASE + pathname, body ? Object.keys(body) : 'nobody');
+  }
+
   const res = await fetch(API_BASE + pathname, {
     method,
     headers: {
@@ -292,6 +297,9 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
     const err = new Error('Guesty API error');
     err.status = res.status;
     err.body = json;
+    if (process.env.GUESTY_DEBUG === 'true') {
+      console.error('Guesty API error', res.status, API_BASE + pathname, JSON.stringify(json));
+    }
     throw err;
   }
 
@@ -769,14 +777,37 @@ async function updateReservationStatus(reservationId, { status, reservedUntil })
   });
 }
 
-async function updateReservation(reservationId, body) {
+async function updateReservation(reservationId, body, options = {}) {
+  const { retryCount = 0 } = options;
   if (!reservationId) {
     throw Object.assign(new Error('Reservation ID is required'), { status: 400 });
   }
-  return guestyFetch(`/reservations/${encodeURIComponent(reservationId)}`, {
-    method: 'PUT',
-    body,
-  });
+
+  const encoded = encodeURIComponent(String(reservationId));
+
+  try {
+    return await guestyFetch(`/reservations-v3/${encoded}`, {
+      method: 'PUT',
+      body,
+    });
+  } catch (err) {
+    if (err?.status === 404) {
+      try {
+        return await guestyFetch(`/reservations/${encoded}`, {
+          method: 'PUT',
+          body,
+        });
+      } catch (fallbackErr) {
+        if (fallbackErr?.status === 404 && retryCount < 3) {
+          const backoffMs = 300 * (retryCount + 1);
+          await sleep(backoffMs);
+          return updateReservation(reservationId, body, { retryCount: retryCount + 1 });
+        }
+        throw fallbackErr;
+      }
+    }
+    throw err;
+  }
 }
 
 // ── Fetch reservations with financial data ─────────────────────────────
@@ -791,6 +822,24 @@ async function updateReservation(reservationId, body) {
  * @param {number} [opts.limit] - max results (default 100)
  * @param {number} [opts.skip]  - offset for pagination
  */
+async function getReservationById(reservationId) {
+  if (!reservationId) {
+    throw Object.assign(new Error('Reservation ID is required'), { status: 400 });
+  }
+
+  const encoded = encodeURIComponent(String(reservationId));
+  let primary;
+  try {
+    primary = await guestyFetch(`/reservations-v3/${encoded}`);
+  } catch (err) {
+    if (err?.status !== 404) throw err;
+    primary = await guestyFetch(`/reservations/${encoded}`);
+  }
+
+  // Older/mixed Guesty tenants sometimes wrap payload under `reservation` key.
+  return primary?.reservation || primary;
+}
+
 async function getReservations(opts = {}) {
   const fields = [
     '_id', 'confirmationCode', 'status',
@@ -1059,6 +1108,7 @@ module.exports = {
   createReservation,
   updateReservationStatus,
   updateReservation,
+  getReservationById,
   getReservations,
   countNights,
   isRateLimited,

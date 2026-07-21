@@ -5,7 +5,7 @@ const {
 
 function testCase(name, input, expectedEligible) {
   const result = isDirectRegentBookingCandidate({
-    allowedDomains: ['bookwithregent.com', 'regent.guestybookings.com'],
+    allowedDomains: ['bookwithregent.com', 'regent.guestybookings.com', 'regent.guestbookings.com'],
     requireWebsiteDomain: true,
     ...input,
   });
@@ -22,6 +22,12 @@ function testCase(name, input, expectedEligible) {
 testCase('Allow: Guesty Booking Engine on bookwithregent', {
   source: 'Guesty Booking Engine',
   websiteUrl: 'https://bookwithregent.com/checkout',
+  platform: 'Direct',
+}, true);
+
+testCase('Allow: Guesty Booking Engine on regent.guestbookings.com', {
+  source: 'Guesty Booking Engine',
+  websiteUrl: 'https://regent.guestbookings.com/booking',
   platform: 'Direct',
 }, true);
 

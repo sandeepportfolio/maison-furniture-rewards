@@ -1,4 +1,8 @@
-const DEFAULT_ALLOWED_DOMAINS = ['bookwithregent.com', 'regent.guestybookings.com'];
+const DEFAULT_ALLOWED_DOMAINS = [
+  'bookwithregent.com',
+  'regent.guestybookings.com',
+  'regent.guestbookings.com',
+];
 
 const ALLOWED_SOURCES = new Set([
   'guesty booking engine',
