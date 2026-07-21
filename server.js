@@ -4,6 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
 const Database = require('better-sqlite3');
+const { isDirectRegentBookingCandidate, DEFAULT_ALLOWED_DOMAINS } = require('./guesty-damage-protection-gate');
 
 // ── Load .env locally (Render sets these in the dashboard) ──
 // Minimal loader so we don't add a dependency. Existing env vars win, so
@@ -86,6 +87,28 @@ db.exec(`
 
 // Migration: add subject column if not already present.
 try { db.exec("ALTER TABLE messages ADD COLUMN subject TEXT DEFAULT ''"); } catch (e) { /* column already exists */ }
+
+const TRUVI_PLAN_AMOUNT = (() => {
+  const parsed = Number(process.env.TRUVI_PLAN_AMOUNT || '28.75');
+  return Number.isFinite(parsed) ? parsed : 28.75;
+})();
+const TRUVI_PLAN_NAME = process.env.TRUVI_PLAN_NAME || 'Truvi Host Damage Protection';
+const TRUVI_ALLOWED_DOMAINS = ((process.env.TRUVI_ALLOWED_BOOKING_DOMAINS || DEFAULT_ALLOWED_DOMAINS.join(','))
+  .split(',')
+  .map((d) => d.trim())
+  .filter(Boolean));
+
+const TRUVI_BOOKING_MIGRATIONS = [
+  "ALTER TABLE booking_requests ADD COLUMN direct_booking INTEGER DEFAULT 0",
+  "ALTER TABLE booking_requests ADD COLUMN protection_plan_amount REAL",
+  "ALTER TABLE booking_requests ADD COLUMN protection_plan_name TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN protection_source TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN protection_domain TEXT",
+  "ALTER TABLE booking_requests ADD COLUMN protection_reason TEXT",
+];
+for (const migration of TRUVI_BOOKING_MIGRATIONS) {
+  try { db.exec(migration); } catch (e) { /* already exists */ }
+}
 
 // ── Admin sessions ──
 db.exec(`
@@ -618,6 +641,98 @@ function extractPaymentToken(paymentMethod) {
   return paymentMethod?._id || paymentMethod?.id || paymentMethod?.tokenId || paymentMethod?.payload?.tokenId || paymentMethod?.payload?.id || null;
 }
 
+function normalizeHostname(input) {
+  if (!input) return '';
+  return String(input)
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .split('/')[0]
+    .split('?')[0]
+    .split(':')[0];
+}
+
+function getRequestOrigin(req) {
+  return (
+    req.get('referer') ||
+    req.get('origin') ||
+    req.headers?.referer ||
+    req.headers?.origin ||
+    req.headers?.host ||
+    req.headers?.['x-forwarded-host'] ||
+    req.get('x-forwarded-host') ||
+    ''
+  );
+}
+
+function inferTruviSourceHint(req, sourceHint) {
+  const normalized = String(sourceHint || '').trim().toLowerCase();
+  if (normalized && normalized !== 'beapi') return sourceHint;
+
+  // Local API payload does not reliably preserve a durable Regent-only source field.
+  // If the request is arriving on a canonical Regent direct domain, infer a trusted
+  // direct-marker from the route context instead of trusting the raw `beapi` label.
+  const host = normalizeHostname(getRequestOrigin(req));
+  if (!host) return sourceHint;
+
+  return isAllowedTruviDomain(host) ? 'Guesty Booking Engine' : sourceHint;
+}
+
+function isAllowedTruviDomain(host) {
+  return TRUVI_ALLOWED_DOMAINS
+    .map((item) => normalizeHostname(item))
+    .some((item) => {
+      return host === item || host.endsWith(`.${item}`);
+    });
+}
+
+function getTruviProtectionDecision(req, sourceHint) {
+  const host = normalizeHostname(getRequestOrigin(req));
+  const inferredSource = inferTruviSourceHint(req, sourceHint);
+  const decision = isDirectRegentBookingCandidate({
+    source: inferredSource,
+    platform: req.body?.platform,
+    bookingSource: req.body?.bookingSource,
+    websiteUrl: host,
+    request: {
+      referer: req.get('referer'),
+      origin: req.get('origin'),
+      host: req.headers?.host,
+    },
+    allowedDomains: TRUVI_ALLOWED_DOMAINS,
+    requireWebsiteDomain: true,
+  });
+
+  return {
+    host,
+    inferredSource,
+    ...decision,
+  };
+}
+
+function persistTruviProtectionDecision(requestId, decision, sourceHint) {
+  db.prepare(`
+    UPDATE booking_requests
+    SET
+      direct_booking = ?,
+      protection_plan_amount = ?,
+      protection_plan_name = ?,
+      protection_source = ?,
+      protection_domain = ?,
+      protection_reason = ?
+    WHERE id = ?
+  `).run(
+    decision.eligible ? 1 : 0,
+    decision.eligible ? TRUVI_PLAN_AMOUNT : null,
+    decision.eligible ? TRUVI_PLAN_NAME : null,
+    sourceHint || null,
+    decision.host || null,
+    decision.reason || null,
+    requestId
+  );
+}
+
 // Create a short-lived Guesty reservation intent for Guesty Pay tokenization.
 // The frontend tokenizes against this reservationId using Guesty's PCI-safe iframe.
 //   POST { listing, checkIn, checkOut, guests, guest: { firstName, lastName, email, phone } }
@@ -639,6 +754,7 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
 
     const meta = Object.values(guesty.LISTINGS).find(l => l.id === listingId);
     const { summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+    const truviDecision = getTruviProtectionDecision(req, summary.source);
     const providerRaw = await guesty.getPaymentProvider(listingId);
     const provider = guesty.normalizePaymentProvider(providerRaw);
     if (!provider.paymentProviderId) {
@@ -656,6 +772,7 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
       summary.quoteId, 'requested', (guest?.message || '').trim()
     );
     const requestId = row.lastInsertRowid;
+    persistTruviProtectionDecision(requestId, truviDecision, truviDecision.inferredSource);
 
     const guestResult = await guesty.createGuest(g);
     const guestId = guestResult._id || guestResult.id;
@@ -666,6 +783,7 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
       guests,
       guestId,
       status: 'reserved',
+      source: truviDecision.inferredSource || summary.source || 'manual',
       // Keep the hold short so a failed/abandoned payment does not block the calendar indefinitely.
       reservedUntil: 0.5,
       // Use total (includes 5% direct booking discount) so Guesty shows the actual charge
@@ -685,6 +803,13 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
       reservationId,
       paymentProviderId: provider.paymentProviderId,
       quote: summary,
+      truviProtection: {
+        enabled: truviDecision.eligible,
+        amount: truviDecision.eligible ? TRUVI_PLAN_AMOUNT : null,
+        planName: truviDecision.eligible ? TRUVI_PLAN_NAME : null,
+        reason: truviDecision.reason,
+        domain: truviDecision.host,
+      },
     });
   } catch (err) {
     const detail = err.body?.error?.message || err.body?.message || err.message;
@@ -777,6 +902,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
 
     // Always re-quote server-side — never trust a price from the client.
     const { quote, summary } = await guesty.createQuote({ listingId, checkIn, checkOut, guests });
+    const truviDecision = getTruviProtectionDecision(req, summary.source);
 
     const row = db.prepare(`
       INSERT INTO booking_requests
@@ -789,6 +915,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
       summary.quoteId, 'requested', (guest?.message || '').trim()
     );
     const requestId = row.lastInsertRowid;
+    persistTruviProtectionDecision(requestId, truviDecision, truviDecision.inferredSource);
 
     // Create the reservation in Guesty so dates are blocked and the host
     // can see/manage it inside the Guesty dashboard.
@@ -828,6 +955,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
           guests,
           guestId,
           status: 'inquiry',
+          source: truviDecision.inferredSource || summary.source || 'manual',
           money: { fareAccommodation: summary.total },
         });
         guestyReservationId = reservation._id || reservation.reservationId || reservation.id || null;
@@ -848,6 +976,13 @@ app.post('/api/guesty/reservation', async (req, res) => {
       requestId,
       reservationId: guestyReservationId,
       quote: summary,
+      truviProtection: {
+        enabled: truviDecision.eligible,
+        amount: truviDecision.eligible ? TRUVI_PLAN_AMOUNT : null,
+        planName: truviDecision.eligible ? TRUVI_PLAN_NAME : null,
+        reason: truviDecision.reason,
+        domain: truviDecision.host,
+      },
     });
   } catch (err) {
     const detail = err.body?.error?.message || err.body?.message;

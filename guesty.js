@@ -716,6 +716,7 @@ async function createReservation({
   guestId,
   guest,
   paymentMethodId,
+  source = 'manual',
   status = 'confirmed',
   reservedUntil,
   money,
@@ -732,7 +733,7 @@ async function createReservation({
     checkInDateLocalized: checkIn,
     checkOutDateLocalized: checkOut,
     status,
-    source: 'manual',
+    source: source || 'manual',
     ...(guestId ? { guestId } : { guest }),
     guestsCount: guests || 1,
     numberOfGuests: {

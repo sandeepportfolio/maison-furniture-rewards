@@ -112,110 +112,63 @@ ul{list-style:none}
 .mini-map{width:100%;height:100%;z-index:400}
 .mini-map .leaflet-control-container{display:none}
 
-/* ── Why Book Direct — Immersive Section ── */
-/* ── Why Book Direct ── */
-@keyframes wbdShimmer{0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(200%) skewX(-15deg)}}
-@keyframes wbdGlow{0%,100%{box-shadow:0 0 20px rgba(199,107,66,.15),0 0 40px rgba(199,107,66,.05)}50%{box-shadow:0 0 30px rgba(199,107,66,.25),0 0 60px rgba(199,107,66,.1)}}
-@keyframes wbdFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes wbdOrb{0%{transform:translate(0,0) scale(1);opacity:.04}25%{transform:translate(30px,-20px) scale(1.1);opacity:.06}50%{transform:translate(-10px,-40px) scale(.95);opacity:.03}75%{transform:translate(-30px,-10px) scale(1.05);opacity:.05}100%{transform:translate(0,0) scale(1);opacity:.04}}
-@keyframes wbdLineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes wbdBlurIn{from{opacity:0;transform:translateY(50px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
-@keyframes wbdStatPop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+/* ── Why Book Direct — Compact Modern Strip ── */
+@keyframes wbdPulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes wbdSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wbdCountUp{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes wbdScanline{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes wbdGradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .wbd-section{position:relative;background:#0d0d0d;overflow:hidden;padding:0}
-.wbd-bg{position:absolute;inset:0;z-index:0}
-.wbd-bg::before{content:'';position:absolute;inset:0;background:
-  radial-gradient(ellipse 70% 50% at 30% 30%,rgba(199,107,66,.07) 0%,transparent 60%),
-  radial-gradient(ellipse 50% 40% at 80% 70%,rgba(199,107,66,.04) 0%,transparent 50%),
-  radial-gradient(ellipse 90% 80% at 50% 50%,rgba(197,165,114,.03) 0%,transparent 70%)}
-.wbd-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0d0d0d 0%,transparent 6%,transparent 94%,#0d0d0d 100%)}
-.wbd-grid-pattern{position:absolute;inset:0;opacity:.025;
-  background-image:linear-gradient(rgba(199,107,66,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(199,107,66,.4) 1px,transparent 1px);
-  background-size:80px 80px}
-.wbd-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
-.wbd-orb-1{width:400px;height:400px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(199,107,66,.08),transparent 70%);animation:wbdOrb 18s ease-in-out infinite}
-.wbd-orb-2{width:300px;height:300px;bottom:-50px;right:-80px;background:radial-gradient(circle,rgba(197,165,114,.06),transparent 70%);animation:wbdOrb 22s ease-in-out infinite reverse}
-.wbd-orb-3{width:200px;height:200px;top:40%;left:50%;background:radial-gradient(circle,rgba(199,107,66,.05),transparent 70%);animation:wbdOrb 15s ease-in-out infinite 3s}
-.wbd-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:120px 48px 130px}
-.wbd-top-label{display:flex;align-items:center;gap:16px;margin-bottom:60px;opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
-.wbd-top-label.wbd-visible{opacity:1;transform:translateY(0)}
-.wbd-top-label::before{content:'';width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--accent));transform-origin:left;animation:none}
-.wbd-top-label.wbd-visible::before{animation:wbdLineGrow 1s var(--ease-out) .3s both}
-.wbd-top-label span{font-family:var(--mono);font-size:10px;letter-spacing:.25em;color:var(--accent);text-transform:uppercase}
-.wbd-headline-wrap{margin-bottom:80px;opacity:0;transform:translateY(36px);transition:opacity 1s var(--ease-out),transform 1s var(--ease-out);transition-delay:.15s}
-.wbd-headline-wrap.wbd-visible{opacity:1;transform:translateY(0)}
-.wbd-headline{font-family:var(--serif);font-size:clamp(34px,5vw,60px);font-weight:400;color:var(--text-inv);line-height:1.1;letter-spacing:-.025em;max-width:720px}
-.wbd-headline em{font-style:italic;background:linear-gradient(135deg,var(--accent),var(--brass-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.wbd-headline-sub{font-family:var(--sans);font-size:clamp(14px,1.4vw,17px);color:rgba(255,255,255,.4);margin-top:24px;max-width:500px;line-height:1.7;font-weight:300}
-.wbd-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-.wbd-card{position:relative;background:linear-gradient(165deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.06);border-radius:24px;padding:48px 40px 44px;display:flex;flex-direction:column;gap:22px;transition:transform .6s var(--ease),border-color .6s var(--ease),box-shadow .6s var(--ease),background .6s var(--ease);opacity:0;transform:translateY(50px);filter:blur(6px);cursor:default;overflow:hidden;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.wbd-card.wbd-visible{opacity:1;transform:translateY(0);filter:blur(0);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out),filter .8s var(--ease-out),border-color .6s var(--ease),box-shadow .6s var(--ease),background .6s var(--ease)}
-.wbd-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,rgba(199,107,66,.4) 50%,transparent 90%);opacity:0;transition:opacity .5s var(--ease)}
-.wbd-card::after{content:'';position:absolute;top:0;left:0;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);transform:translateX(-100%) skewX(-15deg);pointer-events:none}
-.wbd-card:hover{transform:translateY(-8px);border-color:rgba(199,107,66,.25);background:linear-gradient(165deg,rgba(255,255,255,.055),rgba(255,255,255,.02));box-shadow:0 24px 80px rgba(0,0,0,.35),0 0 100px rgba(199,107,66,.06),inset 0 1px 0 rgba(199,107,66,.1)}
-.wbd-card:hover::before{opacity:1}
-.wbd-card:hover::after{animation:wbdShimmer .8s var(--ease) forwards}
-.wbd-card-icon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(199,107,66,.15),rgba(199,107,66,.04));display:flex;align-items:center;justify-content:center;transition:transform .5s var(--ease),box-shadow .5s var(--ease);position:relative}
-.wbd-card-icon::after{content:'';position:absolute;inset:-4px;border-radius:20px;background:radial-gradient(circle,rgba(199,107,66,.12),transparent 70%);opacity:0;transition:opacity .5s var(--ease)}
-.wbd-card:hover .wbd-card-icon{transform:scale(1.1) rotate(-4deg);box-shadow:0 8px 24px rgba(199,107,66,.15)}
-.wbd-card:hover .wbd-card-icon::after{opacity:1;animation:wbdGlow 2s ease-in-out infinite}
-.wbd-card-icon svg{width:24px;height:24px;stroke:var(--accent);stroke-width:1.5;fill:none;position:relative;z-index:1;filter:drop-shadow(0 0 6px rgba(199,107,66,.3))}
-.wbd-card-num{position:absolute;top:16px;right:24px;font-family:var(--serif);font-size:72px;font-weight:400;color:rgba(199,107,66,.04);line-height:1;pointer-events:none;transition:color .6s var(--ease)}
-.wbd-card:hover .wbd-card-num{color:rgba(199,107,66,.08)}
-.wbd-card h3{font-family:var(--sans);font-size:21px;font-weight:600;color:var(--text-inv);letter-spacing:-.015em;line-height:1.3}
-.wbd-card p{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.45);line-height:1.7;font-weight:300}
-.wbd-card-stat{margin-top:auto;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);position:relative}
-.wbd-card-stat::before{content:'';position:absolute;top:-1px;left:0;width:0;height:1px;background:linear-gradient(90deg,var(--accent),transparent);transition:width .8s var(--ease-out)}
-.wbd-card:hover .wbd-card-stat::before{width:60%}
-.wbd-card-stat-val{font-family:var(--serif);font-size:36px;color:var(--accent);line-height:1;display:flex;align-items:baseline;gap:2px;opacity:0;transform:scale(.8)}
-.wbd-card-stat-val.wbd-stat-visible{animation:wbdStatPop .6s var(--ease-out) forwards}
-.wbd-card-stat-val .wbd-counter{display:inline}
-.wbd-card-stat-label{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
-.wbd-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:72px;padding-top:44px;border-top:1px solid rgba(255,255,255,.05);opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
-.wbd-bottom.wbd-visible{opacity:1;transform:translateY(0)}
-.wbd-bottom-text{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.35);font-weight:300;max-width:420px;line-height:1.7}
-.wbd-bottom-text strong{color:var(--text-inv);font-weight:500}
-.wbd-cta{display:inline-flex;align-items:center;gap:12px;background:transparent;border:1px solid rgba(199,107,66,.35);color:var(--accent);font-family:var(--sans);font-size:14px;font-weight:500;padding:18px 40px;border-radius:100px;letter-spacing:.03em;transition:all .5s var(--ease);white-space:nowrap;position:relative;overflow:hidden}
-.wbd-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),#d4845c);opacity:0;transition:opacity .5s var(--ease);border-radius:inherit}
-.wbd-cta:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 40px rgba(199,107,66,.3),0 0 60px rgba(199,107,66,.1);color:#fff}
+.wbd-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.2),transparent)}
+.wbd-section::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.2),transparent)}
+.wbd-inner{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:48px 48px 52px}
+.wbd-strip{display:flex;align-items:center;gap:0}
+.wbd-label{flex-shrink:0;display:flex;align-items:center;gap:14px;padding-right:40px;border-right:1px solid rgba(255,255,255,.08)}
+.wbd-label-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:wbdPulse 2s ease-in-out infinite}
+.wbd-label span{font-family:var(--serif);font-size:clamp(18px,2vw,24px);color:var(--text-inv);font-weight:400;white-space:nowrap;letter-spacing:-.01em}
+.wbd-label em{font-style:italic;color:var(--accent)}
+.wbd-pills{display:flex;gap:10px;padding:0 36px;flex:1;justify-content:center}
+.wbd-pill{position:relative;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:60px;padding:10px 20px 10px 14px;transition:all .4s cubic-bezier(.4,0,.2,1);cursor:default;overflow:hidden;opacity:0;transform:translateY(16px)}
+.wbd-pill.wbd-visible{opacity:1;transform:translateY(0);transition:opacity .5s ease,transform .5s ease}
+.wbd-pill::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);transform:translateX(-100%);pointer-events:none}
+.wbd-pill:hover{border-color:rgba(199,107,66,.3);background:rgba(199,107,66,.06);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.wbd-pill:hover::after{animation:wbdScanline .6s ease forwards}
+.wbd-pill-icon{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(199,107,66,.18),rgba(199,107,66,.06));display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .4s ease,box-shadow .4s ease}
+.wbd-pill:hover .wbd-pill-icon{transform:scale(1.1) rotate(-6deg);box-shadow:0 0 16px rgba(199,107,66,.2)}
+.wbd-pill-icon svg{width:14px;height:14px;stroke:var(--accent);stroke-width:1.8;fill:none}
+.wbd-pill-text{display:flex;flex-direction:column;gap:1px}
+.wbd-pill-val{font-family:var(--serif);font-size:18px;color:var(--accent);line-height:1;display:flex;align-items:baseline;gap:1px}
+.wbd-pill-val .wbd-counter{display:inline}
+.wbd-pill-desc{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.04em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.wbd-cta-wrap{flex-shrink:0;padding-left:40px;border-left:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:16px}
+.wbd-cta-text{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.3);max-width:140px;line-height:1.5;font-weight:300}
+.wbd-cta-text strong{color:rgba(255,255,255,.6);font-weight:500}
+.wbd-cta{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(199,107,66,.3);color:var(--accent);font-family:var(--sans);font-size:13px;font-weight:500;padding:12px 24px;border-radius:100px;letter-spacing:.02em;transition:all .4s cubic-bezier(.4,0,.2,1);white-space:nowrap;position:relative;overflow:hidden;text-decoration:none}
+.wbd-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),#d4845c);opacity:0;transition:opacity .4s ease;border-radius:inherit}
+.wbd-cta:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 28px rgba(199,107,66,.25);color:#fff}
 .wbd-cta:hover::before{opacity:1}
 .wbd-cta span,.wbd-cta svg{position:relative;z-index:1}
-.wbd-cta svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;transition:transform .4s var(--ease)}
-.wbd-cta:hover svg{transform:translateX(5px)}
-.wbd-divider-line{display:block;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(199,107,66,.15),transparent);margin-bottom:32px;opacity:0;transform:scaleX(0);transition:opacity .8s var(--ease-out),transform 1s var(--ease-out)}
-.wbd-divider-line.wbd-visible{opacity:1;transform:scaleX(1)}
+.wbd-cta svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;transition:transform .3s ease}
+.wbd-cta:hover svg{transform:translateX(4px)}
 @media(max-width:1024px){
-  .wbd-inner{padding:88px 32px 96px}
-  .wbd-cards{grid-template-columns:repeat(3,1fr);gap:18px}
-  .wbd-card{padding:36px 28px 36px;border-radius:20px}
-  .wbd-card-num{font-size:52px;top:14px;right:20px}
-  .wbd-card-icon{width:48px;height:48px;border-radius:14px}
-  .wbd-card-icon svg{width:22px;height:22px}
-  .wbd-card h3{font-size:18px}
-  .wbd-card p{font-size:13px}
-  .wbd-card-stat-val{font-size:30px}
-  .wbd-bottom{flex-direction:column;gap:28px;align-items:flex-start}
-  .wbd-orb-1{width:280px;height:280px}
-  .wbd-orb-2{width:200px;height:200px}
-  .wbd-orb-3{display:none}
+  .wbd-inner{padding:36px 28px 40px}
+  .wbd-strip{flex-wrap:wrap;gap:20px}
+  .wbd-label{border-right:none;padding-right:0;width:100%;justify-content:center}
+  .wbd-pills{padding:0;width:100%;justify-content:center;flex-wrap:wrap}
+  .wbd-cta-wrap{border-left:none;padding-left:0;width:100%;justify-content:center;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
+  .wbd-cta-text{display:none}
 }
 @media(max-width:768px){
-  .wbd-inner{padding:72px 20px 80px}
-  .wbd-headline{max-width:100%}
-  .wbd-headline-wrap{margin-bottom:48px}
-  .wbd-cards{grid-template-columns:1fr;gap:16px}
-  .wbd-card{padding:32px 24px;border-radius:18px;flex-direction:column;gap:16px}
-  .wbd-card-icon{width:48px;height:48px;border-radius:14px}
-  .wbd-card-icon svg{width:20px;height:20px}
-  .wbd-card-num{display:none}
-  .wbd-card h3{font-size:17px}
-  .wbd-card p{font-size:13px;line-height:1.6}
-  .wbd-card-stat{margin-top:8px;padding-top:16px}
-  .wbd-card-stat-val{font-size:28px}
-  .wbd-bottom{flex-direction:column;gap:24px;align-items:stretch;margin-top:44px;padding-top:32px}
-  .wbd-cta{justify-content:center;padding:16px 32px}
-  .wbd-grid-pattern{background-size:50px 50px}
-  .wbd-orb-1,.wbd-orb-2,.wbd-orb-3{display:none}
-  .wbd-divider-line{margin-bottom:24px}
+  .wbd-inner{padding:28px 16px 32px}
+  .wbd-strip{gap:16px}
+  .wbd-label span{font-size:17px}
+  .wbd-pills{gap:8px}
+  .wbd-pill{padding:8px 14px 8px 10px}
+  .wbd-pill-icon{width:28px;height:28px}
+  .wbd-pill-icon svg{width:12px;height:12px}
+  .wbd-pill-val{font-size:16px}
+  .wbd-pill-desc{font-size:9px}
+  .wbd-cta{padding:10px 20px;font-size:12px}
 }
 
 /* ── Sections ── */
@@ -1638,62 +1591,39 @@ ul{list-style:none}
 
 <!-- ═══ WHY BOOK DIRECT ═══ -->
 <section class="wbd-section" id="whyBookDirect">
-  <div class="wbd-bg">
-    <div class="wbd-grid-pattern"></div>
-    <div class="wbd-orb wbd-orb-1"></div>
-    <div class="wbd-orb wbd-orb-2"></div>
-    <div class="wbd-orb wbd-orb-3"></div>
-  </div>
   <div class="wbd-inner">
-    <div class="wbd-top-label" data-wbd-reveal>
-      <span>Why Book Direct</span>
-    </div>
-    <div class="wbd-headline-wrap" data-wbd-reveal>
-      <h2 class="wbd-headline">Skip the middleman.<br><em>Keep the savings.</em></h2>
-      <p class="wbd-headline-sub">Booking directly with Regent means better rates, priority support, and a stay curated to perfection&mdash;no platform fees, no compromises.</p>
-    </div>
-    <span class="wbd-divider-line" data-wbd-reveal></span>
-    <div class="wbd-cards">
-      <div class="wbd-card" data-wbd-reveal data-wbd-delay="0">
-        <span class="wbd-card-num">01</span>
-        <div class="wbd-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+    <div class="wbd-strip">
+      <div class="wbd-label">
+        <span class="wbd-label-dot"></span>
+        <span>Book <em>direct</em> &amp; save</span>
+      </div>
+      <div class="wbd-pills">
+        <div class="wbd-pill" data-wbd-reveal data-wbd-delay="0">
+          <div class="wbd-pill-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+          <div class="wbd-pill-text">
+            <div class="wbd-pill-val"><span class="wbd-counter" data-wbd-target="15">15</span>%</div>
+            <div class="wbd-pill-desc">Avg. savings</div>
+          </div>
         </div>
-        <h3>Best Rate Guarantee</h3>
-        <p>Our direct prices are always lower than third-party platforms. No booking fees, no service charges&mdash;just transparent pricing.</p>
-        <div class="wbd-card-stat">
-          <div class="wbd-card-stat-val"><span class="wbd-counter" data-wbd-target="15">15</span>%</div>
-          <div class="wbd-card-stat-label">Average savings vs Airbnb</div>
+        <div class="wbd-pill" data-wbd-reveal data-wbd-delay="120">
+          <div class="wbd-pill-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="wbd-pill-text">
+            <div class="wbd-pill-val">&lt;<span class="wbd-counter" data-wbd-target="1">1</span> hr</div>
+            <div class="wbd-pill-desc">Response time</div>
+          </div>
+        </div>
+        <div class="wbd-pill" data-wbd-reveal data-wbd-delay="240">
+          <div class="wbd-pill-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div class="wbd-pill-text">
+            <div class="wbd-pill-val"><span class="wbd-counter" data-wbd-target="3">3</span>x</div>
+            <div class="wbd-pill-desc">Rewards points</div>
+          </div>
         </div>
       </div>
-      <div class="wbd-card" data-wbd-reveal data-wbd-delay="150">
-        <span class="wbd-card-num">02</span>
-        <div class="wbd-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <h3>Dedicated Concierge</h3>
-        <p>A real person, not a chatbot. Your concierge handles everything from early check-in requests to restaurant reservations.</p>
-        <div class="wbd-card-stat">
-          <div class="wbd-card-stat-val">&lt;<span class="wbd-counter" data-wbd-target="1">1</span> hr</div>
-          <div class="wbd-card-stat-label">Average response time</div>
-        </div>
+      <div class="wbd-cta-wrap">
+        <div class="wbd-cta-text"><strong>Support small business</strong>&mdash;not platform fees</div>
+        <a href="#properties" class="wbd-cta"><span>Browse</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       </div>
-      <div class="wbd-card" data-wbd-reveal data-wbd-delay="300">
-        <span class="wbd-card-num">03</span>
-        <div class="wbd-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        </div>
-        <h3>Exclusive Perks</h3>
-        <p>Earn Regent Rewards points, unlock complimentary upgrades, and get priority booking windows on new properties.</p>
-        <div class="wbd-card-stat">
-          <div class="wbd-card-stat-val"><span class="wbd-counter" data-wbd-target="3">3</span>x</div>
-          <div class="wbd-card-stat-label">Points earned vs platforms</div>
-        </div>
-      </div>
-    </div>
-    <div class="wbd-bottom" data-wbd-reveal>
-      <div class="wbd-bottom-text"><strong>Every booking supports a small business</strong>&mdash;not a Silicon Valley platform taking 20% from hosts and charging guests extra.</div>
-      <a href="#properties" class="wbd-cta"><span>Browse Properties</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
 </section>
@@ -3237,7 +3167,6 @@ function renderPropertyCard(p) {
         <button class="btn-details" onclick="openDetail('${p.slug}')">View Details</button>
         <a href="/property/${p.slug}" class="btn-details" style="text-align:center;text-decoration:none">Full Page</a>
         <button class="btn-map-view" onclick="viewPropertyOnMap('${p.slug}')" title="View on Map"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
-        <a href="https://www.airbnb.com/rooms/${p.hostingId}" target="_blank" rel="noopener" class="btn-airbnb">Airbnb &rarr;</a>
       </div>
     </div>
   </div>`;
@@ -4809,11 +4738,11 @@ function initPremiumReveals() {
   cards.forEach(card => revealObserver.observe(card));
 }
 
-/* ═══ Why Book Direct — Scroll Animations ═══ */
+/* ═══ Why Book Direct — Compact Strip Animations ═══ */
 function initWbdSection() {
   const section = document.getElementById('whyBookDirect');
   if (!section) return;
-  const reveals = section.querySelectorAll('[data-wbd-reveal]');
+  const pills = section.querySelectorAll('[data-wbd-reveal]');
   const revealObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
@@ -4821,8 +4750,8 @@ function initWbdSection() {
       setTimeout(() => entry.target.classList.add('wbd-visible'), delay);
       revealObs.unobserve(entry.target);
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
-  reveals.forEach(el => revealObs.observe(el));
+  }, { threshold: 0.1 });
+  pills.forEach(el => revealObs.observe(el));
 
   const counters = section.querySelectorAll('.wbd-counter');
   if (!counters.length) return;
@@ -4831,22 +4760,16 @@ function initWbdSection() {
     entries.forEach(entry => {
       if (!entry.isIntersecting || counted) return;
       counted = true;
-      /* Animate stat values popping in */
-      const statVals = section.querySelectorAll('.wbd-card-stat-val');
-      statVals.forEach((sv, i) => {
-        setTimeout(() => sv.classList.add('wbd-stat-visible'), i * 200 + 400);
-      });
       counters.forEach((el, i) => {
         const target = parseFloat(el.dataset.wbdTarget);
-        const duration = 2000;
-        const delay = i * 200 + 600;
+        const duration = 1200;
+        const delay = i * 150 + 300;
         el.textContent = '0';
         setTimeout(() => {
           const start = performance.now();
           function tick(now) {
             const elapsed = now - start;
             const progress = Math.min(elapsed / duration, 1);
-            /* Ease-out-expo for a snappy deceleration */
             const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
             el.textContent = Math.round(eased * target);
             if (progress < 1) requestAnimationFrame(tick);
@@ -4856,9 +4779,9 @@ function initWbdSection() {
       });
       counterObs.unobserve(entry.target);
     });
-  }, { threshold: 0.2 });
-  const cardsContainer = section.querySelector('.wbd-cards');
-  if (cardsContainer) counterObs.observe(cardsContainer);
+  }, { threshold: 0.3 });
+  const pillsContainer = section.querySelector('.wbd-pills');
+  if (pillsContainer) counterObs.observe(pillsContainer);
 }
 
 /* ═══ Keyboard ═══ */
