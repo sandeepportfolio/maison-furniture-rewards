@@ -3159,9 +3159,9 @@ function renderDiscountedPrice(basePrice, cssPrefix, lowestPrice) {
   const discounted = Math.round(displayPrice * DIRECT_BOOKING_DISCOUNT);
   const original = Math.round(displayPrice);
   if (cssPrefix === 'map') {
-    return `<span class="prop-price-original">$${original}</span>$${discounted} <span>/ night</span> <span class="prop-price-badge">Save 5%</span>`;
+    return `<span class="prop-price-original">$${original}</span>$${discounted} <span>/ night</span> <span class="prop-price-badge">Save 5%+</span>`;
   }
-  return `<span class="prop-price-original">$${original}</span><span class="prop-price-amount">From $${discounted}</span><span class="prop-price-period"> / night</span><span class="prop-price-badge">Save 5%</span>`;
+  return `<span class="prop-price-original">$${original}</span><span class="prop-price-amount">From $${discounted}</span><span class="prop-price-period"> / night</span><span class="prop-price-badge">Save 5%+</span>`;
 }
 
 /* ═══ Live pricing from Guesty API ═══ */
@@ -4797,6 +4797,10 @@ function requestGeoPosition() {
 function initGeolocation() {
   if (!navigator.geolocation) return;
 
+  // If user previously dismissed the banner, don't prompt again
+  var geoState = getGeoStorage();
+  if (geoState.dismissed) return;
+
   // Check localStorage for cached location
   const cachedLat = parseFloat(localStorage.getItem('regent_geo_lat'));
   const cachedLng = parseFloat(localStorage.getItem('regent_geo_lng'));
@@ -4878,9 +4882,15 @@ function showGeoReEnableBanner() {
   const banner = document.createElement('div');
   banner.id = 'geoReEnableBanner';
   banner.className = 'geo-banner';
-  banner.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Enable location for distance info</span><button onclick="retryGeolocation()">Enable</button><button class="geo-banner-close" onclick="this.parentElement.remove()" aria-label="Close">&times;</button>';
+  banner.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Enable location for distance info</span><button onclick="retryGeolocation()">Enable</button><button class="geo-banner-close" onclick="dismissGeoBanner()" aria-label="Close">&times;</button>';
   document.body.appendChild(banner);
   requestAnimationFrame(() => banner.classList.add('geo-banner-show'));
+}
+
+function dismissGeoBanner() {
+  const banner = document.getElementById('geoReEnableBanner');
+  if (banner) banner.remove();
+  setGeoStorage({ dismissed: true });
 }
 
 function retryGeolocation() {

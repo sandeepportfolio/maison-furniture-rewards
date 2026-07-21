@@ -474,6 +474,18 @@ ul { list-style: none; }
   border-color: var(--accent); color: var(--text);
   background: var(--accent-subtle);
 }
+.amenity-pill.has-photo {
+  cursor: pointer; border-color: var(--accent);
+  background: rgba(199, 107, 66, 0.08);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.amenity-pill.has-photo:hover {
+  background: rgba(199, 107, 66, 0.18); transform: translateY(-1px);
+}
+.amenity-pill .photo-link-icon {
+  flex-shrink: 0; opacity: 0.6; transition: opacity 0.2s;
+}
+.amenity-pill.has-photo:hover .photo-link-icon { opacity: 1; }
 
 /* ── Building Amenities Callout ── */
 .building-amenities-callout {
@@ -560,6 +572,7 @@ ul { list-style: none; }
   text-align: center;
 }
 .booking-inner {
+  display: flex; flex-direction: column; align-items: center;
   background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -583,13 +596,13 @@ ul { list-style: none; }
   margin-bottom: 40px; position: relative;
 }
 .booking-btn {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
   background: var(--accent); color: #fff;
   font-family: var(--sans); font-size: 16px; font-weight: 600;
   padding: 18px 48px; border-radius: 100px;
   letter-spacing: 0.02em;
   transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-  position: relative;
+  position: relative; text-decoration: none;
 }
 .booking-btn:hover {
   background: var(--accent-hover);
@@ -602,7 +615,7 @@ ul { list-style: none; }
 }
 .booking-btn:hover svg { transform: translateX(4px); }
 .booking-badge {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   margin-top: 20px; font-size: 13px; font-weight: 500;
   color: var(--accent); letter-spacing: 0.02em;
   position: relative;
@@ -885,7 +898,7 @@ ul { list-style: none; }
       </a>
       <div class="booking-badge">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Save 5% booking direct
+        Save up to 15% booking direct
       </div>
     </div>
   </div>
@@ -1118,8 +1131,14 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
     html += '<span class="amenity-cat-count">' + items.length + '</span>';
     html += '</div>';
     html += '<div class="amenity-list">';
+    var ap = PROPERTY.amenityPhotos || {};
     for (var j = 0; j < items.length; j++) {
-      html += '<span class="amenity-pill">' + items[j] + '</span>';
+      var hasPhoto = ap.hasOwnProperty(items[j]);
+      if (hasPhoto) {
+        html += '<span class="amenity-pill has-photo" onclick="openLightbox(' + ap[items[j]] + ')" title="Click to see photo">' + items[j] + '<svg class="photo-link-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>';
+      } else {
+        html += '<span class="amenity-pill">' + items[j] + '</span>';
+      }
     }
     html += '</div></div>';
     delay++;
