@@ -3273,16 +3273,35 @@ const GUESTY_MAP = {
 };
 
 // ── Standalone Property Pages ──
-app.get('/property/:slug', (req, res) => {
-  const slug = req.params.slug;
-  const prop = PROPERTY_DATA[slug];
-  if (!prop) {
-    return res.status(404).send(`<!DOCTYPE html>
+
+// Reverse lookup: Guesty listing _id -> local slug (derived from GUESTY_MAP).
+// Lets Google Vacation Rentals / Guesty booking URLs shaped like
+// /properties/<guestyListingId> resolve to the same full-page property view.
+const LISTING_ID_TO_SLUG = Object.fromEntries(
+  Object.entries(GUESTY_MAP).map(([slug, listingId]) => [listingId, slug])
+);
+
+// Accepts a local slug (e.g. "executive") OR a Guesty listing _id
+// (e.g. "6a29dc944052f30019465228") and returns the canonical local slug, or null.
+function resolvePropertySlug(idOrSlug) {
+  if (!idOrSlug) return null;
+  if (Object.prototype.hasOwnProperty.call(PROPERTY_DATA, idOrSlug)) return idOrSlug;
+  if (Object.prototype.hasOwnProperty.call(LISTING_ID_TO_SLUG, idOrSlug)) return LISTING_ID_TO_SLUG[idOrSlug];
+  return null;
+}
+
+const PROPERTY_NOT_FOUND_HTML = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Property Not Found</title>
 <style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;color:#333}
 .box{text-align:center;padding:40px}.box h1{font-size:120px;margin:0;color:#ccc}.box p{font-size:18px;margin:12px 0}
 .box a{color:#b08d57;text-decoration:none;font-weight:600}</style></head>
-<body><div class="box"><h1>404</h1><p>Property not found.</p><p><a href="/">Browse all properties</a></p></div></body></html>`);
+<body><div class="box"><h1>404</h1><p>Property not found.</p><p><a href="/">Browse all properties</a></p></div></body></html>`;
+
+// Renders the standalone full-page property view for a known local slug.
+function renderPropertyPage(slug, res) {
+  const prop = PROPERTY_DATA[slug];
+  if (!prop) {
+    return res.status(404).send(PROPERTY_NOT_FOUND_HTML);
   }
 
   const templatePath = path.join(__dirname, 'public', 'property.html');
@@ -3325,6 +3344,23 @@ app.get('/property/:slug', (req, res) => {
     .replace(/\{\{CATEGORY\}\}/g, prop.category);
 
   res.send(html);
+}
+
+// Canonical, slug-based property URL (unchanged behavior): /property/<slug>
+app.get('/property/:slug', (req, res) => {
+  renderPropertyPage(req.params.slug, res);
+});
+
+// Google Vacation Rentals / Guesty booking URL (plural), keyed by Guesty
+// listing _id. Guesty's metasearch URL template substitutes (PARTNER-HOTEL-ID)
+// with the listing _id, producing /properties/<listingId>. A local slug is also
+// accepted. Serves HTTP 200 with the same full-page view; the page's
+// rel="canonical" still points to /property/<slug>, so there is no duplicate
+// content and existing SEO is unaffected.
+app.get('/properties/:id', (req, res) => {
+  const slug = resolvePropertySlug(req.params.id);
+  if (!slug) return res.status(404).send(PROPERTY_NOT_FOUND_HTML);
+  return renderPropertyPage(slug, res);
 });
 
 // ══════════════════════════════════════════════════════════════════════
