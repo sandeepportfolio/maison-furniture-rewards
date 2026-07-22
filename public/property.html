@@ -1516,5 +1516,64 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
   }
 })();
 </script>
+<script>
+/* ------------------------------------------------------------------------
+   Google Vacation Rentals -> Guesty booking engine: date/guest hand-off.
+   Purely additive and fail-safe. Google Vacation Rentals appends the guest's
+   chosen check-in / check-out / party size to this landing URL (via the Guesty
+   metasearch template). When those params are present we copy them onto the
+   "Book Now" links that open the Guesty booking engine, so the guest keeps
+   their dates. When they are absent, every link is left exactly as it is today.
+   NOTE: engine param names are best-effort (BEAPI-consistent). Adjust
+   ENGINE_PARAMS below if the live engine expects different names.
+   ------------------------------------------------------------------------ */
+(function () {
+  try {
+    var qs = new URLSearchParams(window.location.search);
+    var pick = function (names) {
+      for (var i = 0; i < names.length; i++) {
+        var v = qs.get(names[i]);
+        if (v) return v;
+      }
+      return null;
+    };
+    var rawIn  = pick(['checkIn', 'checkin', 'check_in', 'startDate', 'from']);
+    var rawOut = pick(['checkOut', 'checkout', 'check_out', 'endDate', 'to']);
+    var rawG   = pick(['guests', 'minOccupancy', 'numberOfGuests', 'guestsCount', 'adults']);
+    if (!rawIn && !rawOut && !rawG) return;   // nothing to forward -> unchanged
+
+    var toYMD = function (d) {
+      if (!d) return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+      var dt = new Date(d);
+      if (isNaN(dt.getTime())) return null;
+      var mm = String(dt.getMonth() + 1).padStart(2, '0');
+      var dd = String(dt.getDate()).padStart(2, '0');
+      return dt.getFullYear() + '-' + mm + '-' + dd;
+    };
+    var checkIn  = toYMD(rawIn);
+    var checkOut = toYMD(rawOut);
+    var guests   = rawG ? parseInt(rawG, 10) : null;
+    if (!guests || isNaN(guests) || guests < 1) guests = null;
+
+    // Map canonical values -> the query-param names the Guesty engine reads.
+    var ENGINE_PARAMS = { checkIn: 'checkIn', checkOut: 'checkOut', guests: 'minOccupancy' };
+    var toAppend = {};
+    if (checkIn)  toAppend[ENGINE_PARAMS.checkIn]  = checkIn;
+    if (checkOut) toAppend[ENGINE_PARAMS.checkOut] = checkOut;
+    if (guests)   toAppend[ENGINE_PARAMS.guests]   = String(guests);
+    if (!Object.keys(toAppend).length) return;
+
+    var links = document.querySelectorAll('a[href*="guestybookings.com"]');
+    Array.prototype.forEach.call(links, function (a) {
+      try {
+        var u = new URL(a.href, window.location.origin);
+        Object.keys(toAppend).forEach(function (k) { u.searchParams.set(k, toAppend[k]); });
+        a.href = u.toString();
+      } catch (e) { /* leave this particular link unchanged */ }
+    });
+  } catch (e) { /* never let the hand-off break the page */ }
+})();
+</script>
 </body>
 </html>
