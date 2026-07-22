@@ -175,7 +175,7 @@ ul{list-style:none}
 .prop-card.villa-card{grid-column:1/-1;display:grid;grid-template-columns:55% 1fr}
 .prop-card.villa-card .prop-carousel{aspect-ratio:unset;height:100%;min-height:420px}
 .prop-card.villa-card .prop-info{display:flex;flex-direction:column;justify-content:center;padding:48px 44px}
-.prop-card.villa-card .prop-name{font-size:36px}
+.prop-card.villa-card .prop-name{font-size:clamp(40px,6vw,72px);font-family:var(--serif);font-weight:400;line-height:1.08;white-space:normal}
 .prop-card.villa-card .prop-actions{margin-top:auto;padding-top:8px}
 
 /* ── Property Card (2026 Redesign) ── */
@@ -230,7 +230,7 @@ ul{list-style:none}
 /* Info section */
 .prop-info{padding:24px 24px 22px}
 .prop-header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:4px}
-.prop-name{font-family:var(--sans);font-size:20px;font-weight:600;color:var(--text);line-height:1.25;letter-spacing:-.02em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prop-name{font-family:var(--serif);font-size:clamp(28px,3.5vw,36px);font-weight:400;color:var(--text);line-height:1.15;letter-spacing:-.02em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prop-location{font-family:var(--sans);font-size:12px;font-weight:400;letter-spacing:.01em;color:var(--text-muted);margin-bottom:10px}
 
 /* Spec Pills */
@@ -859,7 +859,7 @@ ul{list-style:none}
   .prop-card.villa-card{display:grid;grid-template-columns:1fr}
   .prop-card.villa-card .prop-carousel{aspect-ratio:16/9;min-height:unset;height:auto}
   .prop-card.villa-card .prop-info{padding:28px}
-  .prop-card.villa-card .prop-name{font-size:26px}
+  .prop-card.villa-card .prop-name{font-size:clamp(32px,8vw,48px)}
   .features-grid{grid-template-columns:repeat(2,1fr)}
   .story-inner{grid-template-columns:1fr;gap:40px;padding:80px 24px}
   .story-visual{order:2}
@@ -1178,7 +1178,7 @@ ul{list-style:none}
   .exp-num{font-size:40px;margin-bottom:16px}
   .exp-desc{display:none}
   .prop-info{padding:20px}
-  .prop-name{font-size:22px}
+  .prop-name{font-size:clamp(24px,4vw,30px)}
   .prop-carousel{aspect-ratio:4/3}
   .prop-specs span{padding:4px 10px;font-size:11px}
   .detail-modal{padding:0}
@@ -1278,7 +1278,7 @@ ul{list-style:none}
   .stat-item{padding:20px 12px}
   .stat-number{font-size:28px}
   .stat-label{font-size:9px;letter-spacing:.06em}
-  .prop-name{font-size:18px}
+  .prop-name{font-size:clamp(20px,5vw,24px)}
   .prop-specs span{font-size:10px;padding:3px 0}
   .prop-actions{flex-wrap:wrap;gap:6px}
   .prop-actions a,.prop-actions button{font-size:12px;padding:9px 14px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}

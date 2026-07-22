@@ -90,11 +90,20 @@ db.exec(`
 // Migration: add subject column if not already present.
 try { db.exec("ALTER TABLE messages ADD COLUMN subject TEXT DEFAULT ''"); } catch (e) { /* column already exists */ }
 
+// ── Truvi plan (staged: full $1M host damage protection, direct-bookings only) ──
+// Program: Truvi "Screening + Protection $0–$1M" preset — verified list price
+// $31.95/booking on truvi.com/platform/pricing (2026-07). Covers from dollar one
+// to $1,000,000 with no self-covered gap. Overridable via env for future re-pricing.
 const TRUVI_PLAN_AMOUNT = (() => {
-  const parsed = Number(process.env.TRUVI_PLAN_AMOUNT || '28.75');
-  return Number.isFinite(parsed) ? parsed : 28.75;
+  const parsed = Number(process.env.TRUVI_PLAN_AMOUNT || '31.95');
+  return Number.isFinite(parsed) ? parsed : 31.95;
 })();
-const TRUVI_PLAN_NAME = process.env.TRUVI_PLAN_NAME || 'Truvi Host Damage Protection';
+const TRUVI_PLAN_NAME = process.env.TRUVI_PLAN_NAME || 'Truvi Host Damage Protection ($1M)';
+const TRUVI_PLAN_COVERAGE_LIMIT = (() => {
+  const parsed = Number(process.env.TRUVI_PLAN_COVERAGE_LIMIT || '1000000');
+  return Number.isFinite(parsed) ? parsed : 1000000;
+})();
+const TRUVI_PLAN_PROGRAM = process.env.TRUVI_PLAN_PROGRAM || 'screening_protection_0_1m';
 const TRUVI_ALLOWED_DOMAINS = ((process.env.TRUVI_ALLOWED_BOOKING_DOMAINS || DEFAULT_ALLOWED_DOMAINS.join(','))
   .split(',')
   .map((d) => d.trim())
@@ -863,6 +872,8 @@ function buildTruviPayloadFromRequest(bookingReq, reservation) {
     },
     planAmount: bookingReq.protection_plan_amount,
     planName: bookingReq.protection_plan_name,
+    coverageLimit: TRUVI_PLAN_COVERAGE_LIMIT,
+    program: TRUVI_PLAN_PROGRAM,
   };
 }
 
@@ -1287,6 +1298,7 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
         enabled: truviDecision.eligible,
         amount: truviDecision.eligible ? TRUVI_PLAN_AMOUNT : null,
         planName: truviDecision.eligible ? TRUVI_PLAN_NAME : null,
+        coverageLimit: truviDecision.eligible ? TRUVI_PLAN_COVERAGE_LIMIT : null,
         reason: truviDecision.reason,
         domain: truviDecision.host,
       },
@@ -1473,6 +1485,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
         enabled: truviDecision.eligible,
         amount: truviDecision.eligible ? TRUVI_PLAN_AMOUNT : null,
         planName: truviDecision.eligible ? TRUVI_PLAN_NAME : null,
+        coverageLimit: truviDecision.eligible ? TRUVI_PLAN_COVERAGE_LIMIT : null,
         reason: truviDecision.reason,
         domain: truviDecision.host,
       },
@@ -2153,6 +2166,7 @@ app.post('/api/admin/custom-invoice', requireAuth, async (req, res) => {
         enabled: truviDecision.eligible,
         amount: truviDecision.eligible ? TRUVI_PLAN_AMOUNT : null,
         planName: truviDecision.eligible ? TRUVI_PLAN_NAME : null,
+        coverageLimit: truviDecision.eligible ? TRUVI_PLAN_COVERAGE_LIMIT : null,
         reason: truviDecision.reason,
         domain: truviDecision.host,
       },
@@ -2905,7 +2919,7 @@ const PROPERTY_DATA = {
     ],
     description: 'Experience millionaire-level luxury in a cinematic loft in downtown Dallas. 1910 industrial charm — exposed brick and soaring 10-foot ceilings — meets bespoke modern design. Free valet parking, resort-style pool, private cinema, 24/7 gym, and a fully stocked kitchen. Steps from the Dallas Farmers Market and Deep Ellum. The premier luxury Airbnb in the Butler Brothers Building.',
     fullAmenities: {Bathroom:['Full bathroom','Hair dryer','Cleaning products','Shampoo','Body soap','Hot water','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Clothing storage','Air mattress'],Entertainment:['Smart TV (living room)','Smart TV (bedroom)','Board games','Premium LED lighting'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Coffee station','Spices','Cookware','Dining table'],Outdoor:['Resort-style courtyard pool','Luxury lounge seating'],'Parking & Facilities':['Free valet parking','Pool','Elevator','24/7 Fitness center','Private cinema & screening room','Karaoke lounge','Game room','Art & music studio','24-hour security'],'Work & Tech':['Dedicated workspace','1GB high-speed internet','USB ports throughout'],Building:['Exposed brick walls','10-foot ceilings','Controlled access','Co-working spaces','Meeting rooms','Entertainment & arcade room'],Location:['Downtown Dallas','Near Farmers Market','Near Deep Ellum','AT&T Discovery District','Butler Brothers Building']},
-    amenityPhotos: {'Smart TV (living room)':5,'Full kitchen':9,'Dishwasher':9,'Coffee station':11,'Microwave':15,'Smart TV (bedroom)':19,'Full-length mirror':25,'Clothing storage':27,'Dedicated workspace':37,'Washer':40,'Dryer':40,'24/7 Fitness center':43,'Pool':44,'Game room':51},
+    amenityPhotos: {'Smart TV (living room)':5,'Full kitchen':9,'Dishwasher':9,'Coffee station':11,'Microwave':15,'Smart TV (bedroom)':19,'Full-length mirror':25,'Clothing storage':27,'Dedicated workspace':37,'Washer':40,'Dryer':40,'24/7 Fitness center':43,'Pool':44,'Game room':51,'Resort-style courtyard pool':44,'Private cinema & screening room':47,'Art & music studio':50,'Entertainment & arcade room':53,'Downtown Dallas':7},
     photos: [
       '8e867888-7159-4313-b7c4-b64ff0fbd07e.png',
       'ffbb21b8-5e89-4658-bcb3-2bc399ee8e8e.png',
