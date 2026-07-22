@@ -22,6 +22,7 @@ const { isDirectRegentBookingCandidate, DEFAULT_ALLOWED_DOMAINS } = require('./g
   } catch (_) { /* ignore */ }
 })();
 
+const jwt = require('jsonwebtoken');
 const guesty = require('./guesty');
 const truvi = require('./guesty-truvi-provider');
 
@@ -3324,6 +3325,758 @@ app.get('/property/:slug', (req, res) => {
     .replace(/\{\{CATEGORY\}\}/g, prop.category);
 
   res.send(html);
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// ── GUEST TRIP PORTAL ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════
+
+const TRIP_JWT_SECRET = process.env.TRIP_JWT_SECRET || crypto.randomBytes(32).toString('hex');
+
+// ── Trip DB tables ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS trip_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reservation_id TEXT NOT NULL,
+    guest_email TEXT NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    expires_at TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS guest_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reservation_id TEXT NOT NULL,
+    guest_email TEXT NOT NULL,
+    guest_name TEXT DEFAULT '',
+    property_name TEXT DEFAULT '',
+    sender TEXT NOT NULL DEFAULT 'guest' CHECK(sender IN ('guest','host')),
+    message TEXT NOT NULL,
+    read INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+// ── Rate limiter (in-memory, per IP) ──
+const tripRateLimits = new Map();
+function checkTripRateLimit(ip, maxPerHour = 5) {
+  const now = Date.now();
+  const key = `trip:${ip}`;
+  const entry = tripRateLimits.get(key) || { attempts: [], blocked: false };
+  // Prune old attempts
+  entry.attempts = entry.attempts.filter(t => now - t < 3600000);
+  if (entry.attempts.length >= maxPerHour) return false;
+  entry.attempts.push(now);
+  tripRateLimits.set(key, entry);
+  return true;
+}
+
+// Clean rate limit map every 30 min
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of tripRateLimits) {
+    v.attempts = v.attempts.filter(t => now - t < 3600000);
+    if (!v.attempts.length) tripRateLimits.delete(k);
+  }
+}, 30 * 60000);
+
+// ── Guesty field whitelist — NEVER expose these fields ──
+const GUESTY_BLOCKED_FIELDS = new Set([
+  'accountId', 'integrationId', 'payoutAccountId',
+  'money.payments', 'money.payoutAccountId', 'money.hostPayoutAmount',
+  'guest.paymentMethods', 'guest.creditCards',
+  'internalNotes', 'privateNotes', 'notes',
+]);
+
+function sanitizeReservationData(res) {
+  if (!res) return null;
+  const safe = { ...res };
+  for (const field of GUESTY_BLOCKED_FIELDS) {
+    const parts = field.split('.');
+    let obj = safe;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (obj && typeof obj === 'object') obj = obj[parts[i]];
+      else break;
+    }
+    if (obj && typeof obj === 'object') delete obj[parts[parts.length - 1]];
+  }
+  // Remove payment methods from guest object
+  if (safe.guest) {
+    delete safe.guest.paymentMethods;
+    delete safe.guest.creditCards;
+  }
+  return safe;
+}
+
+// ── Trip auth middleware ──
+function requireTripAuth(req, res, next) {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies.trip_session;
+  if (!token) return res.status(401).json({ error: 'Not authenticated' });
+
+  try {
+    const payload = jwt.verify(token, TRIP_JWT_SECRET);
+    req.tripReservationId = payload.reservationId;
+    req.tripGuestEmail = payload.email;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Session expired or invalid' });
+  }
+}
+
+// ── Serve trip page ──
+app.get('/trip', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'trip.html'));
+});
+
+// ── Trip lookup: verify confirmation code + email ──
+app.post('/api/trip/lookup', async (req, res) => {
+  try {
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    if (!checkTripRateLimit(ip)) {
+      return res.status(429).json({ error: 'Too many attempts. Please try again in an hour.' });
+    }
+
+    const { confirmationCode, email } = req.body || {};
+    if (!confirmationCode || !email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Confirmation code and email are required' });
+    }
+
+    const code = confirmationCode.trim();
+    const guestEmail = email.trim().toLowerCase();
+
+    // Search Guesty for reservation by confirmation code
+    const filters = JSON.stringify([
+      { operator: '$eq', field: 'confirmationCode', value: code }
+    ]);
+    const params = new URLSearchParams({
+      filters,
+      fields: '_id confirmationCode status guest.firstName guest.lastName guest.email guest.phone checkInDateLocalized checkOutDateLocalized listing._id listing.title guestsCount nightsCount money.totalPaid money.balanceDue money.fareAccommodation money.currency money.invoiceItems money.totalTaxes source',
+      limit: '5',
+    });
+
+    let reservations;
+    try {
+      const result = await guesty.getReservationById ? null : null;
+      // Use raw guestyFetch via the module's getReservations
+      const searchResult = await guesty.getReservations({ limit: 5 });
+      // Actually, we need to use the filter approach. Let's call guestyFetch directly.
+      // Since guesty module doesn't expose a filter-by-confirmationCode method,
+      // we'll need to use the guestyFetch through the module.
+      reservations = null;
+    } catch (_) {
+      reservations = null;
+    }
+
+    // Use guestyFetch via a dedicated lookup — we need to search by confirmation code
+    // The guesty module exports getReservations but doesn't support confirmationCode filter directly.
+    // We'll call it via the existing token/fetch infrastructure.
+    const token = await (async () => {
+      // Get a valid token via the guesty module's internal getToken
+      // Since it's not exported, we use the reservation search approach
+      return null;
+    })();
+
+    // Actually let's just use the guestyFetch approach by looking up via getReservations
+    // with the confirmation code. The Guesty API supports filters on confirmationCode.
+    let reservation = null;
+    try {
+      // Build the URL with confirmation code filter
+      const filterParam = encodeURIComponent(JSON.stringify([
+        { operator: '$eq', field: 'confirmationCode', value: code }
+      ]));
+      const fieldsParam = encodeURIComponent([
+        '_id', 'confirmationCode', 'status',
+        'checkInDateLocalized', 'checkOutDateLocalized',
+        'nightsCount', 'guestsCount',
+        'listing._id', 'listing.title', 'listing.nickname',
+        'guest.firstName', 'guest.lastName', 'guest.email', 'guest.phone',
+        'money.totalPaid', 'money.balanceDue', 'money.fareAccommodation',
+        'money.currency', 'money.invoiceItems', 'money.totalTaxes',
+      ].join(' '));
+
+      // We need to use the guesty module's internal fetch. Since it's not exported,
+      // let's add a thin wrapper. For now, use getReservationById won't work for search.
+      // Let's use the HTTP approach directly with the cached token.
+      const https = require('https');
+      const guestyToken = await getGuestyTokenForTrip();
+      if (!guestyToken) {
+        return res.status(502).json({ error: 'Could not connect to booking system' });
+      }
+
+      const searchUrl = `https://open-api.guesty.com/v1/reservations?filters=${filterParam}&fields=${fieldsParam}&limit=5`;
+      const searchResult = await fetchJson(searchUrl, { headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' } });
+
+      const results = searchResult.results || [];
+      // Find matching reservation where guest email matches
+      for (const r of results) {
+        const gEmail = (r.guest?.email || '').toLowerCase();
+        if (gEmail === guestEmail) {
+          reservation = r;
+          break;
+        }
+      }
+
+      if (!reservation && results.length > 0) {
+        // Guest email didn't match on the reservation's guest record.
+        // Check if any of the results have the guest email as a secondary contact.
+        return res.status(401).json({ error: 'The email does not match our records for this confirmation code.' });
+      }
+    } catch (err) {
+      console.error('Trip lookup Guesty error:', err.message);
+      return res.status(502).json({ error: 'Could not verify your reservation. Please try again.' });
+    }
+
+    if (!reservation) {
+      return res.status(404).json({ error: 'No reservation found with that confirmation code and email.' });
+    }
+
+    // Check reservation status
+    const status = (reservation.status || '').toLowerCase();
+    if (status === 'canceled' || status === 'cancelled') {
+      return res.status(410).json({ error: 'This reservation has been cancelled.' });
+    }
+
+    // Generate JWT magic link token
+    const checkOut = reservation.checkOutDateLocalized || '';
+    const coDate = checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 30 * 86400000);
+    const expiresAt = new Date(coDate.getTime() + 7 * 86400000); // checkout + 7 days
+
+    const jwtToken = jwt.sign(
+      {
+        reservationId: reservation._id,
+        email: guestEmail,
+        confirmationCode: code,
+      },
+      TRIP_JWT_SECRET,
+      { expiresIn: Math.floor((expiresAt.getTime() - Date.now()) / 1000) }
+    );
+
+    // Return the magic link (display it for now — email integration later)
+    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+    const magicLink = `${baseUrl}/trip?token=${jwtToken}`;
+
+    res.json({
+      success: true,
+      magicLink,
+      guestName: `${reservation.guest?.firstName || ''} ${reservation.guest?.lastName || ''}`.trim(),
+      propertyName: reservation.listing?.title || reservation.listing?.nickname || '',
+      checkIn: reservation.checkInDateLocalized,
+      checkOut: reservation.checkOutDateLocalized,
+    });
+  } catch (err) {
+    console.error('Trip lookup error:', err.message);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// Helper: get Guesty token for trip portal
+async function getGuestyTokenForTrip() {
+  try {
+    // Use guesty module's token mechanism by making a lightweight call
+    // Actually, we need to get the token directly. Let's read the cached token file.
+    const tokenFile = path.join(__dirname, 'db', 'guesty-token.json');
+    if (fs.existsSync(tokenFile)) {
+      const data = JSON.parse(fs.readFileSync(tokenFile, 'utf8'));
+      if (data.token && data.expiry && Date.now() < data.expiry - 60000) {
+        return data.token;
+      }
+    }
+    // Fallback: try env var
+    if (process.env.GUESTY_ACCESS_TOKEN) {
+      const expiry = Number(process.env.GUESTY_ACCESS_TOKEN_EXPIRES_AT || 0);
+      if (!expiry || Date.now() < expiry - 60000) return process.env.GUESTY_ACCESS_TOKEN;
+    }
+    // Last resort: request new token
+    const id = process.env.GUESTY_CLIENT_ID;
+    const secret = process.env.GUESTY_CLIENT_SECRET;
+    if (!id || !secret) return null;
+
+    const resp = await fetch('https://open-api.guesty.com/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+      body: new URLSearchParams({ grant_type: 'client_credentials', scope: 'open-api', client_id: id, client_secret: secret }),
+    });
+    if (!resp.ok) return null;
+    const json = await resp.json();
+    // Persist
+    try {
+      fs.writeFileSync(tokenFile, JSON.stringify({ token: json.access_token, expiry: Date.now() + (json.expires_in || 86400) * 1000 }), { mode: 0o600 });
+    } catch (_) {}
+    return json.access_token;
+  } catch (err) {
+    console.error('getGuestyTokenForTrip error:', err.message);
+    return null;
+  }
+}
+
+// Helper: fetch JSON
+async function fetchJson(url, opts = {}) {
+  const resp = await fetch(url, opts);
+  const text = await resp.text();
+  if (!resp.ok) {
+    const err = new Error(`HTTP ${resp.status}`);
+    err.status = resp.status;
+    try { err.body = JSON.parse(text); } catch (_) { err.body = { raw: text }; }
+    throw err;
+  }
+  return text ? JSON.parse(text) : {};
+}
+
+// ── Trip verify token (set session cookie) ──
+app.post('/api/trip/verify', (req, res) => {
+  const { token: magicToken } = req.body || {};
+  if (!magicToken) return res.status(400).json({ error: 'Token required' });
+
+  try {
+    const payload = jwt.verify(magicToken, TRIP_JWT_SECRET);
+
+    // Set session cookie (24h, httpOnly)
+    const cookieOpts = [
+      `trip_session=${magicToken}`,
+      'Path=/',
+      'HttpOnly',
+      'SameSite=Lax',
+      `Max-Age=${24 * 3600}`,
+    ];
+    if (process.env.RENDER_EXTERNAL_URL) cookieOpts.push('Secure');
+
+    res.setHeader('Set-Cookie', cookieOpts.join('; '));
+    res.json({
+      success: true,
+      reservationId: payload.reservationId,
+      email: payload.email,
+    });
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired link. Please request a new one.' });
+  }
+});
+
+// ── Trip auth check ──
+app.get('/api/trip/auth-check', (req, res) => {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies.trip_session;
+  if (!token) return res.json({ authenticated: false });
+  try {
+    const payload = jwt.verify(token, TRIP_JWT_SECRET);
+    res.json({ authenticated: true, reservationId: payload.reservationId });
+  } catch (_) {
+    res.json({ authenticated: false });
+  }
+});
+
+// ── Trip data endpoint — returns all reservation + listing data ──
+app.get('/api/trip/data', requireTripAuth, async (req, res) => {
+  try {
+    const reservationId = req.tripReservationId;
+
+    // Fetch full reservation
+    let reservation;
+    try {
+      reservation = await guesty.getReservationById(reservationId);
+    } catch (err) {
+      console.error('Trip data - reservation fetch error:', err.message);
+      return res.status(502).json({ error: 'Could not load reservation data' });
+    }
+
+    if (!reservation) {
+      return res.status(404).json({ error: 'Reservation not found' });
+    }
+
+    // Fetch listing details
+    const listingId = reservation.listing?._id || reservation.listingId;
+    let listing = null;
+    if (listingId) {
+      try {
+        const guestyToken = await getGuestyTokenForTrip();
+        if (guestyToken) {
+          listing = await fetchJson(`https://open-api.guesty.com/v1/listings/${encodeURIComponent(listingId)}`, {
+            headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' },
+          });
+        }
+      } catch (err) {
+        console.error('Trip data - listing fetch error:', err.message);
+      }
+    }
+
+    // Determine check-in time and whether we should reveal door codes
+    const now = new Date();
+    const checkInDate = reservation.checkInDateLocalized || '';
+    const checkInTime = listing?.defaultCheckInTime || reservation.listing?.defaultCheckInTime || '16:00';
+    const checkInDateTime = checkInDate ? new Date(`${checkInDate}T${checkInTime}:00`) : null;
+    const isAfterCheckIn = checkInDateTime ? now >= checkInDateTime : false;
+
+    // Build safe response
+    const safeReservation = sanitizeReservationData(reservation);
+
+    // Extract listing details
+    const listingData = listing ? {
+      title: listing.title || '',
+      nickname: listing.nickname || '',
+      description: listing.publicDescription?.summary || listing.publicDescription?.space || '',
+      houseRules: listing.publicDescription?.houseRules || '',
+      interactionWithGuests: listing.publicDescription?.interactionWithGuests || '',
+      neighborhood: listing.publicDescription?.neighborhoodOverview || '',
+      transit: listing.publicDescription?.transit || '',
+      access: listing.publicDescription?.access || '',
+      notes: listing.publicDescription?.notes || '',
+      address: {
+        full: listing.address?.full || '',
+        street: listing.address?.street || '',
+        city: listing.address?.city || '',
+        state: listing.address?.state || '',
+        zipcode: listing.address?.zipcode || '',
+        country: listing.address?.country || '',
+        lat: listing.address?.lat || null,
+        lng: listing.address?.lng || null,
+      },
+      checkInTime: listing.defaultCheckInTime || '16:00',
+      checkOutTime: listing.defaultCheckOutTime || '11:00',
+      amenities: listing.amenities || [],
+      accommodates: listing.accommodates || 0,
+      bedrooms: listing.bedrooms || 0,
+      bathrooms: listing.bathrooms || 0,
+      beds: listing.beds || 0,
+      photos: (listing.pictures || []).slice(0, 20).map(p => ({
+        url: p.original || p.large || p.regular || p.thumbnail || '',
+        caption: p.caption || '',
+      })),
+      // WiFi — from customFields or listing fields
+      wifiName: extractCustomField(listing, 'wifiName') || extractCustomField(listing, 'wifi_name') || extractCustomField(listing, 'wifiNetwork') || '',
+      wifiPassword: extractCustomField(listing, 'wifiPassword') || extractCustomField(listing, 'wifi_password') || extractCustomField(listing, 'wifiPass') || '',
+      // Parking info
+      parkingInfo: extractCustomField(listing, 'parkingInfo') || extractCustomField(listing, 'parking') || '',
+      // Trash schedule
+      trashSchedule: extractCustomField(listing, 'trashSchedule') || extractCustomField(listing, 'trash') || '',
+    } : null;
+
+    // Door codes / check-in instructions — ONLY after check-in time
+    let accessInfo = null;
+    if (isAfterCheckIn) {
+      accessInfo = {
+        doorCode: extractCustomField(listing, 'doorCode') || extractCustomField(listing, 'lockCode') || extractCustomField(listing, 'door_code') || extractCustomField(listing, 'accessCode') || extractCustomField(listing, 'keypadCode') || '',
+        lockboxCode: extractCustomField(listing, 'lockboxCode') || extractCustomField(listing, 'lockbox_code') || extractCustomField(listing, 'lockBox') || '',
+        checkInInstructions: listing?.publicDescription?.access || extractCustomField(listing, 'checkInInstructions') || extractCustomField(listing, 'checkinInstructions') || '',
+      };
+    }
+
+    // Get thread messages
+    const messages = db.prepare(`
+      SELECT id, sender, message, created_at FROM guest_messages
+      WHERE reservation_id = ? ORDER BY created_at ASC
+    `).all(reservationId);
+
+    // Find the property slug for photo CDN
+    let propertySlug = null;
+    let propertyStaticData = null;
+    if (listingId) {
+      for (const [slug, meta] of Object.entries(guesty.LISTINGS)) {
+        if (meta.id === listingId) {
+          propertySlug = slug;
+          propertyStaticData = PROPERTY_DATA[slug] || null;
+          break;
+        }
+      }
+    }
+
+    res.json({
+      reservation: {
+        id: safeReservation._id,
+        confirmationCode: safeReservation.confirmationCode || '',
+        status: safeReservation.status || '',
+        checkIn: safeReservation.checkInDateLocalized || '',
+        checkOut: safeReservation.checkOutDateLocalized || '',
+        nights: safeReservation.nightsCount || 0,
+        guests: safeReservation.guestsCount || 0,
+        guest: {
+          firstName: safeReservation.guest?.firstName || '',
+          lastName: safeReservation.guest?.lastName || '',
+          email: safeReservation.guest?.email || '',
+          phone: safeReservation.guest?.phone || '',
+        },
+        money: {
+          totalPaid: safeReservation.money?.totalPaid || 0,
+          balanceDue: safeReservation.money?.balanceDue || 0,
+          fareAccommodation: safeReservation.money?.fareAccommodation || 0,
+          currency: safeReservation.money?.currency || 'USD',
+          invoiceItems: (safeReservation.money?.invoiceItems || []).map(i => ({
+            title: i.title || '',
+            amount: i.amount || 0,
+            currency: i.currency || 'USD',
+          })),
+          totalTaxes: safeReservation.money?.totalTaxes || 0,
+        },
+      },
+      listing: listingData,
+      accessInfo,
+      isAfterCheckIn,
+      checkInDateTime: checkInDateTime ? checkInDateTime.toISOString() : null,
+      messages,
+      propertySlug,
+      propertyPhotos: propertyStaticData ? propertyStaticData.photos.slice(0, 5) : [],
+      propertyHostingId: propertyStaticData ? propertyStaticData.hostingId : null,
+    });
+  } catch (err) {
+    console.error('Trip data error:', err.message);
+    res.status(500).json({ error: 'Could not load trip data' });
+  }
+});
+
+// Helper to extract custom fields from Guesty listing
+function extractCustomField(listing, fieldName) {
+  if (!listing) return '';
+  // Check customFields array
+  if (Array.isArray(listing.customFields)) {
+    for (const cf of listing.customFields) {
+      if (cf.fieldId === fieldName || cf.key === fieldName || cf.name === fieldName) {
+        return cf.value || '';
+      }
+    }
+  }
+  // Check top-level
+  if (listing[fieldName]) return listing[fieldName];
+  // Check nested publicDescription
+  if (listing.publicDescription?.[fieldName]) return listing.publicDescription[fieldName];
+  return '';
+}
+
+// ── Guest send message ──
+app.post('/api/trip/messages', requireTripAuth, (req, res) => {
+  try {
+    const { message } = req.body || {};
+    if (!message || !message.trim()) return res.status(400).json({ error: 'Message is required' });
+
+    const reservationId = req.tripReservationId;
+    const guestEmail = req.tripGuestEmail;
+
+    // Get guest name from a recent message or reservation lookup
+    const existing = db.prepare('SELECT guest_name, property_name FROM guest_messages WHERE reservation_id = ? LIMIT 1').get(reservationId);
+
+    const stmt = db.prepare(`
+      INSERT INTO guest_messages (reservation_id, guest_email, guest_name, property_name, sender, message)
+      VALUES (?, ?, ?, ?, 'guest', ?)
+    `);
+    const r = stmt.run(
+      reservationId,
+      guestEmail,
+      existing?.guest_name || '',
+      existing?.property_name || '',
+      message.trim()
+    );
+
+    // Fire-and-forget: send email notification
+    sendGuestMessageEmail({
+      guestEmail,
+      guestName: existing?.guest_name || 'Guest',
+      propertyName: existing?.property_name || '',
+      message: message.trim(),
+      reservationId,
+    });
+
+    res.json({ success: true, id: r.lastInsertRowid });
+  } catch (err) {
+    console.error('Guest message error:', err.message);
+    res.status(500).json({ error: 'Could not send message' });
+  }
+});
+
+// ── Get messages for current trip ──
+app.get('/api/trip/messages', requireTripAuth, (req, res) => {
+  try {
+    const messages = db.prepare(`
+      SELECT id, sender, message, created_at FROM guest_messages
+      WHERE reservation_id = ? ORDER BY created_at ASC
+    `).all(req.tripReservationId);
+
+    // Mark guest's messages as read
+    db.prepare("UPDATE guest_messages SET read = 1 WHERE reservation_id = ? AND sender = 'host'").run(req.tripReservationId);
+
+    res.json({ messages });
+  } catch (err) {
+    console.error('Trip messages error:', err.message);
+    res.status(500).json({ error: 'Could not load messages' });
+  }
+});
+
+// ── Update guest name/property for messages (called on first load) ──
+app.post('/api/trip/messages/context', requireTripAuth, (req, res) => {
+  try {
+    const { guestName, propertyName } = req.body || {};
+    const reservationId = req.tripReservationId;
+    // Update all messages for this reservation that lack names
+    if (guestName) {
+      db.prepare("UPDATE guest_messages SET guest_name = ? WHERE reservation_id = ? AND guest_name = ''").run(guestName, reservationId);
+    }
+    if (propertyName) {
+      db.prepare("UPDATE guest_messages SET property_name = ? WHERE reservation_id = ? AND property_name = ''").run(propertyName, reservationId);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.json({ success: true }); // Non-critical
+  }
+});
+
+// Send guest message email notification
+function sendGuestMessageEmail({ guestEmail, guestName, propertyName, message, reservationId }) {
+  return new Promise((resolve) => {
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) return resolve({ skipped: true });
+
+    const timestamp = new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short', timeZone: 'America/Chicago' });
+    const htmlBody = `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;">
+        <div style="background:#0d0d0d;padding:20px 24px;border-radius:8px 8px 0 0;">
+          <h2 style="margin:0;color:#C76B42;font-size:20px;">New Guest Message</h2>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;width:100px;">Guest:</td><td style="padding:8px 0;">${guestName} (${guestEmail})</td></tr>
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;">Property:</td><td style="padding:8px 0;">${propertyName}</td></tr>
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;">Message:</td><td style="padding:8px 0;white-space:pre-wrap;">${message}</td></tr>
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;">Sent:</td><td style="padding:8px 0;">${timestamp}</td></tr>
+          </table>
+          <div style="margin-top:20px;padding:16px;background:#FFF8F0;border-radius:8px;border-left:4px solid #C76B42;">
+            <p style="margin:0;font-size:13px;color:#666;">Reply via the <a href="https://www.bookwithregent.com/admin" style="color:#C76B42;font-weight:bold;">Admin Dashboard</a> → Guest Messages</p>
+          </div>
+        </div>
+      </div>`.trim();
+
+    const payload = JSON.stringify({
+      access_key: accessKey,
+      subject: `Guest Message from ${guestName} — ${propertyName}`,
+      from_name: 'Regent Guest Portal',
+      email: guestEmail,
+      cc: 'jatinshekara@gmail.com, sparx.sandeep@gmail.com',
+      message: htmlBody,
+    });
+
+    const https = require('https');
+    const req = https.request({
+      hostname: 'api.web3forms.com', path: '/submit', method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) },
+    }, (resp) => {
+      let body = '';
+      resp.on('data', c => body += c);
+      resp.on('end', () => resolve({ sent: true }));
+    });
+    req.on('error', () => resolve({ error: true }));
+    req.write(payload);
+    req.end();
+  });
+}
+
+// ── Admin: Guest Messages ──
+app.get('/api/admin/guest-messages', requireAuth, (req, res) => {
+  try {
+    const { reservation_id } = req.query;
+    if (reservation_id) {
+      const messages = db.prepare('SELECT * FROM guest_messages WHERE reservation_id = ? ORDER BY created_at ASC').all(reservation_id);
+      return res.json({ messages });
+    }
+    // Get all threads (grouped by reservation_id)
+    const threads = db.prepare(`
+      SELECT reservation_id, guest_email, guest_name, property_name,
+             MAX(created_at) as last_message_at,
+             COUNT(*) as message_count,
+             SUM(CASE WHEN sender='guest' AND read=0 THEN 1 ELSE 0 END) as unread_count
+      FROM guest_messages
+      GROUP BY reservation_id
+      ORDER BY last_message_at DESC
+    `).all();
+    res.json({ threads });
+  } catch (err) {
+    console.error('Admin guest messages error:', err.message);
+    res.status(500).json({ error: 'Failed to load guest messages' });
+  }
+});
+
+// Admin: reply to guest
+app.post('/api/admin/guest-messages/reply', requireAuth, (req, res) => {
+  try {
+    const { reservation_id, message } = req.body || {};
+    if (!reservation_id || !message?.trim()) {
+      return res.status(400).json({ error: 'Reservation ID and message are required' });
+    }
+
+    // Get guest info from existing messages
+    const existing = db.prepare('SELECT guest_email, guest_name, property_name FROM guest_messages WHERE reservation_id = ? LIMIT 1').get(reservation_id);
+    if (!existing) return res.status(404).json({ error: 'No conversation found for this reservation' });
+
+    const stmt = db.prepare(`
+      INSERT INTO guest_messages (reservation_id, guest_email, guest_name, property_name, sender, message)
+      VALUES (?, ?, ?, ?, 'host', ?)
+    `);
+    const r = stmt.run(reservation_id, existing.guest_email, existing.guest_name, existing.property_name, message.trim());
+
+    // Mark all guest messages as read
+    db.prepare("UPDATE guest_messages SET read = 1 WHERE reservation_id = ? AND sender = 'guest'").run(reservation_id);
+
+    // Send email to guest
+    sendHostReplyEmail({
+      guestEmail: existing.guest_email,
+      guestName: existing.guest_name,
+      propertyName: existing.property_name,
+      message: message.trim(),
+    });
+
+    res.json({ success: true, id: r.lastInsertRowid });
+  } catch (err) {
+    console.error('Admin reply error:', err.message);
+    res.status(500).json({ error: 'Failed to send reply' });
+  }
+});
+
+// Send host reply email to guest
+function sendHostReplyEmail({ guestEmail, guestName, propertyName, message }) {
+  return new Promise((resolve) => {
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) return resolve({ skipped: true });
+
+    const htmlBody = `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;">
+        <div style="background:#0d0d0d;padding:20px 24px;border-radius:8px 8px 0 0;">
+          <h2 style="margin:0;color:#C76B42;font-size:18px;">Message from Your Host — ${propertyName}</h2>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+          <p style="margin:0 0 8px;color:#888;font-size:13px;">Hi ${guestName || 'there'},</p>
+          <div style="padding:16px;background:#f9f9f9;border-radius:8px;white-space:pre-wrap;font-size:15px;line-height:1.6;">${message}</div>
+          <div style="margin-top:20px;padding:16px;background:#FFF8F0;border-radius:8px;border-left:4px solid #C76B42;">
+            <p style="margin:0;font-size:13px;color:#666;">View your trip details and reply at your <a href="https://www.bookwithregent.com/trip" style="color:#C76B42;font-weight:bold;">Guest Portal</a></p>
+          </div>
+          <div style="text-align:center;padding:16px 0;color:#999;font-size:12px;">Regent Capital Ventures LLC</div>
+        </div>
+      </div>`.trim();
+
+    const payload = JSON.stringify({
+      access_key: accessKey,
+      subject: `Message from your host — ${propertyName}`,
+      from_name: 'Regent Hospitality',
+      email: guestEmail,
+      replyto: 'jatinshekara@gmail.com',
+      message: htmlBody,
+    });
+
+    const https = require('https');
+    const req = https.request({
+      hostname: 'api.web3forms.com', path: '/submit', method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) },
+    }, (resp) => {
+      let body = '';
+      resp.on('data', c => body += c);
+      resp.on('end', () => resolve({ sent: true }));
+    });
+    req.on('error', () => resolve({ error: true }));
+    req.write(payload);
+    req.end();
+  });
+}
+
+// ── Trip logout ──
+app.post('/api/trip/logout', (req, res) => {
+  res.setHeader('Set-Cookie', 'trip_session=; Path=/; HttpOnly; Max-Age=0');
+  res.json({ success: true });
 });
 
 app.listen(PORT, '0.0.0.0', () => {

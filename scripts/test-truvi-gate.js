@@ -52,4 +52,76 @@ testCase('Deny: platform blocked even with allowed source', {
   websiteUrl: 'https://bookwithregent.com/checkout',
 }, false);
 
+// ── Explicit OTA/channel deny cases (Sandeep's hard rule: direct-only) ──
+testCase('Deny: Vrbo source', {
+  source: 'Vrbo',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: Booking.com source', {
+  source: 'Booking.com',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: Blueground source', {
+  source: 'Blueground',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: Expedia source', {
+  source: 'Expedia',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: HomeAway source', {
+  source: 'HomeAway',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: manual reservation', {
+  source: 'manual',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: imported reservation', {
+  source: 'imported',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: empty/unknown source (fail closed)', {
+  source: '',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Deny: allowed source but platform=blueground', {
+  source: 'Guesty Booking Engine',
+  platform: 'blueground',
+  websiteUrl: 'https://bookwithregent.com/checkout',
+}, false);
+
+testCase('Allow: Guesty Booking Engine on bookwithregent (regent.guestybookings.com)', {
+  source: 'Guesty Booking Engine',
+  websiteUrl: 'https://regent.guestybookings.com/checkout',
+  platform: 'Direct',
+}, true);
+
+// ── Reason-code assertions (not just eligibility booleans) ──
+const airbnb = isDirectRegentBookingCandidate({
+  source: 'Airbnb', websiteUrl: 'https://bookwithregent.com/checkout',
+  allowedDomains: ['bookwithregent.com', 'regent.guestybookings.com', 'regent.guestbookings.com'],
+});
+assert.ok(/^source_blocked:/.test(airbnb.reason), `Airbnb reason should be source_blocked, got ${airbnb.reason}`);
+
+const wrongDomain = isDirectRegentBookingCandidate({
+  source: 'Guesty Booking Engine', websiteUrl: 'https://evil.example.com/checkout',
+  allowedDomains: ['bookwithregent.com', 'regent.guestybookings.com', 'regent.guestbookings.com'],
+});
+assert.ok(/^website_domain_not_allowed:/.test(wrongDomain.reason), `Wrong-domain reason should be website_domain_not_allowed, got ${wrongDomain.reason}`);
+
+const ok = isDirectRegentBookingCandidate({
+  source: 'Guesty Booking Engine', websiteUrl: 'https://bookwithregent.com/checkout',
+  allowedDomains: ['bookwithregent.com', 'regent.guestybookings.com', 'regent.guestbookings.com'],
+});
+assert.strictEqual(ok.reason, 'eligible_direct_regent_booking', `Allowed reason mismatch: ${ok.reason}`);
+
 console.log('OK: Truvi gating contract tests passed');

@@ -2,12 +2,21 @@
 
 ## Decision (ready state)
 - Provider selected for this cycle: **Truvi**
-  - Selected plan: **$28.75 / booking**
+  - Selected plan: **Screening + Protection $0–$1M** preset
+  - Price: **$31.95 / booking** (verified list price at truvi.com/platform/pricing, 2026-07)
+  - Coverage: **from $0 up to $1,000,000** per booking — full coverage, no self-covered gap
   - Host-facing damage-protection intent tracked in app layer with source/domain gate.
 
 ## Source of plan terms
-- Plan label is configured via `TRUVI_PLAN_NAME` and not yet tied here to an official public source document.
-- **No official claim is made that this plan equals any specific payout threshold or insurer category;** thresholds/certifications should be confirmed in Truvi/guesty product docs before exposure to guests.
+- Plan label/price/coverage configured via `TRUVI_PLAN_NAME`, `TRUVI_PLAN_AMOUNT`,
+  `TRUVI_PLAN_COVERAGE_LIMIT`, `TRUVI_PLAN_PROGRAM`.
+- Price + coverage tier cross-checked live on Truvi's public pricing estimator
+  (2026-07): `$0-$1M` protection product = **$31.95/booking**. The alternative
+  `$500-$1M` preset ($18.40) was rejected because it leaves the first $500
+  self-covered (requires a deposit/waiver), i.e. not "full" coverage.
+- **No official claim is made that this plan equals any specific insurer category;**
+  Truvi is "not insurance but insurance-backed." Confirm exact terms in the Truvi
+  contract before guest exposure.
 
 ## Why this is the right fit
 - Covers host-facing damage and incident workflow.
@@ -42,7 +51,18 @@ Your requirement is stricter than the native Truvi + Guesty integration filters 
 - API responses now include `truviProtection` metadata so host-visible debug is immediate.
 
 ## Implementation state right now
-- **Backend logic for strict gate + plan selection is implemented and persisted.**
-- Next step is activation in Guesty UI (if not already active) and validation of a real `source` payload from:
-  1) your bookwithregent.com checkout flow and
-  2) your prebuilt Guesty Booking Engine flow.
+- **Backend logic for strict gate + $1M plan selection is implemented and persisted.**
+- Plan staged at **$0–$1M / $31.95 per booking** (`TRUVI_PLAN_*` in server.js + .env.example).
+- `TRUVI_ENABLED=false` in .env.example until a real Truvi account + API key exist,
+  so the lifecycle worker will not attempt live enrollment against a non-existent provider.
+- Direct-only enforcement proven by `scripts/verify-truvi-direct-only.js` (full
+  source×domain matrix) and `scripts/test-truvi-gate.js` (contract cases).
+
+## Remaining external blockers to go fully live
+1. **Truvi account** — sign up, accept terms, set up billing (financial commitment).
+2. **Truvi API key** — issued after account setup; set `TRUVI_API_KEY` + `TRUVI_ENABLED=true`.
+3. **Guesty ↔ Truvi console connection** — Integrations → connect Truvi, generate the
+   integration token, and set native "Exclude Airbnb/Vrbo" as defense-in-depth
+   (the app-layer gate is the authoritative direct-only control).
+4. Requires an authenticated `app.guesty.com` console session (Open API token is
+   insufficient for installing a marketplace add-on).

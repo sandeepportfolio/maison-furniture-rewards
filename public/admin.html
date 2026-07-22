@@ -514,6 +514,11 @@ textarea{resize:vertical}
         Messages
         <span class="nav-badge" id="navMsgBadge" style="display:none">0</span>
       </a>
+      <a href="#" class="nav-link" data-section="guest-messages">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Guest Messages
+        <span class="nav-badge" id="navGuestMsgBadge" style="display:none">0</span>
+      </a>
       <a href="#" class="nav-link" data-section="reviews">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         Reviews &amp; Gift Cards
@@ -828,6 +833,20 @@ textarea{resize:vertical}
               <tr><td colspan="6" style="text-align:center;padding:1.5rem;color:var(--text-3)">Loading invoices...</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ GUEST MESSAGES ═══ -->
+    <div class="section" id="sec-guest-messages">
+      <div id="guestMsgThreads"></div>
+      <div id="guestMsgThread" style="display:none">
+        <button class="btn btn-secondary" onclick="backToGuestThreads()" style="margin-bottom:1rem">&larr; All Conversations</button>
+        <div id="guestMsgThreadHeader" style="margin-bottom:1rem"></div>
+        <div id="guestMsgMessages" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;max-height:500px;overflow-y:auto;margin-bottom:1rem"></div>
+        <div style="display:flex;gap:.5rem">
+          <textarea id="guestMsgReply" rows="2" placeholder="Type your reply..." style="flex:1;padding:.7rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.9rem;resize:vertical"></textarea>
+          <button class="btn" onclick="sendGuestReply()">Send</button>
         </div>
       </div>
     </div>
@@ -1315,6 +1334,7 @@ const sectionMeta = {
   pricing: { title: 'Pricing', subtitle: 'Manage pricing overrides and seasonal rates' },
   properties: { title: 'Properties', subtitle: 'Configure property details and visibility' },
   invoices: { title: 'Custom Invoice', subtitle: 'Create reservations with custom pricing and send payment links' },
+  'guest-messages': { title: 'Guest Messages', subtitle: 'Messages from guests via the Trip Portal' },
   settings: { title: 'Settings', subtitle: 'System configuration and preferences' }
 };
 
@@ -1354,6 +1374,7 @@ function loadSectionData(section) {
     case 'pricing': loadPricing(); break;
     case 'properties': loadProperties(); break;
     case 'invoices': loadInvoices(); break;
+    case 'guest-messages': loadGuestMessages(); break;
     case 'settings': loadSettings(); break;
   }
 }
@@ -2170,6 +2191,103 @@ async function togglePropVisibility(slug, visible) {
 $('setMaintenance').addEventListener('change', (e) => {
   $('maintLabel').textContent = e.target.checked ? 'On' : 'Off';
 });
+
+/* ═══════════════════════════════════════════════════════════
+   GUEST MESSAGES (Trip Portal)
+   ═══════════════════════════════════════════════════════════ */
+let currentGuestThread = null;
+
+async function loadGuestMessages() {
+  try {
+    const data = await api('/api/admin/guest-messages');
+    const threads = data.threads || [];
+    const container = $('guestMsgThreads');
+    $('guestMsgThread').style.display = 'none';
+    container.style.display = '';
+
+    // Update nav badge
+    const totalUnread = threads.reduce((sum, t) => sum + (t.unread_count || 0), 0);
+    const badge = $('navGuestMsgBadge');
+    if (totalUnread > 0) {
+      badge.textContent = totalUnread;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    if (!threads.length) {
+      container.innerHTML = '<div class="empty-state"><p>No guest messages yet.</p><p style="color:var(--text-3);font-size:.85rem">Messages from the Guest Trip Portal will appear here.</p></div>';
+      return;
+    }
+
+    container.innerHTML = `<div class="table-wrapper"><table><thead><tr><th>Guest</th><th>Property</th><th>Messages</th><th>Unread</th><th>Last Activity</th><th></th></tr></thead><tbody>${threads.map(t => `
+      <tr style="cursor:pointer" onclick="openGuestThread('${t.reservation_id}')">
+        <td><strong>${esc(t.guest_name || 'Guest')}</strong><br><span style="color:var(--text-3);font-size:.8rem">${esc(t.guest_email)}</span></td>
+        <td>${esc(t.property_name || '--')}</td>
+        <td>${t.message_count}</td>
+        <td>${t.unread_count > 0 ? `<span class="status-badge" style="background:var(--copper);color:#fff">${t.unread_count}</span>` : '0'}</td>
+        <td>${fmtDate(t.last_message_at)}</td>
+        <td><button class="btn btn-secondary" onclick="event.stopPropagation();openGuestThread('${t.reservation_id}')">View</button></td>
+      </tr>`).join('')}</tbody></table></div>`;
+  } catch (err) {
+    $('guestMsgThreads').innerHTML = `<div class="empty-state"><p>Error loading guest messages</p></div>`;
+  }
+}
+
+async function openGuestThread(reservationId) {
+  currentGuestThread = reservationId;
+  $('guestMsgThreads').style.display = 'none';
+  $('guestMsgThread').style.display = '';
+
+  try {
+    const data = await api(`/api/admin/guest-messages?reservation_id=${reservationId}`);
+    const messages = data.messages || [];
+
+    if (messages.length > 0) {
+      const first = messages[0];
+      $('guestMsgThreadHeader').innerHTML = `<div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap"><strong style="font-size:1.1rem">${esc(first.guest_name || 'Guest')}</strong><span style="color:var(--text-3)">${esc(first.guest_email)}</span><span style="color:var(--text-3)">•</span><span style="color:var(--text-3)">${esc(first.property_name || '')}</span></div>`;
+    }
+
+    const msgContainer = $('guestMsgMessages');
+    msgContainer.innerHTML = messages.map(m => `
+      <div style="margin-bottom:.8rem;display:flex;flex-direction:column;align-items:${m.sender === 'guest' ? 'flex-start' : 'flex-end'}">
+        <div style="max-width:80%;padding:.7rem 1rem;border-radius:${m.sender === 'guest' ? '4px 12px 12px 12px' : '12px 4px 12px 12px'};background:${m.sender === 'guest' ? 'rgba(255,255,255,.05)' : 'rgba(199,107,66,.15)'};font-size:.9rem;white-space:pre-wrap">${esc(m.message)}</div>
+        <span style="font-size:.7rem;color:var(--text-3);margin-top:4px">${m.sender === 'host' ? 'You' : esc(m.guest_name || 'Guest')} • ${fmtDate(m.created_at)}</span>
+      </div>
+    `).join('');
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+  } catch (err) {
+    $('guestMsgMessages').innerHTML = '<p style="color:var(--text-3)">Error loading thread</p>';
+  }
+}
+
+function backToGuestThreads() {
+  currentGuestThread = null;
+  loadGuestMessages();
+}
+
+async function sendGuestReply() {
+  const textarea = $('guestMsgReply');
+  const message = textarea.value.trim();
+  if (!message || !currentGuestThread) return;
+
+  try {
+    const res = await api('/api/admin/guest-messages/reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reservation_id: currentGuestThread, message }),
+    });
+    if (res.success) {
+      textarea.value = '';
+      showToast('Reply sent & emailed to guest');
+      openGuestThread(currentGuestThread);
+    } else {
+      showToast(res.error || 'Failed to send reply', 'error');
+    }
+  } catch (err) {
+    showToast('Failed to send reply', 'error');
+  }
+}
 
 async function loadSettings() {
   try {
