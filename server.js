@@ -3359,6 +3359,48 @@ db.exec(`
   )
 `);
 
+// ── Short magic link codes ──
+db.exec(`
+  CREATE TABLE IF NOT EXISTS trip_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE,
+    reservation_id TEXT NOT NULL,
+    guest_email TEXT NOT NULL,
+    confirmation_code TEXT DEFAULT '',
+    guest_name TEXT DEFAULT '',
+    property_name TEXT DEFAULT '',
+    expires_at TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
+function generateTripCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 for clarity
+  let code = 'R-';
+  for (let i = 0; i < 6; i++) code += chars[crypto.randomInt(chars.length)];
+  return code;
+}
+
+function createOrGetTripCode(reservationId, guestEmail, confirmationCode, guestName, propertyName, expiresAt) {
+  // Check for existing unexpired code
+  const existing = db.prepare(
+    "SELECT code FROM trip_codes WHERE reservation_id = ? AND guest_email = ? AND expires_at > datetime('now')"
+  ).get(reservationId, guestEmail);
+  if (existing) return existing.code;
+
+  // Generate unique code
+  let code, attempts = 0;
+  do {
+    code = generateTripCode();
+    attempts++;
+  } while (db.prepare('SELECT 1 FROM trip_codes WHERE code = ?').get(code) && attempts < 20);
+
+  db.prepare(
+    'INSERT INTO trip_codes (code, reservation_id, guest_email, confirmation_code, guest_name, property_name, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(code, reservationId, guestEmail, confirmationCode || '', guestName || '', propertyName || '', expiresAt);
+  return code;
+}
+
 // ── Rate limiter (in-memory, per IP) ──
 const tripRateLimits = new Map();
 function checkTripRateLimit(ip, maxPerHour = 5) {
@@ -3429,6 +3471,35 @@ function requireTripAuth(req, res, next) {
 // ── Serve trip page ──
 app.get('/trip', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'trip.html'));
+});
+
+// ── Short code route: /trip/:code ──
+app.get('/trip/:code', (req, res) => {
+  const code = (req.params.code || '').toUpperCase().trim();
+  const row = db.prepare(
+    "SELECT * FROM trip_codes WHERE code = ? AND expires_at > datetime('now')"
+  ).get(code);
+  if (!row) {
+    // Invalid or expired code — redirect to /trip with error
+    return res.redirect('/trip?expired=1');
+  }
+  // Generate a JWT for this reservation and set the cookie
+  const expiresAt = new Date(row.expires_at);
+  const jwtToken = jwt.sign(
+    { reservationId: row.reservation_id, email: row.guest_email, confirmationCode: row.confirmation_code },
+    TRIP_JWT_SECRET,
+    { expiresIn: Math.max(3600, Math.floor((expiresAt.getTime() - Date.now()) / 1000)) }
+  );
+  const cookieOpts = [
+    `trip_session=${jwtToken}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${24 * 3600}`,
+  ];
+  if (process.env.RENDER_EXTERNAL_URL) cookieOpts.push('Secure');
+  res.setHeader('Set-Cookie', cookieOpts.join('; '));
+  res.redirect('/trip');
 });
 
 // ── Trip lookup: verify confirmation code + email ──
@@ -3539,7 +3610,7 @@ app.post('/api/trip/lookup', async (req, res) => {
       return res.status(410).json({ error: 'This reservation has been cancelled.' });
     }
 
-    // Generate JWT magic link token
+    // Generate JWT magic link token + short code
     const checkOut = reservation.checkOutDateLocalized || '';
     const coDate = checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 30 * 86400000);
     const expiresAt = new Date(coDate.getTime() + 7 * 86400000); // checkout + 7 days
@@ -3554,17 +3625,29 @@ app.post('/api/trip/lookup', async (req, res) => {
       { expiresIn: Math.floor((expiresAt.getTime() - Date.now()) / 1000) }
     );
 
-    // Return the magic link (display it for now — email integration later)
+    const guestName = `${reservation.guest?.firstName || ''} ${reservation.guest?.lastName || ''}`.trim();
+    const propertyName = reservation.listing?.title || reservation.listing?.nickname || '';
+
+    // Generate short magic code
+    const tripCode = createOrGetTripCode(
+      reservation._id, guestEmail, code, guestName, propertyName,
+      expiresAt.toISOString()
+    );
+
     const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
-    const magicLink = `${baseUrl}/trip?token=${jwtToken}`;
+    const magicLink = `${baseUrl}/trip/${tripCode}`;
 
     res.json({
       success: true,
       magicLink,
-      guestName: `${reservation.guest?.firstName || ''} ${reservation.guest?.lastName || ''}`.trim(),
-      propertyName: reservation.listing?.title || reservation.listing?.nickname || '',
+      tripCode,
+      jwtToken,
+      guestName,
+      firstName: reservation.guest?.firstName || '',
+      propertyName,
       checkIn: reservation.checkInDateLocalized,
       checkOut: reservation.checkOutDateLocalized,
+      guests: reservation.guestsCount || 1,
     });
   } catch (err) {
     console.error('Trip lookup error:', err.message);
@@ -3711,35 +3794,36 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     // Build safe response
     const safeReservation = sanitizeReservationData(reservation);
 
-    // Extract listing details
-    const listingData = listing ? {
-      title: listing.title || '',
-      nickname: listing.nickname || '',
-      description: listing.publicDescription?.summary || listing.publicDescription?.space || '',
-      houseRules: listing.publicDescription?.houseRules || '',
-      interactionWithGuests: listing.publicDescription?.interactionWithGuests || '',
-      neighborhood: listing.publicDescription?.neighborhoodOverview || '',
-      transit: listing.publicDescription?.transit || '',
-      access: listing.publicDescription?.access || '',
-      notes: listing.publicDescription?.notes || '',
+    // Extract listing details — fallback to reservation's listing sub-object or static data if full listing unavailable
+    const resListing = reservation.listing || {};
+    const listingData = {
+      title: (listing?.title || resListing.title || resListing.nickname || 'Your Property'),
+      nickname: (listing?.nickname || resListing.nickname || ''),
+      description: (listing?.publicDescription?.summary || listing?.publicDescription?.space || ''),
+      houseRules: (listing?.publicDescription?.houseRules || ''),
+      interactionWithGuests: (listing?.publicDescription?.interactionWithGuests || ''),
+      neighborhood: (listing?.publicDescription?.neighborhoodOverview || ''),
+      transit: (listing?.publicDescription?.transit || ''),
+      access: (listing?.publicDescription?.access || ''),
+      notes: (listing?.publicDescription?.notes || ''),
       address: {
-        full: listing.address?.full || '',
-        street: listing.address?.street || '',
-        city: listing.address?.city || '',
-        state: listing.address?.state || '',
-        zipcode: listing.address?.zipcode || '',
-        country: listing.address?.country || '',
-        lat: listing.address?.lat || null,
-        lng: listing.address?.lng || null,
+        full: (listing?.address?.full || ''),
+        street: (listing?.address?.street || ''),
+        city: (listing?.address?.city || ''),
+        state: (listing?.address?.state || ''),
+        zipcode: (listing?.address?.zipcode || ''),
+        country: (listing?.address?.country || ''),
+        lat: (listing?.address?.lat || null),
+        lng: (listing?.address?.lng || null),
       },
-      checkInTime: listing.defaultCheckInTime || '16:00',
-      checkOutTime: listing.defaultCheckOutTime || '11:00',
-      amenities: listing.amenities || [],
-      accommodates: listing.accommodates || 0,
-      bedrooms: listing.bedrooms || 0,
-      bathrooms: listing.bathrooms || 0,
-      beds: listing.beds || 0,
-      photos: (listing.pictures || []).slice(0, 20).map(p => ({
+      checkInTime: (listing?.defaultCheckInTime || '16:00'),
+      checkOutTime: (listing?.defaultCheckOutTime || '11:00'),
+      amenities: (listing?.amenities || []),
+      accommodates: (listing?.accommodates || 0),
+      bedrooms: (listing?.bedrooms || 0),
+      bathrooms: (listing?.bathrooms || 0),
+      beds: (listing?.beds || 0),
+      photos: (listing?.pictures || []).slice(0, 20).map(p => ({
         url: p.original || p.large || p.regular || p.thumbnail || '',
         caption: p.caption || '',
       })),
@@ -3750,7 +3834,7 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       parkingInfo: extractCustomField(listing, 'parkingInfo') || extractCustomField(listing, 'parking') || '',
       // Trash schedule
       trashSchedule: extractCustomField(listing, 'trashSchedule') || extractCustomField(listing, 'trash') || '',
-    } : null;
+    };
 
     // Door codes / check-in instructions — ONLY after check-in time
     let accessInfo = null;
@@ -3781,6 +3865,31 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       }
     }
 
+    // Personalization: compute stay timing
+    const nowMs = now.getTime();
+    const checkInDateObj = reservation.checkInDateLocalized ? new Date(reservation.checkInDateLocalized + 'T12:00:00') : null;
+    const checkOutDateObj = reservation.checkOutDateLocalized ? new Date(reservation.checkOutDateLocalized + 'T12:00:00') : null;
+    let stayTiming = 'upcoming';
+    if (checkInDateObj && checkOutDateObj) {
+      if (nowMs > checkOutDateObj.getTime()) stayTiming = 'past';
+      else if (nowMs >= checkInDateObj.getTime()) stayTiming = 'ongoing';
+    }
+    const daysUntilCheckIn = checkInDateObj ? Math.ceil((checkInDateObj.getTime() - nowMs) / 86400000) : null;
+
+    // Get or create short trip code for sharing
+    const guestEmail = safeReservation.guest?.email || req.tripGuestEmail || '';
+    const guestFullName = `${safeReservation.guest?.firstName || ''} ${safeReservation.guest?.lastName || ''}`.trim();
+    let tripCode = null;
+    try {
+      const expiresAt = checkOutDateObj ? new Date(checkOutDateObj.getTime() + 7 * 86400000) : new Date(Date.now() + 30 * 86400000);
+      tripCode = createOrGetTripCode(
+        safeReservation._id, guestEmail,
+        safeReservation.confirmationCode || '', guestFullName,
+        listingData.title, expiresAt.toISOString()
+      );
+    } catch (_) {}
+    const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+
     res.json({
       reservation: {
         id: safeReservation._id,
@@ -3808,6 +3917,7 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
           })),
           totalTaxes: safeReservation.money?.totalTaxes || 0,
         },
+        source: safeReservation.source || '',
       },
       listing: listingData,
       accessInfo,
@@ -3817,6 +3927,11 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       propertySlug,
       propertyPhotos: propertyStaticData ? propertyStaticData.photos.slice(0, 5) : [],
       propertyHostingId: propertyStaticData ? propertyStaticData.hostingId : null,
+      // Personalization
+      stayTiming,
+      daysUntilCheckIn,
+      tripCode,
+      shareLink: tripCode ? `${baseUrl}/trip/${tripCode}` : null,
     });
   } catch (err) {
     console.error('Trip data error:', err.message);

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Your Trip | Regent</title>
+<meta name="theme-color" content="#0d0d0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
@@ -15,35 +16,41 @@
   --glass:rgba(26,26,26,.72);--glass-border:rgba(255,255,255,.06);
   --radius:16px;--radius-sm:10px;--radius-xs:6px;
   --font-heading:'Playfair Display',Georgia,serif;--font-body:'Outfit',system-ui,sans-serif;
+  --spring:cubic-bezier(.16,1,.3,1);--bounce:cubic-bezier(.34,1.56,.64,1);
 }
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;line-height:1.6;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none;transition:opacity .2s}
 a:hover{opacity:.8}
 button{font-family:var(--font-body);cursor:pointer;border:none;outline:none}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 input,textarea{font-family:var(--font-body);outline:none;border:none}
+input:focus-visible,textarea:focus-visible{outline:none}
 
-/* ── Scrollbar ── */
+/* Scrollbar */
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
 
-/* ── Loading / Skeleton ── */
+/* Skeleton Shimmer */
 .skeleton{background:linear-gradient(90deg,var(--bg2) 25%,rgba(255,255,255,.04) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.8s infinite;border-radius:var(--radius-xs)}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-#loading-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+
+/* Loading Screen */
+#loading-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s var(--spring),visibility .6s}
 #loading-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .loader-ring{width:48px;height:48px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-text{margin-top:20px;color:var(--muted);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
 
-/* ── Reveal Animations ── */
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+/* Reveal Animations */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s var(--spring),transform .8s var(--spring)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .reveal-delay-1{transition-delay:.1s}
 .reveal-delay-2{transition-delay:.2s}
 .reveal-delay-3{transition-delay:.3s}
 .reveal-delay-4{transition-delay:.4s}
+.reveal-delay-5{transition-delay:.5s}
 
 @keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -52,66 +59,99 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 @keyframes lockPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 @keyframes borderGlow{0%{box-shadow:0 0 0 0 var(--accent-glow)}50%{box-shadow:0 0 16px 3px var(--accent-glow)}100%{box-shadow:0 0 0 0 var(--accent-glow)}}
 @keyframes checkPop{0%{transform:scale(0) rotate(-45deg);opacity:0}60%{transform:scale(1.2) rotate(0deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes lockTurn{0%{transform:rotate(0deg)}30%{transform:rotate(-15deg)}60%{transform:rotate(10deg)}100%{transform:rotate(0deg)}}
+@keyframes codeReveal{0%{clip-path:inset(0 100% 0 0);opacity:0}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes slideInFromTop{from{transform:translateY(-100%) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes slideOutToTop{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-100%) scale(.96);opacity:0}}
+@keyframes particle{0%{transform:translate(0,0) scale(1);opacity:1}100%{opacity:0}}
+@keyframes shimmerGradient{0%{background-position:-200% center}100%{background-position:200% center}}
 
-/* ── LOGIN SCREEN ── */
+/* Toast System */
+.toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:10000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:12px 20px;font-size:14px;color:var(--text);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:slideInFromTop .5s var(--bounce) forwards;pointer-events:auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.toast.leaving{animation:slideOutToTop .4s var(--spring) forwards}
+.toast svg{width:16px;height:16px;color:var(--accent);flex-shrink:0}
+
+/* LOGIN SCREEN */
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
 #login-screen::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(199,107,66,.06) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(199,107,66,.04) 0%,transparent 50%);animation:fadeIn 2s}
-.login-card{position:relative;width:100%;max-width:420px;background:var(--glass);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:48px 32px;animation:fadeInUp .8s cubic-bezier(.16,1,.3,1)}
+.login-card{position:relative;width:100%;max-width:420px;background:var(--glass);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:48px 32px;animation:fadeInUp .8s var(--spring)}
 .login-brand{text-align:center;margin-bottom:40px}
 .login-brand-icon{width:40px;height:40px;margin:0 auto 16px;border:1.5px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center}
 .login-brand-icon svg{width:18px;height:18px;color:var(--accent)}
 .login-brand h1{font-family:var(--font-heading);font-size:28px;font-weight:500;letter-spacing:-.01em;margin-bottom:6px}
 .login-brand p{color:var(--muted);font-size:14px;font-weight:300}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;font-weight:500}
+
+/* Expired Banner */
+.expired-banner{background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.15);border-radius:var(--radius-sm);padding:16px 20px;margin-bottom:24px;text-align:center;animation:fadeInUp .6s var(--spring)}
+.expired-banner p{font-size:14px;color:var(--accent);line-height:1.5}
+.expired-banner p strong{font-weight:500}
+
+/* Floating label inputs */
+.form-group{margin-bottom:20px;position:relative}
+.form-group label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;font-weight:500;transition:color .3s}
 .form-group input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;color:var(--text);font-size:15px;font-weight:300;transition:border-color .3s,box-shadow .3s}
 .form-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(199,107,66,.12)}
+.form-group input:focus + .input-glow,.form-group input:focus ~ .input-glow{opacity:1}
 .form-group input::placeholder{color:var(--muted2)}
-.login-btn{width:100%;padding:15px;background:var(--accent);color:#fff;font-size:15px;font-weight:500;border-radius:var(--radius-sm);letter-spacing:.02em;transition:transform .2s,box-shadow .2s,opacity .2s;margin-top:8px}
+.input-glow{position:absolute;bottom:-1px;left:50%;width:0;height:2px;background:var(--accent);transition:width .4s var(--spring),left .4s var(--spring);opacity:0;border-radius:1px}
+.form-group input:focus ~ .input-glow{width:100%;left:0;opacity:1}
+
+/* Login Button */
+.login-btn{width:100%;padding:15px;background:var(--accent);color:#fff;font-size:15px;font-weight:500;border-radius:var(--radius-sm);letter-spacing:.02em;transition:transform .2s var(--spring),box-shadow .2s;margin-top:8px;position:relative;overflow:hidden}
+.login-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);transition:none}
+.login-btn:hover::after{animation:shimmerGradient 1.2s ease}
 .login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(199,107,66,.3)}
-.login-btn:active{transform:translateY(0)}
-.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.login-error{color:#e74c3c;font-size:13px;text-align:center;margin-top:16px;min-height:20px}
+.login-btn:active{transform:scale(.97)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none}
+.login-error{color:#e74c3c;font-size:13px;text-align:center;margin-top:16px;min-height:20px;transition:opacity .3s;animation:fadeIn .3s}
 
 /* Magic Link Result */
-.magic-link-result{animation:fadeInUp .6s cubic-bezier(.16,1,.3,1);text-align:center}
-.magic-link-result h2{font-family:var(--font-heading);font-size:22px;font-weight:500;margin-bottom:8px}
-.magic-link-result .subtitle{color:var(--muted);font-size:14px;margin-bottom:24px;line-height:1.5}
+.magic-link-result{animation:fadeInUp .6s var(--spring);text-align:center}
+.magic-link-result h2{font-family:var(--font-heading);font-size:24px;font-weight:500;margin-bottom:6px}
+.magic-link-result .subtitle{color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.5}
+.trip-code-display{margin-bottom:20px}
+.trip-code-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.trip-code-value{font-family:'SF Mono',Monaco,'Courier New',monospace;font-size:32px;font-weight:600;letter-spacing:.12em;color:var(--accent);margin-bottom:4px}
+.trip-code-url{font-size:13px;color:var(--muted2);margin-bottom:16px;word-break:break-all}
 .magic-link-box{position:relative;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 48px 14px 16px;font-size:13px;color:var(--muted);word-break:break-all;text-align:left;transition:border-color .4s,box-shadow .4s;margin-bottom:20px}
 .magic-link-box.copied{border-color:var(--accent);animation:borderGlow .8s}
 .magic-link-copy{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;background:rgba(255,255,255,.06);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s}
 .magic-link-copy:hover{background:rgba(255,255,255,.1)}
 .magic-link-copy svg{width:16px;height:16px;color:var(--muted);transition:color .2s}
 .magic-link-copy.copied svg{color:var(--accent)}
-.open-portal-btn{width:100%;padding:15px;background:var(--accent);color:#fff;font-size:15px;font-weight:500;border-radius:var(--radius-sm);letter-spacing:.02em;transition:transform .2s,box-shadow .2s;margin-bottom:12px}
+.open-portal-btn{width:100%;padding:15px;background:var(--accent);color:#fff;font-size:15px;font-weight:500;border-radius:var(--radius-sm);letter-spacing:.02em;transition:transform .2s var(--spring),box-shadow .2s;margin-bottom:12px;position:relative;overflow:hidden}
 .open-portal-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(199,107,66,.3)}
-.magic-link-guest{color:var(--muted);font-size:13px;margin-top:4px}
+.open-portal-btn:active{transform:scale(.97)}
+.magic-trip-summary{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.magic-trip-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:12px;color:var(--muted)}
 
-/* ── TRIP PORTAL ── */
+/* TRIP PORTAL */
 #trip-portal{display:none}
 .section{padding:0 20px;margin-bottom:0}
 @media(min-width:768px){.section{padding:0 40px}}
 @media(min-width:1440px){.section{padding:0;max-width:960px;margin-left:auto;margin-right:auto}}
 
-/* ── Nav bar ── */
-.trip-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transform:translateY(-100%);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+/* Nav bar */
+.trip-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transform:translateY(-100%);transition:transform .4s var(--spring)}
 .trip-nav.visible{transform:translateY(0)}
 .trip-nav-brand{font-family:var(--font-heading);font-size:16px;font-weight:500}
-.trip-nav-logout{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;background:none;padding:8px 12px;border-radius:var(--radius-xs);transition:color .2s,background .2s}
+.trip-nav-logout{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;background:none;padding:8px 12px;border-radius:var(--radius-xs);transition:color .2s,background .2s;min-height:44px;display:flex;align-items:center}
 .trip-nav-logout:hover{color:var(--text);background:rgba(255,255,255,.06)}
 
-/* ── Hero ── */
+/* Hero */
 .hero-section{position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(1px) brightness(.4);transform:scale(1.05);transition:transform 8s cubic-bezier(.16,1,.3,1)}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(1px) brightness(.4);transform:scale(1.05);transition:transform 8s var(--spring)}
 .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 0%,rgba(13,13,13,.4) 40%,rgba(13,13,13,.2) 100%)}
 .hero-content{position:relative;z-index:2;padding:0 24px 64px;width:100%;max-width:960px;margin:0 auto}
 @media(min-width:768px){.hero-content{padding:0 40px 80px}}
 .hero-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--accent);margin-bottom:12px;font-weight:500}
+.hero-greeting{font-family:var(--font-heading);font-size:clamp(20px,4vw,28px);font-weight:400;color:rgba(255,255,255,.7);margin-bottom:4px;font-style:italic}
 .hero-title{font-family:var(--font-heading);font-size:clamp(36px,7vw,64px);font-weight:500;line-height:1.1;margin-bottom:20px;letter-spacing:-.02em}
 .hero-dates{font-size:18px;font-weight:300;color:rgba(255,255,255,.85);margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .hero-dates .separator{color:var(--accent);font-size:14px}
 .hero-meta{display:flex;gap:16px;flex-wrap:wrap}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border:1px solid var(--glass-border);border-radius:100px;padding:8px 16px;font-size:13px;color:rgba(255,255,255,.8);font-weight:400}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border:1px solid var(--glass-border);border-radius:100px;padding:8px 16px;font-size:13px;color:rgba(255,255,255,.8);font-weight:400;min-height:44px}
 .hero-badge svg{width:14px;height:14px;color:var(--accent)}
 
 /* Countdown */
@@ -120,7 +160,7 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 .countdown-strip.checked-in{background:rgba(76,175,80,.08);border-color:rgba(76,175,80,.15);color:#81c784}
 .countdown-strip.completed{background:rgba(255,255,255,.04);border-color:var(--border);color:var(--muted)}
 
-/* ── Section Common ── */
+/* Section Common */
 .content-section{padding-top:80px;padding-bottom:80px}
 @media(min-width:768px){.content-section{padding-top:100px;padding-bottom:100px}}
 .section-header{margin-bottom:40px}
@@ -130,19 +170,19 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 @media(min-width:768px){.section-divider{margin:0 40px}}
 @media(min-width:1440px){.section-divider{max-width:960px;margin:0 auto}}
 
-/* ── Cards ── */
+/* Cards */
 .glass-card{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:28px 24px;transition:border-color .3s}
 .glass-card:hover{border-color:rgba(255,255,255,.1)}
 @media(min-width:768px){.glass-card{padding:32px 28px}}
 
-/* ── Arrival Section ── */
+/* Arrival Section */
 .arrival-grid{display:grid;gap:20px}
 @media(min-width:768px){.arrival-grid{grid-template-columns:1fr 1fr;gap:24px}}
 .arrival-time{display:flex;align-items:center;gap:16px}
 .arrival-time-value{font-family:var(--font-heading);font-size:36px;font-weight:500;color:var(--accent)}
 .arrival-time-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .arrival-address{margin-top:4px;color:var(--muted);font-size:14px;line-height:1.6}
-.maps-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;transition:gap .2s}
+.maps-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;transition:gap .2s;min-height:44px}
 .maps-link:hover{gap:10px;opacity:1}
 .maps-link svg{width:14px;height:14px}
 
@@ -155,41 +195,54 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 .access-locked .unlock-time{color:var(--accent);font-weight:500}
 
 /* Access unlocked */
-.access-unlocked{animation:unlockSlide .8s cubic-bezier(.16,1,.3,1)}
+.access-unlocked{animation:unlockSlide .8s var(--spring)}
+.access-unlock-header{text-align:center;margin-bottom:20px}
+.access-unlock-header .lock-icon{display:inline-flex;width:48px;height:48px;align-items:center;justify-content:center;border:2px solid rgba(76,175,80,.2);border-radius:50%;margin-bottom:12px;animation:lockTurn .6s var(--spring)}
+.access-unlock-header .lock-icon svg{width:20px;height:20px;color:#81c784}
+.access-unlock-header h3{font-family:var(--font-heading);font-size:18px;font-weight:500;color:#81c784}
 .access-item{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border)}
 .access-item:last-child{border-bottom:none}
 .access-item-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.access-item-value{font-family:'SF Mono',Monaco,monospace;font-size:20px;font-weight:500;letter-spacing:.08em}
+.access-item-value{font-family:'SF Mono',Monaco,monospace;font-size:20px;font-weight:500;letter-spacing:.08em;animation:codeReveal .8s var(--spring) .3s both}
 .access-instructions{margin-top:16px;padding:20px;background:rgba(255,255,255,.02);border-radius:var(--radius-sm);border-left:3px solid var(--accent)}
 .access-instructions p{color:var(--muted);font-size:14px;line-height:1.7}
 
-/* ── Copy Button ── */
-.copy-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border-radius:var(--radius-xs);padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .3s;border:1px solid transparent;white-space:nowrap}
+/* Copy Button */
+.copy-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border-radius:var(--radius-xs);padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .3s;border:1px solid transparent;white-space:nowrap;min-height:44px;position:relative}
 .copy-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.copy-btn:active{transform:scale(.97)}
 .copy-btn.copied{border-color:var(--accent);color:var(--accent);animation:borderGlow .8s}
 .copy-btn svg{width:14px;height:14px}
 .copy-btn .check-icon{display:none}
 .copy-btn.copied .copy-icon{display:none}
-.copy-btn.copied .check-icon{display:inline;animation:checkPop .4s cubic-bezier(.16,1,.3,1)}
+.copy-btn.copied .check-icon{display:inline;animation:checkPop .4s var(--spring)}
 
-/* ── Residence Section ── */
+/* Particle burst on copy */
+.copy-particle{position:absolute;width:4px;height:4px;background:var(--accent);border-radius:50%;pointer-events:none}
+
+/* Residence Section */
 .wifi-card{display:flex;align-items:center;justify-content:space-between;padding:20px;background:rgba(255,255,255,.02);border-radius:var(--radius-sm);margin-bottom:12px}
 .wifi-card:last-of-type{margin-bottom:0}
 .wifi-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
 .wifi-value{font-size:16px;font-weight:500}
 .house-rules-card{margin-top:28px}
-.house-rules-card h3{font-family:var(--font-heading);font-size:20px;font-weight:500;margin-bottom:16px}
-.house-rules-text{color:var(--muted);font-size:14px;line-height:1.8;white-space:pre-line}
+.house-rules-card h3{font-family:var(--font-heading);font-size:20px;font-weight:500;margin-bottom:0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0;min-height:44px;user-select:none}
+.house-rules-card h3 .toggle-icon{transition:transform .4s var(--spring);color:var(--muted);flex-shrink:0}
+.house-rules-card h3 .toggle-icon.open{transform:rotate(180deg)}
+.house-rules-content{overflow:hidden;transition:max-height .5s var(--spring),opacity .3s;max-height:0;opacity:0}
+.house-rules-content.open{opacity:1}
+.house-rules-text{color:var(--muted);font-size:14px;line-height:1.8;white-space:pre-line;padding-top:16px}
 .property-desc{margin-top:28px;color:var(--muted);font-size:14px;line-height:1.8}
 .amenities-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:28px}
 @media(min-width:768px){.amenities-grid{grid-template-columns:repeat(3,1fr)}}
-.amenity-chip{display:flex;align-items:center;gap:8px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;color:rgba(255,255,255,.7)}
+.amenity-chip{display:flex;align-items:center;gap:8px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;color:rgba(255,255,255,.7);transition:border-color .3s,background .3s}
+.amenity-chip:hover{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.05)}
 .amenity-chip svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
 .info-block{margin-top:28px;padding:20px;background:rgba(255,255,255,.02);border-radius:var(--radius-sm)}
 .info-block h4{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:8px;font-weight:500}
 .info-block p{color:var(--muted);font-size:14px;line-height:1.6}
 
-/* ── Reservation Section ── */
+/* Reservation Section */
 .reservation-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px}
 @media(min-width:768px){.reservation-stats{grid-template-columns:repeat(4,1fr)}}
 .stat-card{text-align:center;padding:20px 12px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius-sm)}
@@ -203,15 +256,20 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 .price-row.total{border-top:2px solid var(--border);border-bottom:none;padding-top:18px;margin-top:4px;font-size:16px;font-weight:600}
 .price-row.total .label{color:var(--text)}
 .price-row.balance-due .amount{color:var(--accent);font-weight:600}
-.confirmation-row{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:20px;background:rgba(199,107,66,.06);border:1px solid rgba(199,107,66,.12);border-radius:var(--radius-sm)}
+.confirmation-row{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:20px;background:rgba(199,107,66,.06);border:1px solid rgba(199,107,66,.12);border-radius:var(--radius-sm);flex-wrap:wrap;gap:12px}
 .confirmation-row .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .confirmation-row .code{font-family:'SF Mono',Monaco,monospace;font-size:18px;font-weight:600;letter-spacing:.1em}
 
-/* ── Messages Section ── */
+/* Share Link */
+.share-link-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:20px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--radius-sm);flex-wrap:wrap;gap:12px}
+.share-link-row .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.share-link-row .share-code{font-family:'SF Mono',Monaco,monospace;font-size:14px;color:var(--muted);word-break:break-all}
+
+/* Messages Section */
 .messages-container{max-height:400px;overflow-y:auto;padding:4px;margin-bottom:20px;scroll-behavior:smooth}
 .messages-container::-webkit-scrollbar{width:4px}
 .messages-container::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-.message-bubble{max-width:80%;margin-bottom:12px;animation:fadeInUp .3s cubic-bezier(.16,1,.3,1)}
+.message-bubble{max-width:80%;margin-bottom:12px;animation:fadeInUp .3s var(--spring)}
 .message-bubble.guest{margin-left:auto}
 .message-bubble.host{margin-right:auto}
 .message-bubble .bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5}
@@ -220,21 +278,35 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 .message-bubble .time{font-size:11px;color:var(--muted2);margin-top:4px;padding:0 4px}
 .message-bubble.guest .time{text-align:right}
 .message-input-wrap{display:flex;gap:10px;align-items:flex-end}
-.message-input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;color:var(--text);font-size:14px;resize:none;min-height:48px;max-height:120px;transition:border-color .3s}
-.message-input:focus{border-color:var(--accent)}
+.message-input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;color:var(--text);font-size:14px;resize:none;min-height:48px;max-height:120px;transition:border-color .3s,box-shadow .3s}
+.message-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(199,107,66,.12)}
 .message-input::placeholder{color:var(--muted2)}
-.message-send-btn{width:48px;height:48px;background:var(--accent);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s,box-shadow .2s}
+.message-send-btn{width:48px;height:48px;min-width:48px;background:var(--accent);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s var(--spring),box-shadow .2s}
 .message-send-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(199,107,66,.3)}
-.message-send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.message-send-btn:active{transform:scale(.97)}
+.message-send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none}
 .message-send-btn svg{width:18px;height:18px;color:#fff}
-.empty-messages{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.empty-messages{text-align:center;padding:40px 20px}
+.empty-messages svg{width:40px;height:40px;color:var(--muted2);margin-bottom:16px}
+.empty-messages p{color:var(--muted);font-size:14px}
+.empty-messages p:first-of-type{font-size:16px;margin-bottom:4px;color:var(--text);font-weight:400}
 
-/* ── Footer ── */
+/* Error Screen */
+.error-screen{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;animation:fadeInUp .6s var(--spring)}
+.error-screen .error-icon{width:64px;height:64px;margin-bottom:24px;border:2px solid rgba(231,76,60,.2);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.error-screen .error-icon svg{width:28px;height:28px;color:#e74c3c}
+.error-screen h2{font-family:var(--font-heading);font-size:24px;font-weight:500;margin-bottom:8px}
+.error-screen p{color:var(--muted);font-size:14px;margin-bottom:24px;max-width:360px;line-height:1.6}
+.error-screen button{padding:12px 32px;background:var(--accent);color:#fff;border-radius:var(--radius-sm);font-size:14px;font-weight:500;transition:transform .2s var(--spring);min-height:44px}
+.error-screen button:hover{transform:translateY(-1px)}
+.error-screen button:active{transform:scale(.97)}
+
+/* Footer */
 .trip-footer{text-align:center;padding:40px 20px 60px;border-top:1px solid var(--border)}
 .trip-footer p{font-size:12px;color:var(--muted2);letter-spacing:.04em}
 .trip-footer a{color:var(--muted)}
 
-/* ── Responsive ── */
+/* Responsive */
 @media(max-width:374px){
   .login-card{padding:36px 20px}
   .hero-title{font-size:32px}
@@ -242,6 +314,9 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 </style>
 </head>
 <body>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
 
 <!-- Loading Screen -->
 <div id="loading-screen">
@@ -259,14 +334,17 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
       <h1>Access Your Trip</h1>
       <p>Enter your reservation details below</p>
     </div>
+    <div id="expired-banner-slot"></div>
     <form id="login-form">
       <div class="form-group">
-        <label>Confirmation Code</label>
+        <label for="conf-code">Confirmation Code</label>
         <input type="text" id="conf-code" placeholder="e.g. ABC123" autocomplete="off" required>
+        <div class="input-glow"></div>
       </div>
       <div class="form-group">
-        <label>Email Address</label>
+        <label for="conf-email">Email Address</label>
         <input type="email" id="conf-email" placeholder="your@email.com" autocomplete="email" required>
+        <div class="input-glow"></div>
       </div>
       <button type="submit" class="login-btn" id="login-btn">Continue</button>
       <div class="login-error" id="login-error"></div>
@@ -287,10 +365,11 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
     <div class="hero-bg" id="hero-bg"></div>
     <div class="hero-content">
       <div class="hero-eyebrow reveal">Your Stay</div>
-      <h1 class="hero-title reveal reveal-delay-1" id="hero-title"></h1>
-      <div class="hero-dates reveal reveal-delay-2" id="hero-dates"></div>
-      <div class="hero-meta reveal reveal-delay-3" id="hero-meta"></div>
-      <div class="countdown-strip reveal reveal-delay-4" id="countdown-strip"></div>
+      <div class="hero-greeting reveal reveal-delay-1" id="hero-greeting"></div>
+      <h1 class="hero-title reveal reveal-delay-2" id="hero-title"></h1>
+      <div class="hero-dates reveal reveal-delay-3" id="hero-dates"></div>
+      <div class="hero-meta reveal reveal-delay-4" id="hero-meta"></div>
+      <div class="countdown-strip reveal reveal-delay-5" id="countdown-strip"></div>
     </div>
   </section>
 
@@ -341,8 +420,8 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
     <div class="glass-card reveal reveal-delay-1">
       <div class="messages-container" id="messages-container"></div>
       <div class="message-input-wrap">
-        <textarea class="message-input" id="message-input" placeholder="How can we help?" rows="1"></textarea>
-        <button class="message-send-btn" id="message-send-btn" onclick="sendMessage()">
+        <textarea class="message-input" id="message-input" placeholder="How can we help?" rows="1" aria-label="Message"></textarea>
+        <button class="message-send-btn" id="message-send-btn" onclick="sendMessage()" aria-label="Send message">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
@@ -356,157 +435,246 @@ input,textarea{font-family:var(--font-body);outline:none;border:none}
 </div>
 
 <script>
-/* ═══════════════════════════════════════════
-   TRIP PORTAL — bookwithregent.com
-   ═══════════════════════════════════════════ */
+/* =============================================
+   TRIP PORTAL  -  bookwithregent.com
+   ============================================= */
 
 let tripData = null;
 let messagesPollTimer = null;
+let countdownInterval = null;
 
-// ── Helpers ──
+// -- Toast Notification System --
+function showToast(message, icon) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  const svg = icon === 'check'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  toast.innerHTML = svg + '<span>' + message + '</span>';
+  container.appendChild(toast);
+  setTimeout(function() {
+    toast.classList.add('leaving');
+    setTimeout(function() { toast.remove(); }, 400);
+  }, 2400);
+}
+
+// -- Helpers --
 function formatDate(dateStr) {
-  const d = new Date(dateStr + (dateStr.includes('T') ? '' : 'T12:00:00'));
+  if (!dateStr) return '';
+  var d = new Date(dateStr + (dateStr.includes('T') ? '' : 'T12:00:00'));
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 function formatDateShort(dateStr) {
-  const d = new Date(dateStr + (dateStr.includes('T') ? '' : 'T12:00:00'));
+  if (!dateStr) return '';
+  var d = new Date(dateStr + (dateStr.includes('T') ? '' : 'T12:00:00'));
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 function formatDateRange(checkIn, checkOut) {
-  const a = new Date(checkIn + 'T12:00:00');
-  const b = new Date(checkOut + 'T12:00:00');
-  const opts = { month: 'short', day: 'numeric' };
-  const yearA = a.getFullYear();
-  const yearB = b.getFullYear();
-  let result = a.toLocaleDateString('en-US', opts);
+  if (!checkIn || !checkOut) return '';
+  var a = new Date(checkIn + 'T12:00:00');
+  var b = new Date(checkOut + 'T12:00:00');
+  var opts = { month: 'short', day: 'numeric' };
+  var yearA = a.getFullYear();
+  var yearB = b.getFullYear();
+  var result = a.toLocaleDateString('en-US', opts);
   result += ' – ';
-  result += b.toLocaleDateString('en-US', yearA !== yearB ? { ...opts, year: 'numeric' } : opts);
+  result += b.toLocaleDateString('en-US', yearA !== yearB ? { month: 'short', day: 'numeric', year: 'numeric' } : opts);
   result += ', ' + yearB;
   return result;
 }
-function formatMoney(amount, currency = 'USD') {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(amount);
+function formatMoney(amount, currency) {
+  currency = currency || 'USD';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(amount);
 }
 function formatTime(timeStr) {
   if (!timeStr) return '';
-  const [h, m] = timeStr.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 || 12;
-  return m === 0 ? `${hour} ${ampm}` : `${hour}:${String(m).padStart(2,'0')} ${ampm}`;
+  var parts = timeStr.split(':');
+  var h = parseInt(parts[0], 10);
+  var m = parseInt(parts[1], 10) || 0;
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  var hour = h % 12 || 12;
+  return m === 0 ? hour + ' ' + ampm : hour + ':' + String(m).padStart(2, '0') + ' ' + ampm;
 }
 function formatMessageTime(dateStr) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffDays = Math.floor((now - d) / 86400000);
-  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  var d = new Date(dateStr);
+  var now = new Date();
+  var diffDays = Math.floor((now - d) / 86400000);
+  var time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   if (diffDays === 0) return time;
   if (diffDays === 1) return 'Yesterday ' + time;
   if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'short' }) + ' ' + time;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + time;
 }
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 function getMapsUrl(address, lat, lng) {
-  if (isIOS()) return `https://maps.apple.com/?q=${encodeURIComponent(address)}&ll=${lat},${lng}`;
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  if (isIOS()) return 'https://maps.apple.com/?q=' + encodeURIComponent(address) + '&ll=' + lat + ',' + lng;
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address);
 }
 function getPhotoUrl(filename, hostingId) {
-  return `https://a0.muscache.com/im/pictures/hosting/Hosting-${hostingId}/original/${filename}?im_w=720`;
+  return 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + hostingId + '/original/' + filename + '?im_w=720';
 }
 
-// ── Copy to Clipboard ──
+// -- Copy to Clipboard --
+function spawnParticles(btnEl) {
+  var rect = btnEl.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + rect.height / 2;
+  for (var i = 0; i < 6; i++) {
+    var p = document.createElement('div');
+    p.className = 'copy-particle';
+    p.style.position = 'fixed';
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+    p.style.zIndex = '10001';
+    var angle = (Math.PI * 2 / 6) * i + Math.random() * 0.5;
+    var dist = 20 + Math.random() * 20;
+    var dx = Math.cos(angle) * dist;
+    var dy = Math.sin(angle) * dist;
+    p.style.transition = 'all .5s cubic-bezier(.16,1,.3,1)';
+    document.body.appendChild(p);
+    requestAnimationFrame(function(el, x, y) {
+      return function() {
+        el.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(0)';
+        el.style.opacity = '0';
+      };
+    }(p, dx, dy));
+    setTimeout(function(el) { return function() { el.remove(); }; }(p), 600);
+  }
+}
+
 async function copyToClipboard(text, btnEl) {
   try {
     await navigator.clipboard.writeText(text);
-  } catch {
-    const ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+  } catch (e) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
     document.body.removeChild(ta);
   }
-  btnEl.classList.add('copied');
-  setTimeout(() => btnEl.classList.remove('copied'), 2000);
+  if (btnEl) {
+    btnEl.classList.add('copied');
+    spawnParticles(btnEl);
+    setTimeout(function() { btnEl.classList.remove('copied'); }, 2000);
+  }
+  showToast('Copied!', 'check');
 }
 
-function makeCopyBtn(text, label = 'Copy') {
-  const btn = document.createElement('button');
+function makeCopyBtn(text, label) {
+  label = label || 'Copy';
+  var btn = document.createElement('button');
   btn.className = 'copy-btn';
-  btn.innerHTML = `<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">${label}</span>`;
-  btn.addEventListener('click', () => {
+  btn.setAttribute('aria-label', 'Copy ' + label);
+  btn.innerHTML = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">' + label + '</span>';
+  btn.addEventListener('click', function() {
     copyToClipboard(text, btn);
-    btn.querySelector('.copy-label').textContent = 'Copied!';
-    setTimeout(() => { btn.querySelector('.copy-label').textContent = label; }, 2000);
+    var lbl = btn.querySelector('.copy-label');
+    lbl.textContent = 'Copied!';
+    setTimeout(function() { lbl.textContent = label; }, 2000);
   });
   return btn;
 }
 
-// ── API Calls ──
-async function apiPost(url, body = {}) {
-  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
-  return res.json();
+// -- API Calls (with proper error handling) --
+async function apiPost(url, body) {
+  body = body || {};
+  var res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify(body)
+  });
+  var json;
+  try { json = await res.json(); } catch (e) { json = null; }
+  if (!res.ok) {
+    var err = new Error('HTTP ' + res.status);
+    err.status = res.status;
+    err.body = json;
+    throw err;
+  }
+  return json;
 }
+
 async function apiGet(url) {
-  const res = await fetch(url, { credentials: 'same-origin' });
-  return res.json();
+  var res = await fetch(url, { credentials: 'same-origin' });
+  var json;
+  try { json = await res.json(); } catch (e) { json = null; }
+  if (!res.ok) {
+    var err = new Error('HTTP ' + res.status);
+    err.status = res.status;
+    err.body = json;
+    throw err;
+  }
+  return json;
 }
 
-// ── Scroll Reveal ──
+// -- Scroll Reveal --
 function initReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
 }
 
-// ── Nav Scroll ──
+// -- Nav Scroll --
 function initNavScroll() {
-  const nav = document.getElementById('trip-nav');
-  let lastScroll = 0;
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (y > 300) nav.classList.add('visible');
+  var nav = document.getElementById('trip-nav');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) nav.classList.add('visible');
     else nav.classList.remove('visible');
-    lastScroll = y;
   }, { passive: true });
 }
 
-// ── Parallax ──
+// -- Parallax --
 function initParallax() {
-  const bg = document.getElementById('hero-bg');
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
+  var bg = document.getElementById('hero-bg');
+  if (!bg) return;
+  window.addEventListener('scroll', function() {
+    var y = window.scrollY;
     if (y < window.innerHeight * 1.5) {
-      bg.style.transform = `scale(1.05) translateY(${y * 0.15}px)`;
+      bg.style.transform = 'scale(1.05) translateY(' + (y * 0.15) + 'px)';
     }
   }, { passive: true });
 }
 
-// ── Countdown ──
-let countdownInterval = null;
+// -- Countdown --
 function startCountdown(checkInDateTime) {
-  const strip = document.getElementById('countdown-strip');
+  var strip = document.getElementById('countdown-strip');
+  if (!strip) return;
   function update() {
-    const now = new Date();
-    const target = new Date(checkInDateTime);
-    const diff = target - now;
+    var now = new Date();
+    var target = new Date(checkInDateTime);
+    var diff = target - now;
     if (diff <= 0) {
-      // Check if currently checked in or completed
-      strip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Currently checked in</span>`;
-      strip.className = 'countdown-strip checked-in reveal reveal-delay-4 visible';
+      strip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Currently checked in</span>';
+      strip.className = 'countdown-strip checked-in reveal reveal-delay-5 visible';
       if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
       return;
     }
-    const days = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const minutes = Math.floor((diff % 3600000) / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-    let text;
-    if (days > 1) text = `${days} days until your stay`;
-    else if (days === 1) text = `${days} day, ${hours} hours until check-in`;
-    else text = `${hours}h ${minutes}m ${seconds}s until check-in`;
-    strip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>${text}</span>`;
-    // Update every second if within 24 hours
+    var days = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var minutes = Math.floor((diff % 3600000) / 60000);
+    var seconds = Math.floor((diff % 60000) / 1000);
+    var text;
+    if (days > 1) text = days + ' days until your stay';
+    else if (days === 1) text = days + ' day, ' + hours + ' hours until check-in';
+    else text = hours + 'h ' + minutes + 'm ' + seconds + 's until check-in';
+    strip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>' + text + '</span>';
     if (days < 1 && !countdownInterval) {
       clearInterval(countdownInterval);
       countdownInterval = setInterval(update, 1000);
@@ -516,112 +684,158 @@ function startCountdown(checkInDateTime) {
   if (!countdownInterval) countdownInterval = setInterval(update, 60000);
 }
 
-// ── Auto-resize Textarea ──
+// -- Auto-resize Textarea --
 function initAutoResize() {
-  const ta = document.getElementById('message-input');
-  ta.addEventListener('input', () => {
+  var ta = document.getElementById('message-input');
+  if (!ta) return;
+  ta.addEventListener('input', function() {
     ta.style.height = 'auto';
     ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
   });
-  ta.addEventListener('keydown', (e) => {
+  ta.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
 }
 
-// ── Render Portal ──
+// -- Render Portal --
 function renderPortal(data) {
   tripData = data;
-  const { reservation, listing, accessInfo, isAfterCheckIn, checkInDateTime, propertyPhotos, propertyHostingId } = data;
-  const money = reservation.money;
-  const guest = reservation.guest;
+
+  // Guard against missing data
+  var reservation = data.reservation;
+  var listing = data.listing;
+  if (!reservation || !listing) {
+    showErrorUI('Unable to Load Trip', 'Your reservation data could not be retrieved. Please try again or contact support.');
+    return;
+  }
+
+  var accessInfo = data.accessInfo;
+  var isAfterCheckIn = data.isAfterCheckIn;
+  var checkInDateTime = data.checkInDateTime;
+  var propertyPhotos = data.propertyPhotos;
+  var propertyHostingId = data.propertyHostingId;
+  var stayTiming = data.stayTiming || 'upcoming';
+  var daysUntilCheckIn = data.daysUntilCheckIn;
+  var tripCode = data.tripCode;
+  var shareLink = data.shareLink;
+
+  var money = reservation.money || {};
+  var guest = reservation.guest || {};
+  var address = listing.address || {};
 
   // Nav
-  document.getElementById('nav-property-name').textContent = listing.title;
+  document.getElementById('nav-property-name').textContent = listing.title || 'Your Stay';
 
-  // Hero
-  let photoUrl = '';
+  // Hero photo
+  var photoUrl = '';
   if (listing.photos && listing.photos.length > 0) {
     photoUrl = listing.photos[0].url || listing.photos[0];
   } else if (propertyPhotos && propertyPhotos.length > 0 && propertyHostingId) {
     photoUrl = getPhotoUrl(propertyPhotos[0], propertyHostingId);
   }
   if (photoUrl) {
-    document.getElementById('hero-bg').style.backgroundImage = `url(${photoUrl})`;
+    document.getElementById('hero-bg').style.backgroundImage = 'url(' + photoUrl + ')';
   }
-  document.getElementById('hero-title').textContent = listing.title;
-  document.getElementById('hero-dates').innerHTML = `
-    <span>${formatDate(reservation.checkIn)}</span>
-    <span class="separator">&rarr;</span>
-    <span>${formatDate(reservation.checkOut)}</span>
-  `;
-  document.getElementById('hero-meta').innerHTML = `
-    <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${reservation.guests} Guest${reservation.guests !== 1 ? 's' : ''}</span>
-    <span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>${reservation.nights} Night${reservation.nights !== 1 ? 's' : ''}</span>
-    ${listing.bedrooms ? `<span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>${listing.bedrooms} Bed${listing.bedrooms !== 1 ? 's' : ''}</span>` : ''}
-    ${listing.bathrooms ? `<span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" y1="5" x2="8" y2="7"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M7 19v2"/><path d="M17 19v2"/></svg>${listing.bathrooms} Bath${listing.bathrooms !== 1 ? 's' : ''}</span>` : ''}
-  `;
+
+  // Personalized greeting
+  var greetingEl = document.getElementById('hero-greeting');
+  var firstName = guest.firstName || 'Guest';
+  if (stayTiming === 'ongoing') {
+    greetingEl.textContent = 'Welcome home, ' + firstName;
+  } else if (stayTiming === 'past') {
+    greetingEl.textContent = 'We hope you loved your stay, ' + firstName;
+  } else {
+    if (typeof daysUntilCheckIn === 'number' && daysUntilCheckIn >= 0) {
+      var dayWord = daysUntilCheckIn === 1 ? 'day' : 'days';
+      greetingEl.textContent = 'Welcome, ' + firstName + ' — ' + daysUntilCheckIn + ' ' + dayWord + ' until your stay';
+    } else {
+      greetingEl.textContent = 'Welcome, ' + firstName;
+    }
+  }
+
+  document.getElementById('hero-title').textContent = listing.title || '';
+
+  if (reservation.checkIn && reservation.checkOut) {
+    document.getElementById('hero-dates').innerHTML =
+      '<span>' + formatDate(reservation.checkIn) + '</span>' +
+      '<span class="separator">&rarr;</span>' +
+      '<span>' + formatDate(reservation.checkOut) + '</span>';
+  }
+
+  var metaHtml = '';
+  if (reservation.guests) {
+    metaHtml += '<span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' + reservation.guests + ' Guest' + (reservation.guests !== 1 ? 's' : '') + '</span>';
+  }
+  if (reservation.nights) {
+    metaHtml += '<span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>' + reservation.nights + ' Night' + (reservation.nights !== 1 ? 's' : '') + '</span>';
+  }
+  if (listing.bedrooms) {
+    metaHtml += '<span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>' + listing.bedrooms + ' Bed' + (listing.bedrooms !== 1 ? 's' : '') + '</span>';
+  }
+  if (listing.bathrooms) {
+    metaHtml += '<span class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" y1="5" x2="8" y2="7"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M7 19v2"/><path d="M17 19v2"/></svg>' + listing.bathrooms + ' Bath' + (listing.bathrooms !== 1 ? 's' : '') + '</span>';
+  }
+  document.getElementById('hero-meta').innerHTML = metaHtml;
 
   // Countdown
-  const now = new Date();
-  const checkOutDate = new Date(reservation.checkOut + 'T12:00:00');
-  if (now > checkOutDate) {
-    const strip = document.getElementById('countdown-strip');
-    strip.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Stay completed</span>`;
-    strip.className = 'countdown-strip completed reveal reveal-delay-4';
-  } else {
+  var now = new Date();
+  var checkOutDate = reservation.checkOut ? new Date(reservation.checkOut + 'T12:00:00') : null;
+  if (stayTiming === 'past' || (checkOutDate && now > checkOutDate)) {
+    var strip = document.getElementById('countdown-strip');
+    strip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Stay completed</span>';
+    strip.className = 'countdown-strip completed reveal reveal-delay-5';
+  } else if (checkInDateTime) {
     startCountdown(checkInDateTime);
   }
 
   // Arrival info
-  const arrivalCard = document.getElementById('arrival-info-card');
-  arrivalCard.innerHTML = `
-    <div class="arrival-time">
-      <div class="arrival-time-value">${formatTime(listing.checkInTime)}</div>
-      <div>
-        <div class="arrival-time-label">Check-in Time</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Check-out by ${formatTime(listing.checkOutTime)}</div>
-      </div>
-    </div>
-    <div class="arrival-address">${listing.address.full}</div>
-    <a class="maps-link" href="${getMapsUrl(listing.address.full, listing.address.lat, listing.address.lng)}" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      Open in Maps
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-    </a>
-  `;
+  var arrivalCard = document.getElementById('arrival-info-card');
+  var arrivalHtml = '';
+  if (listing.checkInTime) {
+    arrivalHtml += '<div class="arrival-time">' +
+      '<div class="arrival-time-value">' + formatTime(listing.checkInTime) + '</div>' +
+      '<div><div class="arrival-time-label">Check-in Time</div>' +
+      (listing.checkOutTime ? '<div style="font-size:12px;color:var(--muted);margin-top:2px">Check-out by ' + formatTime(listing.checkOutTime) + '</div>' : '') +
+      '</div></div>';
+  }
+  if (address.full) {
+    arrivalHtml += '<div class="arrival-address">' + escapeHtml(address.full) + '</div>';
+    arrivalHtml += '<a class="maps-link" href="' + getMapsUrl(address.full, address.lat, address.lng) + '" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+      'Open in Maps' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>';
+  }
+  arrivalCard.innerHTML = arrivalHtml;
 
   // Access card
-  const accessCard = document.getElementById('access-card');
+  var accessCard = document.getElementById('access-card');
   if (!isAfterCheckIn) {
-    accessCard.innerHTML = `
-      <div class="access-locked">
-        <div class="lock-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <h3>Access Locked</h3>
-        <p>Entry details unlock at<br><span class="unlock-time">${formatTime(listing.checkInTime)} on ${formatDateShort(reservation.checkIn)}</span></p>
-      </div>
-    `;
+    accessCard.innerHTML =
+      '<div class="access-locked">' +
+        '<div class="lock-icon-wrap">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
+        '</div>' +
+        '<h3>Access Locked</h3>' +
+        '<p>Entry details unlock at<br><span class="unlock-time">' + formatTime(listing.checkInTime) + ' on ' + formatDateShort(reservation.checkIn) + '</span></p>' +
+      '</div>';
   } else if (accessInfo) {
-    let html = '<div class="access-unlocked">';
+    var html = '<div class="access-unlocked">' +
+      '<div class="access-unlock-header">' +
+        '<div class="lock-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></div>' +
+        '<h3>Access Granted</h3>' +
+      '</div>';
     if (accessInfo.doorCode) {
-      html += `
-        <div class="access-item">
-          <div><div class="access-item-label">Door Code</div><div class="access-item-value">${accessInfo.doorCode}</div></div>
-          <div id="copy-door-code"></div>
-        </div>
-      `;
+      html += '<div class="access-item">' +
+        '<div><div class="access-item-label">Door Code</div><div class="access-item-value">' + escapeHtml(accessInfo.doorCode) + '</div></div>' +
+        '<div id="copy-door-code"></div></div>';
     }
     if (accessInfo.lockboxCode) {
-      html += `
-        <div class="access-item">
-          <div><div class="access-item-label">Lockbox Code</div><div class="access-item-value">${accessInfo.lockboxCode}</div></div>
-          <div id="copy-lockbox-code"></div>
-        </div>
-      `;
+      html += '<div class="access-item">' +
+        '<div><div class="access-item-label">Lockbox Code</div><div class="access-item-value">' + escapeHtml(accessInfo.lockboxCode) + '</div></div>' +
+        '<div id="copy-lockbox-code"></div></div>';
     }
     if (accessInfo.checkInInstructions) {
-      html += `<div class="access-instructions"><p>${accessInfo.checkInInstructions.replace(/\n/g,'<br>')}</p></div>`;
+      html += '<div class="access-instructions"><p>' + accessInfo.checkInInstructions.replace(/\n/g, '<br>') + '</p></div>';
     }
     html += '</div>';
     accessCard.innerHTML = html;
@@ -631,17 +845,19 @@ function renderPortal(data) {
     if (accessInfo.lockboxCode) {
       document.getElementById('copy-lockbox-code').appendChild(makeCopyBtn(accessInfo.lockboxCode, 'Copy'));
     }
+  } else {
+    accessCard.innerHTML = '<div class="access-locked" style="animation:none"><p style="color:var(--muted)">No access details available for this property.</p></div>';
   }
 
   // WiFi
-  const wifiCard = document.getElementById('wifi-card');
+  var wifiCard = document.getElementById('wifi-card');
   if (listing.wifiName || listing.wifiPassword) {
-    let wifiHtml = '';
+    var wifiHtml = '';
     if (listing.wifiName) {
-      wifiHtml += `<div class="wifi-card"><div><div class="wifi-label">Network</div><div class="wifi-value">${listing.wifiName}</div></div><div id="copy-wifi-name"></div></div>`;
+      wifiHtml += '<div class="wifi-card"><div><div class="wifi-label">Network</div><div class="wifi-value">' + escapeHtml(listing.wifiName) + '</div></div><div id="copy-wifi-name"></div></div>';
     }
     if (listing.wifiPassword) {
-      wifiHtml += `<div class="wifi-card"><div><div class="wifi-label">Password</div><div class="wifi-value">${listing.wifiPassword}</div></div><div id="copy-wifi-pass"></div></div>`;
+      wifiHtml += '<div class="wifi-card"><div><div class="wifi-label">Password</div><div class="wifi-value">' + escapeHtml(listing.wifiPassword) + '</div></div><div id="copy-wifi-pass"></div></div>';
     }
     wifiCard.innerHTML = wifiHtml;
     if (listing.wifiName) document.getElementById('copy-wifi-name').appendChild(makeCopyBtn(listing.wifiName, 'Copy'));
@@ -650,155 +866,221 @@ function renderPortal(data) {
     wifiCard.style.display = 'none';
   }
 
-  // House Rules
+  // House Rules (collapsible)
   if (listing.houseRules) {
-    const rulesCard = document.getElementById('rules-card');
+    var rulesCard = document.getElementById('rules-card');
     rulesCard.style.display = '';
-    rulesCard.innerHTML = `<h3>Residence Etiquette</h3><div class="house-rules-text">${listing.houseRules}</div>`;
+    rulesCard.innerHTML =
+      '<h3 id="rules-toggle">Residence Etiquette <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="6 9 12 15 18 9"/></svg></h3>' +
+      '<div class="house-rules-content" id="rules-content"><div class="house-rules-text">' + escapeHtml(listing.houseRules) + '</div></div>';
+    var rulesToggle = document.getElementById('rules-toggle');
+    var rulesContent = document.getElementById('rules-content');
+    rulesToggle.addEventListener('click', function() {
+      var icon = rulesToggle.querySelector('.toggle-icon');
+      if (rulesContent.classList.contains('open')) {
+        rulesContent.style.maxHeight = '0px';
+        rulesContent.classList.remove('open');
+        icon.classList.remove('open');
+      } else {
+        rulesContent.style.maxHeight = rulesContent.scrollHeight + 'px';
+        rulesContent.classList.add('open');
+        icon.classList.add('open');
+      }
+    });
   }
 
   // Description
   if (listing.description) {
-    document.getElementById('property-desc').innerHTML = `<p>${listing.description}</p>`;
+    document.getElementById('property-desc').innerHTML = '<p>' + escapeHtml(listing.description) + '</p>';
   }
 
   // Amenities
-  const amenGrid = document.getElementById('amenities-grid');
+  var amenGrid = document.getElementById('amenities-grid');
   if (listing.amenities && listing.amenities.length) {
-    amenGrid.innerHTML = listing.amenities.map(a => `
-      <div class="amenity-chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        ${a}
-      </div>
-    `).join('');
+    amenGrid.innerHTML = listing.amenities.map(function(a) {
+      return '<div class="amenity-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + escapeHtml(a) + '</div>';
+    }).join('');
   }
 
   // Extra info
-  const extraEl = document.getElementById('extra-info');
-  let extraHtml = '';
+  var extraEl = document.getElementById('extra-info');
+  var extraHtml = '';
   if (listing.parkingInfo) {
-    extraHtml += `<div class="info-block reveal"><h4>Parking</h4><p>${listing.parkingInfo}</p></div>`;
+    extraHtml += '<div class="info-block reveal"><h4>Parking</h4><p>' + escapeHtml(listing.parkingInfo) + '</p></div>';
   }
   if (listing.trashSchedule) {
-    extraHtml += `<div class="info-block reveal"><h4>Trash &amp; Recycling</h4><p>${listing.trashSchedule}</p></div>`;
+    extraHtml += '<div class="info-block reveal"><h4>Trash &amp; Recycling</h4><p>' + escapeHtml(listing.trashSchedule) + '</p></div>';
   }
   extraEl.innerHTML = extraHtml;
 
   // Reservation
-  const resCard = document.getElementById('reservation-card');
-  let resHtml = `
-    <div class="reservation-stats">
-      <div class="stat-card"><div class="stat-value">${reservation.guests}</div><div class="stat-label">Guests</div></div>
-      <div class="stat-card"><div class="stat-value">${reservation.nights}</div><div class="stat-label">Nights</div></div>
-      <div class="stat-card"><div class="stat-value">${listing.bedrooms || '-'}</div><div class="stat-label">Bedrooms</div></div>
-      <div class="stat-card"><div class="stat-value">${listing.bathrooms || '-'}</div><div class="stat-label">Bathrooms</div></div>
-    </div>
-    <div class="price-table">
-  `;
+  var resCard = document.getElementById('reservation-card');
+  var resHtml =
+    '<div class="reservation-stats">' +
+      '<div class="stat-card"><div class="stat-value">' + (reservation.guests || '-') + '</div><div class="stat-label">Guests</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + (reservation.nights || '-') + '</div><div class="stat-label">Nights</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + (listing.bedrooms || '-') + '</div><div class="stat-label">Bedrooms</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + (listing.bathrooms || '-') + '</div><div class="stat-label">Bathrooms</div></div>' +
+    '</div>' +
+    '<div class="price-table">';
+
   if (money.invoiceItems && money.invoiceItems.length) {
-    money.invoiceItems.forEach(item => {
-      resHtml += `<div class="price-row"><span class="label">${item.title}</span><span class="amount">${formatMoney(item.amount, money.currency)}</span></div>`;
+    money.invoiceItems.forEach(function(item) {
+      resHtml += '<div class="price-row"><span class="label">' + escapeHtml(item.title) + '</span><span class="amount">' + formatMoney(item.amount, money.currency) + '</span></div>';
     });
+  } else if (money.fareAccommodation) {
+    resHtml += '<div class="price-row"><span class="label">Accommodation</span><span class="amount">' + formatMoney(money.fareAccommodation, money.currency) + '</span></div>';
   }
   if (money.totalTaxes) {
-    resHtml += `<div class="price-row"><span class="label">Taxes &amp; Fees</span><span class="amount">${formatMoney(money.totalTaxes, money.currency)}</span></div>`;
+    resHtml += '<div class="price-row"><span class="label">Taxes &amp; Fees</span><span class="amount">' + formatMoney(money.totalTaxes, money.currency) + '</span></div>';
   }
-  const total = (money.totalPaid || 0) + (money.balanceDue || 0);
-  resHtml += `<div class="price-row total"><span class="label">Total</span><span class="amount">${formatMoney(total, money.currency)}</span></div>`;
+  var total = (money.totalPaid || 0) + (money.balanceDue || 0);
+  resHtml += '<div class="price-row total"><span class="label">Total</span><span class="amount">' + formatMoney(total, money.currency) + '</span></div>';
   if (money.balanceDue > 0) {
-    resHtml += `<div class="price-row balance-due"><span class="label">Balance Due</span><span class="amount">${formatMoney(money.balanceDue, money.currency)}</span></div>`;
+    resHtml += '<div class="price-row balance-due"><span class="label">Balance Due</span><span class="amount">' + formatMoney(money.balanceDue, money.currency) + '</span></div>';
   }
   resHtml += '</div>';
-  resHtml += `<div class="confirmation-row"><div><div class="label">Confirmation Code</div><div class="code">${reservation.confirmationCode}</div></div><div id="copy-conf-code"></div></div>`;
+
+  // Confirmation code
+  if (reservation.confirmationCode) {
+    resHtml += '<div class="confirmation-row"><div><div class="label">Confirmation Code</div><div class="code">' + escapeHtml(reservation.confirmationCode) + '</div></div><div id="copy-conf-code"></div></div>';
+  }
+
+  // Share link
+  if (shareLink || tripCode) {
+    var displayLink = shareLink || ('bookwithregent.com/trip/' + tripCode);
+    resHtml += '<div class="share-link-row"><div><div class="label">Share Link</div><div class="share-code">' + escapeHtml(displayLink) + '</div></div><div id="copy-share-link"></div></div>';
+  }
+
   resCard.innerHTML = resHtml;
-  document.getElementById('copy-conf-code').appendChild(makeCopyBtn(reservation.confirmationCode, 'Copy'));
+
+  if (reservation.confirmationCode) {
+    document.getElementById('copy-conf-code').appendChild(makeCopyBtn(reservation.confirmationCode, 'Copy'));
+  }
+  if (shareLink || tripCode) {
+    document.getElementById('copy-share-link').appendChild(makeCopyBtn(shareLink || ('https://www.bookwithregent.com/trip/' + tripCode), 'Copy'));
+  }
 
   // Messages
   renderMessages(data.messages || []);
 
   // Post context for concierge
   apiPost('/api/trip/messages/context', {
-    guestName: `${guest.firstName} ${guest.lastName}`,
-    propertyName: listing.title
-  }).catch(() => {});
+    guestName: (guest.firstName || '') + ' ' + (guest.lastName || ''),
+    propertyName: listing.title || ''
+  }).catch(function() {});
 
   // Re-init reveal for dynamically added elements
   initReveal();
 }
 
-// ── Messages ──
+// -- Messages --
 function renderMessages(messages) {
-  const container = document.getElementById('messages-container');
+  var container = document.getElementById('messages-container');
+  if (!container) return;
   if (!messages || !messages.length) {
-    container.innerHTML = '<div class="empty-messages">No messages yet. Send a message to reach your host.</div>';
+    container.innerHTML =
+      '<div class="empty-messages">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+        '<p>Your concierge is here to help</p>' +
+        '<p>Send a message and we\'ll respond promptly.</p>' +
+      '</div>';
     return;
   }
-  container.innerHTML = messages.map(m => `
-    <div class="message-bubble ${m.sender}">
-      <div class="bubble">${m.message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
-      <div class="time">${formatMessageTime(m.created_at)}</div>
-    </div>
-  `).join('');
+  container.innerHTML = messages.map(function(m) {
+    return '<div class="message-bubble ' + (m.sender || 'host') + '">' +
+      '<div class="bubble">' + escapeHtml(m.message).replace(/\n/g, '<br>') + '</div>' +
+      '<div class="time">' + formatMessageTime(m.created_at) + '</div></div>';
+  }).join('');
   container.scrollTop = container.scrollHeight;
 }
 
 async function sendMessage() {
-  const input = document.getElementById('message-input');
-  const text = input.value.trim();
+  var input = document.getElementById('message-input');
+  if (!input) return;
+  var text = input.value.trim();
   if (!text) return;
-  const btn = document.getElementById('message-send-btn');
+  var btn = document.getElementById('message-send-btn');
   btn.disabled = true;
   input.value = '';
   input.style.height = 'auto';
-  // Optimistic add
-  const container = document.getElementById('messages-container');
-  const emptyMsg = container.querySelector('.empty-messages');
+  var container = document.getElementById('messages-container');
+  var emptyMsg = container.querySelector('.empty-messages');
   if (emptyMsg) emptyMsg.remove();
-  container.insertAdjacentHTML('beforeend', `
-    <div class="message-bubble guest">
-      <div class="bubble">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
-      <div class="time">Just now</div>
-    </div>
-  `);
+  container.insertAdjacentHTML('beforeend',
+    '<div class="message-bubble guest">' +
+      '<div class="bubble">' + escapeHtml(text).replace(/\n/g, '<br>') + '</div>' +
+      '<div class="time">Just now</div></div>'
+  );
   container.scrollTop = container.scrollHeight;
   try {
     await apiPost('/api/trip/messages', { message: text });
-  } catch (e) { console.error('Send failed', e); }
+  } catch (e) {
+    console.error('Send failed', e);
+    showToast('Message failed to send', 'error');
+  }
   btn.disabled = false;
 }
 
 async function pollMessages() {
   try {
-    const res = await apiGet('/api/trip/messages');
+    var res = await apiGet('/api/trip/messages');
     if (res.messages) renderMessages(res.messages);
-  } catch {}
+  } catch (e) { /* silent */ }
 }
 
-// ── Auth Flow ──
+// -- Error UI --
+function showErrorUI(title, message) {
+  document.getElementById('loading-screen').classList.add('hidden');
+  document.getElementById('login-screen').style.display = 'none';
+  var portal = document.getElementById('trip-portal');
+  portal.style.display = '';
+  portal.innerHTML =
+    '<div class="error-screen">' +
+      '<div class="error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>' +
+      '<h2>' + escapeHtml(title) + '</h2>' +
+      '<p>' + escapeHtml(message) + '</p>' +
+      '<button onclick="window.location.reload()">Try Again</button>' +
+    '</div>' +
+    '<footer class="trip-footer"><p>&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a></p></footer>';
+}
+
+// -- Auth Flow --
 async function checkAuth() {
+  var params = new URLSearchParams(window.location.search);
+
+  // Check for expired param
+  if (params.get('expired') === '1') {
+    var slot = document.getElementById('expired-banner-slot');
+    if (slot) {
+      slot.innerHTML =
+        '<div class="expired-banner">' +
+          '<p><strong>Link Expired</strong><br>Your access link has expired. Please look up your reservation again to get a new one.</p>' +
+        '</div>';
+    }
+  }
+
   // Check for token in URL
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
+  var token = params.get('token');
   if (token) {
     try {
-      const res = await apiPost('/api/trip/verify', { token });
+      var res = await apiPost('/api/trip/verify', { token: token });
       if (res.success) {
-        // Remove token from URL and reload
         window.history.replaceState({}, '', window.location.pathname);
         window.location.reload();
         return;
       }
-    } catch {}
+    } catch (e) { /* fall through */ }
   }
 
   // Check existing auth
   try {
-    const res = await apiGet('/api/trip/auth-check');
-    if (res.authenticated) {
+    var authRes = await apiGet('/api/trip/auth-check');
+    if (authRes.authenticated) {
       showPortal();
       return;
     }
-  } catch {}
+  } catch (e) { /* fall through */ }
 
   // Show login
   showLogin();
@@ -814,37 +1096,43 @@ async function showPortal() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('trip-portal').style.display = '';
   try {
-    const data = await apiGet('/api/trip/data');
+    var data = await apiGet('/api/trip/data');
+    if (!data || (!data.reservation && !data.listing)) {
+      showErrorUI('Unable to Load Trip', 'We could not retrieve your reservation details. Please try signing in again.');
+      return;
+    }
     renderPortal(data);
     initNavScroll();
     initParallax();
     initAutoResize();
-    // Poll messages every 30s
     messagesPollTimer = setInterval(pollMessages, 30000);
   } catch (e) {
     console.error('Failed to load trip data', e);
+    showErrorUI('Something Went Wrong', 'We were unable to load your trip details. This may be a temporary issue — please try again in a moment.');
   }
   document.getElementById('loading-screen').classList.add('hidden');
 }
 
 async function logout() {
-  try { await apiPost('/api/trip/logout'); } catch {}
+  try { await apiPost('/api/trip/logout'); } catch (e) { /* ignore */ }
+  if (messagesPollTimer) { clearInterval(messagesPollTimer); messagesPollTimer = null; }
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
   window.location.reload();
 }
 
-// ── Login Form ──
-document.getElementById('login-form').addEventListener('submit', async (e) => {
+// -- Login Form --
+document.getElementById('login-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const code = document.getElementById('conf-code').value.trim();
-  const email = document.getElementById('conf-email').value.trim();
-  const errEl = document.getElementById('login-error');
-  const btn = document.getElementById('login-btn');
+  var code = document.getElementById('conf-code').value.trim();
+  var email = document.getElementById('conf-email').value.trim();
+  var errEl = document.getElementById('login-error');
+  var btn = document.getElementById('login-btn');
   if (!code || !email) { errEl.textContent = 'Please fill in all fields.'; return; }
   btn.disabled = true;
   btn.textContent = 'Looking up...';
   errEl.textContent = '';
   try {
-    const res = await apiPost('/api/trip/lookup', { confirmationCode: code, email });
+    var res = await apiPost('/api/trip/lookup', { confirmationCode: code, email: email });
     if (res.success && res.magicLink) {
       showMagicLinkResult(res);
     } else {
@@ -852,51 +1140,69 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       btn.disabled = false;
       btn.textContent = 'Continue';
     }
-  } catch {
-    errEl.textContent = 'Something went wrong. Please try again.';
+  } catch (e) {
+    var errMsg = (e.body && e.body.error) ? e.body.error : 'Something went wrong. Please try again.';
+    errEl.textContent = errMsg;
     btn.disabled = false;
     btn.textContent = 'Continue';
   }
 });
 
 function showMagicLinkResult(res) {
-  const card = document.getElementById('login-card');
-  const token = new URL(res.magicLink, window.location.origin).searchParams.get('token') || res.magicLink.split('token=')[1] || '';
-  card.innerHTML = `
-    <div class="login-brand">
-      <div class="login-brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-    </div>
-    <div class="magic-link-result">
-      <h2>Welcome, ${res.guestName || 'Guest'}</h2>
-      <p class="subtitle">Your trip to <strong>${res.propertyName || 'your property'}</strong> is ready.<br>${formatDateRange(res.checkIn, res.checkOut)}</p>
-      <div class="magic-link-box" id="magic-link-box">${res.magicLink}<div class="magic-link-copy" id="magic-link-copy"><svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="20 6 9 17 4 12"/></svg></div></div>
-      <button class="open-portal-btn" id="open-portal-btn">Open Trip Portal</button>
-      <p class="magic-link-guest">Bookmark this link for easy access</p>
-    </div>
-  `;
-  // Copy handler
-  document.getElementById('magic-link-copy').addEventListener('click', function() {
-    const box = document.getElementById('magic-link-box');
-    copyToClipboard(res.magicLink, box);
-    const copyEl = this;
-    copyEl.classList.add('copied');
-    copyEl.querySelector('.copy-icon').style.display = 'none';
-    copyEl.querySelector('.check-icon').style.display = '';
-    setTimeout(() => {
-      copyEl.classList.remove('copied');
-      copyEl.querySelector('.copy-icon').style.display = '';
-      copyEl.querySelector('.check-icon').style.display = 'none';
-    }, 2000);
-  });
+  var card = document.getElementById('login-card');
+  var token = res.jwtToken || '';
+  if (!token) {
+    try {
+      token = new URL(res.magicLink, window.location.origin).searchParams.get('token') || '';
+    } catch (e) {
+      var match = (res.magicLink || '').match(/token=([^&]+)/);
+      token = match ? match[1] : '';
+    }
+  }
+
+  var tripCode = res.tripCode || '';
+  var shortUrl = tripCode ? 'bookwithregent.com/trip/' + tripCode : '';
+  var firstName = res.firstName || res.guestName || 'Guest';
+  var dateRange = (res.checkIn && res.checkOut) ? formatDateRange(res.checkIn, res.checkOut) : '';
+
+  card.innerHTML =
+    '<div class="login-brand">' +
+      '<div class="login-brand-icon" style="border-color:#81c784">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="#81c784" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+      '</div>' +
+    '</div>' +
+    '<div class="magic-link-result">' +
+      '<h2>Welcome, ' + escapeHtml(firstName) + '</h2>' +
+      '<p class="subtitle">Your trip to <strong>' + escapeHtml(res.propertyName || 'your property') + '</strong> is ready.' + (dateRange ? '<br>' + dateRange : '') + '</p>' +
+      (tripCode ?
+        '<div class="trip-code-display">' +
+          '<div class="trip-code-label">Your Trip Code</div>' +
+          '<div class="trip-code-value">' + escapeHtml(tripCode) + '</div>' +
+          (shortUrl ? '<div class="trip-code-url">' + escapeHtml(shortUrl) + '</div>' : '') +
+          '<div id="trip-code-copy-wrap" style="margin-bottom:20px"></div>' +
+        '</div>'
+      : '') +
+      '<button class="open-portal-btn" id="open-portal-btn">Open Trip Portal</button>' +
+      '<div class="magic-trip-summary">' +
+        (res.propertyName ? '<span class="magic-trip-chip">' + escapeHtml(res.propertyName) + '</span>' : '') +
+        (dateRange ? '<span class="magic-trip-chip">' + dateRange + '</span>' : '') +
+        (res.guests ? '<span class="magic-trip-chip">' + res.guests + ' Guest' + (res.guests !== 1 ? 's' : '') + '</span>' : '') +
+      '</div>' +
+    '</div>';
+
+  // Copy trip code button
+  if (tripCode) {
+    var copyUrl = shortUrl ? 'https://www.bookwithregent.com/trip/' + tripCode : res.magicLink;
+    document.getElementById('trip-code-copy-wrap').appendChild(makeCopyBtn(copyUrl, 'Copy Link'));
+  }
+
   // Open portal handler
-  document.getElementById('open-portal-btn').addEventListener('click', async () => {
-    const btn = document.getElementById('open-portal-btn');
+  document.getElementById('open-portal-btn').addEventListener('click', async function() {
+    var btn = document.getElementById('open-portal-btn');
     btn.disabled = true;
     btn.textContent = 'Opening...';
     try {
-      const verifyRes = await apiPost('/api/trip/verify', { token });
+      var verifyRes = await apiPost('/api/trip/verify', { token: token });
       if (verifyRes.success) {
         window.history.replaceState({}, '', window.location.pathname);
         window.location.reload();
@@ -904,14 +1210,14 @@ function showMagicLinkResult(res) {
         btn.textContent = 'Error — try the link directly';
         btn.disabled = false;
       }
-    } catch {
+    } catch (e) {
       btn.textContent = 'Error — try the link directly';
       btn.disabled = false;
     }
   });
 }
 
-// ── Init ──
+// -- Init --
 document.addEventListener('DOMContentLoaded', checkAuth);
 </script>
 </body>
