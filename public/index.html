@@ -132,10 +132,17 @@ ul{list-style:none}
 .wbd-tag a:hover{color:#d4845c}
 @media(max-width:768px){
   .wbd-inner{padding:16px 16px}
+  .wbd-row{flex-wrap:wrap;gap:8px 0}
   .wbd-stat{padding:0 16px;gap:4px}
   .wbd-num{font-size:15px}
   .wbd-unit{font-size:9px}
   .wbd-tag{padding:0 16px;font-size:9px}
+}
+@media(max-width:400px){
+  .wbd-stat{padding:0 10px}
+  .wbd-num{font-size:14px}
+  .wbd-unit{font-size:8px}
+  .wbd-tag{padding:0 10px;font-size:8px}
 }
 
 /* ── Sections ── */
