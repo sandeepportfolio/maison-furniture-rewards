@@ -1110,6 +1110,7 @@ module.exports = {
   getCalendar,
   getLowestPrices,
   getToken,
+  guestyFetch,
   createQuote,
   getPaymentProvider,
   normalizePaymentProvider,

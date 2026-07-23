@@ -3683,16 +3683,7 @@ app.post('/api/trip/lookup', async (req, res) => {
         'money.currency', 'money.invoiceItems', 'money.totalTaxes',
       ].join(' '));
 
-      let guestyToken;
-      try {
-        guestyToken = await guesty.getToken();
-      } catch (tokenErr) {
-        console.error('Trip lookup token error:', tokenErr.message);
-        return res.status(502).json({ error: 'Could not connect to booking system' });
-      }
-
-      const searchUrl = `https://open-api.guesty.com/v1/reservations?filters=${filterParam}&fields=${fieldsParam}&limit=5`;
-      const searchResult = await fetchJson(searchUrl, { headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' } });
+      const searchResult = await guesty.guestyFetch(`/reservations?filters=${filterParam}&fields=${fieldsParam}&limit=5`);
 
       const results = searchResult.results || [];
       // Match by email or phone (last 10 digits), prefer most recent check-in
@@ -3786,59 +3777,6 @@ app.post('/api/trip/lookup', async (req, res) => {
   }
 });
 
-// Helper: get Guesty token for trip portal
-async function getGuestyTokenForTrip() {
-  try {
-    // Use guesty module's token mechanism by making a lightweight call
-    // Actually, we need to get the token directly. Let's read the cached token file.
-    const tokenFile = path.join(__dirname, 'db', 'guesty-token.json');
-    if (fs.existsSync(tokenFile)) {
-      const data = JSON.parse(fs.readFileSync(tokenFile, 'utf8'));
-      if (data.token && data.expiry && Date.now() < data.expiry - 60000) {
-        return data.token;
-      }
-    }
-    // Fallback: try env var
-    if (process.env.GUESTY_ACCESS_TOKEN) {
-      const expiry = Number(process.env.GUESTY_ACCESS_TOKEN_EXPIRES_AT || 0);
-      if (!expiry || Date.now() < expiry - 60000) return process.env.GUESTY_ACCESS_TOKEN;
-    }
-    // Last resort: request new token
-    const id = process.env.GUESTY_CLIENT_ID;
-    const secret = process.env.GUESTY_CLIENT_SECRET;
-    if (!id || !secret) return null;
-
-    const resp = await fetch('https://open-api.guesty.com/oauth2/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-      body: new URLSearchParams({ grant_type: 'client_credentials', scope: 'open-api', client_id: id, client_secret: secret }),
-    });
-    if (!resp.ok) return null;
-    const json = await resp.json();
-    // Persist
-    try {
-      fs.writeFileSync(tokenFile, JSON.stringify({ token: json.access_token, expiry: Date.now() + (json.expires_in || 86400) * 1000 }), { mode: 0o600 });
-    } catch (_) {}
-    return json.access_token;
-  } catch (err) {
-    console.error('getGuestyTokenForTrip error:', err.message);
-    return null;
-  }
-}
-
-// Helper: fetch JSON
-async function fetchJson(url, opts = {}) {
-  const resp = await fetch(url, opts);
-  const text = await resp.text();
-  if (!resp.ok) {
-    const err = new Error(`HTTP ${resp.status}`);
-    err.status = resp.status;
-    try { err.body = JSON.parse(text); } catch (_) { err.body = { raw: text }; }
-    throw err;
-  }
-  return text ? JSON.parse(text) : {};
-}
-
 // ── Trip verify token (set session cookie) ──
 app.post('/api/trip/verify', (req, res) => {
   const { token: magicToken } = req.body || {};
@@ -3908,10 +3846,7 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     let listing = null;
     if (listingId) {
       try {
-        const guestyToken = await guesty.getToken();
-        listing = await fetchJson(`https://open-api.guesty.com/v1/listings/${encodeURIComponent(listingId)}`, {
-          headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' },
-        });
+        listing = await guesty.guestyFetch(`/listings/${encodeURIComponent(listingId)}`);
       } catch (err) {
         console.error('Trip data - listing fetch error:', err.message);
       }
