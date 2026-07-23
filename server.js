@@ -3522,9 +3522,19 @@ function generateTripCode() {
 function createOrGetTripCode(reservationId, guestEmail, confirmationCode, guestName, propertyName, expiresAt) {
   // Check for existing unexpired code
   const existing = db.prepare(
-    "SELECT code FROM trip_codes WHERE reservation_id = ? AND guest_email = ? AND expires_at > datetime('now')"
+    "SELECT code, expires_at FROM trip_codes WHERE reservation_id = ? AND guest_email = ? AND expires_at > datetime('now')"
   ).get(reservationId, guestEmail);
-  if (existing) return existing.code;
+  if (existing) {
+    // Update expiry if checkout date changed (reservation extension)
+    if (existing.expires_at !== expiresAt) {
+      try {
+        db.prepare(
+          "UPDATE trip_codes SET expires_at = ? WHERE reservation_id = ? AND guest_email = ?"
+        ).run(expiresAt, reservationId, guestEmail);
+      } catch (_) {}
+    }
+    return existing.code;
+  }
 
   // Generate unique code
   let code, attempts = 0;
