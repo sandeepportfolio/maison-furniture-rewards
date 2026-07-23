@@ -864,7 +864,7 @@ async function pollMessages(){
 function showErrorUI(title,message){
   document.getElementById('loading-screen').classList.add('hidden');
   document.getElementById('login-screen').style.display='none';document.getElementById('login-screen').classList.add('hidden');
-  var p=document.getElementById('trip-portal');p.style.display='';p.classList.add('active');
+  var p=document.getElementById('trip-portal');p.style.display='block';p.classList.add('active');
   p.innerHTML='<div class="err-screen"><div class="err-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><h2>'+esc(title)+'</h2><p>'+esc(message)+'</p><button onclick="window.location.reload()">Try Again</button></div><footer class="t-footer"><p>&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a></p></footer>';
 }
 
@@ -901,7 +901,8 @@ function showLogin(){
 }
 
 async function showPortal(){
-  // Keep loading screen visible until data renders — FIX for blank page
+  // Show loading, hide login
+  document.getElementById('loading-screen').classList.remove('hidden');
   document.getElementById('login-screen').style.display='none';
   document.getElementById('login-screen').classList.add('hidden');
   try{
@@ -909,7 +910,7 @@ async function showPortal(){
     if(!data||(!data.reservation&&!data.listing)){showErrorUI('Unable to Load Trip','We could not retrieve your reservation details. Please try signing in again.');return}
 
     // Show portal container, render content, THEN hide loading
-    document.getElementById('trip-portal').style.display='';
+    document.getElementById('trip-portal').style.display='block';
     renderPortal(data);
     // Slight delay for DOM paint, then reveal
     requestAnimationFrame(function(){
