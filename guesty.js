@@ -159,6 +159,37 @@ function loadPersistedToken() {
 }
 loadPersistedToken();
 
+// ── Proactive startup token refresh ──────────────────────────────────
+// On ephemeral hosts (Render free tier), the bootstrap token in env vars
+// often expires between deploys. Instead of waiting for the first user
+// request to trigger a token refresh (which frequently hits Guesty's
+// aggressive rate limit), proactively refresh in the background after a
+// 30-second startup delay. Retries every 60s if rate-limited.
+if (!cachedToken) {
+  const STARTUP_DELAY = 30_000;
+  const RETRY_INTERVAL = 60_000;
+  console.log(`Startup: no valid token available — will attempt refresh in ${STARTUP_DELAY / 1000}s`);
+  setTimeout(async function startupRefresh() {
+    if (cachedToken) return; // already got one from a user request
+    const id = process.env.GUESTY_CLIENT_ID;
+    const secret = process.env.GUESTY_CLIENT_SECRET;
+    if (!id || !secret) return;
+    try {
+      // Clear any in-memory rate limit from previous attempts
+      rateLimitedUntil = 0;
+      rateLimitBackoffMs = 5 * 60_000;
+      const json = await requestTokenWithBackoff(id, secret);
+      cachedToken = json.access_token;
+      tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
+      persistToken();
+      console.log('Startup token refresh succeeded — token valid until', new Date(tokenExpiry).toISOString());
+    } catch (err) {
+      console.warn('Startup token refresh failed:', err.message, '— retrying in', RETRY_INTERVAL / 1000, 's');
+      setTimeout(startupRefresh, RETRY_INTERVAL);
+    }
+  }, STARTUP_DELAY);
+}
+
 function persistToken() {
   try {
     fs.mkdirSync(path.dirname(TOKEN_FILE), { recursive: true });
