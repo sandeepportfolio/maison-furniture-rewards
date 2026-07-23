@@ -3538,7 +3538,7 @@ app.get('/trip/:code', (req, res) => {
   res.redirect('/trip');
 });
 
-// ── Trip lookup: verify confirmation code + email ──
+// ── Trip lookup: verify confirmation code + email/phone ──
 app.post('/api/trip/lookup', async (req, res) => {
   try {
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
@@ -3546,54 +3546,28 @@ app.post('/api/trip/lookup', async (req, res) => {
       return res.status(429).json({ error: 'Too many attempts. Please try again in an hour.' });
     }
 
-    const { confirmationCode, email } = req.body || {};
-    if (!confirmationCode || !email || !email.includes('@')) {
-      return res.status(400).json({ error: 'Confirmation code and email are required' });
+    const { confirmationCode, email, phone } = req.body || {};
+    const hasEmail = email && email.includes('@');
+    const hasPhone = phone && phone.trim().length >= 7;
+    if (!confirmationCode || (!hasEmail && !hasPhone)) {
+      return res.status(400).json({ error: 'Confirmation code and email or phone number are required' });
     }
-    if (confirmationCode.length > 50 || email.length > 254) {
+    if (confirmationCode.length > 50 || (email && email.length > 254) || (phone && phone.length > 30)) {
       return res.status(400).json({ error: 'Invalid input' });
     }
 
     const code = confirmationCode.trim();
-    const guestEmail = email.trim().toLowerCase();
+    const guestEmail = hasEmail ? email.trim().toLowerCase() : null;
+    // Normalize phone to last 10 digits for comparison
+    const normalizePhone = (p) => {
+      if (!p) return '';
+      const digits = p.replace(/\D/g, '');
+      return digits.length >= 10 ? digits.slice(-10) : digits;
+    };
+    const guestPhone = hasPhone ? normalizePhone(phone) : null;
 
-    // Search Guesty for reservation by confirmation code
-    const filters = JSON.stringify([
-      { operator: '$eq', field: 'confirmationCode', value: code }
-    ]);
-    const params = new URLSearchParams({
-      filters,
-      fields: '_id confirmationCode status guest.firstName guest.lastName guest.email guest.phone checkInDateLocalized checkOutDateLocalized listing._id listing.title guestsCount nightsCount money.totalPaid money.balanceDue money.fareAccommodation money.currency money.invoiceItems money.totalTaxes source',
-      limit: '5',
-    });
-
-    let reservations;
-    try {
-      const result = await guesty.getReservationById ? null : null;
-      // Use raw guestyFetch via the module's getReservations
-      const searchResult = await guesty.getReservations({ limit: 5 });
-      // Actually, we need to use the filter approach. Let's call guestyFetch directly.
-      // Since guesty module doesn't expose a filter-by-confirmationCode method,
-      // we'll need to use the guestyFetch through the module.
-      reservations = null;
-    } catch (_) {
-      reservations = null;
-    }
-
-    // Use guestyFetch via a dedicated lookup — we need to search by confirmation code
-    // The guesty module exports getReservations but doesn't support confirmationCode filter directly.
-    // We'll call it via the existing token/fetch infrastructure.
-    const token = await (async () => {
-      // Get a valid token via the guesty module's internal getToken
-      // Since it's not exported, we use the reservation search approach
-      return null;
-    })();
-
-    // Actually let's just use the guestyFetch approach by looking up via getReservations
-    // with the confirmation code. The Guesty API supports filters on confirmationCode.
     let reservation = null;
     try {
-      // Build the URL with confirmation code filter
       const filterParam = encodeURIComponent(JSON.stringify([
         { operator: '$eq', field: 'confirmationCode', value: code }
       ]));
@@ -3607,10 +3581,6 @@ app.post('/api/trip/lookup', async (req, res) => {
         'money.currency', 'money.invoiceItems', 'money.totalTaxes',
       ].join(' '));
 
-      // We need to use the guesty module's internal fetch. Since it's not exported,
-      // let's add a thin wrapper. For now, use getReservationById won't work for search.
-      // Let's use the HTTP approach directly with the cached token.
-      const https = require('https');
       const guestyToken = await getGuestyTokenForTrip();
       if (!guestyToken) {
         return res.status(502).json({ error: 'Could not connect to booking system' });
@@ -3620,14 +3590,23 @@ app.post('/api/trip/lookup', async (req, res) => {
       const searchResult = await fetchJson(searchUrl, { headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' } });
 
       const results = searchResult.results || [];
-      // Find matching reservations where guest email matches, prefer most recent check-in
+      // Match by email or phone (last 10 digits), prefer most recent check-in
       const matches = results
-        .filter(r => (r.guest?.email || '').toLowerCase() === guestEmail)
+        .filter(r => {
+          if (guestEmail) {
+            return (r.guest?.email || '').toLowerCase() === guestEmail;
+          }
+          if (guestPhone) {
+            return normalizePhone(r.guest?.phone) === guestPhone;
+          }
+          return false;
+        })
         .sort((a, b) => (b.checkInDateLocalized || '').localeCompare(a.checkInDateLocalized || ''));
       reservation = matches[0] || null;
 
       if (!reservation && results.length > 0) {
-        return res.status(401).json({ error: 'The email does not match our records for this confirmation code.' });
+        const identType = guestEmail ? 'email' : 'phone number';
+        return res.status(401).json({ error: `The ${identType} does not match our records for this confirmation code.` });
       }
     } catch (err) {
       console.error('Trip lookup Guesty error:', err.message);
@@ -3635,14 +3614,13 @@ app.post('/api/trip/lookup', async (req, res) => {
     }
 
     if (!reservation) {
-      return res.status(404).json({ error: 'No reservation found with that confirmation code and email.' });
+      return res.status(404).json({ error: 'No reservation found with that confirmation code.' });
     }
 
-    // Check reservation status
+    // Check reservation status — allow canceled bookings through so guests
+    // can view their past reservation details and contact concierge.
     const status = (reservation.status || '').toLowerCase();
-    if (status === 'canceled' || status === 'cancelled') {
-      return res.status(410).json({ error: 'This reservation has been cancelled.' });
-    }
+    const isCanceled = status === 'canceled' || status === 'cancelled';
     if (status === 'declined' || status === 'closed' || status === 'expired') {
       return res.status(410).json({ error: 'This reservation is no longer active.' });
     }
@@ -3651,14 +3629,19 @@ app.post('/api/trip/lookup', async (req, res) => {
     }
 
     // Generate JWT magic link token + short code
+    // For canceled bookings, give 30 days from now so guests can still access details
     const checkOut = reservation.checkOutDateLocalized || '';
-    const coDate = checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 30 * 86400000);
-    const expiresAt = new Date(coDate.getTime() + 7 * 86400000); // checkout + 7 days
+    const coDate = isCanceled
+      ? new Date(Date.now() + 30 * 86400000)
+      : (checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 30 * 86400000));
+    const expiresAt = new Date(coDate.getTime() + 7 * 86400000);
 
+    // Use Guesty's email for the JWT even if guest logged in via phone
+    const jwtEmail = guestEmail || (reservation.guest?.email || '').toLowerCase() || '';
     const jwtToken = jwt.sign(
       {
         reservationId: reservation._id,
-        email: guestEmail,
+        email: jwtEmail,
         confirmationCode: code,
       },
       TRIP_JWT_SECRET,
@@ -3667,10 +3650,12 @@ app.post('/api/trip/lookup', async (req, res) => {
 
     const guestName = `${reservation.guest?.firstName || ''} ${reservation.guest?.lastName || ''}`.trim();
     const propertyName = reservation.listing?.title || reservation.listing?.nickname || '';
+    // Use the guest's actual email from Guesty for trip code (even if they logged in with phone)
+    const tripEmail = guestEmail || (reservation.guest?.email || '').toLowerCase() || `phone:${guestPhone}`;
 
     // Generate short magic code
     const tripCode = createOrGetTripCode(
-      reservation._id, guestEmail, code, guestName, propertyName,
+      reservation._id, tripEmail, code, guestName, propertyName,
       expiresAt.toISOString()
     );
 
@@ -3688,6 +3673,7 @@ app.post('/api/trip/lookup', async (req, res) => {
       checkIn: reservation.checkInDateLocalized,
       checkOut: reservation.checkOutDateLocalized,
       guests: reservation.guestsCount || 1,
+      isCanceled,
     });
   } catch (err) {
     console.error('Trip lookup error:', err.message);
@@ -3981,6 +3967,7 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       daysUntilCheckIn,
       isCanceled,
       canceledStatus: isCanceled ? resStatus : null,
+      cancellationDate: isCanceled ? (reservation.canceledAt || reservation.updatedAt || '') : null,
       tripCode,
       shareLink: tripCode ? `${baseUrl}/trip/${tripCode}` : null,
     });
