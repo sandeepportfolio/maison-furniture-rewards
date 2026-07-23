@@ -149,7 +149,7 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-why-card .inset{background:var(--card);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow-card)}
 .rs-why-card h3{margin:0;font-size:clamp(20px,2vw,24px);font-weight:750;letter-spacing:-.01em}
 .rs-why-card .body p{margin:8px 0 0;font-size:15.5px;line-height:1.55;color:rgba(25,20,16,.7);text-wrap:pretty}
-.rs-note-k{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);line-height:1.6}
+.rs-note-k{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);line-height:1.6}
 .rs-note-q{margin-top:7px;font-family:var(--serif);font-style:italic;font-size:17.5px;line-height:1.45}
 .rs-note-s{margin-top:6px;font-size:12.5px;font-weight:700;color:rgba(25,20,16,.5)}
 .rs-chat{display:flex;flex-direction:column;gap:8px}
@@ -1191,7 +1191,10 @@ function tween(id, to, fmt){
     if (p < 1) requestAnimationFrame(step);
   })(t0);
 }
-function usd(v){ return '$' + Math.round(v).toLocaleString('en-US'); }
+function usd(v){
+  var n = Math.round(v);
+  return (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString('en-US');
+}
 
 var chartEl = document.getElementById('calcChart');
 var MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
