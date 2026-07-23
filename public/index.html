@@ -602,73 +602,83 @@ ul{list-style:none}
 .reveal-delay-3{transition-delay:.3s}
 .reveal-delay-4{transition-delay:.4s}
 
-/* ── Explore Section ── */
+/* ── Explore Section (Redesigned) ── */
 .explore-section{background:var(--bg-dark);position:relative;overflow:hidden}
-.explore-hero{position:relative;height:420px;display:flex;align-items:flex-end;overflow:hidden}
-.explore-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0d0d0d 0%,#1a1520 30%,#1e1418 60%,#0d0d0d 100%);z-index:0}
-.explore-hero-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 40%,rgba(199,107,66,.12) 0%,transparent 70%);z-index:1}
-.explore-hero-bg::after{content:'';position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,var(--bg-dark),transparent);z-index:2}
-.explore-hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(199,107,66,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(199,107,66,.04) 1px,transparent 1px);background-size:60px 60px;opacity:.6;z-index:1;animation:exploreGridDrift 30s linear infinite}
+
+/* Hero */
+.xplr-hero{position:relative;min-height:380px;display:flex;align-items:flex-end;overflow:hidden}
+.xplr-hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#0d0d0d 0%,#1a130f 35%,#1e1418 55%,#0d0d0d 100%)}
+.xplr-hero-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 50% at 70% 30%,rgba(199,107,66,.1) 0%,transparent 70%)}
+.xplr-hero-bg::after{content:'';position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,var(--bg-dark),transparent)}
+.xplr-hero-grain{position:absolute;inset:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:128px;pointer-events:none}
 @keyframes exploreGridDrift{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
-.explore-hero-content{position:relative;z-index:3;padding:0 48px 60px;max-width:1400px;margin:0 auto;width:100%}
-.explore-hero-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:16px;display:block}
-.explore-hero-title{font-family:var(--serif);font-size:clamp(40px,5vw,64px);color:var(--text-inv);line-height:1.1;letter-spacing:-.02em;margin-bottom:16px;text-shadow:0 2px 12px rgba(0,0,0,.4)}
-.explore-hero-title em{font-style:italic;color:var(--accent-light)}
-.explore-hero-sub{font-family:var(--sans);font-size:17px;color:var(--text-inv-muted);max-width:520px;line-height:1.7}
+.xplr-hero-content{position:relative;z-index:3;padding:0 48px 56px;max-width:1400px;margin:0 auto;width:100%}
+.xplr-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:16px;display:block;opacity:0;transform:translateY(12px);animation:xplrFadeUp .8s cubic-bezier(.23,1,.32,1) .1s forwards}
+.xplr-title{font-family:var(--serif);font-size:clamp(36px,5vw,60px);color:var(--text-inv);line-height:1.08;letter-spacing:-.02em;margin-bottom:14px;opacity:0;transform:translateY(16px);animation:xplrFadeUp .8s cubic-bezier(.23,1,.32,1) .2s forwards}
+.xplr-title em{font-style:italic;color:var(--accent-light)}
+.xplr-subtitle{font-family:var(--sans);font-size:16px;color:var(--text-inv-muted);max-width:480px;line-height:1.7;opacity:0;transform:translateY(12px);animation:xplrFadeUp .8s cubic-bezier(.23,1,.32,1) .35s forwards}
+@keyframes xplrFadeUp{to{opacity:1;transform:translateY(0)}}
 
-.explore-inner{max-width:1400px;margin:0 auto;padding:60px 48px 100px}
+/* Hero Stats */
+.xplr-stats{display:flex;align-items:center;gap:24px;margin-top:32px;opacity:0;animation:xplrFadeUp .8s cubic-bezier(.23,1,.32,1) .5s forwards}
+.xplr-stat{display:flex;flex-direction:column;gap:4px}
+.xplr-stat-num{font-family:var(--serif);font-size:clamp(32px,4vw,44px);color:var(--text-inv);line-height:1;font-variant-numeric:tabular-nums}
+.xplr-stat-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--text-inv-muted);text-transform:uppercase}
+.xplr-stat-divider{width:1px;height:40px;background:rgba(255,255,255,.1)}
 
-/* Property Selector */
-.explore-prop-selector{display:flex;align-items:center;gap:10px;margin-bottom:48px;flex-wrap:wrap}
-.explore-prop-pill{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:10px 20px;border-radius:100px;border:1px solid var(--border-dark);color:var(--text-inv-muted);cursor:pointer;transition:all .4s var(--ease);background:transparent;white-space:nowrap}
-.explore-prop-pill:hover{border-color:var(--accent);color:var(--accent-light)}
-.explore-prop-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+/* Body */
+.xplr-body{max-width:1400px;margin:0 auto;padding:48px 48px 100px}
 
-/* Category Tabs */
-.explore-categories{display:flex;align-items:center;gap:6px;margin-bottom:40px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-.explore-categories::-webkit-scrollbar{display:none}
-.explore-cat-tab{font-family:var(--sans);font-size:13px;font-weight:500;padding:10px 22px;border-radius:100px;color:var(--text-inv-muted);cursor:pointer;transition:all .35s var(--ease);background:transparent;border:1px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px}
-.explore-cat-tab svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.explore-cat-tab:hover{color:var(--text-inv);border-color:var(--border-dark)}
-.explore-cat-tab.active{background:rgba(199,107,66,.15);border-color:var(--accent);color:var(--accent-light)}
+/* City Navigation */
+.xplr-cities{position:relative;margin-bottom:32px;border-bottom:1px solid rgba(255,255,255,.06)}
+.xplr-cities-track{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:0}
+.xplr-cities-track::-webkit-scrollbar{display:none}
+.xplr-city-tab{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--text-inv-muted);padding:16px 24px;cursor:pointer;background:none;border:none;white-space:nowrap;position:relative;transition:color .35s cubic-bezier(.23,1,.32,1);display:flex;align-items:center;gap:8px}
+.xplr-city-tab:hover{color:var(--text-inv)}
+.xplr-city-tab.active{color:var(--accent-light)}
+.xplr-city-tab::after{content:'';position:absolute;bottom:-1px;left:24px;right:24px;height:2px;background:var(--accent);transform:scaleX(0);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.xplr-city-tab.active::after{transform:scaleX(1)}
+.xplr-city-count{font-family:var(--mono);font-size:10px;background:rgba(255,255,255,.06);color:var(--text-inv-muted);padding:2px 8px;border-radius:100px;transition:all .35s cubic-bezier(.23,1,.32,1)}
+.xplr-city-tab.active .xplr-city-count{background:rgba(199,107,66,.15);color:var(--accent-light)}
+@media(hover:hover){.xplr-city-tab:hover .xplr-city-count{background:rgba(255,255,255,.1)}}
 
-/* Attraction Grid */
-.explore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:0}
-.explore-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);overflow:hidden;position:relative;cursor:pointer;transition:transform .5s var(--ease),box-shadow .5s var(--ease);opacity:0;transform:translateY(30px);border:1px solid rgba(255,255,255,.04)}
-.explore-card.visible{opacity:1;transform:translateY(0)}
-.explore-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.5)}
-.explore-card-img{position:relative;height:200px;overflow:hidden}
-.explore-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
-.explore-card:hover .explore-card-img img{transform:scale(1.08)}
-.explore-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(17,17,17,.6) 100%)}
-.explore-card-dist{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;background:rgba(17,17,17,.7);backdrop-filter:blur(8px);color:#fff;padding:6px 12px;border-radius:100px;z-index:2;display:flex;align-items:center;gap:5px}
-.explore-card-dist svg{width:10px;height:10px;stroke:var(--accent-light);fill:none;stroke-width:2}
-.explore-card-cat-badge{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;background:var(--accent);color:#fff;padding:5px 12px;border-radius:100px;z-index:2;text-transform:uppercase}
-.explore-card-body{padding:20px}
-.explore-card-name{font-family:var(--serif);font-size:22px;color:var(--text-inv);margin-bottom:8px;line-height:1.25}
-.explore-card-desc{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.explore-card-meta{display:flex;align-items:center;gap:16px}
-.explore-card-rating{font-family:var(--mono);font-size:11px;color:var(--brass-light);display:flex;align-items:center;gap:4px}
-.explore-card-rating svg{width:12px;height:12px;fill:var(--brass);stroke:none}
-.explore-card-tag{font-family:var(--mono);font-size:10px;color:var(--text-inv-muted);letter-spacing:.06em}
-.explore-card-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(199,107,66,.85) 0%,rgba(181,90,51,.9) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s var(--ease);z-index:3;padding:24px}
-.explore-card:hover .explore-card-overlay{opacity:1}
-.explore-card-overlay-text{font-family:var(--serif);font-size:20px;color:#fff;margin-bottom:8px;text-align:center}
-.explore-card-overlay-cta{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px}
-.explore-card-overlay-cta svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2}
-.explore-card-overlay-actions{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:6px}
-.explore-overlay-btn{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#fff;background:rgba(17,17,17,.35);border:1px solid rgba(255,255,255,.4);padding:10px 22px;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;transition:all .3s var(--ease);white-space:nowrap}
-.explore-overlay-btn:hover{background:rgba(17,17,17,.6);border-color:#fff;transform:translateY(-1px)}
-.explore-overlay-btn svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2}
-.explore-card-addr{font-family:var(--mono);font-size:10px;color:var(--text-inv-muted);letter-spacing:.03em;margin-bottom:12px;display:flex;align-items:center;gap:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.explore-card-addr svg{width:10px;height:10px;stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0}
-.explore-card-actions-row{display:flex;align-items:center;gap:8px;margin-top:14px}
-.explore-card-web-btn{flex:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.1);border:1px solid rgba(199,107,66,.25);padding:9px 14px;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;transition:all .3s var(--ease)}
-.explore-card-web-btn:hover{background:rgba(199,107,66,.2);border-color:var(--accent)}
-.explore-card-web-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
-.explore-card-map-btn{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-inv-muted);background:transparent;border:1px solid var(--border-dark);padding:9px 14px;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .3s var(--ease)}
-.explore-card-map-btn:hover{color:var(--text-inv);border-color:var(--text-inv-muted)}
-.explore-card-map-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+/* Category Filter */
+.xplr-cats{display:flex;gap:8px;margin-bottom:36px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.xplr-cats::-webkit-scrollbar{display:none}
+.xplr-cat{font-family:var(--sans);font-size:12px;font-weight:500;padding:8px 20px;border-radius:100px;color:var(--text-inv-muted);cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.08);transition:all .35s cubic-bezier(.23,1,.32,1);white-space:nowrap}
+.xplr-cat:hover{color:var(--text-inv);border-color:rgba(255,255,255,.15)}
+.xplr-cat.active{background:rgba(199,107,66,.12);border-color:rgba(199,107,66,.3);color:var(--accent-light)}
+.xplr-cat:active{transform:scale(.97)}
+
+/* ── Attraction Cards (Redesigned) ── */
+.xplr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:0}
+.xplr-card{background:var(--bg-dark-card);border-radius:16px;overflow:hidden;position:relative;cursor:pointer;border:1px solid rgba(255,255,255,.04);opacity:0;transform:translateY(24px) scale(.98);transition:opacity .6s cubic-bezier(.23,1,.32,1),transform .6s cubic-bezier(.23,1,.32,1),box-shadow .5s cubic-bezier(.23,1,.32,1);text-decoration:none;display:block;color:inherit}
+.xplr-card.visible{opacity:1;transform:translateY(0) scale(1)}
+@media(hover:hover){.xplr-card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(199,107,66,.1)}}
+.xplr-card:active{transform:scale(.98)}
+.xplr-card-img{position:relative;height:210px;overflow:hidden}
+.xplr-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.23,1,.32,1);will-change:transform}
+@media(hover:hover){.xplr-card:hover .xplr-card-img img{transform:scale(1.06)}}
+.xplr-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(13,13,13,.7) 100%)}
+.xplr-card-badge{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(13,13,13,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--accent-light);padding:5px 12px;border-radius:100px;z-index:2;border:1px solid rgba(199,107,66,.15)}
+.xplr-card-rating-badge{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:11px;background:rgba(13,13,13,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--brass-light);padding:5px 12px;border-radius:100px;z-index:2;display:flex;align-items:center;gap:4px;border:1px solid rgba(255,255,255,.06)}
+.xplr-card-rating-badge svg{width:11px;height:11px;fill:var(--brass);stroke:none}
+.xplr-card-body{padding:20px 20px 18px}
+.xplr-card-name{font-family:var(--serif);font-size:20px;color:var(--text-inv);margin-bottom:6px;line-height:1.25;letter-spacing:-.01em}
+.xplr-card-desc{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.xplr-card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.xplr-card-city{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--text-inv-muted);text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.xplr-card-city svg{width:10px;height:10px;stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0}
+.xplr-card-link{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-light);display:flex;align-items:center;gap:5px;transition:gap .3s cubic-bezier(.23,1,.32,1)}
+@media(hover:hover){.xplr-card:hover .xplr-card-link{gap:8px}}
+.xplr-card-link svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .3s cubic-bezier(.23,1,.32,1)}
+@media(hover:hover){.xplr-card:hover .xplr-card-link svg{transform:translateX(2px)}}
+/* Featured first card */
+.xplr-grid .xplr-card:first-child{grid-column:1 / -1;display:grid;grid-template-columns:1.2fr 1fr}
+.xplr-grid .xplr-card:first-child .xplr-card-img{height:100%;min-height:280px}
+.xplr-grid .xplr-card:first-child .xplr-card-body{padding:28px 28px 24px;display:flex;flex-direction:column;justify-content:center}
+.xplr-grid .xplr-card:first-child .xplr-card-name{font-size:28px;margin-bottom:10px}
+.xplr-grid .xplr-card:first-child .xplr-card-desc{-webkit-line-clamp:3;font-size:14px;margin-bottom:20px}
 
 /* ══ Explore Map — Rebuilt Interactive System ══ */
 .explore-map-container{margin-bottom:64px}
@@ -836,18 +846,26 @@ ul{list-style:none}
 .event-countdown svg{width:10px;height:10px;stroke:var(--brass);fill:none;stroke-width:2}
 .event-price{font-family:var(--mono);font-size:11px;color:var(--accent-light);padding:4px 10px;background:rgba(199,107,66,.1);border-radius:100px;align-self:flex-start;margin-top:4px;white-space:nowrap}
 
-/* Explore no-results */
-.explore-empty{text-align:center;padding:80px 24px;grid-column:1/-1}
-.explore-empty p{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted)}
+/* No results */
+.xplr-empty{text-align:center;padding:80px 24px;grid-column:1/-1}
+.xplr-empty p{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted)}
 
-/* Explore show more/less — hidden on desktop */
-.explore-show-more-wrap{display:block;text-align:center;margin:20px 0 56px}
-.explore-grid:not(.expanded) .explore-card:nth-child(n+7){display:none}
+/* Show more */
+.xplr-show-more{display:block;text-align:center;margin:24px 0 56px}
+.xplr-grid:not(.expanded) .xplr-card:nth-child(n+8){display:none}
 .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+5){display:none}
-.explore-show-more-btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.08);border:1px solid rgba(199,107,66,.25);padding:11px 28px;border-radius:100px;cursor:pointer;transition:all .4s var(--ease);display:inline-flex;align-items:center;gap:8px}
-.explore-show-more-btn:hover{background:rgba(199,107,66,.15);border-color:rgba(199,107,66,.35);transform:translateY(-2px)}
-.explore-show-more-btn svg{width:16px;height:16px;stroke:var(--accent-light);stroke-width:2;fill:none;transition:transform .3s var(--ease)}
-.explore-show-more-btn.expanded svg{transform:rotate(180deg)}
+.xplr-more-btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-light);background:rgba(199,107,66,.06);border:1px solid rgba(199,107,66,.2);padding:12px 32px;border-radius:100px;cursor:pointer;transition:all .4s cubic-bezier(.23,1,.32,1);display:inline-flex;align-items:center;gap:8px}
+@media(hover:hover){.xplr-more-btn:hover{background:rgba(199,107,66,.12);border-color:rgba(199,107,66,.35);transform:translateY(-2px)}}
+.xplr-more-btn:active{transform:scale(.97)}
+.xplr-more-btn svg{transition:transform .3s cubic-bezier(.23,1,.32,1)}
+.xplr-more-btn.expanded svg{transform:rotate(180deg)}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+.xplr-label,.xplr-title,.xplr-subtitle,.xplr-stats{opacity:1;transform:none;animation:none}
+.xplr-card{opacity:1;transform:none;transition:none}
+.xplr-city-tab::after{transition:none}
+}
 
 /* ── Responsive ── */
 @media(max-width:1024px){
@@ -864,9 +882,12 @@ ul{list-style:none}
   .story-inner{grid-template-columns:1fr;gap:40px;padding:80px 24px}
   .story-visual{order:2}
   .story-svg{max-width:280px}
-  .explore-grid{grid-template-columns:repeat(2,1fr)}
+  .xplr-grid{grid-template-columns:repeat(2,1fr)}
+  .xplr-grid .xplr-card:first-child{grid-template-columns:1fr;display:block}
+  .xplr-grid .xplr-card:first-child .xplr-card-img{height:220px;min-height:unset}
   .explore-events-grid{grid-template-columns:repeat(2,1fr)}
-  .explore-hero{height:360px}
+  .xplr-hero{min-height:320px}
+  .xplr-body{padding:40px 32px 80px}
 }
 @media(max-width:768px){
   .nav{padding:18px 20px}
@@ -1156,7 +1177,7 @@ ul{list-style:none}
 .reveal-diagonal{opacity:0;transform:translate(-20px,30px) rotate(-1deg);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
 .reveal-diagonal.visible{opacity:1;transform:translate(0,0) rotate(0)}
 /* Keep content visible for crawlers, screenshots, reduced/interrupted JS, and fast-scroll users. */
-.reveal,.reveal-scale,.reveal-left,.reveal-right,.reveal-diagonal,.prop-card,.explore-card,.explore-event-card,.exp-card,.wbd-top-label,.wbd-headline-wrap,.wbd-card,.wbd-bottom,.wbd-divider-line,.wbd-card-stat-val{opacity:1;transform:none;filter:none}
+.reveal,.reveal-scale,.reveal-left,.reveal-right,.reveal-diagonal,.prop-card,.xplr-card,.explore-event-card,.exp-card,.wbd-top-label,.wbd-headline-wrap,.wbd-card,.wbd-bottom,.wbd-divider-line,.wbd-card-stat-val{opacity:1;transform:none;filter:none}
 
 @media(max-width:1024px){
   .stats-bar{grid-template-columns:repeat(2,1fr);gap:20px}
@@ -1225,13 +1246,19 @@ ul{list-style:none}
   .legal-close{top:16px;right:16px;width:40px;height:40px}
   .legal-title{margin-bottom:6px}
   .legal-updated{margin-bottom:36px}
-  .explore-hero{height:300px}
-  .explore-hero-content{padding:0 20px 40px}
-  .explore-inner{padding:40px 20px 80px}
-  .explore-grid{grid-template-columns:1fr}
+  .xplr-hero{min-height:280px}
+  .xplr-hero-content{padding:0 20px 36px}
+  .xplr-body{padding:32px 20px 80px}
+  .xplr-grid{grid-template-columns:1fr}
+  .xplr-grid .xplr-card:first-child{grid-template-columns:1fr;display:block}
+  .xplr-grid .xplr-card:first-child .xplr-card-img{height:200px;min-height:unset}
+  .xplr-grid .xplr-card:first-child .xplr-card-name{font-size:22px}
+  .xplr-grid:not(.expanded) .xplr-card:nth-child(n+6){display:none}
+  .xplr-stats{gap:16px;margin-top:24px}
+  .xplr-stat-num{font-size:28px}
+  .xplr-stat-divider{height:28px}
+  .xplr-city-tab{padding:14px 18px;font-size:13px}
   .explore-events-grid{grid-template-columns:1fr}
-  .explore-show-more-wrap{display:block}
-  .explore-grid:not(.expanded) .explore-card:nth-child(n+5){display:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
   .map-bottom-sheet{border-radius:14px 14px 0 0}
@@ -1263,10 +1290,8 @@ ul{list-style:none}
   .map-prop-strip-price{font-size:10px}
   .map-prop-strip-price span{font-size:8px}
   .map-close-btn{width:42px;height:42px;top:14px;right:14px}
-  .explore-prop-selector{gap:8px}
-  .explore-prop-pill{padding:8px 14px;font-size:10px}
-  .explore-categories{gap:4px}
-  .explore-cat-tab{padding:10px 16px;font-size:12px;min-height:44px}
+  .xplr-cats{gap:6px}
+  .xplr-cat{padding:8px 16px;font-size:11px;min-height:40px}
   .explore-event-card{flex-direction:row}
   .event-date-block{min-width:70px;padding:16px 12px}
   .event-date-day{font-size:26px}
@@ -1305,10 +1330,13 @@ ul{list-style:none}
   .stats-bar{padding:0 16px}
   .stat-item{min-width:120px;padding:20px 16px}
   .marquee-item{font-size:10px}
-  .explore-hero{height:260px}
-  .explore-hero-sub{font-size:14px}
-  .explore-card-img{height:160px}
-  .explore-card-name{font-size:18px}
+  .xplr-hero{min-height:240px}
+  .xplr-title{font-size:28px}
+  .xplr-subtitle{font-size:14px}
+  .xplr-card-img{height:170px}
+  .xplr-card-name{font-size:18px}
+  .xplr-grid .xplr-card:first-child .xplr-card-name{font-size:20px}
+  .xplr-grid .xplr-card:first-child .xplr-card-img{height:180px}
   .explore-map-wrap{height:400px}
   .map-bottom-sheet.strip-only{max-height:calc(230px + env(safe-area-inset-bottom,34px))}
   .map-card-photo{width:80px;min-width:80px;height:80px}
@@ -1687,62 +1715,80 @@ ul{list-style:none}
 <!-- ═══ EXPLORE THE AREA ═══ -->
 <section class="explore-section" id="explore">
   <!-- Hero -->
-  <div class="explore-hero">
-    <div class="explore-hero-bg"></div>
-    <div class="explore-hero-grid"></div>
-    <div class="explore-hero-content">
-      <span class="explore-hero-label">04&ensp;EXPLORE THE AREA</span>
-      <h2 class="explore-hero-title">Discover <em>what&rsquo;s nearby</em></h2>
-      <p class="explore-hero-sub">World-class dining, entertainment, and outdoor adventures — all minutes from your door.</p>
+  <div class="xplr-hero">
+    <div class="xplr-hero-bg"></div>
+    <div class="xplr-hero-grain"></div>
+    <div class="xplr-hero-content">
+      <span class="xplr-label">04&ensp;EXPLORE THE AREA</span>
+      <h2 class="xplr-title">The Dallas-Fort Worth <em>Experience</em></h2>
+      <p class="xplr-subtitle">Five cities. Thirty destinations. One unforgettable stay.</p>
+      <div class="xplr-stats" id="xplrStats">
+        <div class="xplr-stat"><span class="xplr-stat-num" data-target="30">0</span><span class="xplr-stat-label">Curated Spots</span></div>
+        <div class="xplr-stat-divider"></div>
+        <div class="xplr-stat"><span class="xplr-stat-num" data-target="6">0</span><span class="xplr-stat-label">Cities</span></div>
+        <div class="xplr-stat-divider"></div>
+        <div class="xplr-stat"><span class="xplr-stat-num" data-target="7">0</span><span class="xplr-stat-label">Properties</span></div>
+      </div>
     </div>
   </div>
 
-  <div class="explore-inner">
-    <!-- Property Selector -->
-    <div class="explore-prop-selector" id="explorePropSelector"></div>
+  <div class="xplr-body">
+    <!-- City Navigation -->
+    <nav class="xplr-cities" id="xplrCities">
+      <div class="xplr-cities-track">
+        <button class="xplr-city-tab active" data-city="all" onclick="selectCity('all')">
+          <span class="xplr-city-name">All Cities</span>
+          <span class="xplr-city-count" id="xplrCountAll">30</span>
+        </button>
+        <button class="xplr-city-tab" data-city="irving" onclick="selectCity('irving')">
+          <span class="xplr-city-name">Irving &amp; Las Colinas</span>
+          <span class="xplr-city-count" id="xplrCountIrving">9</span>
+        </button>
+        <button class="xplr-city-tab" data-city="dallas" onclick="selectCity('dallas')">
+          <span class="xplr-city-name">Dallas</span>
+          <span class="xplr-city-count" id="xplrCountDallas">12</span>
+        </button>
+        <button class="xplr-city-tab" data-city="plano" onclick="selectCity('plano')">
+          <span class="xplr-city-name">Plano</span>
+          <span class="xplr-city-count" id="xplrCountPlano">2</span>
+        </button>
+        <button class="xplr-city-tab" data-city="arlington" onclick="selectCity('arlington')">
+          <span class="xplr-city-name">Arlington</span>
+          <span class="xplr-city-count" id="xplrCountArlington">3</span>
+        </button>
+        <button class="xplr-city-tab" data-city="richardson" onclick="selectCity('richardson')">
+          <span class="xplr-city-name">Richardson</span>
+          <span class="xplr-city-count" id="xplrCountRichardson">1</span>
+        </button>
+        <button class="xplr-city-tab" data-city="the colony" onclick="selectCity('the colony')">
+          <span class="xplr-city-name">The Colony</span>
+          <span class="xplr-city-count" id="xplrCountColony">1</span>
+        </button>
+      </div>
+      <div class="xplr-city-indicator" id="xplrCityIndicator"></div>
+    </nav>
 
-    <!-- Category Tabs -->
-    <div class="explore-categories" id="exploreCatTabs">
-      <button class="explore-cat-tab active" data-cat="all" onclick="filterExplore('all')">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg>
-        All
-      </button>
-      <button class="explore-cat-tab" data-cat="dining" onclick="filterExplore('dining')">
-        <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
-        Dining &amp; Nightlife
-      </button>
-      <button class="explore-cat-tab" data-cat="outdoor" onclick="filterExplore('outdoor')">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Outdoor &amp; Nature
-      </button>
-      <button class="explore-cat-tab" data-cat="shopping" onclick="filterExplore('shopping')">
-        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        Shopping &amp; Entertainment
-      </button>
-      <button class="explore-cat-tab" data-cat="arts" onclick="filterExplore('arts')">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Arts &amp; Culture
-      </button>
-      <button class="explore-cat-tab" data-cat="family" onclick="filterExplore('family')">
-        <svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/></svg>
-        Family Fun
-      </button>
-      <button class="explore-cat-tab" data-cat="sports" onclick="filterExplore('sports')">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 000 20 14.5 14.5 0 000-20"/><path d="M2 12h20"/></svg>
-        Sports &amp; Recreation
-      </button>
+    <!-- Category Filter -->
+    <div class="xplr-cats" id="xplrCats">
+      <button class="xplr-cat active" data-cat="all" onclick="filterExplore('all')">All</button>
+      <button class="xplr-cat" data-cat="dining" onclick="filterExplore('dining')">Dining</button>
+      <button class="xplr-cat" data-cat="outdoor" onclick="filterExplore('outdoor')">Outdoors</button>
+      <button class="xplr-cat" data-cat="shopping" onclick="filterExplore('shopping')">Shopping</button>
+      <button class="xplr-cat" data-cat="arts" onclick="filterExplore('arts')">Arts</button>
+      <button class="xplr-cat" data-cat="family" onclick="filterExplore('family')">Family</button>
+      <button class="xplr-cat" data-cat="sports" onclick="filterExplore('sports')">Sports</button>
     </div>
 
     <!-- Attractions Grid -->
-    <div class="explore-grid" id="exploreGrid"></div>
-    <div class="explore-show-more-wrap" id="attractionsShowMore">
-      <button class="explore-show-more-btn" onclick="toggleExploreExpand('attractions')">
+    <div class="xplr-grid" id="exploreGrid"></div>
+    <div class="xplr-show-more" id="attractionsShowMore">
+      <button class="xplr-more-btn" onclick="toggleExploreExpand('attractions')">
         Show More
-        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
       </button>
     </div>
 
-    <!-- Interactive Property Map — Rebuilt -->
+    <!-- Interactive Property Map -->
     <div class="explore-map-container" id="propertyMapSection">
       <div class="explore-map-header">
         <div>
@@ -1776,7 +1822,6 @@ ul{list-style:none}
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="8"/></svg>
         </button>
         <div class="map-nav-dots" id="mapNavDots"></div>
-        <!-- Bottom Sheet: unified card + strip container -->
         <div class="map-bottom-sheet strip-only" id="mapBottomSheet">
           <div class="map-sheet-handle"><div class="map-sheet-handle-bar"></div></div>
           <div class="map-card-section" id="mapCardSection">
@@ -1818,10 +1863,10 @@ ul{list-style:none}
         <span class="explore-events-sub">Live events, concerts &amp; more near your stay</span>
       </div>
       <div class="explore-events-grid" id="exploreEventsGrid"></div>
-      <div class="explore-show-more-wrap" id="eventsShowMore">
-        <button class="explore-show-more-btn" onclick="toggleExploreExpand('events')">
+      <div class="xplr-show-more" id="eventsShowMore">
+        <button class="xplr-more-btn" onclick="toggleExploreExpand('events')">
           Show More
-          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
         </button>
       </div>
     </div>
@@ -4737,7 +4782,6 @@ const ATTRACTIONS = [
 ];
 
 
-let exploreSelectedProp = null;
 let exploreSelectedCat = 'all';
 let exploreMapInstance = null;
 let exploreMarkers = [];
@@ -4996,29 +5040,19 @@ function getMapBounds() {
   return L.latLngBounds(coords);
 }
 
-function initExplorePropSelector() {
-  const c = document.getElementById('explorePropSelector');
-  if (!c) return;
-  c.innerHTML = PROPERTIES.map((p, i) => {
-    const cls = i === 0 ? 'explore-prop-pill active' : 'explore-prop-pill';
-    return `<button class="${cls}" data-slug="${p.slug}" onclick="selectExploreProp('${p.slug}')">${p.name}</button>`;
-  }).join('');
-  exploreSelectedProp = PROPERTIES[0];
-}
+// City-based explore
+let exploreSelectedCity = 'all';
 
-function selectExploreProp(slug) {
-  exploreSelectedProp = PROPERTIES.find(p => p.slug === slug) || PROPERTIES[0];
-  document.querySelectorAll('.explore-prop-pill').forEach(b => b.classList.toggle('active', b.dataset.slug === slug));
+function selectCity(city) {
+  exploreSelectedCity = city;
+  document.querySelectorAll('.xplr-city-tab').forEach(b => b.classList.toggle('active', b.dataset.city === city));
   renderExploreGrid();
-  updateExploreMap();
-  fetchEvents();
 }
 
 function filterExplore(cat) {
   exploreSelectedCat = cat;
-  document.querySelectorAll('.explore-cat-tab').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  document.querySelectorAll('.xplr-cat').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
   renderExploreGrid();
-  updateExploreMap();
 }
 
 /* Open map modal zoomed to an attraction or property coordinate */
@@ -5046,121 +5080,91 @@ function viewPropertyOnMap(slug) {
 function renderExploreGrid() {
   const grid = document.getElementById('exploreGrid');
   if (!grid) return;
-  const prop = exploreSelectedProp || PROPERTIES[0];
 
-  let items = ATTRACTIONS.map(a => ({
-    ...a,
-    distance: haversine(prop.lat, prop.lng, a.lat, a.lng)
-  })).sort((a, b) => a.distance - b.distance);
+  const cityLabels = {irving:'Irving / Las Colinas',plano:'Plano',dallas:'Dallas',richardson:'Richardson',arlington:'Arlington','the colony':'The Colony'};
 
+  let items = [...ATTRACTIONS];
+
+  // Filter by city
+  if (exploreSelectedCity !== 'all') {
+    items = items.filter(a => a.area === exploreSelectedCity);
+  }
+
+  // Filter by category
   if (exploreSelectedCat !== 'all') {
     items = items.filter(a => a.cat === exploreSelectedCat);
   }
 
+  // Sort by rating descending for best-first display
+  items.sort((a, b) => b.rating - a.rating);
+
   if (items.length === 0) {
-    grid.innerHTML = '<div class="explore-empty"><p>No attractions found in this category. Try selecting a different filter.</p></div>';
+    grid.innerHTML = '<div class="xplr-empty"><p>No attractions found. Try a different city or category.</p></div>';
+    document.getElementById('attractionsShowMore').style.display = 'none';
     return;
   }
 
   grid.innerHTML = items.map((a, i) => `
-    <div class="explore-card" style="transition-delay:${i * 60}ms" onclick="window.open('${a.url}','_blank','noopener')">
-      <div class="explore-card-img">
+    <a class="xplr-card" href="${a.url}" target="_blank" rel="noopener" style="transition-delay:${Math.min(i, 8) * 50}ms">
+      <div class="xplr-card-img">
         <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#1a1a1a 0%,#2d1f1a 50%,#1a1a1a 100%)'">
-        <span class="explore-card-dist">
-          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${a.distance.toFixed(1)} mi
+        <span class="xplr-card-badge">${a.cat}</span>
+        <span class="xplr-card-rating-badge">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          ${a.rating}
         </span>
-        <span class="explore-card-cat-badge">${a.cat}</span>
       </div>
-      <div class="explore-card-body">
-        <div class="explore-card-name">${a.name}</div>
-        <div class="explore-card-desc">${a.desc}</div>
-        ${a.address ? `<div class="explore-card-addr"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${a.address}</div>` : ''}
-        <div class="explore-card-meta">
-          <span class="explore-card-rating">
-            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            ${a.rating}
+      <div class="xplr-card-body">
+        <div class="xplr-card-name">${a.name}</div>
+        <div class="xplr-card-desc">${a.desc}</div>
+        <div class="xplr-card-footer">
+          <span class="xplr-card-city">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${cityLabels[a.area] || a.area.toUpperCase()}
           </span>
-          <span class="explore-card-tag">${{irving:'IRVING',plano:'PLANO',dallas:'DALLAS',richardson:'RICHARDSON',arlington:'ARLINGTON'}[a.area]||a.area.toUpperCase()}</span>
-        </div>
-        <div class="explore-card-actions-row">
-          <a class="explore-card-web-btn" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-            ${a.booking ? 'Website' : 'Visit Website'}
-            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>
-          ${a.booking ? `<a class="explore-card-web-btn" href="${a.booking}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#fff;background:var(--accent);border-color:var(--accent)">
-            Book
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </a>` : ''}
-          <button class="explore-card-map-btn" onclick="event.stopPropagation();openExploreAttraction(${a.lat},${a.lng},'${a.name.replace(/'/g,"\\'")}')" aria-label="View ${a.name.replace(/'/g,"\\'")} on map">
-            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Map
-          </button>
+          <span class="xplr-card-link">
+            Explore
+            <svg viewBox="0 0 24 24"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
         </div>
       </div>
-      <div class="explore-card-overlay">
-        <div class="explore-card-overlay-text">${a.name}</div>
-        <div class="explore-card-overlay-actions">
-          <a class="explore-overlay-btn" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-            Visit Website
-            <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>
-          ${a.booking ? `<a class="explore-overlay-btn" href="${a.booking}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-            Book Now
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </a>` : ''}
-          <button class="explore-overlay-btn" onclick="event.stopPropagation();openExploreAttraction(${a.lat},${a.lng},'${a.name.replace(/'/g,"\\'")}')">
-            View on Map
-            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+    </a>
   `).join('');
 
-  // Trigger staggered reveal animation
-  requestAnimationFrame(() => {
-    grid.querySelectorAll('.explore-card').forEach((card, i) => {
-      setTimeout(() => card.classList.add('visible'), i * 60);
-    });
-  });
-
-  // Update show more button visibility & count
-  const showMoreBtn = document.querySelector('#attractionsShowMore .explore-show-more-btn');
-  if (showMoreBtn) {
-    const hiddenCount = items.length - exploreVisibleCount('attractions');
-    if (hiddenCount > 0) {
-      if (!grid.classList.contains('expanded')) {
-        showMoreBtn.innerHTML = `Show More (${hiddenCount}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+  // Staggered reveal via IntersectionObserver
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
       }
-      document.getElementById('attractionsShowMore').style.display = 'block';
-    } else {
-      document.getElementById('attractionsShowMore').style.display = 'none';
-    }
-  }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+  grid.querySelectorAll('.xplr-card').forEach(card => obs.observe(card));
+
+  // Show more button
+  updateShowMoreCounts();
 }
 
-// How many cards are visible before "Show More" (must match the CSS nth-child rules)
 function exploreVisibleCount(section) {
   const mobile = window.matchMedia('(max-width:768px)').matches;
-  if (section === 'attractions') return mobile ? 4 : 6;
-  return mobile ? 3 : 4; // events
+  if (section === 'attractions') return mobile ? 5 : 7;
+  return mobile ? 3 : 4;
 }
 
-// Keep "Show More (N)" labels accurate when the viewport crosses the mobile breakpoint
 function updateShowMoreCounts() {
-  [['exploreGrid', 'attractionsShowMore', '.explore-card', 'attractions'],
+  [['exploreGrid', 'attractionsShowMore', '.xplr-card', 'attractions'],
    ['exploreEventsGrid', 'eventsShowMore', '.explore-event-card', 'events']].forEach(([gridId, wrapId, cardSel, section]) => {
     const grid = document.getElementById(gridId);
     const wrap = document.getElementById(wrapId);
     if (!grid || !wrap) return;
-    const btn = wrap.querySelector('.explore-show-more-btn');
+    const btn = wrap.querySelector('.xplr-more-btn');
     const total = grid.querySelectorAll(cardSel).length;
     const hidden = total - exploreVisibleCount(section);
     if (hidden <= 0) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
     if (btn && !grid.classList.contains('expanded')) {
-      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
     }
   });
 }
@@ -5173,35 +5177,36 @@ window.addEventListener('resize', () => {
 function toggleExploreExpand(section) {
   if (section === 'attractions') {
     const grid = document.getElementById('exploreGrid');
-    const btn = document.querySelector('#attractionsShowMore .explore-show-more-btn');
+    const btn = document.querySelector('#attractionsShowMore .xplr-more-btn');
+    if (!grid || !btn) return;
     const visible = exploreVisibleCount('attractions');
     const isExpanding = !grid.classList.contains('expanded');
     grid.classList.toggle('expanded');
     btn.classList.toggle('expanded');
     if (isExpanding) {
-      btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
-      // Animate newly visible cards
-      grid.querySelectorAll(`.explore-card:nth-child(n+${visible + 1})`).forEach((card, i) => {
+      btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+      grid.querySelectorAll(`.xplr-card:nth-child(n+${visible + 1})`).forEach((card, i) => {
         card.classList.remove('visible');
         requestAnimationFrame(() => {
-          setTimeout(() => card.classList.add('visible'), i * 60);
+          setTimeout(() => card.classList.add('visible'), i * 50);
         });
       });
     } else {
-      const total = grid.querySelectorAll('.explore-card').length;
+      const total = grid.querySelectorAll('.xplr-card').length;
       const hidden = total - visible;
-      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
       grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   } else if (section === 'events') {
     const grid = document.getElementById('exploreEventsGrid');
-    const btn = document.querySelector('#eventsShowMore .explore-show-more-btn');
+    const btn = document.querySelector('#eventsShowMore .xplr-more-btn');
+    if (!grid || !btn) return;
     const visible = exploreVisibleCount('events');
     const isExpanding = !grid.classList.contains('expanded');
     grid.classList.toggle('expanded');
     btn.classList.toggle('expanded');
     if (isExpanding) {
-      btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+      btn.innerHTML = 'Show Less <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
       grid.querySelectorAll(`.explore-event-card:nth-child(n+${visible + 1})`).forEach((card, i) => {
         card.classList.remove('visible');
         requestAnimationFrame(() => {
@@ -5211,7 +5216,7 @@ function toggleExploreExpand(section) {
     } else {
       const total = grid.querySelectorAll('.explore-event-card').length;
       const hidden = total - visible;
-      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`;
+      btn.innerHTML = `Show More (${hidden}) <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
       document.getElementById('exploreEvents').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
@@ -5476,7 +5481,6 @@ function selectPropertyOnMap(idx) {
   }
 
   updateMapPropStrip(idx);
-  exploreSelectedProp = prop;
   updateExploreMap();
 }
 
@@ -5754,9 +5758,10 @@ function updateExploreMap() {
 
 // Events
 async function fetchEvents() {
-  const prop = exploreSelectedProp || PROPERTIES[0];
+  // Use center of DFW metro for events
+  const evLat = 32.85, evLng = -96.97;
   try {
-    const resp = await fetch(`/api/events?lat=${prop.lat}&lng=${prop.lng}&radius=25`);
+    const resp = await fetch(`/api/events?lat=${evLat}&lng=${evLng}&radius=25`);
     const data = await resp.json();
     renderEvents(data.events || []);
   } catch (err) {
@@ -5835,19 +5840,42 @@ function initExploreReveals() {
         observer.unobserve(e.target);
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
 
-  document.querySelectorAll('.explore-card, .explore-event-card').forEach(el => observer.observe(el));
+  document.querySelectorAll('.xplr-card, .explore-event-card').forEach(el => observer.observe(el));
 }
 
 function initExplore() {
-  initExplorePropSelector();
   renderExploreGrid();
-  // Pre-initialize the map immediately so it's ready when the user clicks
   initExploreMap();
   fetchEvents();
-  // Delay reveals slightly so cards are rendered
-  setTimeout(initExploreReveals, 200);
+
+  // Animate hero stat counters on scroll
+  const statsEl = document.querySelector('.xplr-stats');
+  if (statsEl) {
+    const counterObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          statsEl.querySelectorAll('.xplr-stat-num').forEach(el => {
+            const target = parseInt(el.dataset.target || el.textContent, 10);
+            if (isNaN(target)) return;
+            el.textContent = '0';
+            const duration = 1400;
+            const start = performance.now();
+            const ease = t => t < 0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+            function tick(now) {
+              const p = Math.min((now - start) / duration, 1);
+              el.textContent = Math.round(ease(p) * target);
+              if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          });
+          counterObs.unobserve(statsEl);
+        }
+      });
+    }, { threshold: 0.3 });
+    counterObs.observe(statsEl);
+  }
 }
 
 /* ═══ Touch Swipe Support for Carousels ═══ */
