@@ -159,35 +159,13 @@ function loadPersistedToken() {
 }
 loadPersistedToken();
 
-// ── Proactive startup token refresh ──────────────────────────────────
-// On ephemeral hosts (Render free tier), the bootstrap token in env vars
-// often expires between deploys. Instead of waiting for the first user
-// request to trigger a token refresh (which frequently hits Guesty's
-// aggressive rate limit), proactively refresh in the background after a
-// 30-second startup delay. Retries every 60s if rate-limited.
+// ── Startup: log token status ────────────────────────────────────────
+// Do NOT proactively refresh at startup — repeated startup retries across
+// overlapping Render instances keep Guesty rate-limited indefinitely.
+// Instead, the first user request triggers getToken() which handles
+// backoff correctly.
 if (!cachedToken) {
-  const STARTUP_DELAY = 120_000;   // 2 min — let Guesty rate limit cool down after a deploy
-  const RETRY_INTERVAL = 300_000;  // 5 min — avoid extending Guesty's rate limit window
-  console.log(`Startup: no valid token available — will attempt refresh in ${STARTUP_DELAY / 1000}s`);
-  setTimeout(async function startupRefresh() {
-    if (cachedToken) return; // already got one from a user request
-    const id = process.env.GUESTY_CLIENT_ID;
-    const secret = process.env.GUESTY_CLIENT_SECRET;
-    if (!id || !secret) return;
-    try {
-      // Clear any in-memory rate limit from previous attempts
-      rateLimitedUntil = 0;
-      rateLimitBackoffMs = 5 * 60_000;
-      const json = await requestTokenWithBackoff(id, secret);
-      cachedToken = json.access_token;
-      tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
-      persistToken();
-      console.log('Startup token refresh succeeded — token valid until', new Date(tokenExpiry).toISOString());
-    } catch (err) {
-      console.warn('Startup token refresh failed:', err.message, '— retrying in', RETRY_INTERVAL / 1000, 's');
-      setTimeout(startupRefresh, RETRY_INTERVAL);
-    }
-  }, STARTUP_DELAY);
+  console.log('Startup: no valid token available — serving static data (token refresh will happen on first user request)');
 }
 
 function persistToken() {
