@@ -76,41 +76,72 @@ input,textarea{font-family:var(--font-b);outline:none;border:none}
 .loader-label{margin-top:24px;color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:400}
 
 /* ─── Login Screen ─── */
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;transition:opacity .6s var(--ease),visibility .6s}
+#login-screen{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:opacity .6s var(--ease),visibility .6s}
 #login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.login-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.35;pointer-events:none}
-.login-orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(199,107,66,.15),transparent 70%);top:-10%;left:-5%;animation:orbFloat1 20s ease-in-out infinite}
-.login-orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(199,107,66,.08),transparent 70%);bottom:-5%;right:-8%;animation:orbFloat2 25s ease-in-out infinite}
-.login-orb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.03),transparent 70%);top:40%;right:20%;animation:orbFloat1 18s ease-in-out infinite reverse}
 
-.login-card{position:relative;width:100%;max-width:400px;background:rgba(18,18,18,.85);backdrop-filter:blur(60px);-webkit-backdrop-filter:blur(60px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:52px 36px 44px;animation:scaleIn .7s var(--ease);z-index:2}
-@media(max-width:480px){.login-card{padding:44px 24px 36px;border-radius:16px}}
-.login-brand{text-align:center;margin-bottom:44px}
-.login-brand-icon{width:44px;height:44px;margin:0 auto 20px;border:1px solid rgba(199,107,66,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
-.login-brand-icon::after{content:'';position:absolute;inset:-4px;border:1px solid rgba(199,107,66,.08);border-radius:50%;animation:glowPulse 4s ease-in-out infinite}
-.login-brand-icon svg{width:18px;height:18px;color:var(--accent)}
-.login-brand h1{font-family:var(--font-h);font-size:26px;font-weight:500;letter-spacing:-.01em;margin-bottom:6px}
-.login-brand p{color:var(--muted);font-size:13px;font-weight:300;letter-spacing:.01em}
+/* Gradient mesh background */
+.login-mesh{position:absolute;inset:0;overflow:hidden}
+.login-mesh::before{content:'';position:absolute;width:140%;height:140%;top:-20%;left:-20%;background:
+  radial-gradient(ellipse 600px 500px at 20% 30%, rgba(199,107,66,.07) 0%, transparent 70%),
+  radial-gradient(ellipse 400px 600px at 80% 70%, rgba(199,107,66,.04) 0%, transparent 70%),
+  radial-gradient(ellipse 300px 300px at 50% 50%, rgba(255,255,255,.015) 0%, transparent 70%);
+  animation:meshDrift 30s ease-in-out infinite alternate}
+.login-mesh::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");opacity:.4}
+@keyframes meshDrift{0%{transform:translate(0,0) rotate(0deg)}100%{transform:translate(20px,-10px) rotate(.5deg)}}
+
+/* Accent line at top */
+.login-accent-line{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(199,107,66,.3) 50%,transparent 95%);z-index:3}
+
+/* Top brand */
+.login-top{position:relative;z-index:2;padding:28px 28px 0;display:flex;align-items:center;gap:10px}
+.login-top-icon{width:34px;height:34px;border:1px solid rgba(199,107,66,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(199,107,66,.05)}
+.login-top-icon svg{width:14px;height:14px;color:var(--accent)}
+.login-top-name{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:500}
+.login-top-name span{color:rgba(199,107,66,.85);font-weight:600}
+
+/* Main content area */
+.login-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 48px;position:relative;z-index:2}
+@media(max-width:480px){.login-main{padding:32px 20px 40px;justify-content:flex-start;padding-top:10vh}}
+
+.login-headline{text-align:center;margin-bottom:32px;max-width:560px}
+.login-eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;font-weight:500;opacity:0;animation:fadeUpSm .7s var(--ease) .15s forwards}
+.login-headline h1{font-family:var(--font-h);font-size:clamp(34px,7.5vw,52px);font-weight:500;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px;opacity:0;animation:fadeUp .8s var(--ease) .25s forwards}
+.login-headline h1 em{font-style:italic;color:var(--accent)}
+.login-headline p{color:var(--muted);font-size:14px;font-weight:300;line-height:1.65;opacity:0;animation:fadeUpSm .7s var(--ease) .38s forwards;max-width:440px;margin:0 auto}
+
+/* Trust pills */
+.login-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:36px;opacity:0;animation:fadeUpSm .7s var(--ease) .48s forwards}
+.login-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:100px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.5);font-weight:400;white-space:nowrap;transition:border-color .3s,background .3s,color .3s}
+.login-pill:hover{border-color:rgba(199,107,66,.2);background:rgba(199,107,66,.04);color:rgba(255,255,255,.7)}
+.login-pill svg{width:13px;height:13px;color:var(--accent);flex-shrink:0}
+
+/* Login card */
+.login-card{width:100%;max-width:400px;background:rgba(14,14,14,.85);backdrop-filter:blur(48px);-webkit-backdrop-filter:blur(48px);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:36px 32px 32px;opacity:0;animation:scaleIn .55s var(--ease) .56s forwards;z-index:2;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+@media(max-width:480px){.login-card{padding:32px 24px 28px;border-radius:16px}}
+.login-card-title{font-family:var(--font-h);font-size:20px;font-weight:500;text-align:center;margin-bottom:6px}
+.login-card-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:28px;font-weight:300}
 
 .expired-banner{background:var(--accent-soft);border:1px solid rgba(199,107,66,.12);border-radius:var(--radius-sm);padding:16px 20px;margin-bottom:24px;text-align:center;animation:fadeUpSm .5s var(--ease)}
 .expired-banner p{font-size:13px;color:rgba(199,107,66,.9);line-height:1.5}
 .expired-banner p strong{font-weight:500;color:var(--accent)}
 
-.form-group{margin-bottom:22px;position:relative}
+.form-group{margin-bottom:20px;position:relative}
 .form-group label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;font-weight:400}
-.form-group input{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-sm);padding:15px 18px;color:var(--text);font-size:15px;font-weight:300;transition:border-color .4s,box-shadow .4s,background .4s}
-.form-group input:focus{border-color:rgba(199,107,66,.4);box-shadow:0 0 0 3px rgba(199,107,66,.08);background:rgba(255,255,255,.04)}
+.form-group input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 18px;color:var(--text);font-size:15px;font-weight:300;transition:border-color .4s,box-shadow .4s,background .4s}
+.form-group input:focus{border-color:rgba(199,107,66,.4);box-shadow:0 0 0 3px rgba(199,107,66,.08);background:rgba(255,255,255,.05)}
 .form-group input::placeholder{color:var(--muted2)}
-.form-group .input-line{position:absolute;bottom:0;left:50%;width:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transition:width .5s var(--ease),left .5s var(--ease);border-radius:1px}
-.form-group input:focus~.input-line{width:100%;left:0}
 
-.login-btn{width:100%;padding:16px;background:var(--accent);color:#fff;font-size:14px;font-weight:500;border-radius:var(--radius-sm);letter-spacing:.04em;text-transform:uppercase;transition:transform .2s var(--ease),box-shadow .3s,opacity .2s;margin-top:8px;position:relative;overflow:hidden}
+.login-btn{width:100%;padding:16px;background:var(--accent);color:#fff;font-size:14px;font-weight:500;border-radius:12px;letter-spacing:.04em;text-transform:uppercase;transition:transform .2s var(--ease),box-shadow .3s,opacity .2s;margin-top:4px;position:relative;overflow:hidden}
 .login-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transition:none}
 .login-btn:hover::after{animation:shimmerGradient 1.4s ease}
 .login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(199,107,66,.25)}
 .login-btn:active{transform:scale(.98)}
 .login-btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
 .login-error{color:var(--red);font-size:13px;text-align:center;margin-top:16px;min-height:20px;animation:fadeIn .3s}
+
+/* Login footer */
+.login-foot{position:relative;z-index:2;text-align:center;padding:0 24px 28px;font-size:12px;color:var(--muted2)}
+.login-foot a{color:var(--accent)}
 
 /* ─── Magic Link Result ─── */
 .mlr{animation:fadeUp .6s var(--ease);text-align:center}
@@ -380,33 +411,44 @@ input,textarea{font-family:var(--font-b);outline:none;border:none}
 
 <!-- Login -->
 <div id="login-screen" style="display:none">
-  <div class="login-orb login-orb-1"></div>
-  <div class="login-orb login-orb-2"></div>
-  <div class="login-orb login-orb-3"></div>
-  <div class="login-card" id="login-card">
-    <div class="login-brand">
-      <div class="login-brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </div>
-      <h1>Access Your Trip</h1>
-      <p>Enter your reservation details</p>
+  <div class="login-mesh"></div>
+  <div class="login-accent-line"></div>
+  <div class="login-top">
+    <div class="login-top-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </div>
-    <div id="expired-banner-slot"></div>
-    <form id="login-form">
-      <div class="form-group">
-        <label for="conf-code">Confirmation Code</label>
-        <input type="text" id="conf-code" placeholder="e.g. ABC123" autocomplete="off" required>
-        <div class="input-line"></div>
-      </div>
-      <div class="form-group">
-        <label for="conf-email">Email or Phone Number</label>
-        <input type="text" id="conf-email" placeholder="your@email.com or (555) 123-4567" autocomplete="email tel" required>
-        <div class="input-line"></div>
-      </div>
-      <button type="submit" class="login-btn" id="login-btn">Continue</button>
-      <div class="login-error" id="login-error"></div>
-    </form>
+    <div class="login-top-name"><span>REGENT</span> STAYS</div>
   </div>
+  <div class="login-main">
+    <div class="login-headline">
+      <div class="login-eyebrow">Guest Portal</div>
+      <h1>Your stay begins <em>here.</em></h1>
+      <p>Access your reservation details, check-in codes, property information, and concierge messaging.</p>
+    </div>
+    <div class="login-pills">
+      <span class="login-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Luxury homes</span>
+      <span class="login-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>24/7 concierge</span>
+      <span class="login-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>5-star rated</span>
+    </div>
+    <div class="login-card" id="login-card">
+      <div class="login-card-title">Enter Your Details</div>
+      <div class="login-card-sub">Use the confirmation code from your booking email</div>
+      <div id="expired-banner-slot"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="conf-code">Confirmation Code</label>
+          <input type="text" id="conf-code" placeholder="e.g. ABC123" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <label for="conf-email">Email or Phone Number</label>
+          <input type="text" id="conf-email" placeholder="your@email.com or (555) 123-4567" autocomplete="email tel" required>
+        </div>
+        <button type="submit" class="login-btn" id="login-btn">Continue</button>
+        <div class="login-error" id="login-error"></div>
+      </form>
+    </div>
+  </div>
+  <div class="login-foot">&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a></div>
 </div>
 
 <!-- Trip Portal -->
@@ -934,7 +976,7 @@ function showMagicLinkResult(res){
     :'Your trip to <strong>'+esc(res.propertyName||'your property')+'</strong> is ready.'+(dateRange?'<br>'+dateRange:'');
 
   card.innerHTML=
-    '<div class="login-brand"><div class="login-brand-icon" style="border-color:'+iconColor+'">'+iconSvg+'</div></div>'+
+    '<div style="text-align:center;margin-bottom:24px"><div style="width:48px;height:48px;margin:0 auto;border:1.5px solid '+iconColor+';border-radius:50%;display:flex;align-items:center;justify-content:center">'+iconSvg+'</div></div>'+
     '<div class="mlr">'+
       '<h2>'+(canceled?'Hello, ':'Welcome, ')+esc(fn)+'</h2>'+
       '<p class="mlr-sub">'+subtitle+'</p>'+
