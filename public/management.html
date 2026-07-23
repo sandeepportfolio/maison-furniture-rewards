@@ -22,7 +22,11 @@
   --glass:rgba(255,255,255,.04);--glass-border:rgba(255,255,255,.08);--glass-hover:rgba(255,255,255,.07);
   --radius:16px;--radius-lg:24px;--radius-xl:32px;
   --sans:'Outfit',system-ui,sans-serif;--serif:'Playfair Display',Georgia,serif;
-  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  /* Emil Kowalski easing curves */
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
+  --ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-out-expo:cubic-bezier(0.16,1,0.3,1);
 }
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
@@ -30,70 +34,75 @@ a{text-decoration:none;color:inherit}
 button{border:none;background:none;cursor:pointer;font-family:var(--sans);color:inherit}
 img{max-width:100%;display:block}
 
+/* ═══ SCROLL PROGRESS BAR ═══ */
+.pm-scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--copper);z-index:10001;width:0;transition:none;will-change:width}
+
 /* ═══ NAV ═══ */
-.pm-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;transition:all .5s var(--ease)}
+.pm-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;transition:background .5s var(--ease-out),backdrop-filter .5s var(--ease-out),padding .4s var(--ease-out),border-color .5s var(--ease-out)}
 .pm-nav.scrolled{background:rgba(13,13,13,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-border);padding:16px 48px}
 .pm-nav-logo{font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.28em;color:var(--cream)}
 .pm-nav-links{display:flex;align-items:center;gap:36px}
-.pm-nav-links a{font-size:14px;font-weight:400;letter-spacing:.02em;color:var(--text-muted);transition:color .3s var(--ease)}
+.pm-nav-links a{font-size:14px;font-weight:400;letter-spacing:.02em;color:var(--text-muted);transition:color .25s var(--ease-out)}
 .pm-nav-links a:hover{color:var(--cream)}
-.pm-nav-cta{padding:10px 24px!important;background:var(--copper)!important;color:var(--white)!important;border-radius:100px!important;font-weight:600!important;font-size:13px!important;letter-spacing:.04em!important;transition:all .3s var(--ease)!important}
-.pm-nav-cta:hover{background:var(--copper-light)!important;transform:translateY(-1px)!important}
+.pm-nav-cta{padding:10px 24px!important;background:var(--copper)!important;color:var(--white)!important;border-radius:100px!important;font-weight:600!important;font-size:13px!important;letter-spacing:.04em!important;transition:background .25s var(--ease-out),transform .16s var(--ease-out),box-shadow .25s var(--ease-out)!important}
+.pm-nav-cta:active{transform:scale(0.97)!important}
 .pm-burger{display:none;flex-direction:column;gap:5px;padding:4px;cursor:pointer}
-.pm-burger span{display:block;width:22px;height:1.5px;background:var(--cream);transition:all .3s var(--ease)}
+.pm-burger span{display:block;width:22px;height:1.5px;background:var(--cream);transition:all .3s var(--ease-out)}
 .pm-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 .pm-burger.open span:nth-child(2){opacity:0}
 .pm-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
-.pm-mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(13,13,13,.97);backdrop-filter:blur(30px);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+.pm-mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(13,13,13,.97);backdrop-filter:blur(30px);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .4s var(--ease-out)}
 .pm-mobile-menu.open{opacity:1;pointer-events:auto}
-.pm-mobile-menu a{font-size:20px;font-weight:400;color:var(--text-muted);transition:color .3s}
+.pm-mobile-menu a{font-size:20px;font-weight:400;color:var(--text-muted);transition:color .25s var(--ease-out)}
 .pm-mobile-menu a:hover{color:var(--copper)}
+
+/* ═══ GLOBAL BUTTON PRESS ═══ */
+.pm-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:100px;font-size:15px;font-weight:600;letter-spacing:.02em;transition:background .25s var(--ease-out),transform .16s var(--ease-out),box-shadow .3s var(--ease-out)}
+.pm-btn:active{transform:scale(0.97)!important;transition:transform 100ms var(--ease-out)!important}
+.pm-btn-primary{background:var(--copper);color:var(--white)}
+.pm-btn-primary:hover{background:var(--copper-light);box-shadow:0 8px 32px rgba(199,107,66,.3)}
+.pm-btn-ghost{border:1px solid var(--glass-border);color:var(--cream);background:var(--glass)}
+.pm-btn-ghost:hover{border-color:rgba(255,255,255,.2);background:var(--glass-hover)}
+.pm-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
 
 /* ═══ SECTIONS ═══ */
 .pm-section{padding:120px 0;position:relative;overflow:hidden}
 .pm-container{max-width:1200px;margin:0 auto;padding:0 32px}
-.pm-wide{max-width:1400px;margin:0 auto;padding:0 32px}
 
 /* ═══ HERO ═══ */
 .pm-hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:0}
 .pm-hero-bg{position:absolute;inset:0;z-index:0}
 .pm-hero-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,13,13,.92) 0%,rgba(13,13,13,.7) 40%,rgba(199,107,66,.08) 100%);z-index:1}
-.pm-hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(199,107,66,.12) 0%,transparent 60%);z-index:2}
-.pm-hero-img{width:100%;height:100%;object-fit:cover;opacity:.35}
+.pm-hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(199,107,66,.12) 0%,transparent 60%);z-index:2;animation:heroPulse 4s ease-in-out infinite}
+@keyframes heroPulse{0%,100%{opacity:.8}50%{opacity:1.2}}
+.pm-hero-img{width:100%;height:100%;object-fit:cover;opacity:.35;transition:transform 0.1s linear;will-change:transform}
 
-/* Animated grain overlay */
+/* Grain overlay */
 .pm-grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 .pm-hero-content{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:0 32px;width:100%}
-.pm-hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--copper);margin-bottom:28px;opacity:0;transform:translateY(20px);animation:fadeUp .8s var(--ease) .3s forwards}
-.pm-hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--copper);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.pm-hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--copper);margin-bottom:28px;opacity:0;transform:translateY(16px) scale(0.97);animation:enterUp .6s var(--ease-out) .3s forwards}
+.pm-hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--copper);animation:tagPulse 2s ease-in-out infinite}
+@keyframes tagPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 
-.pm-hero h1{font-family:var(--serif);font-size:clamp(40px,6vw,80px);font-weight:400;line-height:1.08;color:var(--cream);margin-bottom:24px;opacity:0;transform:translateY(30px);animation:fadeUp 1s var(--ease) .5s forwards}
+/* Hero word-by-word stagger */
+.pm-hero h1{font-family:var(--serif);font-size:clamp(40px,6vw,80px);font-weight:400;line-height:1.08;color:var(--cream);margin-bottom:24px}
 .pm-hero h1 em{font-style:italic;color:var(--copper)}
-.pm-hero-sub{font-size:clamp(16px,1.4vw,20px);color:var(--text-muted);max-width:560px;line-height:1.7;margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .8s var(--ease) .7s forwards}
+.pm-hero-word{display:inline-block;opacity:0;transform:translateY(30px);filter:blur(4px);animation:wordReveal .6s var(--ease-out) forwards}
+@keyframes wordReveal{to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.pm-hero-sub{font-size:clamp(16px,1.4vw,20px);color:var(--text-muted);max-width:560px;line-height:1.7;margin-bottom:48px;opacity:0;transform:translateY(16px);animation:enterUp .6s var(--ease-out) 1.2s forwards}
+.pm-hero-actions{display:flex;align-items:center;gap:20px;margin-bottom:80px;opacity:0;transform:translateY(16px);animation:enterUp .6s var(--ease-out) 1.4s forwards}
 
-.pm-hero-actions{display:flex;align-items:center;gap:20px;margin-bottom:80px;opacity:0;transform:translateY(20px);animation:fadeUp .8s var(--ease) .9s forwards}
-.pm-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:100px;font-size:15px;font-weight:600;letter-spacing:.02em;transition:all .4s var(--ease)}
-.pm-btn-primary{background:var(--copper);color:var(--white)}
-.pm-btn-primary:hover{background:var(--copper-light);transform:translateY(-2px);box-shadow:0 8px 32px rgba(199,107,66,.3)}
-.pm-btn-ghost{border:1px solid var(--glass-border);color:var(--cream);background:var(--glass)}
-.pm-btn-ghost:hover{border-color:rgba(255,255,255,.2);background:var(--glass-hover)}
-.pm-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
-
-/* Hero Stats */
-.pm-hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;opacity:0;transform:translateY(30px);animation:fadeUp 1s var(--ease) 1.1s forwards}
-.pm-stat{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);padding:32px 28px;text-align:center;position:relative;overflow:hidden;transition:all .4s var(--ease)}
+/* Hero Stats with spring count-up */
+.pm-hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;opacity:0;transform:translateY(24px) scale(0.97);animation:enterUp .7s var(--ease-out) 1.6s forwards}
+.pm-stat{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);padding:32px 28px;text-align:center;position:relative;overflow:hidden;transition:background .3s var(--ease-out),border-color .3s var(--ease-out)}
 .pm-stat:first-child{border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
 .pm-stat:last-child{border-radius:0 var(--radius-lg) var(--radius-lg) 0}
-.pm-stat:hover{background:var(--glass-hover);border-color:rgba(199,107,66,.2)}
-.pm-stat::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--copper);transition:width .5s var(--ease)}
-.pm-stat:hover::after{width:80%}
+.pm-stat::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--copper);transition:width .5s var(--ease-out)}
 .pm-stat-num{font-family:var(--serif);font-size:clamp(32px,3.5vw,48px);font-weight:400;color:var(--cream);line-height:1;margin-bottom:8px}
 .pm-stat-label{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
 
-@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{to{opacity:1}}
+@keyframes enterUp{to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
 
 /* ═══ SECTION HEADERS ═══ */
 .pm-section-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--copper);margin-bottom:20px}
@@ -102,61 +111,87 @@ img{max-width:100%;display:block}
 .pm-section-title em{font-style:italic;color:var(--copper)}
 .pm-section-desc{font-size:17px;color:var(--text-muted);max-width:600px;line-height:1.7}
 
-/* ═══ WHY REGENT ═══ */
+/* ═══ REVEAL SYSTEM ═══ */
+.reveal{opacity:0;transform:translateY(32px) scale(0.98);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out),filter .7s var(--ease-out);filter:blur(2px)}
+.reveal.visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+
+/* ═══ WHY REGENT — 3D PERSPECTIVE TILT ═══ */
 .pm-why{background:var(--bg)}
-.pm-why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:60px}
-.pm-why-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:44px 36px;position:relative;overflow:hidden;transition:all .5s var(--ease);opacity:0;transform:translateY(40px)}
-.pm-why-card.visible{opacity:1;transform:translateY(0)}
-.pm-why-card:hover{border-color:rgba(199,107,66,.25);background:var(--glass-hover);transform:translateY(-4px)}
-.pm-why-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--copper),transparent);opacity:0;transition:opacity .5s}
-.pm-why-card:hover::before{opacity:1}
-.pm-why-icon{width:52px;height:52px;border-radius:14px;background:var(--copper-glow);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+.pm-why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:60px;perspective:1200px}
+.pm-why-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:44px 36px;position:relative;overflow:hidden;transform-style:preserve-3d;will-change:transform;transition:transform .35s var(--ease-out),border-color .4s var(--ease-out),background .3s var(--ease-out);opacity:0;transform:translateY(40px) scale(0.95);filter:blur(3px)}
+.pm-why-card.visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+/* Animated copper border sweep on hover */
+.pm-why-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--copper),transparent);transform:translateX(-100%);transition:transform .6s var(--ease-out)}
+.pm-why-card::after{content:'';position:absolute;inset:0;border-radius:var(--radius-lg);background:radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%),rgba(199,107,66,.06) 0%,transparent 60%);opacity:0;transition:opacity .4s var(--ease-out);pointer-events:none}
+.pm-why-icon{width:52px;height:52px;border-radius:14px;background:var(--copper-glow);display:flex;align-items:center;justify-content:center;margin-bottom:24px;transition:transform .3s var(--spring)}
 .pm-why-icon svg{width:24px;height:24px;stroke:var(--copper);fill:none;stroke-width:1.5}
 .pm-why-card h3{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--cream);margin-bottom:12px}
 .pm-why-card p{font-size:15px;color:var(--text-muted);line-height:1.7}
 
-/* ═══ SERVICES ═══ */
+/* ═══ SERVICES — CREATIVE LAYOUT WITH CLIP-PATH REVEALS ═══ */
 .pm-services{background:var(--bg2);position:relative}
 .pm-services::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
-.pm-services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:60px;background:var(--glass-border);border-radius:var(--radius-lg);overflow:hidden}
-.pm-service{background:var(--bg2);padding:44px 32px;position:relative;transition:all .5s var(--ease);opacity:0;transform:scale(.95)}
-.pm-service.visible{opacity:1;transform:scale(1)}
-.pm-service:hover{background:var(--bg3)}
-.pm-service-num{font-family:var(--serif);font-size:48px;font-weight:400;color:rgba(199,107,66,.12);line-height:1;margin-bottom:16px;transition:color .4s}
-.pm-service:hover .pm-service-num{color:rgba(199,107,66,.25)}
-.pm-service h3{font-size:17px;font-weight:600;color:var(--cream);margin-bottom:10px;letter-spacing:.01em}
-.pm-service p{font-size:14px;color:var(--text-muted);line-height:1.65}
-.pm-service-line{width:24px;height:2px;background:var(--copper);margin-top:20px;transition:width .5s var(--ease)}
-.pm-service:hover .pm-service-line{width:48px}
 
-/* ═══ BY THE NUMBERS ═══ */
+.pm-services-layout{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto;gap:20px;margin-top:60px}
+
+/* Feature card — spans left column fully */
+.pm-svc-feature{grid-row:1/3;position:relative;background:linear-gradient(145deg,var(--bg3),var(--bg2));border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:56px 44px;overflow:hidden;clip-path:inset(0 100% 0 0);transition:clip-path 0s;will-change:clip-path}
+.pm-svc-feature.visible{clip-path:inset(0 0% 0 0);transition:clip-path .8s var(--ease-out)}
+.pm-svc-feature::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(199,107,66,.1) 0%,transparent 70%);pointer-events:none}
+.pm-svc-feature::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--copper),transparent);opacity:0;transition:opacity .4s var(--ease-out)}
+.pm-svc-feature .pm-svc-num{font-family:var(--serif);font-size:120px;font-weight:400;color:rgba(199,107,66,.06);line-height:1;position:absolute;top:20px;right:32px;pointer-events:none}
+.pm-svc-feature .pm-svc-icon{width:64px;height:64px;border-radius:16px;background:rgba(199,107,66,.1);display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+.pm-svc-feature .pm-svc-icon svg{width:28px;height:28px;stroke:var(--copper);fill:none;stroke-width:1.5}
+.pm-svc-feature h3{font-family:var(--serif);font-size:28px;font-weight:500;color:var(--cream);margin-bottom:16px}
+.pm-svc-feature p{font-size:16px;color:var(--text-muted);line-height:1.75;max-width:400px}
+
+/* Standard service cards */
+.pm-svc-card{position:relative;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:36px 32px;overflow:hidden;clip-path:inset(0 100% 0 0);transition:clip-path 0s;will-change:clip-path;transform-style:preserve-3d}
+.pm-svc-card.visible{clip-path:inset(0 0% 0 0);transition:clip-path .7s var(--ease-out)}
+.pm-svc-card::before{content:'';position:absolute;inset:0;border-radius:var(--radius-lg);background:radial-gradient(circle at var(--mouse-x,50%) var(--mouse-y,50%),rgba(199,107,66,.05) 0%,transparent 60%);opacity:0;transition:opacity .3s var(--ease-out);pointer-events:none}
+
+.pm-svc-card-header{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.pm-svc-card-icon{width:44px;height:44px;border-radius:12px;background:rgba(199,107,66,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s var(--spring)}
+.pm-svc-card-icon svg{width:20px;height:20px;stroke:var(--copper);fill:none;stroke-width:1.5;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .6s var(--ease-out)}
+.pm-svc-card.visible .pm-svc-card-icon svg{stroke-dashoffset:0}
+.pm-svc-card h3{font-size:17px;font-weight:600;color:var(--cream);letter-spacing:.01em}
+.pm-svc-card p{font-size:14px;color:var(--text-muted);line-height:1.65}
+.pm-svc-line{width:24px;height:2px;background:var(--copper);margin-top:18px;transition:width .5s var(--ease-out)}
+
+/* ═══ BY THE NUMBERS — ANIMATED RINGS ═══ */
 .pm-numbers{background:var(--bg);position:relative}
 .pm-numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:60px;border:1px solid var(--glass-border);border-radius:var(--radius-lg);overflow:hidden}
-.pm-number-card{padding:48px 32px;text-align:center;position:relative;border-right:1px solid var(--glass-border);transition:all .4s var(--ease);opacity:0;transform:translateY(30px)}
-.pm-number-card.visible{opacity:1;transform:translateY(0)}
+.pm-number-card{padding:48px 32px;text-align:center;position:relative;border-right:1px solid var(--glass-border);transition:background .3s var(--ease-out);opacity:0;transform:translateY(24px) scale(0.97)}
+.pm-number-card.visible{opacity:1;transform:translateY(0) scale(1);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
 .pm-number-card:last-child{border-right:none}
-.pm-number-card:hover{background:var(--glass)}
-.pm-number-val{font-family:var(--serif);font-size:clamp(36px,4vw,56px);font-weight:400;color:var(--copper);line-height:1;margin-bottom:6px}
-.pm-number-unit{font-family:var(--serif);font-size:18px;color:var(--copper-light);font-style:italic}
-.pm-number-label{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:.04em;margin-top:12px;line-height:1.4}
+
+/* Progress ring behind number */
+.pm-number-ring{width:100px;height:100px;margin:0 auto 20px;position:relative}
+.pm-number-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.pm-number-ring .ring-bg{fill:none;stroke:var(--glass-border);stroke-width:3}
+.pm-number-ring .ring-fill{fill:none;stroke:var(--copper);stroke-width:3;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 1.8s var(--ease-out)}
+.pm-number-card.visible .ring-fill{stroke-dashoffset:var(--ring-target)}
+.pm-number-val-wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pm-number-val{font-family:var(--serif);font-size:clamp(28px,3vw,40px);font-weight:400;color:var(--copper);line-height:1}
+.pm-number-unit{font-family:var(--serif);font-size:14px;color:var(--copper-light);font-style:italic;margin-top:2px}
+.pm-number-label{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:.04em;line-height:1.4}
 
 /* ═══ PLATFORMS ═══ */
 .pm-platforms{background:var(--bg2);position:relative;padding:80px 0}
 .pm-platforms::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
 .pm-platforms-wrap{display:flex;flex-direction:column;align-items:center;text-align:center}
 .pm-platform-logos{display:flex;align-items:center;justify-content:center;gap:60px;margin-top:48px;flex-wrap:wrap}
-.pm-platform-logo{display:flex;flex-direction:column;align-items:center;gap:12px;opacity:.4;transition:all .5s var(--ease);cursor:default}
-.pm-platform-logo:hover{opacity:1;transform:translateY(-4px)}
+.pm-platform-logo{display:flex;flex-direction:column;align-items:center;gap:12px;opacity:.4;transition:opacity .4s var(--ease-out),transform .3s var(--ease-out);cursor:default}
 .pm-platform-logo svg,.pm-platform-logo img{height:36px;width:auto}
 .pm-platform-name{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
 
-/* ═══ TESTIMONIALS ═══ */
+/* ═══ TESTIMONIALS — PERSPECTIVE ROTATION ═══ */
 .pm-testimonials{background:var(--bg);position:relative}
-.pm-test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
-.pm-test-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:40px 32px;position:relative;opacity:0;transform:translateY(40px);transition:all .5s var(--ease)}
-.pm-test-card.visible{opacity:1;transform:translateY(0)}
-.pm-test-card:hover{border-color:rgba(199,107,66,.2);transform:translateY(-4px)}
-.pm-test-quote{position:absolute;top:20px;right:24px;font-family:var(--serif);font-size:72px;color:rgba(199,107,66,.1);line-height:1}
+.pm-test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;perspective:1400px}
+.pm-test-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:40px 32px;position:relative;transform-style:preserve-3d;will-change:transform;opacity:0;transform:translateY(40px) scale(0.95);filter:blur(3px);transition:transform .35s var(--ease-out),border-color .4s var(--ease-out),opacity .6s var(--ease-out),filter .6s var(--ease-out)}
+.pm-test-card.visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+.pm-test-quote{position:absolute;top:20px;right:24px;font-family:var(--serif);font-size:72px;color:rgba(199,107,66,.08);line-height:1;transform:scale(0);transition:transform .5s var(--spring)}
+.pm-test-card.visible .pm-test-quote{transform:scale(1)}
 .pm-test-stars{display:flex;gap:3px;margin-bottom:20px}
 .pm-test-stars svg{width:16px;height:16px;fill:var(--copper);stroke:none}
 .pm-test-card blockquote{font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:24px}
@@ -165,19 +200,26 @@ img{max-width:100%;display:block}
 .pm-test-name{font-size:14px;font-weight:600;color:var(--cream)}
 .pm-test-prop{font-size:12px;color:var(--text-dim);margin-top:2px}
 
-/* ═══ HOW IT WORKS ═══ */
+/* ═══ HOW IT WORKS — SELF-DRAWING TIMELINE ═══ */
 .pm-how{background:var(--bg2);position:relative}
 .pm-how::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
 .pm-how-steps{display:flex;flex-direction:column;gap:0;margin-top:60px;position:relative}
-.pm-how-line{position:absolute;left:32px;top:40px;bottom:40px;width:1px;background:linear-gradient(180deg,var(--copper),var(--glass-border));z-index:0}
-.pm-step{display:flex;gap:40px;align-items:flex-start;padding:40px 0;position:relative;z-index:1;opacity:0;transform:translateX(-30px);transition:all .6s var(--ease)}
-.pm-step.visible{opacity:1;transform:translateX(0)}
-.pm-step-dot{flex-shrink:0;width:64px;height:64px;border-radius:50%;background:var(--bg);border:2px solid var(--copper);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--copper);transition:all .4s var(--ease)}
-.pm-step:hover .pm-step-dot{background:var(--copper);color:var(--white)}
+
+/* Self-drawing SVG line */
+.pm-how-line-svg{position:absolute;left:32px;top:0;bottom:0;width:2px;z-index:0;overflow:visible}
+.pm-how-line-bg{stroke:var(--glass-border);stroke-width:2;fill:none}
+.pm-how-line-draw{stroke:var(--copper);stroke-width:2;fill:none;stroke-dasharray:var(--line-length);stroke-dashoffset:var(--line-length);transition:none}
+
+.pm-step{display:flex;gap:40px;align-items:flex-start;padding:40px 0;position:relative;z-index:1;opacity:0;transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
+.pm-step:nth-child(odd){transform:translateX(-40px)}
+.pm-step:nth-child(even){transform:translateX(40px)}
+.pm-step.visible{opacity:1;transform:translateX(0)!important}
+.pm-step-dot{flex-shrink:0;width:64px;height:64px;border-radius:50%;background:var(--bg2);border:2px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--text-dim);transition:border-color .4s var(--ease-out),color .4s var(--ease-out),background .4s var(--ease-out),box-shadow .4s var(--ease-out)}
+.pm-step-dot.active{border-color:var(--copper);color:var(--copper);box-shadow:0 0 20px rgba(199,107,66,.2),0 0 40px rgba(199,107,66,.1)}
 .pm-step-content h3{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--cream);margin-bottom:10px}
 .pm-step-content p{font-size:15px;color:var(--text-muted);line-height:1.7;max-width:520px}
 
-/* ═══ CONTACT FORM ═══ */
+/* ═══ CONTACT — ANIMATED FOCUS BORDERS ═══ */
 .pm-contact{background:var(--bg);position:relative;padding:120px 0 160px}
 .pm-contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
 .pm-contact-info h2{font-family:var(--serif);font-size:clamp(32px,3.5vw,48px);font-weight:400;color:var(--cream);margin-bottom:20px;line-height:1.15}
@@ -189,35 +231,75 @@ img{max-width:100%;display:block}
 
 .pm-form{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:44px 36px}
 .pm-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.pm-form-group{display:flex;flex-direction:column;gap:6px}
+.pm-form-group{display:flex;flex-direction:column;gap:6px;position:relative}
 .pm-form-group.full{grid-column:1/-1}
 .pm-form-group label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
-.pm-form-group input,.pm-form-group textarea,.pm-form-group select{background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 16px;font-family:var(--sans);font-size:15px;color:var(--cream);transition:all .3s var(--ease);outline:none;resize:none}
+
+/* Animated border input wrapper */
+.pm-input-wrap{position:relative;border-radius:10px;overflow:hidden}
+.pm-input-wrap::before{content:'';position:absolute;inset:-1px;border-radius:11px;background:conic-gradient(from var(--border-angle,0deg),transparent 0%,var(--copper) 12%,transparent 24%);opacity:0;transition:opacity .4s var(--ease-out);z-index:0;pointer-events:none}
+.pm-input-wrap.focused::before{opacity:1;animation:borderSpin 2s linear infinite}
+@keyframes borderSpin{to{--border-angle:360deg}}
+@property --border-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.pm-input-wrap::after{content:'';position:absolute;inset:1px;border-radius:9px;background:var(--bg);z-index:0;pointer-events:none}
+
+.pm-form-group input,.pm-form-group textarea,.pm-form-group select{background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 16px;font-family:var(--sans);font-size:15px;color:var(--cream);transition:border-color .3s var(--ease-out),background .3s var(--ease-out);outline:none;resize:none;position:relative;z-index:1}
 .pm-form-group input:focus,.pm-form-group textarea:focus,.pm-form-group select:focus{border-color:var(--copper);background:rgba(199,107,66,.06)}
 .pm-form-group input::placeholder,.pm-form-group textarea::placeholder{color:var(--text-dim)}
 .pm-form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a6560' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
 .pm-form-group select option{background:var(--bg2);color:var(--cream)}
 .pm-form-submit{margin-top:24px}
-.pm-form-submit .pm-btn{width:100%;justify-content:center;padding:18px 36px;font-size:16px}
+.pm-form-submit .pm-btn{width:100%;justify-content:center;padding:18px 36px;font-size:16px;position:relative;overflow:hidden}
 
-.pm-form-success{display:none;text-align:center;padding:60px 20px}
+/* Hold-to-submit effect */
+.pm-submit-fill{position:absolute;inset:0;background:var(--copper-light);transform:scaleX(0);transform-origin:left;transition:none;border-radius:inherit;pointer-events:none}
+.pm-btn.holding .pm-submit-fill{transform:scaleX(1);transition:transform 1.2s linear}
+.pm-btn-label{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px}
+
+.pm-form-success{display:none;text-align:center;padding:60px 20px;position:relative}
 .pm-form-success svg{width:64px;height:64px;stroke:var(--copper);fill:none;stroke-width:1.5;margin:0 auto 20px}
 .pm-form-success h3{font-family:var(--serif);font-size:24px;color:var(--cream);margin-bottom:10px}
 .pm-form-success p{font-size:15px;color:var(--text-muted);line-height:1.6}
 
+/* Confetti particles */
+.pm-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pm-confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;opacity:0}
+
 /* ═══ FOOTER ═══ */
 .pm-footer{background:var(--bg2);border-top:1px solid var(--glass-border);padding:40px 0;text-align:center}
 .pm-footer p{font-size:13px;color:var(--text-dim);letter-spacing:.02em}
-.pm-footer a{color:var(--copper);transition:color .3s}
+.pm-footer a{color:var(--copper);transition:color .25s var(--ease-out)}
 .pm-footer a:hover{color:var(--copper-light)}
 
-/* ═══ SCROLL REVEAL ═══ */
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.2s}
-.reveal-delay-3{transition-delay:.3s}
-.reveal-delay-4{transition-delay:.4s}
+/* ═══ HOVER GATING ═══ */
+@media(hover:hover) and (pointer:fine){
+  .pm-nav-cta:hover{background:var(--copper-light)!important;transform:translateY(-1px)!important}
+  .pm-stat:hover{background:var(--glass-hover);border-color:rgba(199,107,66,.2)}
+  .pm-stat:hover::after{width:80%}
+  .pm-why-card:hover{border-color:rgba(199,107,66,.25);background:var(--glass-hover)}
+  .pm-why-card:hover::before{transform:translateX(0)}
+  .pm-why-card:hover::after{opacity:1}
+  .pm-why-card:hover .pm-why-icon{transform:scale(1.05)}
+  .pm-svc-feature:hover::after{opacity:1}
+  .pm-svc-card:hover{border-color:rgba(199,107,66,.2);background:var(--glass-hover)}
+  .pm-svc-card:hover::before{opacity:1}
+  .pm-svc-card:hover .pm-svc-card-icon{transform:scale(1.08)}
+  .pm-svc-card:hover .pm-svc-line{width:48px}
+  .pm-number-card:hover{background:var(--glass)}
+  .pm-platform-logo:hover{opacity:1;transform:translateY(-4px)}
+  .pm-test-card:hover{border-color:rgba(199,107,66,.2)}
+  .pm-step:hover .pm-step-dot{background:var(--copper);color:var(--white);border-color:var(--copper)}
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.15s!important;scroll-behavior:auto!important}
+  .pm-hero-word{opacity:1;transform:none;filter:none;animation:none}
+  .reveal{opacity:1;transform:none;filter:none}
+  .pm-why-card,.pm-svc-feature,.pm-svc-card,.pm-number-card,.pm-test-card,.pm-step{opacity:1;transform:none;filter:none;clip-path:none}
+  .pm-test-quote{transform:scale(1)}
+  .pm-how-line-draw{stroke-dashoffset:0!important}
+}
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:1024px){
@@ -226,7 +308,8 @@ img{max-width:100%;display:block}
   .pm-stat:nth-child(2){border-radius:0 var(--radius-lg) 0 0}
   .pm-stat:nth-child(3){border-radius:0 0 0 var(--radius-lg)}
   .pm-stat:last-child{border-radius:0 0 var(--radius-lg) 0}
-  .pm-services-grid{grid-template-columns:repeat(2,1fr)}
+  .pm-services-layout{grid-template-columns:1fr 1fr}
+  .pm-svc-feature{grid-row:auto}
   .pm-numbers-grid{grid-template-columns:repeat(2,1fr)}
   .pm-number-card:nth-child(2){border-right:none}
   .pm-number-card:nth-child(3){border-top:1px solid var(--glass-border)}
@@ -240,18 +323,24 @@ img{max-width:100%;display:block}
   .pm-nav-links{display:none}
   .pm-burger{display:flex}
   .pm-section{padding:80px 0}
-  .pm-container,.pm-wide{padding:0 20px}
+  .pm-container{padding:0 20px}
   .pm-hero{min-height:auto;padding:140px 0 60px}
   .pm-hero-actions{flex-direction:column;align-items:flex-start}
   .pm-hero-stats{grid-template-columns:1fr 1fr}
   .pm-why-grid{grid-template-columns:1fr}
-  .pm-services-grid{grid-template-columns:1fr}
+  .pm-services-layout{grid-template-columns:1fr}
+  .pm-svc-feature{padding:40px 28px}
+  .pm-svc-feature .pm-svc-num{font-size:80px}
   .pm-numbers-grid{grid-template-columns:1fr}
   .pm-number-card{border-right:none!important;border-bottom:1px solid var(--glass-border)}
   .pm-number-card:last-child{border-bottom:none}
   .pm-platform-logos{gap:32px}
-  .pm-test-grid{grid-template-columns:1fr}
-  .pm-how-line{left:18px}
+  .pm-test-grid{grid-template-columns:1fr;perspective:none}
+  /* Mobile horizontal scroll for testimonials */
+  .pm-test-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:16px;padding-bottom:16px;scrollbar-width:none}
+  .pm-test-grid::-webkit-scrollbar{display:none}
+  .pm-test-card{min-width:85vw;scroll-snap-align:start;flex-shrink:0}
+  .pm-how-line-svg{left:18px}
   .pm-step{gap:20px}
   .pm-step-dot{width:40px;height:40px;font-size:16px}
   .pm-contact-wrap{grid-template-columns:1fr}
@@ -259,9 +348,13 @@ img{max-width:100%;display:block}
   .pm-form{padding:28px 20px}
   .pm-stat{padding:24px 16px}
 }
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+
+<!-- Scroll progress bar -->
+<div class="pm-scroll-progress" id="scrollProgress"></div>
 
 <!-- Grain overlay -->
 <div class="pm-grain"></div>
@@ -291,11 +384,11 @@ img{max-width:100%;display:block}
 <!-- ═══ HERO ═══ -->
 <section class="pm-hero" id="hero">
   <div class="pm-hero-bg">
-    <img class="pm-hero-img" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=1200" alt="Luxury Regent property in Texas">
+    <img class="pm-hero-img" id="heroImg" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=1200" alt="Luxury Regent property in Texas">
   </div>
   <div class="pm-hero-content">
     <div class="pm-hero-tag">Property Management</div>
-    <h1>Your home deserves<br>a team that <em>actually</em><br>picks up the phone.</h1>
+    <h1 id="heroTitle">Your home deserves a team that <em>actually</em> picks up the phone.</h1>
     <p class="pm-hero-sub">We treat every property like it's our own family home. Genuine southern hospitality, industry-leading returns, and a management team you'll actually enjoy working with.</p>
     <div class="pm-hero-actions">
       <a href="#contact" class="pm-btn pm-btn-primary">
@@ -334,28 +427,28 @@ img{max-width:100%;display:block}
       <p class="pm-section-desc">Most property managers treat your home like a line item. We treat it like we live next door. Because, well, some of us do.</p>
     </div>
     <div class="pm-why-grid">
-      <div class="pm-why-card">
+      <div class="pm-why-card" data-tilt>
         <div class="pm-why-icon">
           <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </div>
         <h3>Genuine Southern Hospitality</h3>
         <p>We don't have a script. We have a front porch and sweet tea. Every guest gets the kind of welcome that makes them want to come back, and every homeowner gets a team that actually cares how their Saturday's going.</p>
       </div>
-      <div class="pm-why-card">
+      <div class="pm-why-card" data-tilt>
         <div class="pm-why-icon">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         </div>
         <h3>We Pick Up the Phone. Always.</h3>
         <p>No automated phone trees. No "we'll get back to you in 48 hours." You call us, a real person answers. Your guest locks themselves out at midnight? We're on it before they finish explaining what happened.</p>
       </div>
-      <div class="pm-why-card">
+      <div class="pm-why-card" data-tilt>
         <div class="pm-why-icon">
           <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
         <h3>Tech Meets Human Touch</h3>
         <p>Dynamic pricing algorithms get the best rates. Professional photography makes your listing pop. But it's our hands-on, local team that makes guests leave five-star reviews and homeowners sleep easy.</p>
       </div>
-      <div class="pm-why-card">
+      <div class="pm-why-card" data-tilt>
         <div class="pm-why-icon">
           <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
         </div>
@@ -366,7 +459,7 @@ img{max-width:100%;display:block}
   </div>
 </section>
 
-<!-- ═══ WHAT WE DO ═══ -->
+<!-- ═══ SERVICES — CREATIVE LAYOUT ═══ -->
 <section class="pm-section pm-services" id="services">
   <div class="pm-container">
     <div class="reveal">
@@ -374,42 +467,71 @@ img{max-width:100%;display:block}
       <h2 class="pm-section-title">Everything handled.<br><em>You</em> enjoy the returns.</h2>
       <p class="pm-section-desc">From the moment you sign on, we handle every detail. You just watch the revenue roll in and occasionally check your bank account with a smile.</p>
     </div>
-    <div class="pm-services-grid">
-      <div class="pm-service">
-        <div class="pm-service-num">01</div>
-        <h3>Listing Optimization</h3>
-        <p>SEO-tuned descriptions, strategic titling, and compelling copy that converts browsers into bookers. Your listing won't just show up, it'll stand out.</p>
-        <div class="pm-service-line"></div>
+    <div class="pm-services-layout">
+      <!-- Feature card -->
+      <div class="pm-svc-feature" data-svc-reveal>
+        <div class="pm-svc-num">01</div>
+        <div class="pm-svc-icon">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <h3>Listing Optimization & Photography</h3>
+        <p>SEO-tuned descriptions, strategic titling, and magazine-quality photography that converts browsers into bookers. Your listing won't just show up — it'll be the one people screenshot and send to their friends.</p>
       </div>
-      <div class="pm-service">
-        <div class="pm-service-num">02</div>
-        <h3>Professional Photography</h3>
-        <p>Magazine-quality photos and virtual tours that make scrollers stop and book. First impressions aren't everything, but they're about 80% of it.</p>
-        <div class="pm-service-line"></div>
+
+      <!-- Supporting cards -->
+      <div class="pm-svc-card" data-svc-reveal data-tilt>
+        <div class="pm-svc-card-header">
+          <div class="pm-svc-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>Dynamic Pricing</h3>
+        </div>
+        <p>Smart algorithms adjust nightly rates based on demand, events, season, and competitors. Never leave money on the table.</p>
+        <div class="pm-svc-line"></div>
       </div>
-      <div class="pm-service">
-        <div class="pm-service-num">03</div>
-        <h3>Dynamic Pricing</h3>
-        <p>Smart algorithms that adjust nightly rates based on demand, events, season, and competitor data. Never leave money on the table or price yourself out of bookings.</p>
-        <div class="pm-service-line"></div>
+
+      <div class="pm-svc-card" data-svc-reveal data-tilt>
+        <div class="pm-svc-card-header">
+          <div class="pm-svc-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Guest Screening & Support</h3>
+        </div>
+        <p>We vet every guest before they get the door code. Our team is available around the clock to keep your property protected.</p>
+        <div class="pm-svc-line"></div>
       </div>
-      <div class="pm-service">
-        <div class="pm-service-num">04</div>
-        <h3>Guest Screening & Support</h3>
-        <p>We vet every guest before they get the door code. And once they're in, our team is available around the clock. Your property stays protected, your guests stay happy.</p>
-        <div class="pm-service-line"></div>
+
+      <div class="pm-svc-card" data-svc-reveal data-tilt>
+        <div class="pm-svc-card-header">
+          <div class="pm-svc-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+          </div>
+          <h3>Cleaning & Turnover</h3>
+        </div>
+        <p>Hotel-quality deep cleans, fresh linens, restocked amenities, and a walkthrough checklist that would make a drill sergeant nod.</p>
+        <div class="pm-svc-line"></div>
       </div>
-      <div class="pm-service">
-        <div class="pm-service-num">05</div>
-        <h3>Cleaning & Turnover</h3>
-        <p>Our cleaning crews don't just tidy up. Hotel-quality deep cleans, fresh linens, restocked amenities, and a walkthrough checklist that would make a drill sergeant nod.</p>
-        <div class="pm-service-line"></div>
+
+      <div class="pm-svc-card" data-svc-reveal data-tilt>
+        <div class="pm-svc-card-header">
+          <div class="pm-svc-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3>Maintenance & Inspections</h3>
+        </div>
+        <p>Regular property inspections, vendor coordination, and proactive maintenance. We fix the small stuff before it becomes expensive.</p>
+        <div class="pm-svc-line"></div>
       </div>
-      <div class="pm-service">
-        <div class="pm-service-num">06</div>
-        <h3>Maintenance & Inspections</h3>
-        <p>Regular property inspections, vendor coordination, and proactive maintenance. We fix the small stuff before it becomes the expensive stuff. Your home stays in top shape.</p>
-        <div class="pm-service-line"></div>
+
+      <div class="pm-svc-card" data-svc-reveal data-tilt>
+        <div class="pm-svc-card-header">
+          <div class="pm-svc-card-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Owner Dashboard & Reports</h3>
+        </div>
+        <p>Real-time booking data, revenue tracking, and monthly performance reports. Full transparency, no surprises.</p>
+        <div class="pm-svc-line"></div>
       </div>
     </div>
   </div>
@@ -425,20 +547,40 @@ img{max-width:100%;display:block}
     </div>
     <div class="pm-numbers-grid">
       <div class="pm-number-card">
-        <div class="pm-number-val" data-count="94" data-suffix="%">0</div>
+        <div class="pm-number-ring" data-ring-pct="94">
+          <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="45"/><circle class="ring-fill" cx="50" cy="50" r="45"/></svg>
+          <div class="pm-number-val-wrap">
+            <div class="pm-number-val" data-count="94" data-suffix="%">0</div>
+          </div>
+        </div>
         <div class="pm-number-label">Average Occupancy<br>Across All Properties</div>
       </div>
       <div class="pm-number-card">
-        <div class="pm-number-val" data-count="156" data-prefix="$">0</div>
+        <div class="pm-number-ring" data-ring-pct="78">
+          <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="45"/><circle class="ring-fill" cx="50" cy="50" r="45"/></svg>
+          <div class="pm-number-val-wrap">
+            <div class="pm-number-val" data-count="156" data-prefix="$">0</div>
+          </div>
+        </div>
         <div class="pm-number-label">Average Nightly<br>Rate Achieved</div>
       </div>
       <div class="pm-number-card">
-        <div class="pm-number-val" data-count="4.9" data-decimals="1">0</div>
-        <div class="pm-number-unit">out of 5</div>
+        <div class="pm-number-ring" data-ring-pct="98">
+          <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="45"/><circle class="ring-fill" cx="50" cy="50" r="45"/></svg>
+          <div class="pm-number-val-wrap">
+            <div class="pm-number-val" data-count="4.9" data-decimals="1">0</div>
+            <div class="pm-number-unit">out of 5</div>
+          </div>
+        </div>
         <div class="pm-number-label">Guest Satisfaction<br>Rating</div>
       </div>
       <div class="pm-number-card">
-        <div class="pm-number-val" data-count="100" data-suffix="%">0</div>
+        <div class="pm-number-ring" data-ring-pct="100">
+          <svg viewBox="0 0 100 100"><circle class="ring-bg" cx="50" cy="50" r="45"/><circle class="ring-fill" cx="50" cy="50" r="45"/></svg>
+          <div class="pm-number-val-wrap">
+            <div class="pm-number-val" data-count="100" data-suffix="%">0</div>
+          </div>
+        </div>
         <div class="pm-number-label">Profitable Properties<br>In Our Portfolio</div>
       </div>
     </div>
@@ -486,7 +628,7 @@ img{max-width:100%;display:block}
       <h2 class="pm-section-title">Don't take our word for it.<br><em>Take theirs.</em></h2>
     </div>
     <div class="pm-test-grid">
-      <div class="pm-test-card">
+      <div class="pm-test-card" data-tilt>
         <div class="pm-test-quote">&ldquo;</div>
         <div class="pm-test-stars">
           <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -504,7 +646,7 @@ img{max-width:100%;display:block}
           </div>
         </div>
       </div>
-      <div class="pm-test-card">
+      <div class="pm-test-card" data-tilt>
         <div class="pm-test-quote">&ldquo;</div>
         <div class="pm-test-stars">
           <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -522,7 +664,7 @@ img{max-width:100%;display:block}
           </div>
         </div>
       </div>
-      <div class="pm-test-card">
+      <div class="pm-test-card" data-tilt>
         <div class="pm-test-quote">&ldquo;</div>
         <div class="pm-test-stars">
           <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -552,30 +694,33 @@ img{max-width:100%;display:block}
       <h2 class="pm-section-title">From handshake to first booking<br>in <em>two weeks.</em></h2>
       <p class="pm-section-desc">No red tape. No six-month onboarding. We move fast because we know your property sitting empty costs you money.</p>
     </div>
-    <div class="pm-how-steps">
-      <div class="pm-how-line"></div>
-      <div class="pm-step">
+    <div class="pm-how-steps" id="howSteps">
+      <svg class="pm-how-line-svg" id="howLineSvg" preserveAspectRatio="none">
+        <line class="pm-how-line-bg" x1="1" y1="40" x2="1" y2="100%"/>
+        <line class="pm-how-line-draw" id="howLineDraw" x1="1" y1="40" x2="1" y2="100%"/>
+      </svg>
+      <div class="pm-step" data-step>
         <div class="pm-step-dot">1</div>
         <div class="pm-step-content">
           <h3>The Conversation</h3>
           <p>We start with a real conversation, not a sales pitch. Tell us about your property, your goals, and your concerns. We'll give you an honest assessment of what we can deliver. No pressure, no obligations.</p>
         </div>
       </div>
-      <div class="pm-step">
+      <div class="pm-step" data-step>
         <div class="pm-step-dot">2</div>
         <div class="pm-step-content">
           <h3>Property Assessment</h3>
           <p>We visit your property in person, evaluate its potential, and create a tailored revenue strategy. We'll tell you what's working, what could be improved, and exactly what kind of returns to expect.</p>
         </div>
       </div>
-      <div class="pm-step">
+      <div class="pm-step" data-step>
         <div class="pm-step-dot">3</div>
         <div class="pm-step-content">
           <h3>The Setup</h3>
           <p>Professional photography, listing creation across all platforms, pricing strategy implementation, and smart home setup. We handle every detail while you put your feet up.</p>
         </div>
       </div>
-      <div class="pm-step">
+      <div class="pm-step" data-step>
         <div class="pm-step-dot">4</div>
         <div class="pm-step-content">
           <h3>Go Live & Earn</h3>
@@ -607,7 +752,7 @@ img{max-width:100%;display:block}
           <span>Proudly serving homeowners across Texas</span>
         </div>
       </div>
-      <div class="reveal reveal-delay-2">
+      <div class="reveal" style="transition-delay:.15s">
         <form class="pm-form" id="pmForm" onsubmit="return submitPmForm(event)">
           <div class="pm-form-grid">
             <div class="pm-form-group">
@@ -645,12 +790,16 @@ img{max-width:100%;display:block}
           </div>
           <div class="pm-form-submit">
             <button type="submit" class="pm-btn pm-btn-primary" id="pmSubmitBtn">
-              Get My Free Revenue Estimate
-              <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              <span class="pm-submit-fill"></span>
+              <span class="pm-btn-label">
+                Get My Free Revenue Estimate
+                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
             </button>
           </div>
         </form>
         <div class="pm-form-success" id="pmSuccess">
+          <div class="pm-confetti" id="confettiContainer"></div>
           <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <h3>We got your message!</h3>
           <p>Someone from our team will reach out within 24 hours with a personalized revenue estimate for your property. We can't wait to learn more about your home.</p>
@@ -668,12 +817,64 @@ img{max-width:100%;display:block}
 </footer>
 
 <script>
+/* ═══ SCROLL PROGRESS BAR ═══ */
+const scrollProgress = document.getElementById('scrollProgress');
+function updateScrollProgress() {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+  scrollProgress.style.width = pct + '%';
+}
+
 /* ═══ NAV SCROLL ═══ */
 const pmNav = document.getElementById('pmNav');
-let lastScroll = 0;
 window.addEventListener('scroll', () => {
   pmNav.classList.toggle('scrolled', window.scrollY > 50);
+  updateScrollProgress();
 }, { passive: true });
+
+/* ═══ HERO PARALLAX ═══ */
+const heroImg = document.getElementById('heroImg');
+function updateParallax() {
+  if (window.scrollY < window.innerHeight) {
+    heroImg.style.transform = 'translateY(' + (window.scrollY * 0.15) + 'px) scale(' + (1 + window.scrollY * 0.0002) + ')';
+  }
+}
+window.addEventListener('scroll', updateParallax, { passive: true });
+
+/* ═══ HERO WORD-BY-WORD STAGGER ═══ */
+(function() {
+  const title = document.getElementById('heroTitle');
+  const html = title.innerHTML;
+  // Split into words while preserving HTML tags
+  const parts = [];
+  let inTag = false;
+  let current = '';
+  for (let i = 0; i < html.length; i++) {
+    const c = html[i];
+    if (c === '<') { inTag = true; if (current.trim()) parts.push({type:'text',val:current}); current = '<'; continue; }
+    if (c === '>') { inTag = false; current += '>'; parts.push({type:'tag',val:current}); current = ''; continue; }
+    if (inTag) { current += c; continue; }
+    current += c;
+  }
+  if (current.trim()) parts.push({type:'text',val:current});
+
+  let wordIdx = 0;
+  let result = '';
+  parts.forEach(p => {
+    if (p.type === 'tag') { result += p.val; return; }
+    const words = p.val.split(/(\s+)/);
+    words.forEach(w => {
+      if (w.trim()) {
+        const delay = 0.5 + wordIdx * 0.06;
+        result += '<span class="pm-hero-word" style="animation-delay:' + delay + 's">' + w + '</span>';
+        wordIdx++;
+      } else {
+        result += w;
+      }
+    });
+  });
+  title.innerHTML = result;
+})();
 
 /* ═══ MOBILE MENU ═══ */
 const pmBurger = document.getElementById('pmBurger');
@@ -697,34 +898,57 @@ const revealObserver = new IntersectionObserver((entries) => {
       revealObserver.unobserve(entry.target);
     }
   });
-}, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+}, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
 
-// Group-based stagger: cards within the same parent get staggered delays
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-['.pm-why-grid', '.pm-services-grid', '.pm-numbers-grid', '.pm-test-grid', '.pm-how-steps'].forEach(parentSel => {
+/* Staggered reveals for card grids */
+['.pm-why-grid', '.pm-numbers-grid', '.pm-test-grid'].forEach(parentSel => {
   const parent = document.querySelector(parentSel);
   if (!parent) return;
-  parent.querySelectorAll('.pm-why-card, .pm-service, .pm-number-card, .pm-test-card, .pm-step').forEach((el, i) => {
-    el.style.transitionDelay = `${i * 0.1}s`;
+  parent.querySelectorAll('.pm-why-card, .pm-number-card, .pm-test-card').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.08) + 's';
     revealObserver.observe(el);
   });
 });
 
-/* ═══ ANIMATED COUNTERS ═══ */
-function animateCounter(el) {
+/* Service clip-path stagger */
+document.querySelectorAll('[data-svc-reveal]').forEach((el, i) => {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  obs.observe(el);
+});
+
+/* Timeline steps — alternating slide in */
+document.querySelectorAll('[data-step]').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.12) + 's';
+  revealObserver.observe(el);
+});
+
+/* ═══ SPRING COUNTER ANIMATION ═══ */
+function springCounter(el) {
   const target = parseFloat(el.dataset.count);
   const decimals = parseInt(el.dataset.decimals) || 0;
   const suffix = el.dataset.suffix || '';
   const prefix = el.dataset.prefix || '';
-  const duration = 2000;
+  const duration = 2200;
   const start = performance.now();
+
+  function springEase(t) {
+    // Damped spring: overshoots slightly then settles
+    return 1 - Math.pow(2, -10 * t) * Math.cos(t * Math.PI * 2.5);
+  }
 
   function update(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    // Ease out cubic
-    const eased = 1 - Math.pow(1 - progress, 3);
+    const eased = springEase(progress);
     const current = eased * target;
     el.textContent = prefix + current.toFixed(decimals) + suffix;
     if (progress < 1) requestAnimationFrame(update);
@@ -735,13 +959,119 @@ function animateCounter(el) {
 const counterObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.querySelectorAll('[data-count]').forEach(el => animateCounter(el));
+      entry.target.querySelectorAll('[data-count]').forEach(el => springCounter(el));
       counterObserver.unobserve(entry.target);
     }
   });
 }, { threshold: 0.3 });
 
 document.querySelectorAll('.pm-hero-stats, .pm-numbers-grid').forEach(el => counterObserver.observe(el));
+
+/* ═══ PROGRESS RING TARGETS ═══ */
+document.querySelectorAll('.pm-number-ring').forEach(ring => {
+  const pct = parseInt(ring.dataset.ringPct) || 0;
+  const circumference = 2 * Math.PI * 45; // r=45
+  const offset = circumference - (pct / 100) * circumference;
+  ring.querySelector('.ring-fill').style.setProperty('--ring-target', offset);
+});
+
+/* ═══ 3D PERSPECTIVE TILT ═══ */
+const isTouchDevice = window.matchMedia('(hover: none)').matches;
+if (!isTouchDevice) {
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      const rotateX = (y - 0.5) * -8;
+      const rotateY = (x - 0.5) * 8;
+      card.style.transform = 'perspective(800px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.01)';
+      card.style.setProperty('--mouse-x', (x * 100) + '%');
+      card.style.setProperty('--mouse-y', (y * 100) + '%');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+}
+
+/* ═══ SELF-DRAWING TIMELINE ═══ */
+(function() {
+  const stepsContainer = document.getElementById('howSteps');
+  const lineDraw = document.getElementById('howLineDraw');
+  const lineSvg = document.getElementById('howLineSvg');
+  if (!stepsContainer || !lineDraw || !lineSvg) return;
+
+  function updateTimeline() {
+    const rect = stepsContainer.getBoundingClientRect();
+    const containerH = rect.height;
+    lineSvg.setAttribute('height', containerH);
+    lineSvg.querySelector('.pm-how-line-bg').setAttribute('y2', containerH - 40);
+    lineDraw.setAttribute('y2', containerH - 40);
+
+    const lineLength = containerH - 80;
+    lineDraw.style.strokeDasharray = lineLength;
+
+    // Calculate draw progress based on scroll
+    const viewH = window.innerHeight;
+    const top = rect.top;
+    const scrollThrough = viewH - top;
+    const maxScroll = viewH + containerH;
+    const pct = Math.max(0, Math.min(1, scrollThrough / maxScroll));
+    lineDraw.style.strokeDashoffset = lineLength * (1 - pct);
+
+    // Activate step dots based on progress
+    const steps = stepsContainer.querySelectorAll('.pm-step');
+    steps.forEach((step, i) => {
+      const stepPct = (i + 0.5) / steps.length;
+      const dot = step.querySelector('.pm-step-dot');
+      if (pct >= stepPct) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateTimeline, { passive: true });
+  window.addEventListener('resize', updateTimeline);
+  setTimeout(updateTimeline, 100);
+})();
+
+/* ═══ FORM FOCUS ANIMATION ═══ */
+document.querySelectorAll('.pm-form-group input, .pm-form-group textarea, .pm-form-group select').forEach(input => {
+  const wrap = input.parentElement;
+  input.addEventListener('focus', () => wrap.classList.add('focused'));
+  input.addEventListener('blur', () => wrap.classList.remove('focused'));
+});
+
+/* ═══ CONFETTI EFFECT ═══ */
+function createConfetti(container) {
+  const colors = ['#C76B42','#d4845f','#d4a574','#f5efe6','#a85a36'];
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+    piece.classList.add('pm-confetti-piece');
+    piece.style.left = (Math.random() * 100) + '%';
+    piece.style.top = '50%';
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (4 + Math.random() * 6) + 'px';
+    piece.style.height = (4 + Math.random() * 6) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    const angle = (Math.random() - 0.5) * 120;
+    const dist = 80 + Math.random() * 160;
+    const dx = Math.sin(angle * Math.PI / 180) * dist;
+    const dy = -Math.abs(Math.cos(angle * Math.PI / 180) * dist);
+    piece.style.opacity = '1';
+    piece.style.transition = 'none';
+    container.appendChild(piece);
+    requestAnimationFrame(() => {
+      piece.style.transition = 'transform 1s cubic-bezier(0.23,1,0.32,1), opacity 1s ease-out';
+      piece.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) rotate(' + (Math.random() * 360) + 'deg)';
+      piece.style.opacity = '0';
+    });
+    setTimeout(() => piece.remove(), 1200);
+  }
+}
 
 /* ═══ FORM SUBMISSION ═══ */
 async function submitPmForm(e) {
@@ -751,7 +1081,7 @@ async function submitPmForm(e) {
   const success = document.getElementById('pmSuccess');
 
   btn.disabled = true;
-  btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Sending...';
+  btn.querySelector('.pm-btn-label').innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Sending...';
 
   const data = {
     name: document.getElementById('pm-name').value,
@@ -772,13 +1102,14 @@ async function submitPmForm(e) {
     if (res.ok && result.success) {
       form.style.display = 'none';
       success.style.display = 'block';
+      createConfetti(document.getElementById('confettiContainer'));
     } else {
       throw new Error(result.error || 'Submission failed');
     }
   } catch (err) {
     alert(err.message || 'Something went wrong. Please try again.');
     btn.disabled = false;
-    btn.innerHTML = 'Get My Free Revenue Estimate <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+    btn.querySelector('.pm-btn-label').innerHTML = 'Get My Free Revenue Estimate <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
   }
 }
 
@@ -789,10 +1120,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     if (target) {
       e.preventDefault();
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      closePmMobile();
     }
   });
 });
 </script>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 </body>
 </html>
