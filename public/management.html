@@ -78,6 +78,10 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .rs-reveal.on{opacity:1;transform:none}
 
+/* One-time hero entrance — staggered fade-up on load */
+@keyframes rsEnter{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.rs-enter{opacity:0;animation:rsEnter .65s var(--ease) both}
+
 /* ═══ Hero ═══ */
 .rs-hero{padding:clamp(120px,16vh,170px) clamp(20px,5vw,64px) 0}
 .rs-hero-top{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -489,21 +493,21 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
 <!-- ═══ Hero ═══ -->
 <section class="rs-hero" id="top">
   <div class="rs-hero-top">
-    <div class="rs-hero-badge"><span style="color:var(--gold)">✳</span>Luxury short-term rental management · Dallas–Fort Worth</div>
-    <h1>Your home deserves a team that <em class="rs-it">actually</em> picks up the phone.</h1>
-    <p class="rs-hero-sub">We pair genuine Southern hospitality with smart pricing and hotel-level care — so your property earns industry-leading occupancy while you get your weekends back.</p>
-    <div class="rs-hero-ctas">
+    <div class="rs-hero-badge rs-enter"><span style="color:var(--gold)">✳</span>Luxury short-term rental management · Dallas–Fort Worth</div>
+    <h1 class="rs-enter" style="animation-delay:70ms">Your home deserves a team that <em class="rs-it">actually</em> picks up the phone.</h1>
+    <p class="rs-hero-sub rs-enter" style="animation-delay:140ms">We pair genuine Southern hospitality with smart pricing and hotel-level care — so your property earns industry-leading occupancy while you get your weekends back.</p>
+    <div class="rs-hero-ctas rs-enter" style="animation-delay:210ms">
       <a href="#contact" class="rs-btn rs-btn-dark"><span style="white-space:nowrap">Get my free estimate</span><span aria-hidden="true">→</span></a>
       <a href="#calculator" class="rs-btn rs-btn-ghost" style="white-space:nowrap">Run the numbers</a>
     </div>
-    <div class="rs-hero-pills">
+    <div class="rs-hero-pills rs-enter" style="animation-delay:280ms">
       <div class="rs-pill"><b><span data-count="94">0</span>%</b><span>avg occupancy</span></div>
       <div class="rs-pill"><b class="up">+<span data-count="38">0</span>%</b><span>vs market revenue</span></div>
       <div class="rs-pill"><b><span data-count="4.9" data-dec="1">0</span><span class="star">★</span></b><span>guest rating</span></div>
       <div class="rs-pill"><b>24/7</b><span>real humans</span></div>
     </div>
   </div>
-  <div class="rs-stage-wrap">
+  <div class="rs-stage-wrap rs-enter" style="animation-delay:340ms">
     <div class="rs-stage">
       <div class="rs-sun" aria-hidden="true"></div>
       <div class="rs-hill-a" aria-hidden="true"></div>
