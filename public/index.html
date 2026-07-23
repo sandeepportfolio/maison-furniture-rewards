@@ -62,7 +62,7 @@ ul{list-style:none}
 .nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;transition:background .4s var(--ease),box-shadow .4s var(--ease),padding .3s var(--ease)}
 .nav.scrolled{background:rgba(250,250,248,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 1px 0 var(--border);padding:16px 48px}
 .nav-logo{font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.28em;color:var(--text)}
-.nav-links{display:flex;align-items:center;gap:40px}
+.nav-links{display:flex;align-items:center;gap:32px}
 .nav-links a{font-family:var(--sans);font-size:15px;font-weight:400;letter-spacing:.01em;color:var(--text-muted);transition:color .3s var(--ease)}
 .nav-links a:hover{color:var(--text)}
 .nav-cta{color:var(--accent)!important;font-weight:600!important}
@@ -1510,7 +1510,7 @@ ul{list-style:none}
     <a href="#experience">Experience</a>
     <a href="#explore" onclick="event.preventDefault();openMapModal()">Explore</a>
     <a href="#story">Our Story</a>
-    <a href="#rewards" onclick="event.preventDefault();showRewards()">Rewards</a>
+    <a href="/management">Management</a>
     <a href="#contact">Contact</a>
     <a href="#properties" class="nav-cta">Book Now</a>
   </div>
@@ -1523,7 +1523,7 @@ ul{list-style:none}
   <a href="#experience" onclick="closeMobile()">Experience</a>
   <a href="#explore" onclick="closeMobile();event.preventDefault();openMapModal()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
-  <a href="#rewards" onclick="closeMobile();event.preventDefault();showRewards()">Rewards</a>
+  <a href="/management" onclick="closeMobile()">Management</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <a href="#properties" onclick="closeMobile()">Book Now</a>
 </div>

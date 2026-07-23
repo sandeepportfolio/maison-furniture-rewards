@@ -536,6 +536,11 @@ textarea{resize:vertical}
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Properties
       </a>
+      <a href="#" class="nav-link" data-section="pm-inquiries">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
+        PM Inquiries
+        <span class="nav-badge" id="navPmBadge" style="display:none">0</span>
+      </a>
       <a href="#" class="nav-link" data-section="invoices">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Custom Invoice
@@ -762,6 +767,22 @@ textarea{resize:vertical}
     <div class="section" id="sec-properties">
       <div class="prop-grid" id="propGrid">
         <div class="loading-state" style="grid-column:1/-1"><span class="spinner"></span> Loading properties...</div>
+      </div>
+    </div>
+
+    <!-- ═══ PM INQUIRIES ═══ -->
+    <div class="section" id="sec-pm-inquiries">
+      <div class="filter-bar" style="margin-bottom:1rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
+        <select id="pmFilter" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.5rem .8rem;color:var(--text);font-size:.85rem;font-family:inherit">
+          <option value="">All Inquiries</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="archived">Archived</option>
+        </select>
+        <span id="pmCount" style="font-size:.82rem;color:var(--text-2)"></span>
+      </div>
+      <div id="pmTable" style="overflow-x:auto">
+        <div class="loading-state"><span class="spinner"></span> Loading PM inquiries...</div>
       </div>
     </div>
 
@@ -1334,6 +1355,7 @@ const sectionMeta = {
   pricing: { title: 'Pricing', subtitle: 'Manage pricing overrides and seasonal rates' },
   properties: { title: 'Properties', subtitle: 'Configure property details and visibility' },
   invoices: { title: 'Custom Invoice', subtitle: 'Create reservations with custom pricing and send payment links' },
+  'pm-inquiries': { title: 'PM Inquiries', subtitle: 'Property management inquiry submissions' },
   'guest-messages': { title: 'Guest Messages', subtitle: 'Messages from guests via the Trip Portal' },
   settings: { title: 'Settings', subtitle: 'System configuration and preferences' }
 };
@@ -1374,6 +1396,7 @@ function loadSectionData(section) {
     case 'pricing': loadPricing(); break;
     case 'properties': loadProperties(); break;
     case 'invoices': loadInvoices(); break;
+    case 'pm-inquiries': loadPmInquiries(); break;
     case 'guest-messages': loadGuestMessages(); break;
     case 'settings': loadSettings(); break;
   }
@@ -2191,6 +2214,83 @@ async function togglePropVisibility(slug, visible) {
 $('setMaintenance').addEventListener('change', (e) => {
   $('maintLabel').textContent = e.target.checked ? 'On' : 'Off';
 });
+
+/* ═══════════════════════════════════════════════════════════
+   PM INQUIRIES
+   ═══════════════════════════════════════════════════════════ */
+let allPmInquiries = [];
+
+async function loadPmInquiries() {
+  try {
+    const res = await fetch('/api/admin/pm-inquiries', { credentials: 'include' });
+    if (!res.ok) throw new Error('Failed to load');
+    allPmInquiries = await res.json();
+    renderPmInquiries();
+    const newCount = allPmInquiries.filter(i => i.status === 'new').length;
+    const badge = $('navPmBadge');
+    if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; }
+    else { badge.style.display = 'none'; }
+  } catch (e) {
+    $('pmTable').innerHTML = '<div style="color:var(--text-2);padding:1rem">Failed to load PM inquiries</div>';
+  }
+}
+
+function renderPmInquiries() {
+  const filter = $('pmFilter').value;
+  const filtered = filter ? allPmInquiries.filter(i => i.status === filter) : allPmInquiries;
+  $('pmCount').textContent = `${filtered.length} inquir${filtered.length === 1 ? 'y' : 'ies'}`;
+
+  if (!filtered.length) {
+    $('pmTable').innerHTML = '<div style="color:var(--text-2);padding:2rem;text-align:center">No inquiries yet</div>';
+    return;
+  }
+
+  const statusColors = { new: '#C76B42', contacted: '#4CAF50', archived: '#888' };
+  $('pmTable').innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.85rem">
+    <thead><tr style="border-bottom:1px solid var(--border);text-align:left">
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Name</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Email</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Phone</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Property</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">BRs</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Message</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Date</th>
+      <th style="padding:.6rem .5rem;color:var(--text-2);font-weight:500">Status</th>
+    </tr></thead>
+    <tbody>${filtered.map(i => `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:.6rem .5rem;font-weight:500">${esc(i.name)}</td>
+      <td style="padding:.6rem .5rem"><a href="mailto:${esc(i.email)}" style="color:var(--copper)">${esc(i.email)}</a></td>
+      <td style="padding:.6rem .5rem">${esc(i.phone || '—')}</td>
+      <td style="padding:.6rem .5rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(i.property_address)}">${esc(i.property_address || '—')}</td>
+      <td style="padding:.6rem .5rem">${esc(i.bedrooms || '—')}</td>
+      <td style="padding:.6rem .5rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(i.message)}">${esc(i.message || '—')}</td>
+      <td style="padding:.6rem .5rem;white-space:nowrap">${new Date(i.created_at).toLocaleDateString()}</td>
+      <td style="padding:.6rem .5rem">
+        <select onchange="updatePmStatus(${i.id},this.value)" style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:${statusColors[i.status]||'var(--text)'};font-size:.8rem;font-family:inherit;font-weight:600">
+          <option value="new" ${i.status==='new'?'selected':''}>New</option>
+          <option value="contacted" ${i.status==='contacted'?'selected':''}>Contacted</option>
+          <option value="archived" ${i.status==='archived'?'selected':''}>Archived</option>
+        </select>
+      </td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+async function updatePmStatus(id, status) {
+  try {
+    await fetch(`/api/admin/pm-inquiries/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ status })
+    });
+    loadPmInquiries();
+  } catch (e) { console.error('PM status update failed', e); }
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+$('pmFilter').addEventListener('change', renderPmInquiries);
 
 /* ═══════════════════════════════════════════════════════════
    GUEST MESSAGES (Trip Portal)

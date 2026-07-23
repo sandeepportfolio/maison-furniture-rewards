@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Management | Regent Stays — Luxury Short-Term Rental Management in Texas</title>
+<meta name="description" content="Partner with Regent Stays for luxury short-term rental property management in Texas. Industry-leading occupancy rates, premium guest experiences, and genuine southern hospitality.">
+<meta property="og:title" content="Property Management | Regent Stays">
+<meta property="og:description" content="Industry-leading occupancy rates and genuine southern hospitality. Let Regent manage your Texas property.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.bookwithregent.com/management">
+<link rel="canonical" href="https://www.bookwithregent.com/management">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#222;
+  --copper:#C76B42;--copper-light:#d4845f;--copper-dark:#a85a36;--copper-glow:rgba(199,107,66,.15);
+  --gold:#d4a574;--cream:#f5efe6;--white:#fff;--text:#e8e4df;--text-muted:#9a9590;--text-dim:#6a6560;
+  --glass:rgba(255,255,255,.04);--glass-border:rgba(255,255,255,.08);--glass-hover:rgba(255,255,255,.07);
+  --radius:16px;--radius-lg:24px;--radius-xl:32px;
+  --sans:'Outfit',system-ui,sans-serif;--serif:'Playfair Display',Georgia,serif;
+  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+a{text-decoration:none;color:inherit}
+button{border:none;background:none;cursor:pointer;font-family:var(--sans);color:inherit}
+img{max-width:100%;display:block}
+
+/* ═══ NAV ═══ */
+.pm-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;transition:all .5s var(--ease)}
+.pm-nav.scrolled{background:rgba(13,13,13,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-border);padding:16px 48px}
+.pm-nav-logo{font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.28em;color:var(--cream)}
+.pm-nav-links{display:flex;align-items:center;gap:36px}
+.pm-nav-links a{font-size:14px;font-weight:400;letter-spacing:.02em;color:var(--text-muted);transition:color .3s var(--ease)}
+.pm-nav-links a:hover{color:var(--cream)}
+.pm-nav-cta{padding:10px 24px!important;background:var(--copper)!important;color:var(--white)!important;border-radius:100px!important;font-weight:600!important;font-size:13px!important;letter-spacing:.04em!important;transition:all .3s var(--ease)!important}
+.pm-nav-cta:hover{background:var(--copper-light)!important;transform:translateY(-1px)!important}
+.pm-burger{display:none;flex-direction:column;gap:5px;padding:4px;cursor:pointer}
+.pm-burger span{display:block;width:22px;height:1.5px;background:var(--cream);transition:all .3s var(--ease)}
+.pm-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.pm-burger.open span:nth-child(2){opacity:0}
+.pm-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.pm-mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(13,13,13,.97);backdrop-filter:blur(30px);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+.pm-mobile-menu.open{opacity:1;pointer-events:auto}
+.pm-mobile-menu a{font-size:20px;font-weight:400;color:var(--text-muted);transition:color .3s}
+.pm-mobile-menu a:hover{color:var(--copper)}
+
+/* ═══ SECTIONS ═══ */
+.pm-section{padding:120px 0;position:relative;overflow:hidden}
+.pm-container{max-width:1200px;margin:0 auto;padding:0 32px}
+.pm-wide{max-width:1400px;margin:0 auto;padding:0 32px}
+
+/* ═══ HERO ═══ */
+.pm-hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:0}
+.pm-hero-bg{position:absolute;inset:0;z-index:0}
+.pm-hero-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,13,13,.92) 0%,rgba(13,13,13,.7) 40%,rgba(199,107,66,.08) 100%);z-index:1}
+.pm-hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(199,107,66,.12) 0%,transparent 60%);z-index:2}
+.pm-hero-img{width:100%;height:100%;object-fit:cover;opacity:.35}
+
+/* Animated grain overlay */
+.pm-grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.pm-hero-content{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:0 32px;width:100%}
+.pm-hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--copper);margin-bottom:28px;opacity:0;transform:translateY(20px);animation:fadeUp .8s var(--ease) .3s forwards}
+.pm-hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--copper);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+.pm-hero h1{font-family:var(--serif);font-size:clamp(40px,6vw,80px);font-weight:400;line-height:1.08;color:var(--cream);margin-bottom:24px;opacity:0;transform:translateY(30px);animation:fadeUp 1s var(--ease) .5s forwards}
+.pm-hero h1 em{font-style:italic;color:var(--copper)}
+.pm-hero-sub{font-size:clamp(16px,1.4vw,20px);color:var(--text-muted);max-width:560px;line-height:1.7;margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .8s var(--ease) .7s forwards}
+
+.pm-hero-actions{display:flex;align-items:center;gap:20px;margin-bottom:80px;opacity:0;transform:translateY(20px);animation:fadeUp .8s var(--ease) .9s forwards}
+.pm-btn{display:inline-flex;align-items:center;gap:8px;padding:16px 36px;border-radius:100px;font-size:15px;font-weight:600;letter-spacing:.02em;transition:all .4s var(--ease)}
+.pm-btn-primary{background:var(--copper);color:var(--white)}
+.pm-btn-primary:hover{background:var(--copper-light);transform:translateY(-2px);box-shadow:0 8px 32px rgba(199,107,66,.3)}
+.pm-btn-ghost{border:1px solid var(--glass-border);color:var(--cream);background:var(--glass)}
+.pm-btn-ghost:hover{border-color:rgba(255,255,255,.2);background:var(--glass-hover)}
+.pm-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* Hero Stats */
+.pm-hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;opacity:0;transform:translateY(30px);animation:fadeUp 1s var(--ease) 1.1s forwards}
+.pm-stat{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);padding:32px 28px;text-align:center;position:relative;overflow:hidden;transition:all .4s var(--ease)}
+.pm-stat:first-child{border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
+.pm-stat:last-child{border-radius:0 var(--radius-lg) var(--radius-lg) 0}
+.pm-stat:hover{background:var(--glass-hover);border-color:rgba(199,107,66,.2)}
+.pm-stat::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--copper);transition:width .5s var(--ease)}
+.pm-stat:hover::after{width:80%}
+.pm-stat-num{font-family:var(--serif);font-size:clamp(32px,3.5vw,48px);font-weight:400;color:var(--cream);line-height:1;margin-bottom:8px}
+.pm-stat-label{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ═══ SECTION HEADERS ═══ */
+.pm-section-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--copper);margin-bottom:20px}
+.pm-section-label::before{content:'';width:32px;height:1px;background:var(--copper)}
+.pm-section-title{font-family:var(--serif);font-size:clamp(32px,4vw,56px);font-weight:400;line-height:1.15;color:var(--cream);margin-bottom:20px}
+.pm-section-title em{font-style:italic;color:var(--copper)}
+.pm-section-desc{font-size:17px;color:var(--text-muted);max-width:600px;line-height:1.7}
+
+/* ═══ WHY REGENT ═══ */
+.pm-why{background:var(--bg)}
+.pm-why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:60px}
+.pm-why-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:44px 36px;position:relative;overflow:hidden;transition:all .5s var(--ease);opacity:0;transform:translateY(40px)}
+.pm-why-card.visible{opacity:1;transform:translateY(0)}
+.pm-why-card:hover{border-color:rgba(199,107,66,.25);background:var(--glass-hover);transform:translateY(-4px)}
+.pm-why-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--copper),transparent);opacity:0;transition:opacity .5s}
+.pm-why-card:hover::before{opacity:1}
+.pm-why-icon{width:52px;height:52px;border-radius:14px;background:var(--copper-glow);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+.pm-why-icon svg{width:24px;height:24px;stroke:var(--copper);fill:none;stroke-width:1.5}
+.pm-why-card h3{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--cream);margin-bottom:12px}
+.pm-why-card p{font-size:15px;color:var(--text-muted);line-height:1.7}
+
+/* ═══ SERVICES ═══ */
+.pm-services{background:var(--bg2);position:relative}
+.pm-services::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
+.pm-services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:60px;background:var(--glass-border);border-radius:var(--radius-lg);overflow:hidden}
+.pm-service{background:var(--bg2);padding:44px 32px;position:relative;transition:all .5s var(--ease);opacity:0;transform:scale(.95)}
+.pm-service.visible{opacity:1;transform:scale(1)}
+.pm-service:hover{background:var(--bg3)}
+.pm-service-num{font-family:var(--serif);font-size:48px;font-weight:400;color:rgba(199,107,66,.12);line-height:1;margin-bottom:16px;transition:color .4s}
+.pm-service:hover .pm-service-num{color:rgba(199,107,66,.25)}
+.pm-service h3{font-size:17px;font-weight:600;color:var(--cream);margin-bottom:10px;letter-spacing:.01em}
+.pm-service p{font-size:14px;color:var(--text-muted);line-height:1.65}
+.pm-service-line{width:24px;height:2px;background:var(--copper);margin-top:20px;transition:width .5s var(--ease)}
+.pm-service:hover .pm-service-line{width:48px}
+
+/* ═══ BY THE NUMBERS ═══ */
+.pm-numbers{background:var(--bg);position:relative}
+.pm-numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:60px;border:1px solid var(--glass-border);border-radius:var(--radius-lg);overflow:hidden}
+.pm-number-card{padding:48px 32px;text-align:center;position:relative;border-right:1px solid var(--glass-border);transition:all .4s var(--ease);opacity:0;transform:translateY(30px)}
+.pm-number-card.visible{opacity:1;transform:translateY(0)}
+.pm-number-card:last-child{border-right:none}
+.pm-number-card:hover{background:var(--glass)}
+.pm-number-val{font-family:var(--serif);font-size:clamp(36px,4vw,56px);font-weight:400;color:var(--copper);line-height:1;margin-bottom:6px}
+.pm-number-unit{font-family:var(--serif);font-size:18px;color:var(--copper-light);font-style:italic}
+.pm-number-label{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:.04em;margin-top:12px;line-height:1.4}
+
+/* ═══ PLATFORMS ═══ */
+.pm-platforms{background:var(--bg2);position:relative;padding:80px 0}
+.pm-platforms::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
+.pm-platforms-wrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+.pm-platform-logos{display:flex;align-items:center;justify-content:center;gap:60px;margin-top:48px;flex-wrap:wrap}
+.pm-platform-logo{display:flex;flex-direction:column;align-items:center;gap:12px;opacity:.4;transition:all .5s var(--ease);cursor:default}
+.pm-platform-logo:hover{opacity:1;transform:translateY(-4px)}
+.pm-platform-logo svg,.pm-platform-logo img{height:36px;width:auto}
+.pm-platform-name{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+
+/* ═══ TESTIMONIALS ═══ */
+.pm-testimonials{background:var(--bg);position:relative}
+.pm-test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
+.pm-test-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:40px 32px;position:relative;opacity:0;transform:translateY(40px);transition:all .5s var(--ease)}
+.pm-test-card.visible{opacity:1;transform:translateY(0)}
+.pm-test-card:hover{border-color:rgba(199,107,66,.2);transform:translateY(-4px)}
+.pm-test-quote{position:absolute;top:20px;right:24px;font-family:var(--serif);font-size:72px;color:rgba(199,107,66,.1);line-height:1}
+.pm-test-stars{display:flex;gap:3px;margin-bottom:20px}
+.pm-test-stars svg{width:16px;height:16px;fill:var(--copper);stroke:none}
+.pm-test-card blockquote{font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:24px}
+.pm-test-author{display:flex;align-items:center;gap:12px}
+.pm-test-avatar{width:40px;height:40px;border-radius:50%;background:var(--copper-glow);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:var(--copper);font-weight:500}
+.pm-test-name{font-size:14px;font-weight:600;color:var(--cream)}
+.pm-test-prop{font-size:12px;color:var(--text-dim);margin-top:2px}
+
+/* ═══ HOW IT WORKS ═══ */
+.pm-how{background:var(--bg2);position:relative}
+.pm-how::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent)}
+.pm-how-steps{display:flex;flex-direction:column;gap:0;margin-top:60px;position:relative}
+.pm-how-line{position:absolute;left:32px;top:40px;bottom:40px;width:1px;background:linear-gradient(180deg,var(--copper),var(--glass-border));z-index:0}
+.pm-step{display:flex;gap:40px;align-items:flex-start;padding:40px 0;position:relative;z-index:1;opacity:0;transform:translateX(-30px);transition:all .6s var(--ease)}
+.pm-step.visible{opacity:1;transform:translateX(0)}
+.pm-step-dot{flex-shrink:0;width:64px;height:64px;border-radius:50%;background:var(--bg);border:2px solid var(--copper);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--copper);transition:all .4s var(--ease)}
+.pm-step:hover .pm-step-dot{background:var(--copper);color:var(--white)}
+.pm-step-content h3{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--cream);margin-bottom:10px}
+.pm-step-content p{font-size:15px;color:var(--text-muted);line-height:1.7;max-width:520px}
+
+/* ═══ CONTACT FORM ═══ */
+.pm-contact{background:var(--bg);position:relative;padding:120px 0 160px}
+.pm-contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.pm-contact-info h2{font-family:var(--serif);font-size:clamp(32px,3.5vw,48px);font-weight:400;color:var(--cream);margin-bottom:20px;line-height:1.15}
+.pm-contact-info h2 em{font-style:italic;color:var(--copper)}
+.pm-contact-info p{font-size:16px;color:var(--text-muted);line-height:1.7;margin-bottom:32px;max-width:440px}
+.pm-contact-detail{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.pm-contact-detail svg{width:20px;height:20px;stroke:var(--copper);fill:none;stroke-width:1.5;flex-shrink:0}
+.pm-contact-detail span{font-size:15px;color:var(--text-muted)}
+
+.pm-form{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:44px 36px}
+.pm-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pm-form-group{display:flex;flex-direction:column;gap:6px}
+.pm-form-group.full{grid-column:1/-1}
+.pm-form-group label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+.pm-form-group input,.pm-form-group textarea,.pm-form-group select{background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 16px;font-family:var(--sans);font-size:15px;color:var(--cream);transition:all .3s var(--ease);outline:none;resize:none}
+.pm-form-group input:focus,.pm-form-group textarea:focus,.pm-form-group select:focus{border-color:var(--copper);background:rgba(199,107,66,.06)}
+.pm-form-group input::placeholder,.pm-form-group textarea::placeholder{color:var(--text-dim)}
+.pm-form-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a6560' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
+.pm-form-group select option{background:var(--bg2);color:var(--cream)}
+.pm-form-submit{margin-top:24px}
+.pm-form-submit .pm-btn{width:100%;justify-content:center;padding:18px 36px;font-size:16px}
+
+.pm-form-success{display:none;text-align:center;padding:60px 20px}
+.pm-form-success svg{width:64px;height:64px;stroke:var(--copper);fill:none;stroke-width:1.5;margin:0 auto 20px}
+.pm-form-success h3{font-family:var(--serif);font-size:24px;color:var(--cream);margin-bottom:10px}
+.pm-form-success p{font-size:15px;color:var(--text-muted);line-height:1.6}
+
+/* ═══ FOOTER ═══ */
+.pm-footer{background:var(--bg2);border-top:1px solid var(--glass-border);padding:40px 0;text-align:center}
+.pm-footer p{font-size:13px;color:var(--text-dim);letter-spacing:.02em}
+.pm-footer a{color:var(--copper);transition:color .3s}
+.pm-footer a:hover{color:var(--copper-light)}
+
+/* ═══ SCROLL REVEAL ═══ */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1024px){
+  .pm-hero-stats{grid-template-columns:repeat(2,1fr)}
+  .pm-stat:first-child{border-radius:var(--radius-lg) 0 0 0}
+  .pm-stat:nth-child(2){border-radius:0 var(--radius-lg) 0 0}
+  .pm-stat:nth-child(3){border-radius:0 0 0 var(--radius-lg)}
+  .pm-stat:last-child{border-radius:0 0 var(--radius-lg) 0}
+  .pm-services-grid{grid-template-columns:repeat(2,1fr)}
+  .pm-numbers-grid{grid-template-columns:repeat(2,1fr)}
+  .pm-number-card:nth-child(2){border-right:none}
+  .pm-number-card:nth-child(3){border-top:1px solid var(--glass-border)}
+  .pm-number-card:nth-child(4){border-top:1px solid var(--glass-border)}
+  .pm-test-grid{grid-template-columns:1fr 1fr}
+  .pm-contact-wrap{grid-template-columns:1fr;gap:48px}
+}
+@media(max-width:768px){
+  .pm-nav{padding:18px 20px}
+  .pm-nav.scrolled{padding:14px 20px}
+  .pm-nav-links{display:none}
+  .pm-burger{display:flex}
+  .pm-section{padding:80px 0}
+  .pm-container,.pm-wide{padding:0 20px}
+  .pm-hero{min-height:auto;padding:140px 0 60px}
+  .pm-hero-actions{flex-direction:column;align-items:flex-start}
+  .pm-hero-stats{grid-template-columns:1fr 1fr}
+  .pm-why-grid{grid-template-columns:1fr}
+  .pm-services-grid{grid-template-columns:1fr}
+  .pm-numbers-grid{grid-template-columns:1fr}
+  .pm-number-card{border-right:none!important;border-bottom:1px solid var(--glass-border)}
+  .pm-number-card:last-child{border-bottom:none}
+  .pm-platform-logos{gap:32px}
+  .pm-test-grid{grid-template-columns:1fr}
+  .pm-how-line{left:18px}
+  .pm-step{gap:20px}
+  .pm-step-dot{width:40px;height:40px;font-size:16px}
+  .pm-contact-wrap{grid-template-columns:1fr}
+  .pm-form-grid{grid-template-columns:1fr}
+  .pm-form{padding:28px 20px}
+  .pm-stat{padding:24px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- Grain overlay -->
+<div class="pm-grain"></div>
+
+<!-- Navigation -->
+<nav class="pm-nav" id="pmNav">
+  <a href="/" class="pm-nav-logo">R E G E N T</a>
+  <div class="pm-nav-links">
+    <a href="/">Home</a>
+    <a href="/#properties">Properties</a>
+    <a href="/#experience">Experience</a>
+    <a href="/#story">Our Story</a>
+    <a href="#contact" class="pm-nav-cta">Get Started</a>
+  </div>
+  <button class="pm-burger" id="pmBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="pm-mobile-menu" id="pmMobile">
+  <a href="/" onclick="closePmMobile()">Home</a>
+  <a href="/#properties" onclick="closePmMobile()">Properties</a>
+  <a href="/#experience" onclick="closePmMobile()">Experience</a>
+  <a href="/#story" onclick="closePmMobile()">Our Story</a>
+  <a href="#contact" onclick="closePmMobile()" style="color:var(--copper);font-weight:600">Get Started</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="pm-hero" id="hero">
+  <div class="pm-hero-bg">
+    <img class="pm-hero-img" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/a4f242ba-e02b-46a4-a699-4b17837ac4b7.png?im_w=1200" alt="Luxury Regent property in Texas">
+  </div>
+  <div class="pm-hero-content">
+    <div class="pm-hero-tag">Property Management</div>
+    <h1>Your home deserves<br>a team that <em>actually</em><br>picks up the phone.</h1>
+    <p class="pm-hero-sub">We treat every property like it's our own family home. Genuine southern hospitality, industry-leading returns, and a management team you'll actually enjoy working with.</p>
+    <div class="pm-hero-actions">
+      <a href="#contact" class="pm-btn pm-btn-primary">
+        Let's Talk About Your Property
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#how" class="pm-btn pm-btn-ghost">How It Works</a>
+    </div>
+    <div class="pm-hero-stats">
+      <div class="pm-stat">
+        <div class="pm-stat-num" data-count="94" data-suffix="%">0%</div>
+        <div class="pm-stat-label">Avg Occupancy Rate</div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-num" data-count="38" data-suffix="%" data-prefix="+">0%</div>
+        <div class="pm-stat-label">Above Market ROI</div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-num" data-count="7">0</div>
+        <div class="pm-stat-label">Properties Managed</div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-num" data-count="4.9" data-decimals="1">0</div>
+        <div class="pm-stat-label">Avg Guest Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY REGENT ═══ -->
+<section class="pm-section pm-why" id="why">
+  <div class="pm-container">
+    <div class="reveal">
+      <div class="pm-section-label">Why Regent</div>
+      <h2 class="pm-section-title">Not just another <em>management<br>company.</em> We're your neighbors.</h2>
+      <p class="pm-section-desc">Most property managers treat your home like a line item. We treat it like we live next door. Because, well, some of us do.</p>
+    </div>
+    <div class="pm-why-grid">
+      <div class="pm-why-card">
+        <div class="pm-why-icon">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <h3>Genuine Southern Hospitality</h3>
+        <p>We don't have a script. We have a front porch and sweet tea. Every guest gets the kind of welcome that makes them want to come back, and every homeowner gets a team that actually cares how their Saturday's going.</p>
+      </div>
+      <div class="pm-why-card">
+        <div class="pm-why-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>We Pick Up the Phone. Always.</h3>
+        <p>No automated phone trees. No "we'll get back to you in 48 hours." You call us, a real person answers. Your guest locks themselves out at midnight? We're on it before they finish explaining what happened.</p>
+      </div>
+      <div class="pm-why-card">
+        <div class="pm-why-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>Tech Meets Human Touch</h3>
+        <p>Dynamic pricing algorithms get the best rates. Professional photography makes your listing pop. But it's our hands-on, local team that makes guests leave five-star reviews and homeowners sleep easy.</p>
+      </div>
+      <div class="pm-why-card">
+        <div class="pm-why-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
+        </div>
+        <h3>Premium Positioning, Premium Returns</h3>
+        <p>We don't compete on being the cheapest listing. We position your property as the luxury choice, command premium nightly rates, and still maintain occupancy rates that would make other managers blush.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHAT WE DO ═══ -->
+<section class="pm-section pm-services" id="services">
+  <div class="pm-container">
+    <div class="reveal">
+      <div class="pm-section-label">Full-Service Management</div>
+      <h2 class="pm-section-title">Everything handled.<br><em>You</em> enjoy the returns.</h2>
+      <p class="pm-section-desc">From the moment you sign on, we handle every detail. You just watch the revenue roll in and occasionally check your bank account with a smile.</p>
+    </div>
+    <div class="pm-services-grid">
+      <div class="pm-service">
+        <div class="pm-service-num">01</div>
+        <h3>Listing Optimization</h3>
+        <p>SEO-tuned descriptions, strategic titling, and compelling copy that converts browsers into bookers. Your listing won't just show up, it'll stand out.</p>
+        <div class="pm-service-line"></div>
+      </div>
+      <div class="pm-service">
+        <div class="pm-service-num">02</div>
+        <h3>Professional Photography</h3>
+        <p>Magazine-quality photos and virtual tours that make scrollers stop and book. First impressions aren't everything, but they're about 80% of it.</p>
+        <div class="pm-service-line"></div>
+      </div>
+      <div class="pm-service">
+        <div class="pm-service-num">03</div>
+        <h3>Dynamic Pricing</h3>
+        <p>Smart algorithms that adjust nightly rates based on demand, events, season, and competitor data. Never leave money on the table or price yourself out of bookings.</p>
+        <div class="pm-service-line"></div>
+      </div>
+      <div class="pm-service">
+        <div class="pm-service-num">04</div>
+        <h3>Guest Screening & Support</h3>
+        <p>We vet every guest before they get the door code. And once they're in, our team is available around the clock. Your property stays protected, your guests stay happy.</p>
+        <div class="pm-service-line"></div>
+      </div>
+      <div class="pm-service">
+        <div class="pm-service-num">05</div>
+        <h3>Cleaning & Turnover</h3>
+        <p>Our cleaning crews don't just tidy up. Hotel-quality deep cleans, fresh linens, restocked amenities, and a walkthrough checklist that would make a drill sergeant nod.</p>
+        <div class="pm-service-line"></div>
+      </div>
+      <div class="pm-service">
+        <div class="pm-service-num">06</div>
+        <h3>Maintenance & Inspections</h3>
+        <p>Regular property inspections, vendor coordination, and proactive maintenance. We fix the small stuff before it becomes the expensive stuff. Your home stays in top shape.</p>
+        <div class="pm-service-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BY THE NUMBERS ═══ -->
+<section class="pm-section pm-numbers" id="numbers">
+  <div class="pm-container">
+    <div class="reveal" style="text-align:center;margin-bottom:0">
+      <div class="pm-section-label" style="justify-content:center">Performance</div>
+      <h2 class="pm-section-title" style="margin:0 auto 20px">Numbers that <em>speak for themselves.</em></h2>
+      <p class="pm-section-desc" style="margin:0 auto">We're not in the business of making promises we can't keep. Here's what our portfolio actually delivers, consistently, month after month.</p>
+    </div>
+    <div class="pm-numbers-grid">
+      <div class="pm-number-card">
+        <div class="pm-number-val" data-count="94" data-suffix="%">0</div>
+        <div class="pm-number-label">Average Occupancy<br>Across All Properties</div>
+      </div>
+      <div class="pm-number-card">
+        <div class="pm-number-val" data-count="156" data-prefix="$">0</div>
+        <div class="pm-number-label">Average Nightly<br>Rate Achieved</div>
+      </div>
+      <div class="pm-number-card">
+        <div class="pm-number-val" data-count="4.9" data-decimals="1">0</div>
+        <div class="pm-number-unit">out of 5</div>
+        <div class="pm-number-label">Guest Satisfaction<br>Rating</div>
+      </div>
+      <div class="pm-number-card">
+        <div class="pm-number-val" data-count="100" data-suffix="%">0</div>
+        <div class="pm-number-label">Profitable Properties<br>In Our Portfolio</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PLATFORM PRESENCE ═══ -->
+<section class="pm-platforms" id="platforms">
+  <div class="pm-container">
+    <div class="pm-platforms-wrap reveal">
+      <div class="pm-section-label" style="justify-content:center">Listed Everywhere</div>
+      <h2 class="pm-section-title" style="text-align:center">Your property, on <em>every</em> platform<br>guests are searching.</h2>
+      <p class="pm-section-desc" style="text-align:center;margin:0 auto">We optimize and sync your listing across every major booking platform, so you're always where the guests are looking.</p>
+      <div class="pm-platform-logos">
+        <div class="pm-platform-logo">
+          <svg viewBox="0 0 120 40" style="height:32px"><text x="0" y="30" font-family="var(--sans)" font-size="24" font-weight="700" fill="var(--cream)">airbnb</text></svg>
+          <span class="pm-platform-name">Airbnb</span>
+        </div>
+        <div class="pm-platform-logo">
+          <svg viewBox="0 0 120 40" style="height:32px"><text x="0" y="30" font-family="var(--sans)" font-size="24" font-weight="700" fill="var(--cream)">vrbo</text></svg>
+          <span class="pm-platform-name">VRBO</span>
+        </div>
+        <div class="pm-platform-logo">
+          <svg viewBox="0 0 200 40" style="height:32px;width:auto"><text x="0" y="30" font-family="var(--sans)" font-size="22" font-weight="600" fill="var(--cream)">Booking.com</text></svg>
+          <span class="pm-platform-name">Booking.com</span>
+        </div>
+        <div class="pm-platform-logo">
+          <svg viewBox="0 0 130 40" style="height:32px"><text x="0" y="30" font-family="var(--sans)" font-size="24" font-weight="700" fill="var(--cream)">Google</text></svg>
+          <span class="pm-platform-name">Google Vacation Rentals</span>
+        </div>
+        <div class="pm-platform-logo">
+          <svg viewBox="0 0 130 40" style="height:32px"><text x="0" y="30" font-family="var(--sans)" font-size="22" font-weight="600" fill="var(--cream)">Regent</text></svg>
+          <span class="pm-platform-name">Direct Booking Site</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="pm-section pm-testimonials" id="testimonials">
+  <div class="pm-container">
+    <div class="reveal">
+      <div class="pm-section-label">What Owners Say</div>
+      <h2 class="pm-section-title">Don't take our word for it.<br><em>Take theirs.</em></h2>
+    </div>
+    <div class="pm-test-grid">
+      <div class="pm-test-card">
+        <div class="pm-test-quote">&ldquo;</div>
+        <div class="pm-test-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <blockquote>"I'd tried two other management companies before Regent. The difference is night and day. They actually treat my property like they own it. My revenue went up 40% in the first three months."</blockquote>
+        <div class="pm-test-author">
+          <div class="pm-test-avatar">M</div>
+          <div>
+            <div class="pm-test-name">Michael T.</div>
+            <div class="pm-test-prop">3BR Property, San Antonio</div>
+          </div>
+        </div>
+      </div>
+      <div class="pm-test-card">
+        <div class="pm-test-quote">&ldquo;</div>
+        <div class="pm-test-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <blockquote>"What sold me was their honesty. They told me exactly what to expect, no inflated projections. Then they exceeded every number they'd promised. That's rare in this industry."</blockquote>
+        <div class="pm-test-author">
+          <div class="pm-test-avatar">S</div>
+          <div>
+            <div class="pm-test-name">Sarah K.</div>
+            <div class="pm-test-prop">4BR Villa, Austin</div>
+          </div>
+        </div>
+      </div>
+      <div class="pm-test-card">
+        <div class="pm-test-quote">&ldquo;</div>
+        <div class="pm-test-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <blockquote>"I was nervous about handing over the keys to my investment. Six months later, I handed them the keys to my second property too. These folks know what they're doing."</blockquote>
+        <div class="pm-test-author">
+          <div class="pm-test-avatar">R</div>
+          <div>
+            <div class="pm-test-name">Robert & Lisa D.</div>
+            <div class="pm-test-prop">2 Properties, Dallas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="pm-section pm-how" id="how">
+  <div class="pm-container">
+    <div class="reveal">
+      <div class="pm-section-label">Getting Started</div>
+      <h2 class="pm-section-title">From handshake to first booking<br>in <em>two weeks.</em></h2>
+      <p class="pm-section-desc">No red tape. No six-month onboarding. We move fast because we know your property sitting empty costs you money.</p>
+    </div>
+    <div class="pm-how-steps">
+      <div class="pm-how-line"></div>
+      <div class="pm-step">
+        <div class="pm-step-dot">1</div>
+        <div class="pm-step-content">
+          <h3>The Conversation</h3>
+          <p>We start with a real conversation, not a sales pitch. Tell us about your property, your goals, and your concerns. We'll give you an honest assessment of what we can deliver. No pressure, no obligations.</p>
+        </div>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-dot">2</div>
+        <div class="pm-step-content">
+          <h3>Property Assessment</h3>
+          <p>We visit your property in person, evaluate its potential, and create a tailored revenue strategy. We'll tell you what's working, what could be improved, and exactly what kind of returns to expect.</p>
+        </div>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-dot">3</div>
+        <div class="pm-step-content">
+          <h3>The Setup</h3>
+          <p>Professional photography, listing creation across all platforms, pricing strategy implementation, and smart home setup. We handle every detail while you put your feet up.</p>
+        </div>
+      </div>
+      <div class="pm-step">
+        <div class="pm-step-dot">4</div>
+        <div class="pm-step-content">
+          <h3>Go Live & Earn</h3>
+          <p>Your listing goes live, bookings start rolling in, and you get a dedicated dashboard to track everything. We manage the guests, the cleanings, the reviews, and the midnight lockouts. You manage your newfound free time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT FORM ═══ -->
+<section class="pm-contact" id="contact">
+  <div class="pm-container">
+    <div class="pm-contact-wrap">
+      <div class="pm-contact-info reveal">
+        <div class="pm-section-label">Let's Talk</div>
+        <h2>Ready to see what your<br>home <em>could</em> earn?</h2>
+        <p>Fill out the form and we'll reach out within 24 hours with a free, no-obligation revenue estimate for your property. No sales pressure, just honest numbers.</p>
+        <div class="pm-contact-detail">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Call us anytime &mdash; a real person answers</span>
+        </div>
+        <div class="pm-contact-detail">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>We respond to inquiries within 24 hours</span>
+        </div>
+        <div class="pm-contact-detail">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Proudly serving homeowners across Texas</span>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <form class="pm-form" id="pmForm" onsubmit="return submitPmForm(event)">
+          <div class="pm-form-grid">
+            <div class="pm-form-group">
+              <label for="pm-name">Full Name *</label>
+              <input type="text" id="pm-name" name="name" placeholder="Your name" required>
+            </div>
+            <div class="pm-form-group">
+              <label for="pm-email">Email *</label>
+              <input type="email" id="pm-email" name="email" placeholder="your@email.com" required>
+            </div>
+            <div class="pm-form-group">
+              <label for="pm-phone">Phone</label>
+              <input type="tel" id="pm-phone" name="phone" placeholder="(555) 123-4567">
+            </div>
+            <div class="pm-form-group">
+              <label for="pm-bedrooms">Bedrooms</label>
+              <select id="pm-bedrooms" name="bedrooms">
+                <option value="">Select...</option>
+                <option value="1">1 Bedroom</option>
+                <option value="2">2 Bedrooms</option>
+                <option value="3">3 Bedrooms</option>
+                <option value="4">4 Bedrooms</option>
+                <option value="5">5 Bedrooms</option>
+                <option value="6+">6+ Bedrooms</option>
+              </select>
+            </div>
+            <div class="pm-form-group full">
+              <label for="pm-address">Property Address</label>
+              <input type="text" id="pm-address" name="property_address" placeholder="Street address, city, TX">
+            </div>
+            <div class="pm-form-group full">
+              <label for="pm-message">Tell Us About Your Property</label>
+              <textarea id="pm-message" name="message" rows="4" placeholder="Anything you'd like us to know — property type, current use, goals, questions..."></textarea>
+            </div>
+          </div>
+          <div class="pm-form-submit">
+            <button type="submit" class="pm-btn pm-btn-primary" id="pmSubmitBtn">
+              Get My Free Revenue Estimate
+              <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </form>
+        <div class="pm-form-success" id="pmSuccess">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <h3>We got your message!</h3>
+          <p>Someone from our team will reach out within 24 hours with a personalized revenue estimate for your property. We can't wait to learn more about your home.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="pm-footer">
+  <div class="pm-container">
+    <p>&copy; 2026 <a href="/">Regent Stays</a> &middot; Regent Capital Ventures LLC &middot; Texas</p>
+  </div>
+</footer>
+
+<script>
+/* ═══ NAV SCROLL ═══ */
+const pmNav = document.getElementById('pmNav');
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  pmNav.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+/* ═══ MOBILE MENU ═══ */
+const pmBurger = document.getElementById('pmBurger');
+const pmMobile = document.getElementById('pmMobile');
+pmBurger.addEventListener('click', () => {
+  pmBurger.classList.toggle('open');
+  pmMobile.classList.toggle('open');
+  document.body.style.overflow = pmMobile.classList.contains('open') ? 'hidden' : '';
+});
+function closePmMobile() {
+  pmBurger.classList.remove('open');
+  pmMobile.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ═══ SCROLL REVEAL ═══ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+
+// Group-based stagger: cards within the same parent get staggered delays
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+['.pm-why-grid', '.pm-services-grid', '.pm-numbers-grid', '.pm-test-grid', '.pm-how-steps'].forEach(parentSel => {
+  const parent = document.querySelector(parentSel);
+  if (!parent) return;
+  parent.querySelectorAll('.pm-why-card, .pm-service, .pm-number-card, .pm-test-card, .pm-step').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.1}s`;
+    revealObserver.observe(el);
+  });
+});
+
+/* ═══ ANIMATED COUNTERS ═══ */
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.count);
+  const decimals = parseInt(el.dataset.decimals) || 0;
+  const suffix = el.dataset.suffix || '';
+  const prefix = el.dataset.prefix || '';
+  const duration = 2000;
+  const start = performance.now();
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = eased * target;
+    el.textContent = prefix + current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('[data-count]').forEach(el => animateCounter(el));
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.pm-hero-stats, .pm-numbers-grid').forEach(el => counterObserver.observe(el));
+
+/* ═══ FORM SUBMISSION ═══ */
+async function submitPmForm(e) {
+  e.preventDefault();
+  const form = document.getElementById('pmForm');
+  const btn = document.getElementById('pmSubmitBtn');
+  const success = document.getElementById('pmSuccess');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Sending...';
+
+  const data = {
+    name: document.getElementById('pm-name').value,
+    email: document.getElementById('pm-email').value,
+    phone: document.getElementById('pm-phone').value,
+    bedrooms: document.getElementById('pm-bedrooms').value,
+    property_address: document.getElementById('pm-address').value,
+    message: document.getElementById('pm-message').value
+  };
+
+  try {
+    const res = await fetch('/api/pm/inquire', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (res.ok && result.success) {
+      form.style.display = 'none';
+      success.style.display = 'block';
+    } else {
+      throw new Error(result.error || 'Submission failed');
+    }
+  } catch (err) {
+    alert(err.message || 'Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.innerHTML = 'Get My Free Revenue Estimate <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  }
+}
+
+/* ═══ SMOOTH SCROLL ═══ */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+</body>
+</html>

@@ -91,6 +91,21 @@ db.exec(`
 // Migration: add subject column if not already present.
 try { db.exec("ALTER TABLE messages ADD COLUMN subject TEXT DEFAULT ''"); } catch (e) { /* column already exists */ }
 
+// Property management inquiries.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS pm_inquiries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT DEFAULT '',
+    email TEXT NOT NULL,
+    phone TEXT DEFAULT '',
+    property_address TEXT DEFAULT '',
+    bedrooms TEXT DEFAULT '',
+    message TEXT DEFAULT '',
+    status TEXT DEFAULT 'new' CHECK(status IN ('new','contacted','archived')),
+    created_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
 // ── Truvi plan (staged: full $1M host damage protection, direct-bookings only) ──
 // Program: Truvi "Screening + Protection $0–$1M" preset — verified list price
 // $31.95/booking on truvi.com/platform/pricing (2026-07). Covers from dollar one
@@ -1709,6 +1724,93 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
     console.error('Message update error:', err);
     res.status(500).json({ error: 'Failed to update message' });
   }
+});
+
+// ── PROPERTY MANAGEMENT INQUIRIES ──
+
+// Public: submit a PM inquiry.
+app.post('/api/pm/inquire', (req, res) => {
+  try {
+    const { name, email, phone, property_address, bedrooms, message } = req.body || {};
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'A valid email is required' });
+    }
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+    const stmt = db.prepare(
+      'INSERT INTO pm_inquiries (name, email, phone, property_address, bedrooms, message) VALUES (?, ?, ?, ?, ?, ?)'
+    );
+    const r = stmt.run(
+      name.trim(),
+      email.trim().toLowerCase(),
+      (phone || '').trim(),
+      (property_address || '').trim(),
+      (bedrooms || '').toString().trim(),
+      (message || '').trim()
+    );
+    res.json({ success: true, id: r.lastInsertRowid });
+
+    // Fire-and-forget: send email notification
+    sendContactEmail({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: (phone || '').trim(),
+      property: (property_address || '').trim(),
+      subject: 'Property Management Inquiry',
+      message: `New PM inquiry from ${name.trim()}\n\nProperty: ${(property_address || 'Not provided').trim()}\nBedrooms: ${(bedrooms || 'Not specified')}\n\n${(message || '').trim()}`
+    }).catch(() => {});
+  } catch (err) {
+    console.error('PM inquiry submit error:', err);
+    res.status(500).json({ error: 'Failed to save inquiry' });
+  }
+});
+
+// Admin: list PM inquiries.
+app.get('/api/admin/pm-inquiries', requireAuth, (req, res) => {
+  try {
+    const { status } = req.query;
+    let q = 'SELECT * FROM pm_inquiries';
+    const p = [];
+    if (status && ['new', 'contacted', 'archived'].includes(status)) {
+      q += ' WHERE status = ?';
+      p.push(status);
+    }
+    q += ' ORDER BY created_at DESC';
+    res.json(db.prepare(q).all(...p));
+  } catch (err) {
+    console.error('PM inquiries list error:', err);
+    res.status(500).json({ error: 'Failed to load PM inquiries' });
+  }
+});
+
+// Admin: update a PM inquiry's status.
+app.put('/api/admin/pm-inquiries/:id', requireAuth, (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id || isNaN(id)) return res.status(400).json({ error: 'Invalid inquiry id' });
+
+    const existing = db.prepare('SELECT * FROM pm_inquiries WHERE id = ?').get(id);
+    if (!existing) return res.status(404).json({ error: 'Inquiry not found' });
+
+    const { status } = req.body || {};
+    const validStatuses = ['new', 'contacted', 'archived'];
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Status must be one of: ${validStatuses.join(', ')}` });
+    }
+
+    db.prepare('UPDATE pm_inquiries SET status = ? WHERE id = ?').run(status, id);
+    const updated = db.prepare('SELECT * FROM pm_inquiries WHERE id = ?').get(id);
+    res.json({ success: true, inquiry: updated });
+  } catch (err) {
+    console.error('PM inquiry update error:', err);
+    res.status(500).json({ error: 'Failed to update inquiry' });
+  }
+});
+
+// Serve management page
+app.get('/management', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'management.html'));
 });
 
 // ── ADMIN: Custom Invoice ──
