@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"/>
@@ -59,23 +59,40 @@ ul{list-style:none}
 }
 
 /* ── Nav ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;transition:background .4s var(--ease),box-shadow .4s var(--ease),padding .3s var(--ease)}
-.nav.scrolled{background:rgba(250,250,248,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 1px 0 var(--border);padding:16px 48px}
-.nav-logo{font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.28em;color:var(--text)}
-.nav-links{display:flex;align-items:center;gap:32px}
-.nav-links a{font-family:var(--sans);font-size:15px;font-weight:400;letter-spacing:.01em;color:var(--text-muted);transition:color .3s var(--ease)}
-.nav-links a:hover{color:var(--text)}
-.nav-cta{color:var(--accent)!important;font-weight:600!important}
-.nav-burger{display:none;flex-direction:column;gap:5px;padding:4px}
-.nav-burger span{display:block;width:22px;height:1.5px;background:var(--text);transition:transform .3s var(--ease),opacity .3s var(--ease)}
-.nav-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.nav{position:fixed;top:14px;left:0;right:0;z-index:1000;padding:0 clamp(12px,3vw,24px);pointer-events:none}
+.nav-inner{pointer-events:auto;max-width:1150px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;background:rgba(250,250,248,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(17,17,17,.08);border-radius:999px;padding:10px 12px 10px 16px;box-shadow:0 2px 12px rgba(17,17,17,.06);transition:box-shadow .3s var(--ease),background .3s var(--ease)}
+.nav.scrolled .nav-inner{box-shadow:0 14px 34px rgba(17,17,17,.14);background:rgba(250,250,248,.94)}
+.nav-logo{display:flex;align-items:center;gap:10px;color:var(--text)}
+.nav-logo-mark{width:34px;height:34px;border-radius:10px;background:#1F4A38;display:inline-flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px rgba(31,74,56,.28)}
+.nav-logo-mark svg{width:20px;height:20px;display:block}
+.nav-logo-word{display:flex;align-items:baseline;gap:8px;white-space:nowrap;font-family:'Gabarito',var(--sans)}
+.nav-logo-word b{font-weight:800;font-size:16px;letter-spacing:.22em}
+.nav-logo-word span{font-size:10px;font-weight:700;letter-spacing:.22em;color:var(--brass)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-links a{font-family:'Gabarito',var(--sans);font-size:15px;font-weight:600;letter-spacing:.01em;color:var(--text);padding:9px 13px;border-radius:999px;transition:background .2s var(--ease);white-space:nowrap}
+.nav-links a:hover{background:rgba(17,17,17,.06);color:var(--text)}
+.nav-cta{background:var(--bg-dark)!important;color:#FAFAF8!important;font-weight:700!important;padding:11px 20px!important;margin-left:6px;transition:transform .2s var(--ease),box-shadow .2s var(--ease)!important}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(17,17,17,.25);background:var(--bg-dark)!important}
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:42px;height:42px;border-radius:999px;border:1px solid rgba(17,17,17,.15);background:#fff;align-items:center}
+.nav-burger span{display:block;width:16px;height:2px;border-radius:2px;background:var(--text);transition:transform .3s var(--ease),opacity .3s var(--ease)}
+.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .nav-burger.open span:nth-child(2){opacity:0}
-.nav-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:1080px){.nav-links{display:none}.nav-burger{display:flex}}
+@media(max-width:560px){
+  .nav-inner{padding:8px 10px 8px 12px}
+  .nav-logo-mark{width:30px;height:30px;border-radius:9px}
+  .nav-logo-word b{font-size:14px;letter-spacing:.16em}
+  .nav-logo-word span{display:none}
+  .nav-burger{width:38px;height:38px}
+}
 
 /* ── Mobile Menu ── */
-.mobile-menu{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;opacity:0;visibility:hidden;transition:opacity .4s var(--ease),visibility .4s}
-.mobile-menu.open{opacity:1;visibility:visible}
-.mobile-menu a{font-family:var(--sans);font-size:32px;font-weight:500;color:var(--text);letter-spacing:-.01em}
+.mobile-menu{position:fixed;top:78px;left:14px;right:14px;bottom:auto;z-index:999;background:#fff;border:1px solid rgba(17,17,17,.1);border-radius:24px;box-shadow:0 24px 60px rgba(17,17,17,.18);padding:14px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:2px;opacity:0;visibility:hidden;transform:translateY(-10px) scale(.98);transition:opacity .3s var(--ease),visibility .3s,transform .3s var(--ease)}
+.mobile-menu.open{opacity:1;visibility:visible;transform:none}
+.mobile-menu a{font-family:'Gabarito',var(--sans);font-size:17px;font-weight:600;color:var(--text);letter-spacing:0;padding:13px 16px;border-radius:14px}
+.mobile-menu a:hover{background:rgba(17,17,17,.05)}
+.mobile-menu a:last-child{text-align:center;background:var(--bg-dark);color:#FAFAF8;font-weight:700;border-radius:999px;margin-top:8px}
 
 /* ── Bento Hero ── */
 .bento{max-width:1400px;margin:0 auto;padding:100px 24px 40px;display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:500px 180px;gap:12px}
@@ -890,10 +907,8 @@ ul{list-style:none}
   .xplr-body{padding:40px 32px 80px}
 }
 @media(max-width:768px){
-  .nav{padding:18px 20px}
-  .nav.scrolled{padding:14px 20px}
-  .nav-links{display:none}
-  .nav-burger{display:flex}
+  .nav{top:10px}
+  .mobile-menu{top:70px}
   .bento{grid-template-columns:1fr;grid-template-rows:360px 160px;gap:10px;padding:80px 16px 24px}
   .bento-main{grid-column:1;grid-row:1}
   .bento-map-tile{grid-column:1;grid-row:2}
@@ -1532,17 +1547,24 @@ ul{list-style:none}
 
 <!-- Navigation -->
 <nav class="nav" id="nav">
-  <a href="#" class="nav-logo">R E G E N T</a>
-  <div class="nav-links">
-    <a href="#properties">Properties</a>
-    <a href="#experience">Experience</a>
-    <a href="#explore" onclick="event.preventDefault();openMapModal()">Explore</a>
-    <a href="#story">Our Story</a>
-    <a href="/management">Management</a>
-    <a href="#contact">Contact</a>
-    <a href="#properties" class="nav-cta">Book Now</a>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Regent Stays home">
+      <span class="nav-logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 34 34" fill="none"><path d="M8 27V10.5L17 5l9 5.5V27" stroke="#E8CD8F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 27v-8.5h8V27" stroke="#E8CD8F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="nav-logo-word"><b>REGENT</b><span>STAYS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#properties">Properties</a>
+      <a href="#experience">Experience</a>
+      <a href="#explore" onclick="event.preventDefault();openMapModal()">Explore</a>
+      <a href="#story">Our Story</a>
+      <a href="/management">Management</a>
+      <a href="#contact">Contact</a>
+      <a href="#properties" class="nav-cta">Book Now</a>
+    </div>
+    <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
-  <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
 <!-- Mobile Menu -->
@@ -4024,11 +4046,18 @@ function scrollToProperty(slug) {
 }
 
 /* ═══ Map ═══ */
-const miniIcon = L.divIcon({
-  className: '',
-  html: '<div style="width:10px;height:10px;border-radius:50%;background:#B8654A;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>',
-  iconSize: [10, 10], iconAnchor: [5, 5]
-});
+/* Lazy so a blocked/failed Leaflet CDN can't take down the rest of the page script */
+let _miniIcon = null;
+function miniIconGet() {
+  if (!_miniIcon && typeof L !== 'undefined') {
+    _miniIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:10px;height:10px;border-radius:50%;background:#B8654A;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>',
+      iconSize: [10, 10], iconAnchor: [5, 5]
+    });
+  }
+  return _miniIcon;
+}
 
 let miniMapInstance = null;
 let miniMapMarkers = [];
@@ -4055,7 +4084,7 @@ function initMiniMap() {
 
   PROPERTIES.forEach(p => {
     const marker = L.marker([p.lat, p.lng], {
-      icon: miniIcon,
+      icon: miniIconGet(),
       interactive: false,
       keyboard: false,
       alt: `${p.name} map location`,
@@ -4079,7 +4108,7 @@ function refreshAllMaps() {
     miniMapMarkers = [];
     PROPERTIES.forEach(p => {
       const marker = L.marker([p.lat, p.lng], {
-        icon: miniIcon, interactive: false, keyboard: false,
+        icon: miniIconGet(), interactive: false, keyboard: false,
         alt: `${p.name} map location`, title: `${p.name} map location`
       }).addTo(miniMapInstance);
       const markerEl = marker.getElement();
