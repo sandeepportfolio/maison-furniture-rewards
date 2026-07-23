@@ -166,8 +166,8 @@ loadPersistedToken();
 // aggressive rate limit), proactively refresh in the background after a
 // 30-second startup delay. Retries every 60s if rate-limited.
 if (!cachedToken) {
-  const STARTUP_DELAY = 30_000;
-  const RETRY_INTERVAL = 60_000;
+  const STARTUP_DELAY = 120_000;   // 2 min — let Guesty rate limit cool down after a deploy
+  const RETRY_INTERVAL = 300_000;  // 5 min — avoid extending Guesty's rate limit window
   console.log(`Startup: no valid token available — will attempt refresh in ${STARTUP_DELAY / 1000}s`);
   setTimeout(async function startupRefresh() {
     if (cachedToken) return; // already got one from a user request
