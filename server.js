@@ -3520,12 +3520,12 @@ function generateTripCode() {
 }
 
 function createOrGetTripCode(reservationId, guestEmail, confirmationCode, guestName, propertyName, expiresAt) {
-  // Check for existing unexpired code
+  // Check for existing code (including previously expired — trip codes persist)
   const existing = db.prepare(
-    "SELECT code, expires_at FROM trip_codes WHERE reservation_id = ? AND guest_email = ? AND expires_at > datetime('now')"
+    "SELECT code, expires_at FROM trip_codes WHERE reservation_id = ? AND guest_email = ?"
   ).get(reservationId, guestEmail);
   if (existing) {
-    // Update expiry if checkout date changed (reservation extension)
+    // Always refresh the expiry to keep the code alive
     if (existing.expires_at !== expiresAt) {
       try {
         db.prepare(
@@ -3624,19 +3624,18 @@ app.get('/trip', (req, res) => {
 // ── Short code route: /trip/:code ──
 app.get('/trip/:code', (req, res) => {
   const code = (req.params.code || '').toUpperCase().trim();
+  // Trip codes persist indefinitely — no expiration check
   const row = db.prepare(
-    "SELECT * FROM trip_codes WHERE code = ? AND expires_at > datetime('now')"
+    "SELECT * FROM trip_codes WHERE code = ?"
   ).get(code);
   if (!row) {
-    // Invalid or expired code — redirect to /trip with error
     return res.redirect('/trip?expired=1');
   }
-  // Generate a JWT for this reservation and set the cookie
-  const expiresAt = new Date(row.expires_at);
+  // Generate a JWT with a fixed 7-day session duration
   const jwtToken = jwt.sign(
     { reservationId: row.reservation_id, email: row.guest_email, confirmationCode: row.confirmation_code },
     TRIP_JWT_SECRET,
-    { expiresIn: Math.max(3600, Math.floor((expiresAt.getTime() - Date.now()) / 1000)) }
+    { expiresIn: 7 * 24 * 3600 }
   );
   const cookieOpts = [
     `trip_session=${jwtToken}`,
@@ -3738,9 +3737,9 @@ app.post('/api/trip/lookup', async (req, res) => {
     // For canceled bookings, give 30 days from now so guests can still access details
     const checkOut = reservation.checkOutDateLocalized || '';
     const coDate = isCanceled
-      ? new Date(Date.now() + 30 * 86400000)
-      : (checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 30 * 86400000));
-    const expiresAt = new Date(coDate.getTime() + 7 * 86400000);
+      ? new Date(Date.now() + 365 * 86400000)
+      : (checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 365 * 86400000));
+    const expiresAt = new Date(coDate.getTime() + 730 * 86400000);
 
     // Use Guesty's email for the JWT even if guest logged in via phone
     const jwtEmail = guestEmail || (reservation.guest?.email || '').toLowerCase() || '';
@@ -3751,7 +3750,7 @@ app.post('/api/trip/lookup', async (req, res) => {
         confirmationCode: code,
       },
       TRIP_JWT_SECRET,
-      { expiresIn: Math.floor((expiresAt.getTime() - Date.now()) / 1000) }
+      { expiresIn: 7 * 24 * 3600 }
     );
 
     const guestName = `${reservation.guest?.firstName || ''} ${reservation.guest?.lastName || ''}`.trim();
@@ -3964,7 +3963,7 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     const guestFullName = `${safeReservation.guest?.firstName || ''} ${safeReservation.guest?.lastName || ''}`.trim();
     let tripCode = null;
     try {
-      const expiresAt = checkOutDateObj ? new Date(checkOutDateObj.getTime() + 7 * 86400000) : new Date(Date.now() + 30 * 86400000);
+      const expiresAt = checkOutDateObj ? new Date(checkOutDateObj.getTime() + 730 * 86400000) : new Date(Date.now() + 730 * 86400000);
       tripCode = createOrGetTripCode(
         safeReservation._id, guestEmail,
         safeReservation.confirmationCode || '', guestFullName,
