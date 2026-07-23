@@ -912,18 +912,23 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   });
 });
 
-/* Service clip-path stagger */
-document.querySelectorAll('[data-svc-reveal]').forEach((el, i) => {
-  const obs = new IntersectionObserver((entries) => {
+/* Service clip-path stagger — observe parent, reveal children */
+(function() {
+  const svcParent = document.querySelector('.pm-services-layout');
+  if (!svcParent) return;
+  const svcCards = svcParent.querySelectorAll('[data-svc-reveal]');
+  const svcObs = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 60);
-        obs.unobserve(entry.target);
+        svcCards.forEach((card, i) => {
+          setTimeout(() => card.classList.add('visible'), i * 80);
+        });
+        svcObs.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.1 });
-  obs.observe(el);
-});
+  }, { threshold: 0.02, rootMargin: '0px 0px -20px 0px' });
+  svcObs.observe(svcParent);
+})();
 
 /* Timeline steps — alternating slide in */
 document.querySelectorAll('[data-step]').forEach((el, i) => {
