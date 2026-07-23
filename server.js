@@ -3550,6 +3550,9 @@ app.post('/api/trip/lookup', async (req, res) => {
     if (!confirmationCode || !email || !email.includes('@')) {
       return res.status(400).json({ error: 'Confirmation code and email are required' });
     }
+    if (confirmationCode.length > 50 || email.length > 254) {
+      return res.status(400).json({ error: 'Invalid input' });
+    }
 
     const code = confirmationCode.trim();
     const guestEmail = email.trim().toLowerCase();
@@ -3617,18 +3620,13 @@ app.post('/api/trip/lookup', async (req, res) => {
       const searchResult = await fetchJson(searchUrl, { headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' } });
 
       const results = searchResult.results || [];
-      // Find matching reservation where guest email matches
-      for (const r of results) {
-        const gEmail = (r.guest?.email || '').toLowerCase();
-        if (gEmail === guestEmail) {
-          reservation = r;
-          break;
-        }
-      }
+      // Find matching reservations where guest email matches, prefer most recent check-in
+      const matches = results
+        .filter(r => (r.guest?.email || '').toLowerCase() === guestEmail)
+        .sort((a, b) => (b.checkInDateLocalized || '').localeCompare(a.checkInDateLocalized || ''));
+      reservation = matches[0] || null;
 
       if (!reservation && results.length > 0) {
-        // Guest email didn't match on the reservation's guest record.
-        // Check if any of the results have the guest email as a secondary contact.
         return res.status(401).json({ error: 'The email does not match our records for this confirmation code.' });
       }
     } catch (err) {
@@ -3644,6 +3642,12 @@ app.post('/api/trip/lookup', async (req, res) => {
     const status = (reservation.status || '').toLowerCase();
     if (status === 'canceled' || status === 'cancelled') {
       return res.status(410).json({ error: 'This reservation has been cancelled.' });
+    }
+    if (status === 'declined' || status === 'closed' || status === 'expired') {
+      return res.status(410).json({ error: 'This reservation is no longer active.' });
+    }
+    if (status === 'inquiry') {
+      return res.status(400).json({ error: 'This reservation is still an inquiry and has not been confirmed yet.' });
     }
 
     // Generate JWT magic link token + short code
@@ -3804,6 +3808,10 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       return res.status(404).json({ error: 'Reservation not found' });
     }
 
+    // Check reservation status
+    const resStatus = (reservation.status || '').toLowerCase();
+    const isCanceled = ['canceled', 'cancelled', 'declined', 'closed', 'expired', 'no-show', 'no_show'].includes(resStatus);
+
     // Fetch listing details
     const listingId = reservation.listing?._id || reservation.listingId;
     let listing = null;
@@ -3864,17 +3872,22 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
         caption: p.caption || '',
       })),
       // WiFi — from customFields or listing fields
-      wifiName: extractCustomField(listing, 'wifiName') || extractCustomField(listing, 'wifi_name') || extractCustomField(listing, 'wifiNetwork') || '',
-      wifiPassword: extractCustomField(listing, 'wifiPassword') || extractCustomField(listing, 'wifi_password') || extractCustomField(listing, 'wifiPass') || '',
+      wifiName: isCanceled ? '' : (extractCustomField(listing, 'wifiName') || extractCustomField(listing, 'wifi_name') || extractCustomField(listing, 'wifiNetwork') || ''),
+      wifiPassword: isCanceled ? '' : (extractCustomField(listing, 'wifiPassword') || extractCustomField(listing, 'wifi_password') || extractCustomField(listing, 'wifiPass') || ''),
       // Parking info
       parkingInfo: extractCustomField(listing, 'parkingInfo') || extractCustomField(listing, 'parking') || '',
       // Trash schedule
       trashSchedule: extractCustomField(listing, 'trashSchedule') || extractCustomField(listing, 'trash') || '',
     };
 
-    // Door codes / check-in instructions — ONLY after check-in time
+    // Door codes / check-in instructions — ONLY during active stay (not canceled, not past checkout + 24h)
+    const isPastCheckout = (() => {
+      if (!reservation.checkOutDateLocalized) return false;
+      const coDate = new Date(reservation.checkOutDateLocalized + 'T23:59:59');
+      return new Date() > new Date(coDate.getTime() + 24 * 3600000);
+    })();
     let accessInfo = null;
-    if (isAfterCheckIn) {
+    if (isAfterCheckIn && !isCanceled && !isPastCheckout) {
       accessInfo = {
         doorCode: extractCustomField(listing, 'doorCode') || extractCustomField(listing, 'lockCode') || extractCustomField(listing, 'door_code') || extractCustomField(listing, 'accessCode') || extractCustomField(listing, 'keypadCode') || '',
         lockboxCode: extractCustomField(listing, 'lockboxCode') || extractCustomField(listing, 'lockbox_code') || extractCustomField(listing, 'lockBox') || '',
@@ -3966,6 +3979,8 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       // Personalization
       stayTiming,
       daysUntilCheckIn,
+      isCanceled,
+      canceledStatus: isCanceled ? resStatus : null,
       tripCode,
       shareLink: tripCode ? `${baseUrl}/trip/${tripCode}` : null,
     });
@@ -3998,6 +4013,7 @@ app.post('/api/trip/messages', requireTripAuth, (req, res) => {
   try {
     const { message } = req.body || {};
     if (!message || !message.trim()) return res.status(400).json({ error: 'Message is required' });
+    if (message.length > 2000) return res.status(400).json({ error: 'Message is too long (max 2000 characters)' });
 
     const reservationId = req.tripReservationId;
     const guestEmail = req.tripGuestEmail;
@@ -4067,6 +4083,20 @@ app.post('/api/trip/messages/context', requireTripAuth, (req, res) => {
   } catch (err) {
     res.json({ success: true }); // Non-critical
   }
+});
+
+// ── Trip logout ──
+app.post('/api/trip/logout', (req, res) => {
+  const cookieOpts = [
+    'trip_session=',
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    'Max-Age=0',
+  ];
+  if (process.env.RENDER_EXTERNAL_URL) cookieOpts.push('Secure');
+  res.setHeader('Set-Cookie', cookieOpts.join('; '));
+  res.json({ success: true });
 });
 
 // Send guest message email notification
@@ -4223,12 +4253,6 @@ function sendHostReplyEmail({ guestEmail, guestName, propertyName, message }) {
     req.end();
   });
 }
-
-// ── Trip logout ──
-app.post('/api/trip/logout', (req, res) => {
-  res.setHeader('Set-Cookie', 'trip_session=; Path=/; HttpOnly; Max-Age=0');
-  res.json({ success: true });
-});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Regent Review Portal`);

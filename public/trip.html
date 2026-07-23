@@ -311,6 +311,21 @@ input:focus-visible,textarea:focus-visible{outline:none}
   .login-card{padding:36px 20px}
   .hero-title{font-size:32px}
 }
+
+/* Text overflow safety */
+.hero-title,.trip-nav-brand{overflow:hidden;text-overflow:ellipsis}
+.trip-nav-brand{max-width:60vw;white-space:nowrap}
+.arrival-address,.property-desc p,.access-instructions p{word-break:break-word;overflow-wrap:break-word}
+.access-item-value,.wifi-value,.share-code{word-break:break-all}
+
+/* Canceled state */
+.canceled-banner{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.15);border-radius:var(--radius-sm);padding:20px 24px;margin:24px 20px 0;text-align:center;animation:fadeInUp .6s var(--spring)}
+@media(min-width:768px){.canceled-banner{margin:24px 40px 0}}
+@media(min-width:1440px){.canceled-banner{max-width:960px;margin:24px auto 0}}
+.canceled-banner .canceled-icon{width:48px;height:48px;margin:0 auto 12px;border:2px solid rgba(231,76,60,.2);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.canceled-banner .canceled-icon svg{width:20px;height:20px;color:#e74c3c}
+.canceled-banner h3{font-family:var(--font-heading);font-size:20px;font-weight:500;margin-bottom:6px;color:#e74c3c}
+.canceled-banner p{color:var(--muted);font-size:14px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -420,7 +435,7 @@ input:focus-visible,textarea:focus-visible{outline:none}
     <div class="glass-card reveal reveal-delay-1">
       <div class="messages-container" id="messages-container"></div>
       <div class="message-input-wrap">
-        <textarea class="message-input" id="message-input" placeholder="How can we help?" rows="1" aria-label="Message"></textarea>
+        <textarea class="message-input" id="message-input" placeholder="How can we help?" rows="1" aria-label="Message" maxlength="2000"></textarea>
         <button class="message-send-btn" id="message-send-btn" onclick="sendMessage()" aria-label="Send message">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
@@ -451,7 +466,10 @@ function showToast(message, icon) {
   const svg = icon === 'check'
     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-  toast.innerHTML = svg + '<span>' + message + '</span>';
+  var span = document.createElement('span');
+  span.textContent = message;
+  toast.innerHTML = svg;
+  toast.appendChild(span);
   container.appendChild(toast);
   setTimeout(function() {
     toast.classList.add('leaving');
@@ -585,10 +603,19 @@ function makeCopyBtn(text, label) {
   return btn;
 }
 
+function fetchWithTimeout(url, opts, ms) {
+  ms = ms || 15000;
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function() { controller.abort(); }, ms);
+  opts = opts || {};
+  opts.signal = controller.signal;
+  return fetch(url, opts).finally(function() { clearTimeout(timeoutId); });
+}
+
 // -- API Calls (with proper error handling) --
 async function apiPost(url, body) {
   body = body || {};
-  var res = await fetch(url, {
+  var res = await fetchWithTimeout(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'same-origin',
@@ -606,7 +633,7 @@ async function apiPost(url, body) {
 }
 
 async function apiGet(url) {
-  var res = await fetch(url, { credentials: 'same-origin' });
+  var res = await fetchWithTimeout(url, { credentials: 'same-origin' });
   var json;
   try { json = await res.json(); } catch (e) { json = null; }
   if (!res.ok) {
@@ -706,6 +733,12 @@ function renderPortal(data) {
   var listing = data.listing;
   if (!reservation || !listing) {
     showErrorUI('Unable to Load Trip', 'Your reservation data could not be retrieved. Please try again or contact support.');
+    return;
+  }
+
+  // Handle canceled/declined/closed bookings
+  if (data.isCanceled) {
+    renderCanceledPortal(data);
     return;
   }
 
@@ -835,7 +868,7 @@ function renderPortal(data) {
         '<div id="copy-lockbox-code"></div></div>';
     }
     if (accessInfo.checkInInstructions) {
-      html += '<div class="access-instructions"><p>' + accessInfo.checkInInstructions.replace(/\n/g, '<br>') + '</p></div>';
+      html += '<div class="access-instructions"><p>' + escapeHtml(accessInfo.checkInInstructions).replace(/\n/g, '<br>') + '</p></div>';
     }
     html += '</div>';
     accessCard.innerHTML = html;
@@ -974,6 +1007,97 @@ function renderPortal(data) {
   initReveal();
 }
 
+// -- Canceled Booking State --
+function renderCanceledPortal(data) {
+  var reservation = data.reservation;
+  var listing = data.listing;
+  var guest = reservation.guest || {};
+  var money = reservation.money || {};
+  var firstName = guest.firstName || 'Guest';
+  var statusLabel = (data.canceledStatus || 'canceled').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+
+  // Nav
+  document.getElementById('nav-property-name').textContent = listing.title || 'Your Stay';
+
+  // Hero — muted
+  var photoUrl = '';
+  if (listing.photos && listing.photos.length > 0) {
+    photoUrl = listing.photos[0].url || listing.photos[0];
+  }
+  if (photoUrl) {
+    var bg = document.getElementById('hero-bg');
+    bg.style.backgroundImage = 'url(' + photoUrl + ')';
+    bg.style.filter = 'blur(2px) brightness(.25) grayscale(.5)';
+  }
+
+  document.getElementById('hero-greeting').textContent = firstName + ', we\'re sorry to see you go';
+  document.getElementById('hero-title').textContent = listing.title || '';
+
+  if (reservation.checkIn && reservation.checkOut) {
+    document.getElementById('hero-dates').innerHTML =
+      '<span>' + formatDate(reservation.checkIn) + '</span>' +
+      '<span class="separator">&rarr;</span>' +
+      '<span>' + formatDate(reservation.checkOut) + '</span>';
+  }
+
+  document.getElementById('hero-meta').innerHTML = '';
+  var strip = document.getElementById('countdown-strip');
+  strip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>Reservation ' + escapeHtml(statusLabel) + '</span>';
+  strip.style.background = 'rgba(231,76,60,.08)';
+  strip.style.borderColor = 'rgba(231,76,60,.15)';
+  strip.style.color = '#e74c3c';
+
+  // Hide arrival section
+  document.getElementById('arrival-section').style.display = 'none';
+
+  // Hide residence section
+  document.getElementById('residence-section').style.display = 'none';
+
+  // Canceled banner
+  var dividers = document.querySelectorAll('.section-divider');
+  if (dividers[0]) {
+    var banner = document.createElement('div');
+    banner.className = 'canceled-banner';
+    banner.innerHTML =
+      '<div class="canceled-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>' +
+      '<h3>Reservation ' + escapeHtml(statusLabel) + '</h3>' +
+      '<p>This booking is no longer active. If you believe this is an error or have questions about a refund, please contact us using the message form below.</p>';
+    dividers[0].parentNode.insertBefore(banner, dividers[0]);
+  }
+
+  // Show simplified reservation card
+  var resCard = document.getElementById('reservation-card');
+  var resHtml =
+    '<div class="reservation-stats">' +
+      '<div class="stat-card"><div class="stat-value">' + (reservation.guests || '-') + '</div><div class="stat-label">Guests</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + (reservation.nights || '-') + '</div><div class="stat-label">Nights</div></div>' +
+    '</div>';
+
+  var total = (money.totalPaid || 0) + (money.balanceDue || 0);
+  if (total > 0) {
+    resHtml += '<div class="price-table">' +
+      '<div class="price-row total"><span class="label">Total</span><span class="amount">' + formatMoney(total, money.currency) + '</span></div>' +
+    '</div>';
+  }
+
+  if (reservation.confirmationCode) {
+    resHtml += '<div class="confirmation-row"><div><div class="label">Confirmation Code</div><div class="code">' + escapeHtml(reservation.confirmationCode) + '</div></div><div id="copy-conf-code"></div></div>';
+  }
+  resCard.innerHTML = resHtml;
+  if (reservation.confirmationCode) {
+    document.getElementById('copy-conf-code').appendChild(makeCopyBtn(reservation.confirmationCode, 'Copy'));
+  }
+
+  // Messages still available
+  renderMessages(data.messages || []);
+  apiPost('/api/trip/messages/context', {
+    guestName: (guest.firstName || '') + ' ' + (guest.lastName || ''),
+    propertyName: listing.title || ''
+  }).catch(function() {});
+
+  initReveal();
+}
+
 // -- Messages --
 function renderMessages(messages) {
   var container = document.getElementById('messages-container');
@@ -1026,7 +1150,13 @@ async function pollMessages() {
   try {
     var res = await apiGet('/api/trip/messages');
     if (res.messages) renderMessages(res.messages);
-  } catch (e) { /* silent */ }
+  } catch (e) {
+    if (e.status === 401) {
+      if (messagesPollTimer) { clearInterval(messagesPollTimer); messagesPollTimer = null; }
+      showLogin();
+      showToast('Your session has expired. Please sign in again.', 'error');
+    }
+  }
 }
 
 // -- Error UI --
@@ -1108,6 +1238,11 @@ async function showPortal() {
     messagesPollTimer = setInterval(pollMessages, 30000);
   } catch (e) {
     console.error('Failed to load trip data', e);
+    if (e.status === 401) {
+      showLogin();
+      showToast('Your session has expired. Please sign in again.', 'error');
+      return;
+    }
     showErrorUI('Something Went Wrong', 'We were unable to load your trip details. This may be a temporary issue — please try again in a moment.');
   }
   document.getElementById('loading-screen').classList.add('hidden');
