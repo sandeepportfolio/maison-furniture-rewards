@@ -3581,8 +3581,11 @@ app.post('/api/trip/lookup', async (req, res) => {
         'money.currency', 'money.invoiceItems', 'money.totalTaxes',
       ].join(' '));
 
-      const guestyToken = await getGuestyTokenForTrip();
-      if (!guestyToken) {
+      let guestyToken;
+      try {
+        guestyToken = await guesty.getToken();
+      } catch (tokenErr) {
+        console.error('Trip lookup token error:', tokenErr.message);
         return res.status(502).json({ error: 'Could not connect to booking system' });
       }
 
@@ -3803,12 +3806,10 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     let listing = null;
     if (listingId) {
       try {
-        const guestyToken = await getGuestyTokenForTrip();
-        if (guestyToken) {
-          listing = await fetchJson(`https://open-api.guesty.com/v1/listings/${encodeURIComponent(listingId)}`, {
-            headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' },
-          });
-        }
+        const guestyToken = await guesty.getToken();
+        listing = await fetchJson(`https://open-api.guesty.com/v1/listings/${encodeURIComponent(listingId)}`, {
+          headers: { Authorization: `Bearer ${guestyToken}`, Accept: 'application/json' },
+        });
       } catch (err) {
         console.error('Trip data - listing fetch error:', err.message);
       }

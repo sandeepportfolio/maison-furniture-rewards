@@ -1100,6 +1100,7 @@ module.exports = {
   getListings,
   getCalendar,
   getLowestPrices,
+  getToken,
   createQuote,
   getPaymentProvider,
   normalizePaymentProvider,
