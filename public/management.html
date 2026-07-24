@@ -433,6 +433,13 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
   .rs-nav-cta{padding:10px 14px;font-size:14px}
   .rs-menu-btn{width:38px;height:38px}
 }
+/* Mobile: turn the scattered hero stat pills into a clean, balanced 2×2 KPI grid */
+@media(max-width:600px){
+  .rs-hero-pills{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:10px;justify-content:stretch}
+  .rs-pill{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;border-radius:16px;padding:14px 15px;border-color:rgba(25,20,16,.08);box-shadow:0 1px 3px rgba(25,20,16,.05)}
+  .rs-pill b{font-size:21px;line-height:1.05}
+  .rs-pill span{font-size:12.5px;white-space:normal;line-height:1.25}
+}
 @media(min-width:660px){.rs-why-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:700px){.rs-svc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rs-svc-last{grid-column:span 2}}
 @media(min-width:1100px){.rs-svc-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.rs-svc-last{grid-column:auto}}
@@ -763,7 +770,8 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
               <button data-v="dallas">Dallas</button>
               <button data-v="grapevine">Grapevine</button>
               <button data-v="arlington">Arlington</button>
-              <button data-v="frisco">Frisco</button>
+              <button data-v="plano-frisco">Plano/Frisco</button>
+              <button data-v="downtown-austin">Downtown Austin</button>
             </div>
           </div>
           <div class="rs-field">
@@ -1144,13 +1152,13 @@ if (rail){
 /* ═══════════ PROFIT CALCULATOR ═══════════ */
 /* Base nightly rates (Regent-managed, premium finish) by bedroom count — DFW STR market */
 var ADR_BASE = {1:135, 2:175, 3:225, 4:295, 5:380, 6:460};
-var AREA_MULT = {'las-colinas':1.0,'irving':.95,'dallas':1.05,'grapevine':1.1,'arlington':1.0,'frisco':1.05};
+var AREA_MULT = {'las-colinas':1.0,'irving':.95,'dallas':1.05,'grapevine':1.1,'arlington':1.0,'plano-frisco':1.05,'downtown-austin':1.42};
 var TIER_MULT = {comfort:.85, premium:1, luxury:1.25};
 var AMEN_LIFT = {pool:.06, hottub:.07, game:.05, pet:.04, ev:.02};
 /* DFW seasonal demand curve (spring + State-Fair fall peaks, soft winter) */
 var SEASON = [.82,.88,1.05,1.10,1.08,1.05,1.02,.95,1.03,1.12,.98,.92];
 var DAYS = [31,28,31,30,31,30,31,31,30,31,30,31];
-/* Long-term rent per month by bedrooms — DFW metro medians */
+/* Long-term rent per month by bedrooms — DFW metro medians + Austin premium */
 var LTR_RENT = {1:1400, 2:1900, 3:2400, 4:3100, 5:3900, 6:4600};
 var REGENT_OCC = .94, SELF_OCC = .65, SELF_ADR_PENALTY = .88;
 
