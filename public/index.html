@@ -36,6 +36,11 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;max-width:100vw;overflow-x:hidden}
+/* The nav is fixed, so a bare anchor jump hides the target under it. Offset every
+   in-page scroll target by the nav's height plus breathing room. Nav clears 81px
+   on desktop and 66px at <=560px. */
+#hero,#properties,#experience,#story,#explore,#contact{scroll-margin-top:100px}
+@media(max-width:560px){#hero,#properties,#experience,#story,#explore,#contact{scroll-margin-top:84px}}
 body{font-family:var(--sans);color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden;max-width:100vw;overflow-wrap:break-word;word-break:break-word}
 ::selection{background:var(--accent);color:#0D110E;-webkit-text-fill-color:#0D110E}
 img{max-width:100%;display:block}
@@ -1143,7 +1148,7 @@ ul{list-style:none}
 .detail-rating .star{color:var(--accent);font-size:18px}
 .detail-rating .rating-num{font-family:var(--sans);font-size:18px;font-weight:700}
 .detail-rating .review-count{font-family:var(--sans);font-size:13px;color:var(--text-muted)}
-.detail-specs{display:flex;gap:0;font-family:var(--sans);font-size:13px;font-weight:400;color:var(--text-muted)}
+.detail-specs{display:flex;gap:0;font-family:var(--sans);font-size:13px;font-weight:400;color:var(--text-muted);margin-top:6px}
 .detail-specs span{display:flex;align-items:center;gap:5px;padding:0 12px;border-right:1px solid var(--border)}
 .detail-specs span:first-child{padding-left:0}
 .detail-specs span:last-child{border-right:none}
@@ -1331,10 +1336,11 @@ ul{list-style:none}
   .detail-header{flex-direction:column;gap:12px;padding-bottom:0;margin-bottom:0;border-bottom:none}
   .detail-header-left h2{font-size:24px;margin-bottom:0;letter-spacing:-.03em}
   .detail-header-right{align-items:flex-start;margin-top:0}
-  .detail-specs{flex-wrap:wrap;gap:0}
+  .detail-header-left .detail-loc{margin-bottom:2px}
+  .detail-specs{flex-wrap:wrap;gap:0;margin-top:5px}
   .detail-specs span{padding:2px 10px 2px 0;border-right:1px solid var(--border);font-size:12px;color:var(--text-muted)}
   .detail-specs span:last-child{border-right:none}
-  .detail-price{margin-top:6px !important}
+  .detail-price{margin-top:10px !important}
   .detail-new-badge{margin-top:0}
   .detail-desc h3,.detail-amenities h3{font-size:20px}
   .amenity-highlights{gap:6px}
@@ -1342,7 +1348,7 @@ ul{list-style:none}
   .amenity-category{padding:16px}
   .amenity-pills{gap:6px}
   .amenity-pill{font-size:11px;padding:5px 12px}
-  .detail-actions{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:center;column-gap:4px;row-gap:8px;padding:12px 0 0;margin:0 0 16px}
+  .detail-actions{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:center;column-gap:4px;row-gap:0;padding:12px 0 0;margin:0 0 12px}
   .detail-actions .btn-book{flex:1 0 100%;justify-content:center;text-align:center;padding:13px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;border-radius:8px;margin-bottom:0}
   .detail-actions .btn-contact{flex:0 1 auto;border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;padding:8px 0;justify-content:center;letter-spacing:.01em;box-shadow:none}
   .detail-actions .btn-contact svg{opacity:.5}
@@ -1658,7 +1664,7 @@ ul{list-style:none}
     <div class="nav-links">
       <a href="#properties">Properties</a>
       <a href="#experience">Experience</a>
-      <a href="#explore" onclick="event.preventDefault();openMapModal()">Explore</a>
+      <a href="#explore">Explore</a>
       <a href="#story">Our Story</a>
       <a href="/management">Management</a>
       <a href="#contact">Contact</a>
@@ -1672,7 +1678,7 @@ ul{list-style:none}
 <div class="mobile-menu" id="mobileMenu">
   <a href="#properties" onclick="closeMobile()">Properties</a>
   <a href="#experience" onclick="closeMobile()">Experience</a>
-  <a href="#explore" onclick="closeMobile();event.preventDefault();openMapModal()">Explore</a>
+  <a href="#explore" onclick="closeMobile()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="/management" onclick="closeMobile()">Management</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
@@ -1685,7 +1691,7 @@ ul{list-style:none}
   <div class="v2-orb v2-orb-b" data-plx="-0.05" aria-hidden="true"></div>
   <div class="v2-hero-grid">
     <div class="v2-hero-copy">
-      <p class="v2-kicker v2-in" style="animation-delay:.05s"><span class="v2-sq"></span>NOW BOOKING · 2026<span class="v2-sl">/</span><span class="v2-dim">01 DALLAS–FORT WORTH</span><span class="v2-sl">/</span><span class="v2-dim" data-clock></span></p>
+      <p class="v2-kicker v2-in" style="animation-delay:.05s"><span class="v2-sq"></span>NOW BOOKING · 2026</p>
       <h1 class="v2-h1 v2-in" style="animation-delay:.15s">Where every stay becomes a <em class="v2-shimmer">story</em></h1>
       <p class="v2-hero-sub v2-in" style="animation-delay:.25s">Designer interiors, effortless check-in, and the finest locations across Dallas–Fort Worth. Book your perfect stay today — direct, for the best rates.</p>
       <div class="v2-hero-ctas v2-in" style="animation-delay:.35s">
@@ -3315,7 +3321,7 @@ function renderPropertyCard(p) {
       <div class="prop-divider"></div>
       <div class="prop-actions" onclick="event.stopPropagation()">
         <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
-        <button class="btn-details" onclick="openDetail('${p.slug}')">View Details</button>
+        <button class="btn-details" onclick="openDetail('${p.slug}')">Glance</button>
         <a href="/property/${p.slug}" class="btn-details" style="text-align:center;text-decoration:none">Full Page</a>
         <button class="btn-map-view" onclick="viewPropertyOnMap('${p.slug}')" title="View on Map"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
       </div>
@@ -4543,7 +4549,7 @@ function openDetail(slug, skipHistory) {
         <div class="detail-header-left">
           <div class="detail-loc">${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}</div>
           <h2>${prop.name}</h2>
-          <div class="detail-specs" style="margin-top:6px">
+          <div class="detail-specs">
             <span>${prop.guests} guest${prop.guests>1?'s':''}</span>
             <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
             <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
@@ -6423,13 +6429,6 @@ if (fine && !reduce) {
   });
 }
 
-/* Dallas clock */
-var clockEl = document.querySelector('[data-clock]');
-function v2clock(){
-  if (clockEl) clockEl.textContent = new Date().toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit' }) + ' IN DALLAS';
-}
-v2clock();
-setInterval(v2clock, 30000);
 
 /* Mobile book bar after scroll */
 var bar = document.getElementById('v2BookBar');

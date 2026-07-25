@@ -58,6 +58,11 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-nav-right{display:flex;align-items:center;gap:8px}
 .rs-nav-cta{white-space:nowrap;display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);border-radius:999px;padding:11px clamp(15px,3.5vw,22px);font-weight:700;font-size:15px;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
 .rs-nav-cta:active{transform:scale(.97)}
+/* Back to the main site. The brand mark also links home, but that is not an
+   obvious "leave this page" affordance, so this stays visible at every width —
+   the label collapses to just the arrow on narrow screens. */
+.rs-nav-back{display:inline-flex;align-items:center;gap:7px;color:var(--ink);font-weight:600;font-size:15px;padding:9px 14px;border-radius:999px;border:1px solid rgba(25,20,16,.15);white-space:nowrap;transition:background .2s,border-color .2s}
+.rs-nav-back:hover{background:rgba(25,20,16,.06);border-color:rgba(25,20,16,.3);color:var(--ink)}
 .rs-menu-btn{display:none;align-items:center;justify-content:center;flex-direction:column;gap:4px;width:42px;height:42px;border-radius:999px;border:1px solid rgba(25,20,16,.15);background:var(--card)}
 .rs-menu-btn span{display:block;width:16px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s var(--ease),opacity .2s}
 .rs-menu-btn.open span:nth-child(1){transform:translateY(3px) rotate(45deg)}
@@ -431,6 +436,8 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
   .rs-brand-word b{font-size:14px;letter-spacing:.16em}
   .rs-brand-word span{display:none}
   .rs-nav-cta{padding:10px 14px;font-size:14px}
+  .rs-nav-back .rs-nav-back-label{display:none}
+  .rs-nav-back{padding:9px 12px;font-size:16px;line-height:1}
   .rs-menu-btn{width:38px;height:38px}
 }
 /* Mobile: turn the scattered hero stat pills into a clean, balanced 2×2 KPI grid */
@@ -484,6 +491,7 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
       <a href="#how">How it works</a>
     </div>
     <div class="rs-nav-right">
+      <a href="/" class="rs-nav-back"><span aria-hidden="true">&larr;</span><span class="rs-nav-back-label">Back to site</span></a>
       <a href="#contact" class="rs-nav-cta">Let's talk</a>
       <button class="rs-menu-btn" id="rsMenuBtn" aria-label="Menu" aria-expanded="false" aria-controls="rsMobileMenu"><span></span><span></span></button>
     </div>
