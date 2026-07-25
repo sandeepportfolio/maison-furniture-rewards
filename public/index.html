@@ -1767,7 +1767,7 @@ ul{list-style:none}
         <a href="#properties" class="v2-btn-gold" data-magnet>Explore Properties <span class="v2-arrow">→</span></a>
         <a href="#explore" class="v2-btn-ghost" data-magnet onclick="event.preventDefault();openMapModal()">Explore Map</a>
       </div>
-      <p class="v2-trust v2-in" style="animation-delay:.45s">SUPERHOST <span>✦</span> 4.9★ AVG RATING <span>✦</span> 79+ REVIEWS <span>✦</span> BOOK DIRECT &amp; SAVE</p>
+      <p class="v2-trust v2-in" style="animation-delay:.45s">SUPERHOST <span>✦</span> 4.9★ AVG RATING <span>✦</span> 143+ REVIEWS <span>✦</span> BOOK DIRECT &amp; SAVE</p>
     </div>
     <div class="v2-hero-stage v2-in" style="animation-delay:.2s">
       <div class="v2-hero-photo">
@@ -1834,7 +1834,7 @@ ul{list-style:none}
           <div class="stat-label">Avg Rating</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number"><span class="stat-val" data-target="79">79</span><span class="stat-suffix">+</span></div>
+          <div class="stat-number"><span class="stat-val" data-target="143">143</span><span class="stat-suffix">+</span></div>
           <div class="stat-label">Reviews</div>
         </div>
         <div class="stat-item">
@@ -2070,7 +2070,7 @@ ul{list-style:none}
 
 <!-- ═══ CTA ═══ -->
 <section class="v2-reviews" aria-label="Guest reviews">
-  <p class="v2-reviews-k"><span class="v2-sq"></span>4.9★ FROM 79+ GUEST REVIEWS</p>
+  <p class="v2-reviews-k"><span class="v2-sq"></span>4.9★ FROM 143+ GUEST REVIEWS</p>
   <div class="v2-mq-track">
     <div class="v2-mq-set">
       <span class="v2-quote"><em>"Spotless, stylish — and check-in took 30 seconds."</em><b>AMARI ★★★★★</b></span><span class="v2-mq-star">✦</span>
@@ -2879,7 +2879,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1711340298974810369',
     guests: 14, beds: 4, baths: 3.5,
-    rating: null, reviews: 0,
+    rating: 5.0, reviews: 5,
     lat: 33.02050, lng: -96.75080,
     amenities: [
       { label: 'Hot Tub', premium: true },
@@ -2978,7 +2978,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1725649500272518567',
     guests: 5, beds: 1, baths: 1,
-    rating: null, reviews: 0,
+    rating: 5.0, reviews: 1,
     lat: 32.7772411, lng: -96.7956303,
     amenities: [
       { label: 'Skyline Views', premium: true },
@@ -3061,7 +3061,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1656911479326581139',
     guests: 3, beds: 1, baths: 1,
-    rating: 4.89, reviews: 9,
+    rating: 4.92, reviews: 13,
     lat: 32.8758610678049, lng: -96.937335804104,
     amenities: [
       { label: 'Soaking Tub', premium: true },
@@ -3114,7 +3114,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1691507762565991335',
     guests: 3, beds: 1, baths: 1,
-    rating: null, reviews: 1,
+    rating: 5.0, reviews: 12,
     lat: 32.8751259, lng: -96.9369134,
     amenities: [
       { label: 'Sky Lounge', premium: true },
@@ -3171,7 +3171,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1579365691674889946',
     guests: 3, beds: 1, baths: 1,
-    rating: 4.92, reviews: 25,
+    rating: 4.95, reviews: 44,
     lat: 32.868187373138625, lng: -96.93422075361013,
     amenities: [
       { label: 'Lake View', premium: true },
@@ -3223,7 +3223,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '1622247533469388804',
     guests: 5, beds: 1, baths: 1,
-    rating: 4.95, reviews: 21,
+    rating: 4.85, reviews: 34,
     lat: 32.984401, lng: -96.710101,
     amenities: [
       { label: '75" TV', premium: true },
@@ -3281,7 +3281,7 @@ const PROPERTIES = [
     state: 'Texas',
     hostingId: '862596563097784023',
     guests: 3, beds: 1, baths: 1,
-    rating: 4.83, reviews: 23,
+    rating: 4.74, reviews: 34,
     lat: 32.8686393, lng: -96.9340601,
     amenities: [
       { label: 'Lake View', premium: true },
@@ -3327,6 +3327,9 @@ const PROPERTIES = [
   }
 ];
 
+/* Airbnb shows whole-number ratings with one decimal ("5.0"), fractions as-is ("4.92") */
+const fmtRating = r => Number.isInteger(r) ? r.toFixed(1) : String(r);
+
 /* ═══ Carousel State ═══ */
 const carouselState = {};
 
@@ -3348,7 +3351,7 @@ function renderPropertyCard(p) {
       <span class="building-amenity"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/></svg> Workspaces</span>
     </div>` : '';
   const ratingHtml = p.rating !== null ?
-    `<span class="star">&#9733;</span><span class="rating-num">${p.rating}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
+    `<span class="star">&#9733;</span><span class="rating-num">${fmtRating(p.rating)}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
     `<span class="prop-new-badge">&#10024; NEW</span>${p.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${p.reviews} review)</span>` : ''}`;
   const isVilla = p.category === 'villa';
   const villaClass = isVilla ? ' villa-card' : '';
@@ -3856,7 +3859,7 @@ function openBooking(slug) {
   if (prop.rating && prop.reviews > 0) {
     ratingEl.style.display = 'flex';
     document.getElementById('gbeStars').textContent = '★'.repeat(Math.round(prop.rating));
-    document.getElementById('gbeReviews').textContent = `${prop.rating} (${prop.reviews} review${prop.reviews > 1 ? 's' : ''})`;
+    document.getElementById('gbeReviews').textContent = `${fmtRating(prop.rating)} (${prop.reviews} review${prop.reviews > 1 ? 's' : ''})`;
   } else if (prop.reviews > 0) {
     ratingEl.style.display = 'flex';
     document.getElementById('gbeStars').textContent = '★';
@@ -4499,7 +4502,7 @@ function openDetail(slug, skipHistory) {
   // Content
   const content = document.getElementById('detailContent');
   const ratingHtml = prop.rating !== null ?
-    `<div class="detail-rating"><span class="star">&#9733;</span><span class="rating-num">${prop.rating}</span><span class="review-count">(${prop.reviews} review${prop.reviews!==1?'s':''})</span></div>` :
+    `<div class="detail-rating"><span class="star">&#9733;</span><span class="rating-num">${fmtRating(prop.rating)}</span><span class="review-count">(${prop.reviews} review${prop.reviews!==1?'s':''})</span></div>` :
     `<div class="detail-rating"><span class="detail-new-badge">&#10024; NEW LISTING</span>${prop.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${prop.reviews} review)</span>` : ''}</div>`;
 
   // Amenity highlight cards (top premium amenities from prop.amenities)
@@ -5741,7 +5744,7 @@ function selectPropertyOnMap(idx) {
   // Rating
   if (ratingEl) {
     if (prop.rating) {
-      ratingEl.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${prop.rating} &middot; ${prop.reviews} review${prop.reviews !== 1 ? 's' : ''}`;
+      ratingEl.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${fmtRating(prop.rating)} &middot; ${prop.reviews} review${prop.reviews !== 1 ? 's' : ''}`;
     } else {
       ratingEl.innerHTML = `<span style="color:var(--text-inv-muted);font-size:11px">New listing</span>`;
     }
