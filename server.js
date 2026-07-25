@@ -3850,16 +3850,25 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     const resStatus = (reservation.status || '').toLowerCase();
     const isCanceled = ['canceled', 'cancelled', 'declined', 'closed', 'expired', 'no-show', 'no_show'].includes(resStatus);
 
-    // Fetch listing details
+    // Fetch listing details.
+    // NOTE: /listings/:id truncates long custom-field values (appends "…"), so we also hit
+    // /listings/:id/custom-fields which returns `fullText` for anything truncated.
     const listingId = reservation.listing?._id || reservation.listingId;
     let listing = null;
+    let listingCustomFields = [];
     if (listingId) {
-      try {
-        listing = await guesty.guestyFetch(`/listings/${encodeURIComponent(listingId)}`);
-      } catch (err) {
-        console.error('Trip data - listing fetch error:', err.message);
-      }
+      const encId = encodeURIComponent(listingId);
+      const [listingRes, cfRes] = await Promise.allSettled([
+        guesty.guestyFetch(`/listings/${encId}`),
+        guesty.guestyFetch(`/listings/${encId}/custom-fields`),
+      ]);
+      if (listingRes.status === 'fulfilled') listing = listingRes.value;
+      else console.error('Trip data - listing fetch error:', listingRes.reason?.message);
+      if (cfRes.status === 'fulfilled' && Array.isArray(cfRes.value)) listingCustomFields = cfRes.value;
+      else if (cfRes.status === 'rejected') console.error('Trip data - custom fields fetch error:', cfRes.reason?.message);
     }
+    // Prefer the dedicated endpoint (untruncated); fall back to the values embedded in the listing.
+    const customFields = buildCustomFieldMap(listingCustomFields.length ? listingCustomFields : (listing?.customFields || []));
 
     // Determine check-in time and whether we should reveal door codes
     const now = new Date();
@@ -3871,18 +3880,48 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     // Build safe response
     const safeReservation = sanitizeReservationData(reservation);
 
+    // Stay-window gating. Practical arrival info (directions, parking, house manual, wifi,
+    // amenity access) is shown to a confirmed guest before and during the stay, then hidden
+    // once the stay is over. Numeric entry codes stay locked until check-in time (below).
+    const isPastCheckout = (() => {
+      if (!reservation.checkOutDateLocalized) return false;
+      const coDate = new Date(reservation.checkOutDateLocalized + 'T23:59:59');
+      return new Date() > new Date(coDate.getTime() + 24 * 3600000);
+    })();
+    const showStayInfo = !isCanceled && !isPastCheckout;
+    const stayOnly = v => (showStayInfo ? (v || '') : '');
+
+    const pd = listing?.publicDescription || {};
+    const cf = key => customFields[key] || '';
+
     // Extract listing details — fallback to reservation's listing sub-object or static data if full listing unavailable
     const resListing = reservation.listing || {};
     const listingData = {
+      // ── Identity ──
       title: (listing?.title || resListing.title || resListing.nickname || 'Your Property'),
       nickname: (listing?.nickname || resListing.nickname || ''),
-      description: (listing?.publicDescription?.summary || listing?.publicDescription?.space || ''),
-      houseRules: (listing?.publicDescription?.houseRules || ''),
-      interactionWithGuests: (listing?.publicDescription?.interactionWithGuests || ''),
-      neighborhood: (listing?.publicDescription?.neighborhoodOverview || ''),
-      transit: (listing?.publicDescription?.transit || ''),
-      access: (listing?.publicDescription?.access || ''),
-      notes: (listing?.publicDescription?.notes || ''),
+      unitLabel: cf('unitLabel') || cf('unitNumber') || '',
+      propertyType: (listing?.propertyType || ''),
+      roomType: (listing?.roomType || ''),
+      timezone: (listing?.timezone || ''),
+
+      // ── Capacity ──
+      accommodates: (listing?.accommodates || 0),
+      bedrooms: (listing?.bedrooms || 0),
+      bathrooms: (listing?.bathrooms || 0),
+      beds: (listing?.beds || 0),
+      areaSquareFeet: (listing?.areaSquareFeet || 0),
+      minimumAge: (listing?.minimumAge || 0),
+      bedConfig: buildBedConfig(listing?.listingRooms),
+
+      // ── Times ──
+      checkInTime: (listing?.defaultCheckInTime || '16:00'),
+      checkInEndTime: (listing?.defaultCheckInEndTime || ''),
+      checkOutTime: (listing?.defaultCheckOutTime || '11:00'),
+      minNights: (listing?.terms?.minNights || 0),
+      maxNights: (listing?.terms?.maxNights || 0),
+
+      // ── Address ──
       address: {
         full: (listing?.address?.full || ''),
         street: (listing?.address?.street || ''),
@@ -3893,38 +3932,59 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
         lat: (listing?.address?.lat || null),
         lng: (listing?.address?.lng || null),
       },
-      checkInTime: (listing?.defaultCheckInTime || '16:00'),
-      checkOutTime: (listing?.defaultCheckOutTime || '11:00'),
+
+      // ── Public description (Guesty listing content) ──
+      description: (pd.summary || pd.space || ''),   // kept for backwards compatibility
+      summary: (pd.summary || ''),
+      space: (pd.space || ''),
+      access: (pd.access || ''),
+      neighborhood: (pd.neighborhood || pd.neighborhoodOverview || ''),
+      transit: (pd.transit || ''),
+      notes: (pd.notes || ''),
+      interactionWithGuests: (pd.interactionWithGuests || ''),
+      houseRules: (pd.houseRules || ''),
+
+      // ── Arrival & house manual (Guest App fields) ──
+      checkInMethod: checkInMethodLabel(listing?.checkInInstructions?.primaryCheckIn),
+      checkInNotes: stayOnly(listing?.checkInInstructions?.notes),
+      buildingEntry: stayOnly(cf('buildingEntry')),
+      welcomeMessage: stayOnly(cf('welcomeMessage')),
+      houseManual: stayOnly(listing?.houseManual),
+      amenitiesAccess: stayOnly(cf('amenitiesAccess')),
+      parkingInstructions: stayOnly(listing?.parkingInstructions),
+      trashInstructions: stayOnly(listing?.trashCollectedOn || cf('trashInstructions')),
+      checkOutInstructions: stayOnly(listing?.checkOutInstructions),
+      teaser: cf('teaser'),
+      // Legacy aliases
+      parkingInfo: stayOnly(listing?.parkingInstructions),
+      trashSchedule: stayOnly(listing?.trashCollectedOn || cf('trashInstructions')),
+
+      // ── Host ──
+      hostName: (listing?.hostName || ''),
+      contactPhone: stayOnly(listing?.contactPhone),
+
+      // ── Amenities & photos ──
       amenities: (listing?.amenities || []),
-      accommodates: (listing?.accommodates || 0),
-      bedrooms: (listing?.bedrooms || 0),
-      bathrooms: (listing?.bathrooms || 0),
-      beds: (listing?.beds || 0),
-      photos: (listing?.pictures || []).slice(0, 20).map(p => ({
+      amenitiesNotIncluded: (listing?.amenitiesNotIncluded || []),
+      photos: (listing?.pictures || []).slice(0, 30).map(p => ({
         url: p.original || p.large || p.regular || p.thumbnail || '',
+        thumbnail: p.thumbnail || p.original || '',
         caption: p.caption || '',
       })),
-      // WiFi — from customFields or listing fields
-      wifiName: isCanceled ? '' : (extractCustomField(listing, 'wifiName') || extractCustomField(listing, 'wifi_name') || extractCustomField(listing, 'wifiNetwork') || ''),
-      wifiPassword: isCanceled ? '' : (extractCustomField(listing, 'wifiPassword') || extractCustomField(listing, 'wifi_password') || extractCustomField(listing, 'wifiPass') || ''),
-      // Parking info
-      parkingInfo: extractCustomField(listing, 'parkingInfo') || extractCustomField(listing, 'parking') || '',
-      // Trash schedule
-      trashSchedule: extractCustomField(listing, 'trashSchedule') || extractCustomField(listing, 'trash') || '',
+
+      // ── WiFi ──
+      wifiName: stayOnly(listing?.wifiName),
+      wifiPassword: stayOnly(listing?.wifiPassword),
     };
 
-    // Door codes / check-in instructions — ONLY during active stay (not canceled, not past checkout + 24h)
-    const isPastCheckout = (() => {
-      if (!reservation.checkOutDateLocalized) return false;
-      const coDate = new Date(reservation.checkOutDateLocalized + 'T23:59:59');
-      return new Date() > new Date(coDate.getTime() + 24 * 3600000);
-    })();
+    // Door / lockbox codes — ONLY during active stay (not canceled, not past checkout + 24h)
     let accessInfo = null;
-    if (isAfterCheckIn && !isCanceled && !isPastCheckout) {
+    if (isAfterCheckIn && showStayInfo) {
       accessInfo = {
-        doorCode: extractCustomField(listing, 'doorCode') || extractCustomField(listing, 'lockCode') || extractCustomField(listing, 'door_code') || extractCustomField(listing, 'accessCode') || extractCustomField(listing, 'keypadCode') || '',
-        lockboxCode: extractCustomField(listing, 'lockboxCode') || extractCustomField(listing, 'lockbox_code') || extractCustomField(listing, 'lockBox') || '',
-        checkInInstructions: listing?.publicDescription?.access || extractCustomField(listing, 'checkInInstructions') || extractCustomField(listing, 'checkinInstructions') || '',
+        doorCode: (listing?.doorCode || cf('entryCode') || ''),
+        lockboxCode: (listing?.lockCode || cf('lockboxCode') || ''),
+        checkInMethod: listingData.checkInMethod,
+        checkInInstructions: (listing?.checkInInstructions?.notes || cf('buildingEntry') || pd.access || ''),
       };
     }
 
@@ -4003,6 +4063,7 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
       },
       listing: listingData,
       accessInfo,
+      showStayInfo,
       isAfterCheckIn,
       checkInDateTime: checkInDateTime ? checkInDateTime.toISOString() : null,
       messages,
@@ -4024,22 +4085,67 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
   }
 });
 
-// Helper to extract custom fields from Guesty listing
-function extractCustomField(listing, fieldName) {
-  if (!listing) return '';
-  // Check customFields array
-  if (Array.isArray(listing.customFields)) {
-    for (const cf of listing.customFields) {
-      if (cf.fieldId === fieldName || cf.key === fieldName || cf.name === fieldName) {
-        return cf.value || '';
-      }
+// ── Guesty listing custom fields ──
+// The Open API returns custom fields as {fieldId, value} only — it does not expose the
+// field *names* configured in the Guesty dashboard. These IDs were identified by reading
+// the values across all Regent listings. If a new custom field is added in Guesty, add its
+// ID here (GET /listings/:id/custom-fields lists the IDs in use).
+const LISTING_CUSTOM_FIELDS = {
+  '6a4355fef9a9480013cf4e04': 'unitLabel',        // "Regent Villa", "397", "611" …
+  '6a437bb6065302001b83c1c7': 'unitNumber',       // "397", "113", "611" …
+  '6a435d74f1374d00140d1043': 'buildingEntry',    // how to get from the street to the door
+  '6a4370227e501b00155ab92d': 'amenitiesAccess',  // how to reach pool/gym/lounge
+  '6a43720d04d0a0001516f275': 'trashInstructions',
+  '6a5861303ad12b001227c6dc': 'welcomeMessage',   // full pre-arrival welcome letter
+  '6a4455672b3ea60014d636d6': 'teaser',           // one-line "you'll love it" blurb
+  '6a4357782c0c090013e8c86e': 'entryCode',        // sensitive — gated behind check-in
+  '6a4ee001c5c9b40010c6da6b': 'lockboxCode',      // sensitive — gated behind check-in
+};
+
+// Turn Guesty's [{fieldId, value, fullText?}] into {semanticKey: value}.
+// `fullText` is present (and authoritative) when Guesty truncated a long value.
+function buildCustomFieldMap(fields) {
+  const out = {};
+  if (!Array.isArray(fields)) return out;
+  for (const f of fields) {
+    const key = LISTING_CUSTOM_FIELDS[f.fieldId];
+    if (!key) continue;
+    const val = f.fullText != null ? f.fullText : f.value;
+    if (val === null || val === undefined || val === '') continue;
+    out[key] = String(val);
+  }
+  return out;
+}
+
+// Guesty's checkInInstructions.primaryCheckIn enum → guest-facing label
+function checkInMethodLabel(method) {
+  switch (method) {
+    case 'DOOR_CODE': return 'Smart lock door code';
+    case 'LOCK_BOX': return 'Lockbox';
+    case 'SMART_LOCK': return 'Smart lock';
+    case 'IN_PERSON': return 'In-person greeting';
+    case 'KEYS_HANDOVER': return 'Key handover';
+    case 'OTHER': return 'See instructions below';
+    default: return '';
+  }
+}
+
+// listingRooms → [{label: 'King Bed', quantity: 1}] for the sleeping-arrangement card.
+// Guesty's roomNumber is not a reliable bedroom index (a 1-bedroom unit can report
+// roomNumber 3, and two entries can share roomNumber 0), so we aggregate by bed type.
+function buildBedConfig(rooms) {
+  if (!Array.isArray(rooms)) return [];
+  const titleCase = t => String(t || '').toLowerCase().split('_')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const counts = new Map();
+  for (const room of rooms) {
+    for (const bed of (room.beds || [])) {
+      if (!bed.type) continue;
+      const label = titleCase(bed.type);
+      counts.set(label, (counts.get(label) || 0) + (bed.quantity || 1));
     }
   }
-  // Check top-level
-  if (listing[fieldName]) return listing[fieldName];
-  // Check nested publicDescription
-  if (listing.publicDescription?.[fieldName]) return listing.publicDescription[fieldName];
-  return '';
+  return [...counts.entries()].map(([label, quantity]) => ({ label, quantity }));
 }
 
 // ── Guest send message ──
