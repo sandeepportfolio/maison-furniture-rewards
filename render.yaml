@@ -9,3 +9,9 @@ services:
         value: production
       - key: PORT
         value: "3456"
+      # Signs guest trip-portal sessions. Render generates this once and keeps
+      # it stable across restarts and deploys — which is what makes /trip magic
+      # links keep working. If this service was created outside the blueprint,
+      # add TRIP_JWT_SECRET manually under Environment in the Render dashboard.
+      - key: TRIP_JWT_SECRET
+        generateValue: true

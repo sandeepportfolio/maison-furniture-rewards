@@ -489,6 +489,24 @@ input,textarea{font-family:var(--font-b);outline:none;border:none}
 .cx-footer a{color:var(--accent)}
 .cx-confetti{position:fixed;pointer-events:none;z-index:10001;border-radius:50%}
 
+/* ─── Post-stay thank-you ─── */
+.ty-screen{position:fixed;inset:0;z-index:9000;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}
+.ty-photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.14;filter:saturate(.7)}
+.ty-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--bg) 0%,rgba(0,0,0,0) 40%,var(--bg) 100%)}
+.ty-inner{position:relative;max-width:460px;width:100%;animation:fadeUp .8s var(--ease)}
+.ty-mark{width:72px;height:72px;margin:0 auto 30px;border:1.5px solid var(--accent-glow);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ty-mark svg{width:30px;height:30px;color:var(--accent)}
+.ty-inner h1{font-family:var(--font-h);font-size:30px;font-weight:400;line-height:1.25;margin-bottom:16px;letter-spacing:-.01em}
+.ty-inner h1 em{font-style:italic;color:var(--accent)}
+.ty-lede{color:var(--muted);font-size:15px;line-height:1.65;margin-bottom:10px}
+.ty-note{color:var(--muted2);font-size:12.5px;line-height:1.6;margin-bottom:34px}
+.ty-cta{display:block;padding:17px 24px;background:var(--accent);color:#fff;border-radius:var(--radius-sm);font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.ty-cta:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(199,107,66,.28);opacity:1}
+.ty-redirect{margin-top:22px;font-size:12px;color:var(--muted2);line-height:1.6}
+.ty-redirect button{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:0;margin-left:4px}
+.ty-redirect button:hover{color:var(--accent)}
+@media(max-width:520px){.ty-inner h1{font-size:25px}.ty-screen{padding:36px 20px}}
+
 /* ─── Prefers reduced motion ─── */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -1139,7 +1157,7 @@ function spawnConfetti(el){
     (function(el){setTimeout(function(){el.remove()},1200)})(d);
   }
 }
-function logoutTrip(){apiPost('/api/trip/logout').then(function(){window.location.reload()}).catch(function(){window.location.reload()})}
+function logoutTrip(){clearTripToken();apiPost('/api/trip/logout').then(function(){window.location.reload()}).catch(function(){window.location.reload()})}
 
 // ── Messages (normal portal) ──
 function renderMessages(msgs){
@@ -1159,7 +1177,7 @@ async function sendMessage(){
 }
 async function pollMessages(){
   try{var r=await apiGet('/api/trip/messages');if(r.messages)renderMessages(r.messages)}
-  catch(e){if(e.status===401){if(msgPoll){clearInterval(msgPoll);msgPoll=null}showLogin();showToast('Your session has expired. Please sign in again.','error')}}
+  catch(e){if(e.status===401){if(msgPoll){clearInterval(msgPoll);msgPoll=null}clearTripToken();showLogin();showToast('Your session has expired. Please sign in again.','error')}}
 }
 
 // ── Error UI ──
@@ -1171,6 +1189,70 @@ function showErrorUI(title,message){
 }
 
 // ═══════════════════════════════════════════
+// SESSION PERSISTENCE
+// ═══════════════════════════════════════════
+// The session cookie is HttpOnly, so the page cannot read or refresh it. We
+// keep a copy of the signed token in localStorage as well: if the cookie is
+// ever dropped (browser cleanup, privacy mode, a different device profile) the
+// portal silently re-verifies from storage instead of dumping the guest back on
+// the confirmation-code form. Cleared for good at checkout.
+var TRIP_TOKEN_KEY='regent.trip.token';
+function storeTripToken(t){try{if(t)localStorage.setItem(TRIP_TOKEN_KEY,t)}catch(e){}}
+function readTripToken(){try{return localStorage.getItem(TRIP_TOKEN_KEY)||''}catch(e){return''}}
+function clearTripToken(){try{localStorage.removeItem(TRIP_TOKEN_KEY)}catch(e){}}
+
+// ═══════════════════════════════════════════
+// POST-STAY THANK YOU
+// ═══════════════════════════════════════════
+// Reached once the stay is over. The server has already stripped every
+// reservation detail and cleared the session cookie; here we clear the stored
+// token too, so nothing about the trip is left on the device.
+var tyRedirect=null;
+function renderThankYou(data){
+  clearTripToken();
+  if(msgPoll){clearInterval(msgPoll);msgPoll=null}
+  if(cdInterval){clearInterval(cdInterval);cdInterval=null}
+
+  document.getElementById('loading-screen').classList.add('hidden');
+  var login=document.getElementById('login-screen');
+  login.style.display='none';login.classList.add('hidden');
+  var portal=document.getElementById('trip-portal');
+  portal.style.display='none';portal.classList.remove('active');
+  portal.innerHTML='';
+
+  var fn=data.firstName||'',prop=data.propertyName||'your Regent home';
+  var bookUrl=data.bookUrl||'https://www.bookwithregent.com';
+  var photo=data.heroPhoto||'';
+  if(!photo&&data.propertyPhotos&&data.propertyPhotos.length&&data.propertyHostingId)photo=getPhotoUrl(data.propertyPhotos[0],data.propertyHostingId);
+
+  var el=document.createElement('div');el.className='ty-screen';
+  el.innerHTML=
+    (photo?'<div class="ty-photo" style="background-image:url('+photo+')"></div>':'')+
+    '<div class="ty-inner">'+
+      '<div class="ty-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>'+
+      '<h1>Thank you'+(fn?', <em>'+esc(fn)+'</em>':'')+'</h1>'+
+      '<p class="ty-lede">Your stay at '+esc(prop)+' has come to an end. It was a pleasure hosting you &mdash; we hope you felt right at home.</p>'+
+      '<p class="ty-note">For your privacy, your trip details and access information have been cleared from this device.</p>'+
+      '<a class="ty-cta" href="'+esc(bookUrl)+'">Book Your Next Stay</a>'+
+      '<div class="ty-redirect" id="ty-redirect"></div>'+
+    '</div>';
+  document.body.appendChild(el);
+
+  // Gentle auto-redirect to the booking site, always cancellable.
+  var slot=document.getElementById('ty-redirect'),left=20;
+  function tick(){
+    if(left<=0){clearInterval(tyRedirect);tyRedirect=null;window.location.href=bookUrl;return}
+    slot.innerHTML='Taking you to bookwithregent.com in '+left+' second'+(left===1?'':'s')+'<button type="button" id="ty-stay">Stay here</button>';
+    document.getElementById('ty-stay').addEventListener('click',function(){
+      clearInterval(tyRedirect);tyRedirect=null;slot.textContent='';
+    });
+    left--;
+  }
+  tick();
+  tyRedirect=setInterval(tick,1000);
+}
+
+// ═══════════════════════════════════════════
 // AUTH FLOW (fixed: no blank page, no reload)
 // ═══════════════════════════════════════════
 async function checkAuth(){
@@ -1179,17 +1261,24 @@ async function checkAuth(){
   // Expired link banner
   if(params.get('expired')==='1'){
     var slot=document.getElementById('expired-banner-slot');
-    if(slot)slot.innerHTML='<div class="expired-banner"><p><strong>Link Expired</strong><br>Your access link has expired. Please look up your reservation again to get a new one.</p></div>';
+    if(slot)slot.innerHTML='<div class="expired-banner"><p><strong>We couldn\'t open that link</strong><br>Enter your confirmation code below and we\'ll take you straight to your trip.</p></div>';
   }
 
   // Token in URL
   var token=params.get('token');
   if(token){
-    try{var r=await apiPost('/api/trip/verify',{token:token});if(r.success){window.history.replaceState({},'',window.location.pathname);showPortal();return}}catch(e){}
+    try{var r=await apiPost('/api/trip/verify',{token:token});if(r.success){storeTripToken(token);window.history.replaceState({},'',window.location.pathname);showPortal();return}}catch(e){}
   }
 
   // Existing session
   try{var auth=await apiGet('/api/trip/auth-check');if(auth.authenticated){showPortal();return}}catch(e){}
+
+  // No cookie — fall back to the token we stashed at sign-in. This is what
+  // keeps a guest signed in across server restarts and cookie loss.
+  var saved=readTripToken();
+  if(saved){
+    try{var sr=await apiPost('/api/trip/verify',{token:saved});if(sr.success){showPortal();return}}catch(e){clearTripToken()}
+  }
 
   showLogin();
 }
@@ -1209,6 +1298,8 @@ async function showPortal(){
   document.getElementById('login-screen').classList.add('hidden');
   try{
     var data=await apiGet('/api/trip/data');
+    // Stay is over — server returned nothing but a name and a booking link.
+    if(data&&data.postStay){renderThankYou(data);return}
     if(!data||(!data.reservation&&!data.listing)){showErrorUI('Unable to Load Trip','We could not retrieve your reservation details. Please try signing in again.');return}
 
     // Show portal container, render content, THEN hide loading
@@ -1225,12 +1316,13 @@ async function showPortal(){
     initAutoResize();
     msgPoll=setInterval(pollMessages,30000);
   } catch(e){
-    if(e.status===401){showLogin();showToast('Your session has expired. Please sign in again.','error');return}
+    if(e.status===401){clearTripToken();showLogin();showToast('Your session has expired. Please sign in again.','error');return}
     showErrorUI('Something Went Wrong','We were unable to load your trip details. This may be a temporary issue — please try again in a moment.');
   }
 }
 
 async function logout(){
+  clearTripToken();
   try{await apiPost('/api/trip/logout')}catch(e){}
   if(msgPoll){clearInterval(msgPoll);msgPoll=null}
   if(cdInterval){clearInterval(cdInterval);cdInterval=null}
@@ -1264,6 +1356,9 @@ function showMagicLinkResult(res){
   var card=document.getElementById('login-card');
   var token=res.jwtToken||'';
   if(!token){try{token=new URL(res.magicLink,window.location.origin).searchParams.get('token')||''}catch(e){var m=(res.magicLink||'').match(/token=([^&]+)/);token=m?m[1]:''}}
+  // Persist immediately: this token is what keeps the guest signed in for the
+  // whole trip, independent of the cookie and of any server restart.
+  storeTripToken(token);
 
   // Fade out the headline and pills for a cleaner result view
   var hl=document.querySelector('.login-headline');

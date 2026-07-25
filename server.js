@@ -3469,7 +3469,58 @@ app.get('/properties/:id', (req, res) => {
 // ── GUEST TRIP PORTAL ────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════
 
-const TRIP_JWT_SECRET = process.env.TRIP_JWT_SECRET || crypto.randomBytes(32).toString('hex');
+// ── Session signing secret ────────────────────────────────────────────
+//
+// IMPORTANT (Render deploy): set TRIP_JWT_SECRET in the Render dashboard
+// (Environment → Add Environment Variable). Any long random string works:
+//     node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+//
+// Without it we previously generated a fresh random secret on every boot, so
+// every trip session cookie and magic-link token was invalidated the moment
+// Render restarted the service (which on the free tier is constantly). Guests
+// saw "Link Expired" minutes after signing in.
+//
+// The fallback below is now DETERMINISTIC: it derives the secret from other
+// env vars that are already stable for the life of the service, so tokens keep
+// verifying across restarts even if TRIP_JWT_SECRET was never set. Setting
+// TRIP_JWT_SECRET explicitly is still strongly preferred — the derived secret
+// changes if the Guesty credentials are ever rotated, which would sign every
+// guest out.
+function resolveTripSecret() {
+  const explicit = (process.env.TRIP_JWT_SECRET || '').trim();
+  if (explicit) return explicit;
+
+  // Stable per-service values. GUESTY_CLIENT_ID/SECRET are required for the app
+  // to function at all; RENDER_SERVICE_ID is injected by Render automatically.
+  const seed = [
+    process.env.GUESTY_CLIENT_ID,
+    process.env.GUESTY_CLIENT_SECRET,
+    process.env.RENDER_SERVICE_ID,
+    process.env.WEB3FORMS_ACCESS_KEY,
+  ].filter(Boolean).join('|');
+
+  if (seed) {
+    console.warn('[trip] TRIP_JWT_SECRET is not set — using a derived fallback secret. Set TRIP_JWT_SECRET on Render to make guest sessions independent of credential rotation.');
+    return crypto.createHash('sha256').update('regent-trip-portal-v1|' + seed).digest('hex');
+  }
+
+  console.warn('[trip] TRIP_JWT_SECRET is not set and no stable seed is available — falling back to a random per-boot secret. Guest sessions will NOT survive a restart.');
+  return crypto.randomBytes(32).toString('hex');
+}
+
+const TRIP_JWT_SECRET = resolveTripSecret();
+
+// Guest sessions are intentionally long-lived: a magic link has to keep working
+// for the whole booking window (booked months ahead), the whole stay, and after
+// checkout. 400 days is the maximum lifetime Chrome will honour on a cookie, so
+// the JWT expiry and the cookie Max-Age are both pinned to it — previously the
+// cookie expired after 24h while the JWT lasted 7 days, so returning guests were
+// silently logged out overnight.
+const TRIP_SESSION_TTL_SECONDS = 400 * 24 * 3600;
+
+// How long after the checkout date the portal keeps showing stay details before
+// switching to the post-stay thank-you screen.
+const POST_CHECKOUT_GRACE_HOURS = 24;
 
 // ── Trip DB tables ──
 db.exec(`
@@ -3512,18 +3563,39 @@ db.exec(`
   )
 `);
 
-function generateTripCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 for clarity
+const TRIP_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 chars, no I/O/0/1
+
+// Trip codes are DERIVED, not random.
+//
+// The SQLite database lives on Render's ephemeral filesystem (and db/ is
+// gitignored), so the trip_codes table is wiped on every restart. A randomly
+// generated code was unrecoverable once that happened — every magic link that
+// had already gone out to a guest resolved to nothing and redirected to
+// "Link Expired".
+//
+// Deriving the code from (reservationId, guestEmail) with an HMAC keyed on the
+// stable session secret means the exact same code is regenerated after a wipe,
+// so re-seeding the table from Guesty (see seedTripCodesFromGuesty) restores
+// every previously issued link. 32 divides 256 evenly, so the byte-modulo below
+// is uniform.
+function deriveTripCode(reservationId, guestEmail, salt = 0) {
+  const h = crypto.createHmac('sha256', TRIP_JWT_SECRET)
+    .update(`tripcode|v1|${reservationId}|${(guestEmail || '').toLowerCase()}|${salt}`)
+    .digest();
   let code = 'R-';
-  for (let i = 0; i < 6; i++) code += chars[crypto.randomInt(chars.length)];
+  for (let i = 0; i < 6; i++) code += TRIP_CODE_ALPHABET[h[i] % TRIP_CODE_ALPHABET.length];
   return code;
 }
 
 function createOrGetTripCode(reservationId, guestEmail, confirmationCode, guestName, propertyName, expiresAt) {
-  // Check for existing code (including previously expired — trip codes persist)
+  const email = (guestEmail || '').toLowerCase();
+
+  // Check for existing code (including previously expired — trip codes persist).
+  // An existing row wins even if it holds a legacy random code, so links that
+  // are already in guests' inboxes keep resolving.
   const existing = db.prepare(
     "SELECT code, expires_at FROM trip_codes WHERE reservation_id = ? AND guest_email = ?"
-  ).get(reservationId, guestEmail);
+  ).get(reservationId, email);
   if (existing) {
     // Always refresh the expiry to keep the code alive
     if (existing.expires_at !== expiresAt) {
@@ -3536,17 +3608,135 @@ function createOrGetTripCode(reservationId, guestEmail, confirmationCode, guestN
     return existing.code;
   }
 
-  // Generate unique code
-  let code, attempts = 0;
-  do {
-    code = generateTripCode();
-    attempts++;
-  } while (db.prepare('SELECT 1 FROM trip_codes WHERE code = ?').get(code) && attempts < 20);
+  // Derive a stable code, salting only on the (vanishingly rare) case where the
+  // code already belongs to a different reservation.
+  let code = deriveTripCode(reservationId, email);
+  let salt = 0;
+  while (salt < 20) {
+    const clash = db.prepare('SELECT reservation_id, guest_email FROM trip_codes WHERE code = ?').get(code);
+    if (!clash) break;
+    if (clash.reservation_id === reservationId && (clash.guest_email || '').toLowerCase() === email) return code;
+    code = deriveTripCode(reservationId, email, ++salt);
+  }
 
   db.prepare(
-    'INSERT INTO trip_codes (code, reservation_id, guest_email, confirmation_code, guest_name, property_name, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).run(code, reservationId, guestEmail, confirmationCode || '', guestName || '', propertyName || '', expiresAt);
+    'INSERT OR REPLACE INTO trip_codes (code, reservation_id, guest_email, confirmation_code, guest_name, property_name, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(code, reservationId, email, confirmationCode || '', guestName || '', propertyName || '', expiresAt);
   return code;
+}
+
+// ── Session token + cookie helpers ────────────────────────────────────
+//
+// The token is fully self-describing: everything /trip needs to identify the
+// reservation is inside the signed payload, so validating a session never
+// touches the database. That is what lets a link survive a Render restart.
+function signTripToken({ reservationId, email, confirmationCode }) {
+  return jwt.sign(
+    { reservationId, email: email || '', confirmationCode: confirmationCode || '' },
+    TRIP_JWT_SECRET,
+    { expiresIn: TRIP_SESSION_TTL_SECONDS }
+  );
+}
+
+function tripCookieOptions(value, maxAgeSeconds) {
+  const opts = [
+    `trip_session=${value}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAgeSeconds}`,
+  ];
+  if (process.env.RENDER_EXTERNAL_URL || process.env.NODE_ENV === 'production') opts.push('Secure');
+  return opts.join('; ');
+}
+
+function setTripSessionCookie(res, token) {
+  res.setHeader('Set-Cookie', tripCookieOptions(token, TRIP_SESSION_TTL_SECONDS));
+}
+
+function clearTripSessionCookie(res) {
+  res.setHeader('Set-Cookie', tripCookieOptions('', 0));
+}
+
+// A stay is "over" once the checkout date has passed plus a grace period, so a
+// guest still travelling home on departure day keeps their details.
+function isStayOver(checkOutDateLocalized) {
+  if (!checkOutDateLocalized) return false;
+  const coEnd = new Date(checkOutDateLocalized + 'T23:59:59');
+  if (isNaN(coEnd.getTime())) return false;
+  return Date.now() > coEnd.getTime() + POST_CHECKOUT_GRACE_HOURS * 3600000;
+}
+
+// ── Re-seed trip codes from Guesty ────────────────────────────────────
+//
+// Runs shortly after boot and every 6 hours, and lazily when an unknown code is
+// hit. Because deriveTripCode is deterministic this rebuilds exactly the same
+// code → reservation mapping that existed before the filesystem was wiped.
+let tripSeedInFlight = null;
+let tripSeedLastRun = 0;
+
+async function seedTripCodesFromGuesty({ reason = 'scheduled' } = {}) {
+  if (tripSeedInFlight) return tripSeedInFlight;
+
+  tripSeedInFlight = (async () => {
+    const started = Date.now();
+    const today = new Date();
+    const iso = d => d.toISOString().slice(0, 10);
+    // Past bookings stay reachable for a while (guests look up receipts), and
+    // future bookings need their link to work the moment it is emailed out.
+    const from = iso(new Date(today.getTime() - 180 * 86400000));
+    const to = iso(new Date(today.getTime() + 400 * 86400000));
+
+    let seeded = 0;
+    try {
+      for (let page = 0; page < 10; page++) {
+        const { reservations, count } = await guesty.getReservations({
+          from, to, limit: 100, skip: page * 100,
+        });
+        if (!reservations.length) break;
+
+        for (const r of reservations) {
+          if (!r._id) continue;
+          const status = (r.status || '').toLowerCase();
+          if (status === 'inquiry' || status === 'declined' || status === 'expired') continue;
+
+          const email = (r.guest?.email || '').toLowerCase()
+            || (r.guest?.phone ? `phone:${normalizeGuestPhone(r.guest.phone)}` : '');
+          if (!email) continue;
+
+          const checkOut = r.checkOutDateLocalized || '';
+          const coDate = checkOut ? new Date(checkOut + 'T23:59:59') : new Date(Date.now() + 365 * 86400000);
+          const expiresAt = new Date(coDate.getTime() + 730 * 86400000).toISOString();
+          const guestName = `${r.guest?.firstName || ''} ${r.guest?.lastName || ''}`.trim();
+          const propertyName = r.listing?.title || r.listing?.nickname || '';
+
+          try {
+            createOrGetTripCode(r._id, email, r.confirmationCode || '', guestName, propertyName, expiresAt);
+            seeded++;
+          } catch (_) { /* one bad row must not abort the seed */ }
+        }
+
+        if ((page + 1) * 100 >= (count || 0)) break;
+      }
+      tripSeedLastRun = Date.now();
+      console.log(`[trip] seeded ${seeded} trip codes from Guesty (${reason}, ${Date.now() - started}ms)`);
+    } catch (err) {
+      console.error(`[trip] trip code seed failed (${reason}):`, err.message);
+    } finally {
+      tripSeedInFlight = null;
+    }
+    return seeded;
+  })();
+
+  return tripSeedInFlight;
+}
+
+// Normalize to the last 10 digits so a phone-based lookup and a Guesty-sourced
+// phone number key the same trip code.
+function normalizeGuestPhone(p) {
+  if (!p) return '';
+  const digits = String(p).replace(/\D/g, '');
+  return digits.length >= 10 ? digits.slice(-10) : digits;
 }
 
 // ── Rate limiter (in-memory, per IP) ──
@@ -3621,31 +3811,50 @@ app.get('/trip', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'trip.html'));
 });
 
+// ── Self-contained magic link: /trip/t/:token ──
+// Needs no database row at all — the signed token carries the reservation.
+// This is the link that always works, even immediately after a restart and
+// before the trip_codes table has been re-seeded from Guesty.
+app.get('/trip/t/:token', (req, res) => {
+  try {
+    const payload = jwt.verify(req.params.token, TRIP_JWT_SECRET);
+    if (!payload.reservationId) throw new Error('missing reservationId');
+    setTripSessionCookie(res, req.params.token);
+    return res.redirect('/trip');
+  } catch (_) {
+    return res.redirect('/trip?expired=1');
+  }
+});
+
 // ── Short code route: /trip/:code ──
-app.get('/trip/:code', (req, res) => {
+app.get('/trip/:code', async (req, res) => {
   const code = (req.params.code || '').toUpperCase().trim();
+  const lookup = () => db.prepare("SELECT * FROM trip_codes WHERE code = ?").get(code);
+
   // Trip codes persist indefinitely — no expiration check
-  const row = db.prepare(
-    "SELECT * FROM trip_codes WHERE code = ?"
-  ).get(code);
+  let row = lookup();
+
+  // A miss on a well-formed code usually means the ephemeral SQLite file was
+  // wiped by a restart, not that the code is bad. Rebuild the table from Guesty
+  // and try once more (throttled so a burst of misses — or a crawler walking
+  // /trip/* — cannot hammer the Guesty API).
+  const looksLikeTripCode = /^R-[A-Z0-9]{6}$/.test(code);
+  if (!row && looksLikeTripCode && Date.now() - tripSeedLastRun > 60_000) {
+    try {
+      await seedTripCodesFromGuesty({ reason: `miss:${code}` });
+      row = lookup();
+    } catch (_) { /* fall through to the expired page */ }
+  }
+
   if (!row) {
     return res.redirect('/trip?expired=1');
   }
-  // Generate a JWT with a fixed 7-day session duration
-  const jwtToken = jwt.sign(
-    { reservationId: row.reservation_id, email: row.guest_email, confirmationCode: row.confirmation_code },
-    TRIP_JWT_SECRET,
-    { expiresIn: 7 * 24 * 3600 }
-  );
-  const cookieOpts = [
-    `trip_session=${jwtToken}`,
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    `Max-Age=${24 * 3600}`,
-  ];
-  if (process.env.RENDER_EXTERNAL_URL) cookieOpts.push('Secure');
-  res.setHeader('Set-Cookie', cookieOpts.join('; '));
+
+  setTripSessionCookie(res, signTripToken({
+    reservationId: row.reservation_id,
+    email: row.guest_email,
+    confirmationCode: row.confirmation_code,
+  }));
   res.redirect('/trip');
 });
 
@@ -3670,11 +3879,7 @@ app.post('/api/trip/lookup', async (req, res) => {
     const code = confirmationCode.trim();
     const guestEmail = hasEmail ? email.trim().toLowerCase() : null;
     // Normalize phone to last 10 digits for comparison
-    const normalizePhone = (p) => {
-      if (!p) return '';
-      const digits = p.replace(/\D/g, '');
-      return digits.length >= 10 ? digits.slice(-10) : digits;
-    };
+    const normalizePhone = normalizeGuestPhone;
     const guestPhone = hasPhone ? normalizePhone(phone) : null;
 
     let reservation = null;
@@ -3741,22 +3946,22 @@ app.post('/api/trip/lookup', async (req, res) => {
       : (checkOut ? new Date(checkOut + 'T23:59:59Z') : new Date(Date.now() + 365 * 86400000));
     const expiresAt = new Date(coDate.getTime() + 730 * 86400000);
 
-    // Use Guesty's email for the JWT even if guest logged in via phone
-    const jwtEmail = guestEmail || (reservation.guest?.email || '').toLowerCase() || '';
-    const jwtToken = jwt.sign(
-      {
-        reservationId: reservation._id,
-        email: jwtEmail,
-        confirmationCode: code,
-      },
-      TRIP_JWT_SECRET,
-      { expiresIn: 7 * 24 * 3600 }
-    );
+    // Key both the session token and the trip code on Guesty's canonical guest
+    // email, whichever way the guest signed in. The startup re-seed only knows
+    // the Guesty email, so keying on anything else would derive a different
+    // trip code after a restart and break the link.
+    const tripEmail = (reservation.guest?.email || '').toLowerCase()
+      || guestEmail
+      || `phone:${guestPhone}`;
+
+    const jwtToken = signTripToken({
+      reservationId: reservation._id,
+      email: tripEmail,
+      confirmationCode: code,
+    });
 
     const guestName = `${reservation.guest?.firstName || ''} ${reservation.guest?.lastName || ''}`.trim();
     const propertyName = reservation.listing?.title || reservation.listing?.nickname || '';
-    // Use the guest's actual email from Guesty for trip code (even if they logged in with phone)
-    const tripEmail = guestEmail || (reservation.guest?.email || '').toLowerCase() || `phone:${guestPhone}`;
 
     // Generate short magic code
     const tripCode = createOrGetTripCode(
@@ -3766,10 +3971,14 @@ app.post('/api/trip/lookup', async (req, res) => {
 
     const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
     const magicLink = `${baseUrl}/trip/${tripCode}`;
+    // Database-free fallback link. Handed to the client so it can restore the
+    // session later without the guest re-entering their confirmation code.
+    const fullLink = `${baseUrl}/trip/t/${jwtToken}`;
 
     res.json({
       success: true,
       magicLink,
+      fullLink,
       tripCode,
       jwtToken,
       guestName,
@@ -3794,17 +4003,9 @@ app.post('/api/trip/verify', (req, res) => {
   try {
     const payload = jwt.verify(magicToken, TRIP_JWT_SECRET);
 
-    // Set session cookie (24h, httpOnly)
-    const cookieOpts = [
-      `trip_session=${magicToken}`,
-      'Path=/',
-      'HttpOnly',
-      'SameSite=Lax',
-      `Max-Age=${24 * 3600}`,
-    ];
-    if (process.env.RENDER_EXTERNAL_URL) cookieOpts.push('Secure');
-
-    res.setHeader('Set-Cookie', cookieOpts.join('; '));
+    // Cookie lifetime matches the token lifetime exactly — a shorter cookie
+    // would silently sign the guest out while their link was still valid.
+    setTripSessionCookie(res, magicToken);
     res.json({
       success: true,
       reservationId: payload.reservationId,
@@ -3883,12 +4084,46 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     // Stay-window gating. Practical arrival info (directions, parking, house manual, wifi,
     // amenity access) is shown to a confirmed guest before and during the stay, then hidden
     // once the stay is over. Numeric entry codes stay locked until check-in time (below).
-    const isPastCheckout = (() => {
-      if (!reservation.checkOutDateLocalized) return false;
-      const coDate = new Date(reservation.checkOutDateLocalized + 'T23:59:59');
-      return new Date() > new Date(coDate.getTime() + 24 * 3600000);
-    })();
+    const isPastCheckout = isStayOver(reservation.checkOutDateLocalized);
     const showStayInfo = !isCanceled && !isPastCheckout;
+
+    // ── Post-checkout: the stay is over ──
+    // Nothing about the reservation is returned any more — no address, no
+    // codes, no money, no message history, no contact details. The client gets
+    // just enough to say thank you by name and point the guest at the booking
+    // site, and the session cookie is cleared in the same response so nothing
+    // is left behind on the device.
+    if (isPastCheckout && !isCanceled) {
+      let postStaySlug = null;
+      let postStayPhotos = [];
+      let postStayHostingId = null;
+      const postStayListingId = reservation.listing?._id || reservation.listingId;
+      if (postStayListingId) {
+        for (const [slug, meta] of Object.entries(guesty.LISTINGS)) {
+          if (meta.id === postStayListingId) {
+            postStaySlug = slug;
+            const staticData = PROPERTY_DATA[slug] || null;
+            if (staticData) {
+              postStayPhotos = staticData.photos.slice(0, 1);
+              postStayHostingId = staticData.hostingId;
+            }
+            break;
+          }
+        }
+      }
+      const heroPhoto = (listing?.pictures || [])[0];
+      clearTripSessionCookie(res);
+      return res.json({
+        postStay: true,
+        firstName: reservation.guest?.firstName || '',
+        propertyName: listing?.title || reservation.listing?.title || reservation.listing?.nickname || 'your Regent home',
+        propertySlug: postStaySlug,
+        propertyPhotos: postStayPhotos,
+        propertyHostingId: postStayHostingId,
+        heroPhoto: heroPhoto ? (heroPhoto.original || heroPhoto.large || heroPhoto.regular || '') : '',
+        bookUrl: 'https://www.bookwithregent.com',
+      });
+    }
     const stayOnly = v => (showStayInfo ? (v || '') : '');
 
     const pd = listing?.publicDescription || {};
@@ -4227,15 +4462,7 @@ app.post('/api/trip/messages/context', requireTripAuth, (req, res) => {
 
 // ── Trip logout ──
 app.post('/api/trip/logout', (req, res) => {
-  const cookieOpts = [
-    'trip_session=',
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    'Max-Age=0',
-  ];
-  if (process.env.RENDER_EXTERNAL_URL) cookieOpts.push('Secure');
-  res.setHeader('Set-Cookie', cookieOpts.join('; '));
+  clearTripSessionCookie(res);
   res.json({ success: true });
 });
 
@@ -4416,4 +4643,15 @@ app.listen(PORT, '0.0.0.0', () => {
         console.error('Truvi worker error:', err.message);
       });
   }, TRUVI_WORKER_INTERVAL_MS);
+
+  // Rebuild the trip_codes table from Guesty. The database sits on Render's
+  // ephemeral disk and is wiped by every restart, so without this every magic
+  // link already in a guest's inbox would resolve to "Link Expired". Delayed
+  // 20s so it does not compete with the Guesty token prewarm on cold start.
+  setTimeout(() => {
+    seedTripCodesFromGuesty({ reason: 'startup' }).catch(() => {});
+  }, 20_000);
+  setInterval(() => {
+    seedTripCodesFromGuesty({ reason: 'refresh' }).catch(() => {});
+  }, 6 * 3600 * 1000);
 });
