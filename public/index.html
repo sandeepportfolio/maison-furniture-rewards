@@ -404,9 +404,11 @@ ul{list-style:none}
 .prop-price-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--accent);background:var(--accent-pale);padding:3px 8px;border-radius:100px;margin-left:8px;font-weight:500;white-space:nowrap}
 .prop-price-loading{display:inline-block;width:110px;height:18px;background:linear-gradient(90deg,var(--bg-card) 25%,rgba(255,255,255,.06) 50%,var(--bg-card) 75%);background-size:200% 100%;animation:priceShimmer 1.5s infinite;border-radius:4px;vertical-align:middle}
 @keyframes priceShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.detail-price{margin-top:12px}
+.detail-price{margin-top:12px;display:flex;align-items:baseline;flex-wrap:wrap;gap:6px}
 .detail-price .prop-price-amount{font-size:20px}
 .detail-price .prop-price-period{font-size:14px}
+.detail-price .prop-price-original{margin-right:0}
+.detail-price .prop-price-badge{margin-left:4px;align-self:center}
 
 /* Divider before actions */
 .prop-divider{height:1px;background:var(--border);margin-bottom:20px}
@@ -1326,29 +1328,25 @@ ul{list-style:none}
   .detail-share-toast{top:60px;right:12px}
   .detail-content{padding:20px 20px}
   .detail-section:first-child{margin-bottom:0}
-  .detail-header{flex-direction:column;gap:6px;padding-bottom:0;margin-bottom:0;border-bottom:none}
+  .detail-header{flex-direction:column;gap:12px;padding-bottom:0;margin-bottom:0;border-bottom:none}
   .detail-header-left h2{font-size:24px;margin-bottom:0;letter-spacing:-.03em}
-  .detail-header-right{align-items:flex-start;margin-top:2px}
+  .detail-header-right{align-items:flex-start;margin-top:0}
   .detail-specs{flex-wrap:wrap;gap:0}
   .detail-specs span{padding:2px 10px 2px 0;border-right:1px solid var(--border);font-size:12px;color:var(--text-muted)}
   .detail-specs span:last-child{border-right:none}
   .detail-price{margin-top:6px !important}
-  .detail-new-badge{margin-top:6px}
+  .detail-new-badge{margin-top:0}
   .detail-desc h3,.detail-amenities h3{font-size:20px}
   .amenity-highlights{gap:6px}
   .amenity-highlight-card{flex:none}
   .amenity-category{padding:16px}
   .amenity-pills{gap:6px}
   .amenity-pill{font-size:11px;padding:5px 12px}
-  .detail-actions{display:flex;flex-direction:column;gap:0;padding:4px 0 0;margin:0}
-  .detail-actions .btn-book{width:100%;justify-content:center;text-align:center;padding:13px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;border-radius:8px;margin-bottom:8px}
-  .detail-actions .btn-contact{border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;padding:8px 0;justify-content:center;letter-spacing:.01em;box-shadow:none}
+  .detail-actions{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:center;column-gap:4px;row-gap:8px;padding:12px 0 0;margin:0 0 16px}
+  .detail-actions .btn-book{flex:1 0 100%;justify-content:center;text-align:center;padding:13px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;border-radius:8px;margin-bottom:0}
+  .detail-actions .btn-contact{flex:0 1 auto;border:none;background:transparent;color:var(--text-muted);font-size:12px;font-weight:500;padding:8px 0;justify-content:center;letter-spacing:.01em;box-shadow:none}
   .detail-actions .btn-contact svg{opacity:.5}
   .detail-actions .btn-contact:hover{border:none;transform:none;color:var(--text)}
-  .detail-actions .btn-book+.btn-contact{display:inline-flex}
-  .detail-actions{flex-direction:row;flex-wrap:wrap}
-  .detail-actions .btn-book{flex-basis:100%}
-  .detail-actions .btn-contact{flex:1}
   .detail-actions svg{width:13px;height:13px}
   .detail-thumb{width:64px;height:44px}
   .contact-body{padding:24px}
@@ -4545,7 +4543,7 @@ function openDetail(slug, skipHistory) {
         <div class="detail-header-left">
           <div class="detail-loc">${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}</div>
           <h2>${prop.name}</h2>
-          <div class="detail-specs" style="margin-top:4px">
+          <div class="detail-specs" style="margin-top:6px">
             <span>${prop.guests} guest${prop.guests>1?'s':''}</span>
             <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
             <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
