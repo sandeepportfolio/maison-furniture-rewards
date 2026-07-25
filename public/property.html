@@ -541,88 +541,433 @@ ul { list-style: none; }
   font-size: 12px; color: var(--text-muted); font-weight: 400;
 }
 
-/* ── Location ── */
-.location-section .location-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius-xl); padding: 48px;
-  display: flex; align-items: center; gap: 48px;
+/* ══════════════════════════════════════════════════════════════
+   LOCATION — "The Plot"
+   An abstract cartographic instrument: drifting survey grid, range
+   rings, a rotating bezel and a sonar-pulsing pin. Layers separate
+   under the cursor (parallax). No claim of a literal map is made —
+   the only geographic assertion is the property's real lat/lng.
+   ══════════════════════════════════════════════════════════════ */
+.loc-panel {
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 188px 1fr;
+  align-items: center; gap: 46px;
+  padding: 28px 44px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(130% 150% at 2% 0%, rgba(199, 107, 66, 0.07), transparent 55%),
+    linear-gradient(152deg, #161514 0%, #101010 58%, #15130F 100%);
+  transition: border-color 0.6s var(--ease), box-shadow 0.6s var(--ease);
 }
-.location-icon-wrap {
-  width: 80px; height: 80px; border-radius: 20px;
-  background: var(--accent-subtle);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.loc-panel:hover {
+  border-color: rgba(199, 107, 66, 0.26);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.45);
 }
-.location-icon-wrap svg {
-  width: 36px; height: 36px; stroke: var(--accent);
-  fill: none; stroke-width: 1.5;
+/* Hairline of light travelling around the panel edge */
+.loc-panel::after {
+  content: ''; position: absolute; inset: 0; z-index: 3;
+  border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(115deg,
+    transparent 34%, rgba(199, 107, 66, 0.45) 46%,
+    rgba(224, 168, 138, 0.9) 50%, rgba(199, 107, 66, 0.45) 54%, transparent 66%);
+  background-size: 300% 100%;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity 1s var(--ease) 0.4s;
 }
-.location-info h3 {
-  font-family: var(--serif); font-size: 28px; font-weight: 400;
-  color: var(--text); margin-bottom: 8px;
+.loc-panel.visible::after { opacity: 0.7; animation: loc-sheen 11s linear infinite; }
+@keyframes loc-sheen { from { background-position: 190% 0; } to { background-position: -90% 0; } }
+
+/* ── The instrument ── */
+.loc-plot {
+  --px: 0; --py: 0;
+  position: relative; z-index: 1;
+  width: 188px; height: 188px; justify-self: center;
 }
-.location-info p {
-  font-size: 16px; color: var(--text-secondary); line-height: 1.7;
-  font-weight: 300; max-width: 600px;
+.loc-plot::before {
+  content: ''; position: absolute; inset: -18%;
+  background: radial-gradient(circle at 50% 50%, rgba(199, 107, 66, 0.16), transparent 62%);
+  animation: loc-breathe 7s var(--ease) infinite;
+}
+@keyframes loc-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.08); }
+}
+.lp-layer {
+  position: absolute; inset: 0;
+  transition: transform 0.7s var(--ease-out);
+  will-change: transform;
+}
+.lp-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lp-grid  { transform: translate3d(calc(var(--px) * 11px), calc(var(--py) * 11px), 0); }
+.lp-rings { transform: translate3d(calc(var(--px) * 6px),  calc(var(--py) * 6px),  0); }
+.lp-bezel { transform: translate3d(calc(var(--px) * 3px),  calc(var(--py) * 3px),  0); }
+.lp-pin   { transform: translate3d(calc(var(--px) * 18px), calc(var(--py) * 18px), 0); }
+
+/* survey grid — two crossing rakes drifting in opposite directions */
+.lp-grid .lp-rake-a { animation: loc-rake-a 26s linear infinite; }
+.lp-grid .lp-rake-b { animation: loc-rake-b 34s linear infinite; }
+@keyframes loc-rake-a { to { transform: translate(0, 26px); } }
+@keyframes loc-rake-b { to { transform: translate(-26px, 0); } }
+
+/* rotating bezel */
+.lp-bezel .lp-ticks {
+  transform-box: view-box; transform-origin: 100px 100px;
+  animation: loc-spin 72s linear infinite;
+}
+.lp-bezel .lp-ticks-inner {
+  transform-box: view-box; transform-origin: 100px 100px;
+  animation: loc-spin 48s linear infinite reverse;
+}
+@keyframes loc-spin { to { transform: rotate(360deg); } }
+
+/* sonar */
+.lp-rings .lp-sonar circle {
+  transform-box: view-box; transform-origin: 100px 100px;
+  animation: loc-sonar 4.6s var(--ease-out) infinite;
+}
+.lp-rings .lp-sonar circle:nth-child(2) { animation-delay: 1.53s; }
+.lp-rings .lp-sonar circle:nth-child(3) { animation-delay: 3.06s; }
+@keyframes loc-sonar {
+  0%   { transform: scale(0.16); opacity: 0; }
+  12%  { opacity: 0.75; }
+  100% { transform: scale(1); opacity: 0; }
 }
 
-/* ── Booking CTA ── */
-.booking-section {
-  padding: 96px 0; border-bottom: none;
-  text-align: center;
+/* pin */
+.lp-pin svg { overflow: visible; }
+.lp-pin .lp-pin-body {
+  transform-box: view-box; transform-origin: 100px 106px;
+  animation: loc-hover 5.2s var(--ease) infinite;
+  filter: drop-shadow(0 0 7px rgba(199, 107, 66, 0.55));
 }
-.booking-inner {
-  display: flex; flex-direction: column; align-items: center;
-  background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+@keyframes loc-hover {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.lp-pin .lp-shadow {
+  transform-box: view-box; transform-origin: 100px 127px;
+  animation: loc-shadow 5.2s var(--ease) infinite;
+}
+@keyframes loc-shadow {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.72); }
+}
+
+/* ── The text side ── */
+.loc-body { position: relative; z-index: 1; min-width: 0; }
+.loc-coords {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.loc-coords i { font-style: normal; color: var(--text-dim); margin-right: 7px; }
+.loc-coords b {
+  font-weight: 500; color: var(--accent);
+  font-variant-numeric: tabular-nums; letter-spacing: 0.1em;
+}
+.loc-coords span { display: inline-flex; align-items: baseline; }
+.loc-coords em {
+  flex: 1; height: 1px; font-style: normal;
+  background: linear-gradient(90deg, var(--border-light), transparent);
+  max-width: 120px;
+}
+.loc-body h3 {
+  font-family: var(--serif); font-size: 28px; font-weight: 400;
+  line-height: 1.15; letter-spacing: -0.01em; color: var(--text);
+}
+.loc-rule {
+  display: block; height: 1px; width: 0; margin: 12px 0 13px;
+  background: linear-gradient(90deg, var(--accent), rgba(199, 107, 66, 0.05));
+  transition: width 1.4s var(--ease-out) 0.35s;
+}
+.loc-panel.visible .loc-rule { width: 92px; }
+.loc-body p {
+  font-size: 15px; color: var(--text-secondary);
+  line-height: 1.6; font-weight: 300; max-width: 74ch;
+}
+/* nearby landmarks — names lifted verbatim from the copy above, no
+   distances invented */
+.loc-marks {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 14px;
+}
+.loc-mark {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 13px 6px 11px; border-radius: 100px;
+  font-size: 11.5px; font-weight: 500; letter-spacing: 0.03em;
+  color: var(--text-muted);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 72px 48px;
+  background: rgba(255, 255, 255, 0.012);
+  opacity: 0; transform: translateY(8px);
+  transition: color 0.4s var(--ease), border-color 0.4s var(--ease),
+              background 0.4s var(--ease), opacity 0.6s var(--ease-out),
+              transform 0.6s var(--ease-out);
+}
+.loc-panel.visible .loc-mark { opacity: 1; transform: translateY(0); }
+.loc-mark::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--text-dim);
+  transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.loc-mark.lit, .loc-mark:hover {
+  color: var(--text); border-color: rgba(199, 107, 66, 0.4);
+  background: rgba(199, 107, 66, 0.07);
+}
+.loc-mark.lit::before, .loc-mark:hover::before {
+  background: var(--accent); box-shadow: 0 0 10px rgba(199, 107, 66, 0.9);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOOKING CTA — "The Invitation"
+   Drifting aurora field, a slow light sweep across the headline,
+   a rotating filament border, and a cursor-magnetic button.
+   ══════════════════════════════════════════════════════════════ */
+@property --bk-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+.booking-section { padding: 88px 0 96px; border-bottom: none; text-align: center; }
+.booking-inner {
+  --bk-shift: 0;
   position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 54px 48px 50px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: linear-gradient(158deg, #161514 0%, #0F0F0F 55%, #151210 100%);
 }
+/* rotating filament along the edge */
 .booking-inner::before {
-  content: ''; position: absolute; top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle at center, rgba(199, 107, 66, 0.04), transparent 60%);
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0; z-index: 4;
+  border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--bk-angle) at 50% 50%,
+    transparent 0 64%,
+    rgba(199, 107, 66, 0.14) 71%,
+    rgba(224, 168, 138, 0.62) 76%,
+    rgba(197, 165, 114, 0.18) 81%,
+    transparent 88%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: bk-rotate 14s linear infinite;
 }
+@keyframes bk-rotate { to { --bk-angle: 360deg; } }
+
+.bk-aurora, .bk-weave, .bk-motes {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+}
+.bk-aurora {
+  inset: -22%;
+  /* fade the field away from the edges so it reads as light, not a stain */
+  -webkit-mask: radial-gradient(72% 68% at 50% 44%, #000 8%, transparent 74%);
+          mask: radial-gradient(72% 68% at 50% 44%, #000 8%, transparent 74%);
+}
+.bk-aurora b {
+  position: absolute; display: block; border-radius: 50%;
+  filter: blur(74px); will-change: transform;
+}
+.bk-aurora b:nth-child(1) {
+  width: 44%; height: 66%; left: 16%; top: 10%;
+  background: radial-gradient(circle, rgba(199, 107, 66, 0.24), transparent 70%);
+  animation: bk-drift-a 27s var(--ease) infinite;
+}
+.bk-aurora b:nth-child(2) {
+  width: 38%; height: 58%; right: 16%; top: 16%;
+  background: radial-gradient(circle, rgba(197, 165, 114, 0.14), transparent 70%);
+  animation: bk-drift-b 34s var(--ease) infinite;
+}
+.bk-aurora b:nth-child(3) {
+  width: 46%; height: 46%; left: 30%; bottom: 6%;
+  background: radial-gradient(circle, rgba(224, 168, 138, 0.12), transparent 72%);
+  animation: bk-drift-c 41s var(--ease) infinite;
+}
+@keyframes bk-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(16%, 8%, 0) scale(1.16); }
+}
+@keyframes bk-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.08); }
+  50%      { transform: translate3d(-14%, 12%, 0) scale(0.92); }
+}
+@keyframes bk-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-10%, -14%, 0) scale(1.2); }
+}
+
+/* fine surveyor's weave, faded at the edges, panning with scroll */
+.bk-weave {
+  opacity: 0.9;
+  background-image:
+    linear-gradient(rgba(245, 245, 243, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 245, 243, 0.045) 1px, transparent 1px);
+  background-size: 58px 58px;
+  -webkit-mask: radial-gradient(120% 96% at 50% 42%, #000 12%, transparent 76%);
+          mask: radial-gradient(120% 96% at 50% 42%, #000 12%, transparent 76%);
+  transform: translate3d(0, calc(var(--bk-shift) * 26px), 0);
+}
+/* slow motes of light */
+.bk-motes b {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(224, 168, 138, 0.55); filter: blur(0.5px);
+  animation: bk-mote 17s linear infinite;
+}
+.bk-motes b:nth-child(1) { left: 16%; animation-delay: 0s;     animation-duration: 19s; }
+.bk-motes b:nth-child(2) { left: 37%; animation-delay: -6s;    animation-duration: 24s; }
+.bk-motes b:nth-child(3) { left: 61%; animation-delay: -12s;   animation-duration: 16s; }
+.bk-motes b:nth-child(4) { left: 82%; animation-delay: -3.5s;  animation-duration: 27s; }
+.bk-motes b:nth-child(5) { left: 71%; animation-delay: -17s;   animation-duration: 21s; }
+@keyframes bk-mote {
+  0%   { transform: translateY(112%) scale(0.6); opacity: 0; }
+  14%  { opacity: 0.85; }
+  78%  { opacity: 0.5; }
+  100% { transform: translateY(-14%) scale(1); opacity: 0; }
+}
+
+.booking-eyebrow, .booking-title, .booking-subtitle,
+.bk-cta-wrap, .booking-badge { position: relative; z-index: 2; }
+
+.booking-eyebrow {
+  display: inline-flex; align-items: center; gap: 11px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.24em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.booking-eyebrow s {
+  display: block; width: 34px; height: 1px; text-decoration: none;
+  background: linear-gradient(90deg, transparent, var(--accent));
+}
+.booking-eyebrow s:last-child { background: linear-gradient(90deg, var(--accent), transparent); }
+
 .booking-title {
-  font-family: var(--serif); font-size: clamp(32px, 4vw, 48px);
-  font-weight: 400; color: var(--text); margin-bottom: 16px;
-  letter-spacing: -0.02em; position: relative;
+  font-family: var(--serif); font-size: clamp(32px, 4vw, 46px);
+  font-weight: 400; line-height: 1.12; letter-spacing: -0.02em;
+  margin-bottom: 14px; color: var(--text);
+  background: linear-gradient(100deg,
+    #EDEDEA 0%, #F7F7F5 34%, #FFFFFF 44%, #EDEDEA 56%, #9E9E99 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: bk-sweep 8s var(--ease) infinite;
 }
-.booking-title em { font-style: italic; color: var(--accent); }
+.booking-title em {
+  font-style: italic;
+  background: linear-gradient(100deg,
+    #B85A34 0%, var(--accent) 32%, #F0C4A6 44%, var(--copper-light) 54%, #B85A34 78%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: bk-sweep 8s var(--ease) infinite;
+}
+@keyframes bk-sweep {
+  0%, 100% { background-position: 130% 0; }
+  50%      { background-position: -30% 0; }
+}
 .booking-subtitle {
-  font-size: 16px; color: var(--text-secondary); font-weight: 300;
-  margin-bottom: 40px; position: relative;
+  font-size: 15.5px; color: var(--text-secondary); font-weight: 300;
+  letter-spacing: 0.01em; margin-bottom: 34px;
 }
+
+/* magnet zone + halo */
+.bk-cta-wrap { display: inline-flex; padding: 18px; margin: -18px; }
+.bk-cta-wrap::before {
+  content: ''; position: absolute; inset: 4px; border-radius: 100px;
+  background: radial-gradient(closest-side, rgba(199, 107, 66, 0.45), transparent 76%);
+  filter: blur(16px); opacity: 0.45; pointer-events: none;
+  animation: bk-halo 5s var(--ease) infinite;
+  transition: opacity 0.5s var(--ease);
+}
+.bk-cta-wrap:hover::before { opacity: 0.85; }
+@keyframes bk-halo {
+  0%, 100% { transform: scale(1);    opacity: 0.4; }
+  50%      { transform: scale(1.14); opacity: 0.7; }
+}
+
 .booking-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  background: var(--accent); color: #fff;
-  font-family: var(--sans); font-size: 16px; font-weight: 600;
-  padding: 18px 48px; border-radius: 100px;
-  letter-spacing: 0.02em;
-  transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-  position: relative; text-decoration: none;
+  --mx: 50%; --my: 50%;
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; align-items: center; justify-content: center; gap: 11px;
+  color: #fff; text-decoration: none;
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 19px 50px; border-radius: 100px;
+  background: linear-gradient(135deg, #C97046 0%, #A94E2B 52%, #C36239 100%);
+  box-shadow: 0 10px 30px rgba(199, 107, 66, 0.22),
+              inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease);
+}
+/* cursor spotlight */
+.booking-btn::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(120px 120px at var(--mx) var(--my),
+    rgba(255, 235, 220, 0.3), transparent 64%);
+  opacity: 0; transition: opacity 0.45s var(--ease);
+}
+.booking-btn:hover::before { opacity: 1; }
+/* shimmer sweep */
+.booking-btn::after {
+  content: ''; position: absolute; inset: 0 auto 0 -60%; z-index: -1;
+  width: 46%; transform: skewX(-22deg);
+  background: linear-gradient(90deg, transparent,
+    rgba(255, 255, 255, 0.22) 50%, transparent);
+  animation: bk-btn-shimmer 5.5s var(--ease) infinite;
+}
+@keyframes bk-btn-shimmer {
+  0%, 62%, 100% { left: -60%; }
+  92%           { left: 130%; }
 }
 .booking-btn:hover {
-  background: var(--accent-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(199, 107, 66, 0.35);
+  box-shadow: 0 18px 46px rgba(199, 107, 66, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 .booking-btn svg {
-  width: 18px; height: 18px; stroke: currentColor;
-  fill: none; stroke-width: 2; transition: transform 0.3s var(--ease);
+  width: 17px; height: 17px; stroke: currentColor;
+  fill: none; stroke-width: 2; transition: transform 0.45s var(--ease-spring);
 }
-.booking-btn:hover svg { transform: translateX(4px); }
+.booking-btn:hover svg { transform: translateX(5px); }
+
 .booking-badge {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-top: 20px; font-size: 13px; font-weight: 500;
-  color: var(--accent); letter-spacing: 0.02em;
-  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 26px; padding: 7px 16px; border-radius: 100px;
+  font-size: 12.5px; font-weight: 500; letter-spacing: 0.03em;
+  color: var(--copper-light);
+  border: 1px solid rgba(199, 107, 66, 0.22);
+  background: rgba(199, 107, 66, 0.05);
+  transition: border-color 0.4s var(--ease), background 0.4s var(--ease);
+}
+.booking-badge:hover {
+  border-color: rgba(199, 107, 66, 0.45);
+  background: rgba(199, 107, 66, 0.1);
 }
 .booking-badge svg {
-  width: 16px; height: 16px; stroke: var(--accent);
+  width: 14px; height: 14px; stroke: var(--accent);
   fill: none; stroke-width: 2;
+  animation: bk-shield 4.4s var(--ease) infinite;
+}
+@keyframes bk-shield {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+
+/* Motion-sensitive visitors get the composition, not the movement */
+@media (prefers-reduced-motion: reduce) {
+  .loc-panel.visible::after, .lp-grid .lp-rake-a, .lp-grid .lp-rake-b,
+  .lp-bezel .lp-ticks, .lp-bezel .lp-ticks-inner, .lp-rings .lp-sonar circle,
+  .lp-pin .lp-pin-body, .lp-pin .lp-shadow, .loc-plot::before,
+  .booking-inner::before, .bk-aurora b, .bk-motes b,
+  .booking-title, .booking-title em, .booking-btn::after,
+  .bk-cta-wrap::before, .booking-badge svg {
+    animation: none !important;
+  }
+  .lp-layer { transform: none !important; }
+  /* without the pulse the sonar rings would sit as three stacked hard circles */
+  .lp-rings .lp-sonar { display: none; }
+  .booking-title, .booking-title em {
+    background: none; -webkit-text-fill-color: currentColor; color: var(--text);
+  }
+  .booking-title em { color: var(--accent); }
+  .bk-motes { display: none; }
 }
 
 /* ── Footer ── */
@@ -694,11 +1039,10 @@ ul { list-style: none; }
   .building-amenity-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .location-section .location-card {
-    flex-direction: column; text-align: center;
-    padding: 36px;
+  .loc-panel {
+    grid-template-columns: 156px 1fr; gap: 34px; padding: 30px 34px;
   }
-  .location-info p { max-width: none; }
+  .loc-plot { width: 156px; height: 156px; }
 }
 
 @media (max-width: 768px) {
@@ -727,7 +1071,23 @@ ul { list-style: none; }
   .description-section .description-text { font-size: 16px; }
   .building-amenity-grid { grid-template-columns: 1fr; }
   .building-amenities-callout { padding: 28px; }
-  .booking-inner { padding: 48px 24px; }
+  .loc-panel {
+    grid-template-columns: 1fr; gap: 16px;
+    padding: 26px 24px 28px; text-align: center;
+  }
+  .loc-plot { width: 116px; height: 116px; }
+  .loc-coords { justify-content: center; gap: 12px; font-size: 9.5px; margin-bottom: 6px; }
+  .loc-coords em { display: none; }
+  .loc-body h3 { font-size: 25px; }
+  .loc-rule { margin: 10px auto 11px; }
+  .loc-panel.visible .loc-rule { width: 64px; }
+  .loc-body p { max-width: none; font-size: 14.5px; line-height: 1.55; }
+  .loc-marks { justify-content: center; gap: 6px; margin-top: 13px; }
+  .loc-mark { padding: 5px 11px 5px 9px; font-size: 11px; }
+  .booking-section { padding: 64px 0 72px; }
+  .booking-inner { padding: 44px 24px 40px; }
+  .booking-subtitle { margin-bottom: 28px; }
+  .booking-btn { padding: 17px 38px; }
   .lightbox-prev { left: 12px; }
   .lightbox-next { right: 12px; }
   .lightbox-nav { width: 44px; height: 44px; }
@@ -1115,13 +1475,96 @@ ul { list-style: none; }
       <span class="section-label">Location</span>
       <h2 class="section-title">Where you'll <em>be</em></h2>
     </div>
-    <div class="location-card reveal" id="locationCard">
-      <div class="location-icon-wrap">
-        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <div class="loc-panel reveal" id="locationCard">
+
+      <div class="loc-plot" id="locPlot" aria-hidden="true">
+        <!-- drifting survey grid -->
+        <div class="lp-layer lp-grid">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <radialGradient id="lpFade" cx="50%" cy="50%" r="50%">
+                <stop offset="40%" stop-color="#fff" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+              </radialGradient>
+              <mask id="lpMask"><circle cx="100" cy="100" r="94" fill="url(#lpFade)"/></mask>
+            </defs>
+            <g mask="url(#lpMask)" stroke="#C76B42" stroke-opacity="0.16" stroke-width="0.75">
+              <g class="lp-rake-a">
+                <path d="M-20 0H220M-20 26H220M-20 52H220M-20 78H220M-20 104H220M-20 130H220M-20 156H220M-20 182H220M-20 208H220"/>
+              </g>
+              <g class="lp-rake-b">
+                <path d="M0 -20V220M26 -20V220M52 -20V220M78 -20V220M104 -20V220M130 -20V220M156 -20V220M182 -20V220M208 -20V220"/>
+              </g>
+            </g>
+            <g mask="url(#lpMask)" fill="none" stroke="#C5A572" stroke-opacity="0.2" stroke-width="0.9">
+              <path d="M18 132c22-6 34-22 58-20s30 22 54 18 36-16 52-8"/>
+              <path d="M6 152c26-8 40-18 66-14s34 18 60 12 34-12 52-4"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- range rings + sonar -->
+        <div class="lp-layer lp-rings">
+          <svg viewBox="0 0 200 200">
+            <g fill="none" stroke="#C76B42" stroke-opacity="0.32">
+              <circle cx="100" cy="100" r="34" stroke-dasharray="1.5 6"/>
+              <circle cx="100" cy="100" r="56" stroke-dasharray="1.5 9"/>
+              <circle cx="100" cy="100" r="76" stroke-opacity="0.16"/>
+            </g>
+            <g class="lp-sonar" fill="none" stroke="#E0A88A" stroke-width="1">
+              <circle cx="100" cy="100" r="76"/>
+              <circle cx="100" cy="100" r="76"/>
+              <circle cx="100" cy="100" r="76"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- rotating bezel -->
+        <div class="lp-layer lp-bezel">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="92" fill="none" stroke="#2A2A28" stroke-width="1"/>
+            <g class="lp-ticks" stroke="#C76B42" stroke-opacity="0.4" stroke-width="1">
+              <path d="M100 8v7M100 185v7M8 100h7M185 100h7"/>
+              <g stroke-opacity="0.2" stroke-dasharray="0.5 9.2">
+                <circle cx="100" cy="100" r="86" fill="none"/>
+              </g>
+            </g>
+            <g class="lp-ticks-inner" stroke="#C5A572" stroke-opacity="0.25" stroke-width="0.8">
+              <path d="M100 22v5M178 100h-5M100 178v-5M22 100h5"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- the property -->
+        <div class="lp-layer lp-pin">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <radialGradient id="lpRest" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#C76B42" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#C76B42" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <ellipse class="lp-shadow" cx="100" cy="127" rx="16" ry="4" fill="url(#lpRest)"/>
+            <g class="lp-pin-body">
+              <path d="M100 76a14.5 14.5 0 00-14.5 14.5c0 10.6 14.5 26.5 14.5 26.5s14.5-15.9 14.5-26.5A14.5 14.5 0 00100 76z"
+                    fill="#0D0D0D" stroke="#E0A88A" stroke-width="1.9" stroke-linejoin="round"/>
+              <circle cx="100" cy="90.5" r="4.6" fill="#C76B42"/>
+              <circle cx="100" cy="90.5" r="4.6" fill="none" stroke="#F0C4A6" stroke-width="0.8" stroke-opacity="0.7"/>
+            </g>
+          </svg>
+        </div>
       </div>
-      <div class="location-info">
+
+      <div class="loc-body">
+        <div class="loc-coords" id="locCoords">
+          <span><i>Lat</i><b data-val="{{LAT}}">00.0000</b></span>
+          <span><i>Lng</i><b data-val="{{LNG}}">00.0000</b></span>
+          <em></em>
+        </div>
         <h3 id="locationTitle">{{CITY}}, {{STATE}}</h3>
+        <span class="loc-rule"></span>
         <p id="locationDesc"></p>
+        <div class="loc-marks" id="locMarks"></div>
       </div>
     </div>
   </div>
@@ -1130,13 +1573,20 @@ ul { list-style: none; }
 <!-- Booking CTA -->
 <section class="section booking-section" id="booking">
   <div class="content">
-    <div class="booking-inner reveal">
+    <div class="booking-inner reveal" id="bookingInner">
+      <div class="bk-aurora" aria-hidden="true"><b></b><b></b><b></b></div>
+      <div class="bk-weave" aria-hidden="true"></div>
+      <div class="bk-motes" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></div>
+
+      <span class="booking-eyebrow"><s></s>Reserve Direct<s></s></span>
       <h2 class="booking-title">Ready to <em>experience</em> it?</h2>
       <p class="booking-subtitle">Secure your dates and enjoy a curated luxury stay</p>
-      <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="booking-btn">
-        Book Your Stay
-        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      <span class="bk-cta-wrap" id="bkMagnet">
+        <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="booking-btn" id="bookingBtn">
+          Book Your Stay
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </span>
       <div class="booking-badge">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Save up to 15% booking direct
@@ -1427,11 +1877,20 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
   }
 })();
 
-// ── Location Description ──
+// ── Location Description + Landmarks ──
 (function() {
   var city = '{{CITY}}';
   var state = '{{STATE}}';
   var desc = document.getElementById('locationDesc');
+
+  // Landmark names are lifted verbatim from the descriptions below — no
+  // distances or travel times are asserted anywhere.
+  var cityLandmarks = {
+    'Plano': ['Legacy West', 'The Shops at Willow Bend', 'Dallas North Tollway'],
+    'Dallas': ['Dallas Farmers Market', 'Deep Ellum', 'Arts District'],
+    'Irving': ['Toyota Music Factory', 'Lake Carolyn', 'DART Rail', 'DFW Airport'],
+    'Richardson': ['CityLine', 'DART Rail', 'UT Dallas', 'Telecom Corridor']
+  };
 
   var cityDescriptions = {
     'Plano': 'Situated in the heart of Plano, you\'ll be minutes from Legacy West, world-class dining, and the vibrant shops at The Shops at Willow Bend. Excellent access to the Dallas North Tollway puts all of DFW within easy reach.',
@@ -1441,6 +1900,177 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
   };
 
   desc.textContent = cityDescriptions[city] || 'Experience the best of ' + city + ', ' + state + '. Conveniently located near local dining, entertainment, and major attractions. A perfect home base for exploring the area.';
+
+  // Landmark chips, revealed in sequence, then a slow travelling highlight.
+  var marks = document.getElementById('locMarks');
+  var names = cityLandmarks[city] || ['Local dining', 'Entertainment', 'Major attractions'];
+  var chips = names.map(function(name, i) {
+    var el = document.createElement('span');
+    el.className = 'loc-mark';
+    el.textContent = name;
+    el.style.transitionDelay = (0.45 + i * 0.09) + 's, 0s, 0s, ' +
+      (0.45 + i * 0.09) + 's, ' + (0.45 + i * 0.09) + 's';
+    marks.appendChild(el);
+    return el;
+  });
+
+  if (chips.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var at = 0;
+    setInterval(function() {
+      chips.forEach(function(c) { c.classList.remove('lit'); });
+      chips[at].classList.add('lit');
+      at = (at + 1) % chips.length;
+    }, 2200);
+  }
+})();
+
+// ── Location: coordinate readout, settles on reveal ──
+(function() {
+  var wrap = document.getElementById('locCoords');
+  var card = document.getElementById('locationCard');
+  if (!wrap || !card) return;
+
+  var fields = Array.prototype.slice.call(wrap.querySelectorAll('b')).map(function(el, i) {
+    var raw = parseFloat(el.getAttribute('data-val'));
+    return {
+      el: el,
+      target: isNaN(raw) ? 0 : Math.abs(raw),
+      hemi: i === 0 ? (raw < 0 ? 'S' : 'N') : (raw < 0 ? 'W' : 'E'),
+      ok: !isNaN(raw)
+    };
+  });
+  if (!fields.length || !fields[0].ok) { wrap.style.display = 'none'; return; }
+
+  function paint(f, v) { f.el.textContent = v.toFixed(4) + '° ' + f.hemi; }
+
+  // Correctness first: the true reading is on screen from the outset, so a
+  // tab that never gets a rAF tick still shows real coordinates. The lock-on
+  // animation below is decoration layered on top.
+  fields.forEach(function(f) { paint(f, f.target); });
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var played = false;
+
+  function run() {
+    if (played) return;
+    played = true;
+    var start = performance.now(), dur = 1300;
+    (function step(now) {
+      var t = Math.min(1, (now - start) / dur);
+      var e = 1 - Math.pow(1 - t, 4);
+      fields.forEach(function(f) {
+        // scramble early, converge late — reads like an instrument locking on
+        var jitter = t < 0.82 ? (Math.random() - 0.5) * (1 - t) * 1.6 : 0;
+        paint(f, Math.max(0, f.target * e + jitter));
+      });
+      if (t < 1) requestAnimationFrame(step);
+      else fields.forEach(function(f) { paint(f, f.target); });
+    })(start);
+    // backstop: if the rAF chain stalls (tab hidden mid-flight) never leave a
+    // scrambled reading on screen
+    setTimeout(function() {
+      fields.forEach(function(f) { paint(f, f.target); });
+    }, dur + 700);
+  }
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (en.isIntersecting) { run(); io.disconnect(); }
+      });
+    }, { threshold: 0.35 });
+    io.observe(card);
+  } else {
+    run();
+  }
+})();
+
+// ── Location: cursor parallax on the plot ──
+(function() {
+  var panel = document.getElementById('locationCard');
+  var plot = document.getElementById('locPlot');
+  if (!panel || !plot) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(hover: hover)').matches) return;
+
+  var frame = null;
+  panel.addEventListener('pointermove', function(e) {
+    if (frame) return;
+    frame = requestAnimationFrame(function() {
+      frame = null;
+      var r = panel.getBoundingClientRect();
+      plot.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+      plot.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+    });
+  }, { passive: true });
+
+  panel.addEventListener('pointerleave', function() {
+    plot.style.setProperty('--px', 0);
+    plot.style.setProperty('--py', 0);
+  });
+})();
+
+// ── Booking CTA: magnetic button + cursor spotlight ──
+(function() {
+  var zone = document.getElementById('bkMagnet');
+  var btn = document.getElementById('bookingBtn');
+  if (!zone || !btn) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(hover: hover)').matches) return;
+
+  var frame = null;
+  zone.addEventListener('pointermove', function(e) {
+    if (frame) return;
+    frame = requestAnimationFrame(function() {
+      frame = null;
+      var r = btn.getBoundingClientRect();
+      var dx = e.clientX - (r.left + r.width / 2);
+      var dy = e.clientY - (r.top + r.height / 2);
+      // pull toward the cursor, capped so the button never detaches
+      btn.style.transform = 'translate3d(' + (dx * 0.16).toFixed(2) + 'px,' +
+        (dy * 0.28 - 2).toFixed(2) + 'px,0)';
+      btn.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      btn.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  }, { passive: true });
+
+  zone.addEventListener('pointerleave', function() {
+    btn.style.transform = '';
+    btn.style.setProperty('--mx', '50%');
+    btn.style.setProperty('--my', '50%');
+  });
+})();
+
+// ── Booking CTA: scroll-linked drift of the weave ──
+(function() {
+  var inner = document.getElementById('bookingInner');
+  if (!inner) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var frame = null, live = false;
+
+  function update() {
+    frame = null;
+    var r = inner.getBoundingClientRect();
+    // -0.5 → 0.5 as the panel crosses the viewport
+    var p = (r.top + r.height / 2) / window.innerHeight - 0.5;
+    inner.style.setProperty('--bk-shift', Math.max(-0.5, Math.min(0.5, p)).toFixed(3));
+  }
+
+  function onScroll() { if (live && !frame) frame = requestAnimationFrame(update); }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) { live = en.isIntersecting; if (live) update(); });
+    }, { rootMargin: '120px 0px' }).observe(inner);
+  } else {
+    live = true;
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
 })();
 
 // ── Scroll Reveal (IntersectionObserver) ──
