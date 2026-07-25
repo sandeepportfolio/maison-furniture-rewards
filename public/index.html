@@ -11,9 +11,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>
+<link rel="preconnect" href="https://b.basemaps.cartocdn.com" crossorigin>
+<!-- Leaflet CSS — non-blocking; maps are below the fold and initialise lazily.
+     MarkerCluster.Default.css is intentionally omitted: cluster badges are fully restyled below. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" media="print" onload="this.media='all'"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" media="print" onload="this.media='all'"/>
+<noscript>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"/>
+</noscript>
 <style>
 :root {
   --bg:#0D110E;--bg-card:#141A15;--bg-dark:#0A0D0A;--bg-dark-card:#10150F;
@@ -806,26 +813,32 @@ ul{list-style:none}
 
 /* ══ Explore Map — Rebuilt Interactive System ══ */
 .explore-map-container{margin-bottom:64px}
-.explore-map-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.explore-map-title{font-family:var(--serif);font-size:28px;color:var(--text-inv)}
-.explore-map-subtitle{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
-.map-legend{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);letter-spacing:.03em}
-.map-legend-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(201,152,69,.6);flex-shrink:0}
+.explore-map-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:16px}
+.explore-map-title{font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.015em;color:var(--text-inv)}
+.explore-map-subtitle{font-family:var(--sans);font-size:13.5px;color:var(--text-inv-muted);margin-top:7px;letter-spacing:.005em}
+.map-legend{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);letter-spacing:.02em;padding:8px 15px 8px 13px;border:1px solid rgba(242,237,225,.1);border-radius:100px;background:rgba(242,237,225,.03);white-space:nowrap}
+.map-legend b{font-family:var(--mono);font-weight:500;color:var(--accent-light)}
+.map-legend-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.16),0 0 8px rgba(201,152,69,.7);flex-shrink:0}
 /* Backdrop overlay */
 .map-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:999;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.4,0,.2,1)}
 .map-backdrop.visible{opacity:1;pointer-events:auto}
 /* Map wrapper — collapsed state */
-.explore-map-wrap{display:flex;flex-direction:column;border-radius:var(--radius-xl);overflow:hidden;height:590px;border:1px solid var(--border-dark);position:relative;background:var(--bg-dark-card);cursor:pointer;z-index:1;transform-origin:center center;transition:none;will-change:transform,width,height,top,left,border-radius}
-.explore-map-wrap .map-click-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:502;display:flex;align-items:center;gap:8px;padding:10px 22px;background:rgba(17,17,17,.75);backdrop-filter:blur(10px);border:1px solid var(--border-dark);border-radius:100px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.7);pointer-events:none;opacity:1;transition:opacity .3s var(--ease)}
-.explore-map-wrap .map-click-hint svg{width:14px;height:14px;stroke:var(--accent-light);fill:none;stroke-width:2}
-.explore-map-wrap:hover .map-click-hint{color:var(--accent-light)}
+.explore-map-wrap{display:flex;flex-direction:column;border-radius:var(--radius-xl);overflow:hidden;height:590px;border:1px solid var(--border-dark);position:relative;background:var(--bg-dark-card);cursor:pointer;z-index:1;transform-origin:center center;transition:none;box-shadow:0 26px 70px -24px rgba(0,0,0,.85),0 2px 0 0 rgba(242,237,225,.04) inset;will-change:transform,width,height,top,left,border-radius}
+.explore-map-wrap .map-click-hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:502;display:flex;align-items:center;gap:9px;padding:11px 24px;background:rgba(13,17,14,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(242,237,225,.12);border-radius:100px;font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:rgba(242,237,225,.72);pointer-events:none;opacity:1;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.explore-map-wrap .map-click-hint svg{width:13px;height:13px;stroke:var(--accent-light);fill:none;stroke-width:2}
+@media(hover:hover){.explore-map-wrap:hover .map-click-hint{color:var(--accent-light);border-color:rgba(201,152,69,.3)}}
 /* Map wrapper — expanded state */
 .explore-map-wrap.map-expanded{position:fixed;top:0!important;right:0!important;bottom:0!important;left:0!important;width:auto!important;height:auto!important;z-index:1000;border-radius:0;border:none;cursor:default;overflow:hidden}
 .explore-map-wrap.map-expanded .map-click-hint{opacity:0}
 /* Map element */
-#exploreMap{flex:1;min-height:0;width:100%;z-index:1}
+#exploreMap{flex:1;min-height:0;width:100%;z-index:1;background:#0A0D0A}
 #exploreMap .leaflet-control-attribution{display:none}
 #exploreMap .leaflet-control-zoom{display:none}
+/* Warm the cold blue-grey of the CARTO dark basemap towards the brand palette */
+#exploreMap .leaflet-tile-pane{filter:saturate(.55) hue-rotate(-14deg) brightness(1.06) contrast(1.04)}
+/* Inner vignette + hairline so the map reads as a framed plate, not a raw embed */
+.explore-map-wrap::after{content:'';position:absolute;inset:0;z-index:400;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(242,237,225,.07),inset 0 0 90px 30px rgba(10,13,10,.55)}
+.explore-map-wrap.map-expanded::after{box-shadow:inset 0 0 120px 40px rgba(10,13,10,.5)}
 /* Custom zoom controls */
 .map-zoom-controls{position:absolute;bottom:80px;right:16px;z-index:502;display:flex;flex-direction:column;gap:1px;border-radius:var(--radius);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .3s var(--ease),transform .3s var(--ease)}
 .map-expanded .map-zoom-controls{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.2s}
@@ -841,7 +854,9 @@ ul{list-style:none}
 @keyframes stripItemIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes closeBtnIn{from{transform:scale(0) rotate(-90deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
 /* Markers */
-.map-marker{position:relative;width:42px;height:42px;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+/* `backwards` (not `forwards`) so the finished state falls back to the rules
+   below — otherwise the animation's transform would win over :hover. */
+.map-marker{position:relative;width:42px;height:42px;cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1);animation:markerFadeIn .4s cubic-bezier(.34,1.56,.64,1) var(--marker-delay,0ms) backwards}
 .map-marker:hover{transform:scale(1.3)}
 .map-marker.active{transform:scale(1.25)}
 .map-marker-ring{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;border:2px solid var(--accent);opacity:.5;animation:markerPulse 2.8s cubic-bezier(.4,0,.2,1) infinite}
@@ -849,11 +864,17 @@ ul{list-style:none}
 .map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;background:var(--accent);border:2.5px solid rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(201,152,69,.5);transition:box-shadow .3s var(--ease),background .3s var(--ease),transform .3s cubic-bezier(.34,1.56,.64,1);animation:markerGlow 3s ease-in-out infinite}
 .map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 24px rgba(201,152,69,.8);transform:translate(-50%,-50%) scale(1.1)}
 .map-marker-core svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none}
-/* MarkerCluster copper/bronze theme */
-.marker-cluster-small,.marker-cluster-medium,.marker-cluster-large{background:rgba(201,152,69,.25);border:2px solid rgba(201,152,69,.6)}
-.marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:rgba(184,101,74,.85);color:#fff;font-family:var(--sans);font-weight:600;font-size:13px;width:32px;height:32px;margin:3px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(184,101,74,.5)}
-.marker-cluster-medium{background:rgba(201,152,69,.35)}
-.marker-cluster-large{background:rgba(201,152,69,.45)}
+/* ── Cluster badge — brass "constellation" (replaces MarkerCluster.Default.css) ── */
+.map-cluster-icon{background:none;border:none}
+.map-cluster{position:relative;width:54px;height:54px;cursor:pointer;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.map-cluster-halo{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(224,177,92,.45);animation:markerPulse 3.2s cubic-bezier(.4,0,.2,1) infinite}
+.map-cluster-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:radial-gradient(circle at 32% 28%,rgba(224,177,92,.95),rgba(180,128,54,.92) 62%,rgba(140,96,38,.95));border:1.5px solid rgba(255,255,255,.55);box-shadow:0 6px 20px rgba(0,0,0,.5),0 0 0 6px rgba(201,152,69,.12),inset 0 1px 0 rgba(255,255,255,.35);transition:box-shadow .3s var(--ease),transform .35s cubic-bezier(.34,1.56,.64,1)}
+.map-cluster-count{font-family:var(--serif);font-size:19px;line-height:1;color:#1A1408;font-weight:400;font-style:normal}
+.map-cluster-label{font-family:var(--mono);font-size:6.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(26,20,8,.62);font-style:normal;line-height:1}
+@media(hover:hover){.map-cluster:hover{transform:scale(1.12)}
+.map-cluster:hover .map-cluster-core{box-shadow:0 10px 28px rgba(0,0,0,.55),0 0 0 10px rgba(201,152,69,.18),inset 0 1px 0 rgba(255,255,255,.4)}}
+/* Base positioning normally supplied by MarkerCluster.Default.css */
+.marker-cluster{background-clip:padding-box}
 /* Geolocation pulsing blue dot */
 @keyframes userLocPulse{0%{transform:scale(1);opacity:.5}70%{transform:scale(2.5);opacity:0}100%{transform:scale(2.5);opacity:0}}
 .user-loc-marker{position:relative;width:20px;height:20px}
@@ -947,28 +968,64 @@ ul{list-style:none}
 .map-prop-strip-price strong{color:var(--text-inv);font-weight:600}
 .map-prop-strip-price span{font-size:9px;margin-left:1px}
 
-/* Events Section */
+/* ══ Events — "Happening Nearby" ══ */
 .explore-events{margin-bottom:20px}
-.explore-events-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
-.explore-events-title{font-family:var(--serif);font-size:32px;color:var(--text-inv);display:flex;align-items:center;gap:14px}
-.explore-events-title .pulse-dot{width:8px;height:8px;border-radius:50%;background:#6FCF97;animation:pulse 2s ease-in-out infinite;flex-shrink:0}
-.explore-events-sub{font-family:var(--sans);font-size:13px;color:var(--text-inv-muted)}
-.explore-events-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.explore-event-card{background:var(--bg-dark-card);border-radius:var(--radius-lg);overflow:hidden;display:flex;border:1px solid rgba(255,255,255,.04);transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .4s var(--ease);cursor:pointer;opacity:0;transform:translateY(20px)}
+.explore-events-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:14px}
+.explore-events-title{font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.015em;color:var(--text-inv);display:flex;align-items:center;gap:14px}
+.explore-events-title .pulse-dot{width:8px;height:8px;border-radius:50%;background:#6FCF97;box-shadow:0 0 0 4px rgba(111,207,151,.14);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+.explore-events-sub{font-family:var(--sans);font-size:13.5px;color:var(--text-inv-muted);letter-spacing:.005em}
+.explore-events-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+
+/* Card shell */
+.explore-event-card{position:relative;display:flex;align-items:stretch;background:linear-gradient(160deg,rgba(242,237,225,.055),rgba(242,237,225,.018) 46%,rgba(242,237,225,.03));border:1px solid rgba(242,237,225,.08);border-radius:18px;overflow:hidden;text-decoration:none;color:inherit;cursor:pointer;opacity:0;transform:translateY(20px);isolation:isolate;box-shadow:0 1px 0 rgba(242,237,225,.05) inset;transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease),opacity .5s var(--ease)}
 .explore-event-card.visible{opacity:1;transform:translateY(0)}
-.explore-event-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.4);border-color:rgba(201,152,69,.2)}
-.event-date-block{min-width:80px;background:linear-gradient(135deg,var(--accent),var(--accent-hover));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;gap:2px;flex-shrink:0}
-.event-date-month{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.8);text-transform:uppercase}
-.event-date-day{font-family:var(--serif);font-size:32px;color:#fff;line-height:1}
-.event-date-dow{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.6)}
-.event-info{padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:6px;overflow:hidden;flex:1}
-.event-name{font-family:var(--serif);font-size:18px;color:var(--text-inv);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.event-detail{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.event-detail span{display:flex;align-items:center;gap:4px;white-space:nowrap}
-.event-detail svg{width:12px;height:12px;stroke:var(--accent-light);fill:none;stroke-width:2}
-.event-countdown{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--brass-light);margin-top:2px;display:flex;align-items:center;gap:6px}
-.event-countdown svg{width:10px;height:10px;stroke:var(--brass);fill:none;stroke-width:2}
-.event-price{font-family:var(--mono);font-size:11px;color:var(--accent-light);padding:4px 10px;background:rgba(201,152,69,.1);border-radius:100px;align-self:flex-start;margin-top:4px;white-space:nowrap}
+/* Brass hairline that draws itself along the top edge on hover */
+.explore-event-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;z-index:3;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
+@media(hover:hover){
+  .explore-event-card:hover{transform:translateY(-5px);border-color:rgba(201,152,69,.28);box-shadow:0 24px 50px -18px rgba(0,0,0,.75),0 0 0 1px rgba(201,152,69,.06)}
+  .explore-event-card:hover::before{transform:scaleX(1)}
+}
+.explore-event-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.explore-event-card:active{transform:translateY(-1px) scale(.995)}
+
+/* Media panel — sizing lives on the wrapper; only the photo layer scales on hover */
+.event-media{position:relative;width:38%;min-width:132px;max-width:190px;flex-shrink:0;overflow:hidden;background:#12160F}
+.event-photo{position:absolute;inset:0;display:block;background-size:cover;background-position:center;transition:transform .7s var(--ease)}
+@media(hover:hover){.explore-event-card:hover .event-photo{transform:scale(1.06)}}
+.event-photo.no-photo{background-image:radial-gradient(120% 90% at 15% 0%,rgba(201,152,69,.28),transparent 62%),linear-gradient(150deg,#1A1E16,#0E120C 70%)}
+.event-photo.no-photo::before{content:'';position:absolute;inset:0;opacity:.5;background-image:repeating-linear-gradient(135deg,rgba(242,237,225,.05) 0 1px,transparent 1px 9px)}
+.event-glyph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;color:rgba(224,177,92,.42);filter:drop-shadow(0 2px 10px rgba(0,0,0,.45));transition:color .5s var(--ease)}
+@media(hover:hover){.explore-event-card:hover .event-glyph{color:rgba(224,177,92,.62)}}
+/* Scrim blends the media into the card body — no hard seam */
+.event-media-scrim{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(90deg,rgba(10,13,10,.34) 0%,rgba(10,13,10,.04) 30%,rgba(10,13,10,.14) 58%,rgba(13,17,14,.94) 100%)}
+/* Floating date chip */
+.event-date-chip{position:absolute;top:12px;left:12px;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;width:52px;padding:8px 0 7px;border-radius:12px;background:rgba(10,13,10,.68);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(242,237,225,.14);box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.event-date-chip b{font-family:var(--serif);font-weight:400;font-size:24px;line-height:.95;color:var(--text-inv)}
+.event-date-chip i{font-family:var(--mono);font-style:normal;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-light);margin-top:3px}
+
+/* Body */
+.event-info{position:relative;z-index:2;flex:1;min-width:0;display:flex;flex-direction:column;padding:17px 20px 15px;gap:0}
+.event-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:9px;min-height:16px}
+.event-cat{flex:1;min-width:0;font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.event-when{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-dim);padding:3px 9px;border-radius:100px;border:1px solid rgba(242,237,225,.1);white-space:nowrap;flex-shrink:0;margin-left:auto}
+.event-when.soon{color:#8FD9AE;border-color:rgba(111,207,151,.28);background:rgba(111,207,151,.07)}
+.event-when-dot{width:5px;height:5px;border-radius:50%;background:#6FCF97;animation:pulse 2s ease-in-out infinite;flex-shrink:0}
+.event-name{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.22;letter-spacing:-.008em;color:var(--text-inv);margin:0 0 11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color .35s var(--ease)}
+@media(hover:hover){.explore-event-card:hover .event-name{color:#FBF4E4}}
+.event-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.event-meta-row{display:flex;align-items:center;gap:7px;font-family:var(--sans);font-size:12.5px;color:var(--text-inv-muted);min-width:0}
+.event-meta-row svg{width:12px;height:12px;flex-shrink:0;stroke:var(--accent);fill:none;stroke-width:1.6;opacity:.85}
+.event-meta-row>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Footer sits on a hairline, pinned to the bottom of the card */
+.event-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:12px;border-top:1px solid rgba(242,237,225,.07)}
+.event-price{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--accent-light);white-space:nowrap}
+.event-price.is-free{color:#8FD9AE;letter-spacing:.14em;text-transform:uppercase;font-size:10px}
+.event-cta{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;transition:color .35s var(--ease),gap .35s var(--ease)}
+.event-cta svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;transition:transform .35s var(--ease)}
+@media(hover:hover){
+  .explore-event-card:hover .event-cta{color:var(--accent-light);gap:9px}
+  .explore-event-card:hover .event-cta svg{transform:translateX(2px)}
+}
 
 /* No results */
 .xplr-empty{text-align:center;padding:80px 24px;grid-column:1/-1}
@@ -1413,11 +1470,16 @@ ul{list-style:none}
   .map-close-btn{width:42px;height:42px;top:14px;right:14px}
   .xplr-cats{gap:6px}
   .xplr-cat{padding:8px 16px;font-size:11px;min-height:40px}
-  .explore-event-card{flex-direction:row}
-  .event-date-block{min-width:70px;padding:16px 12px}
-  .event-date-day{font-size:26px}
-  .event-name{font-size:15px;white-space:normal;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
-  .event-info{padding:12px 16px;gap:4px}
+  .explore-event-card{flex-direction:row;border-radius:16px}
+  .event-media{width:34%;min-width:112px;max-width:150px}
+  .event-glyph{width:40px;height:40px}
+  .event-date-chip{top:10px;left:10px;width:46px;padding:7px 0 6px}
+  .event-date-chip b{font-size:21px}
+  .event-name{font-size:17px;margin-bottom:9px}
+  .event-info{padding:14px 15px 12px}
+  .event-meta{margin-bottom:11px;gap:4px}
+  .event-meta-row{font-size:12px}
+  .event-foot{padding-top:10px}
 }
 @media(max-width:480px){
   .stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:48px;overflow:visible}
@@ -1474,11 +1536,18 @@ ul{list-style:none}
   .map-prop-strip-name{font-size:10px}
   .map-prop-strip-loc{font-size:9px}
   .map-close-btn{width:40px;height:40px;top:12px;right:12px}
-  .explore-events-title{font-size:24px}
-  .explore-map-title{font-size:22px}
-  .event-date-block{min-width:60px;padding:12px 10px}
-  .event-date-day{font-size:22px}
-  .event-date-month{font-size:9px}
+  .explore-events-title{font-size:26px;gap:11px}
+  .explore-map-title{font-size:26px}
+  .event-media{width:33%;min-width:104px;max-width:124px}
+  .event-glyph{width:34px;height:34px}
+  .event-date-chip{width:42px;padding:6px 0 5px;border-radius:10px}
+  .event-date-chip b{font-size:19px}
+  .event-date-chip i{font-size:8px;letter-spacing:.12em}
+  .event-name{font-size:16px;margin-bottom:8px}
+  .event-info{padding:13px 14px 11px}
+  .event-eyebrow{margin-bottom:8px}
+  .event-meta-row{font-size:11.5px;gap:6px}
+  .event-cta{font-size:9px;letter-spacing:.12em}
   /* booking modal handled above with full-screen mobile rules */
 }
 
@@ -1923,7 +1992,7 @@ ul{list-style:none}
         </div>
         <div class="map-legend">
           <span class="map-legend-dot"></span>
-          <span>7 Properties across Dallas-Fort Worth</span>
+          <span><b id="mapLegendCount">7</b> properties across Dallas&ndash;Fort Worth</span>
         </div>
       </div>
       <div class="map-backdrop" id="mapBackdrop"></div>
@@ -2774,9 +2843,9 @@ ul{list-style:none}
   </div>
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+<!-- Leaflet JS — deferred: executes before DOMContentLoaded, so map init still finds `L` -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <!-- Guesty Pay Tokenization JS (loads PCI-safe iframe from Guesty; do not bundle/self-host) -->
 <script src="https://pay.guesty.com/tokenization/v2/init.js"></script>
 
@@ -5394,6 +5463,39 @@ function toggleExploreExpand(section) {
   }
 }
 
+/* Padding used for every "show all properties" fit. Leaves room for the header
+   chrome at the top and the property strip / bottom sheet at the bottom. */
+const MAP_FIT_PADDING = { paddingTopLeft: [48, 44], paddingBottomRight: [48, 64] };
+/* Never zoom out past the DFW metro — a wider view is never useful here and was
+   what made the map read as "all of Texas" when it initialised at zero width. */
+const MAP_MIN_ZOOM = 9;
+const MAP_MAX_FIT_ZOOM = 13;
+
+function fitMapToProperties(opts) {
+  if (!exploreMapInstance) return;
+  exploreMapInstance.stop(); // cancels in-flight pan/fly (not zoom — see below)
+  /* Leaflet's setView is a SILENT NO-OP while a zoom animation is running:
+     _tryAnimatedZoom returns true immediately when _animatingZoom is set, so
+     fitBounds does nothing and the map keeps whatever zoom it had. That is what
+     left the collapsed map a level too far out after closing the full-screen
+     view. Wait for the animation to land, then fit for real. */
+  if (exploreMapInstance._animatingZoom) {
+    exploreMapInstance.once('zoomend', () => fitMapToProperties(opts));
+    return;
+  }
+  const fit = Object.assign({ maxZoom: MAP_MAX_FIT_ZOOM, animate: false }, MAP_FIT_PADDING, opts || {});
+  // Expanded, the property strip covers the bottom of the map — keep pins above it.
+  if (mapIsExpanded) {
+    const sheet = document.getElementById('mapBottomSheet');
+    const mapH = exploreMapInstance.getSize().y;
+    // Never eat so much of a short viewport that the fit collapses.
+    const room = Math.max(0, mapH * 0.5 - fit.paddingTopLeft[1]);
+    const sheetH = Math.min(sheet ? sheet.offsetHeight + 28 : 0, room);
+    fit.paddingBottomRight = [fit.paddingBottomRight[0], sheetH];
+  }
+  exploreMapInstance.fitBounds(getMapBounds(), fit);
+}
+
 function initExploreMap() {
   const el = document.getElementById('exploreMap');
   if (!el || typeof L === 'undefined') return;
@@ -5403,17 +5505,47 @@ function initExploreMap() {
   exploreMapInstance = L.map('exploreMap', {
     center: bounds.getCenter(),
     zoom: 11,
+    minZoom: MAP_MIN_ZOOM,
     zoomControl: false,
     attributionControl: false,
-    scrollWheelZoom: false
+    scrollWheelZoom: false,
+    zoomSnap: 0.25,          // finer fit — gets meaningfully closer than whole steps
+    zoomDelta: 0.5,
+    fadeAnimation: false     // cheaper tile swaps on the dark basemap
   });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 18,
-    subdomains: 'abcd'
+    subdomains: 'abcd',
+    updateWhenIdle: true,    // don't refetch tiles mid-pan
+    updateWhenZooming: false,
+    keepBuffer: 1,
+    crossOrigin: true
   }).addTo(exploreMapInstance);
 
-  exploreMapInstance.fitBounds(bounds.pad(0.12), { animate: false });
+  fitMapToProperties();
+
+  /* A map created while its container has no layout (hidden tab, zero-width
+     viewport, fonts still settling) computes a nonsense fit — that is what
+     produced the fully zoomed-out state. Re-measure and re-fit whenever the
+     container actually resizes, until the guest takes control of the view. */
+  if (typeof ResizeObserver !== 'undefined') {
+    let userMovedMap = false;
+    exploreMapInstance.on('zoomstart dragstart', () => {
+      if (mapIsExpanded || mapActiveProperty != null) userMovedMap = true;
+    });
+    const ro = new ResizeObserver(() => {
+      // Expand/collapse resize the container themselves and re-fit when done —
+      // stepping in mid-transition would fight them.
+      if (!exploreMapInstance || mapExpandAnimating) return;
+      exploreMapInstance.invalidateSize({ animate: false });
+      if (!userMovedMap && mapActiveProperty === null) fitMapToProperties();
+    });
+    ro.observe(el);
+  }
+
+  const legend = document.getElementById('mapLegendCount');
+  if (legend) legend.textContent = PROPERTIES.length;
 
   addPropertyMarkers();
   buildMapPropStrip();
@@ -5458,22 +5590,26 @@ function addPropertyMarkers() {
   });
   mapPropertyMarkers = [];
 
-  // Create cluster group with copper styling
+  // Cluster group — restyled as a brass "constellation" badge
   mapClusterGroup = L.markerClusterGroup({
-    maxClusterRadius: 45,
+    maxClusterRadius: 38,
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
     zoomToBoundsOnClick: true,
     disableClusteringAtZoom: 13,
+    animateAddingMarkers: false,
     iconCreateFunction: function(cluster) {
       const count = cluster.getChildCount();
-      let size = 'small';
-      if (count >= 5) size = 'large';
-      else if (count >= 3) size = 'medium';
       return L.divIcon({
-        html: '<div>' + count + '</div>',
-        className: 'marker-cluster marker-cluster-' + size,
-        iconSize: L.point(40, 40)
+        html: '<div class="map-cluster">' +
+                '<span class="map-cluster-halo"></span>' +
+                '<span class="map-cluster-core">' +
+                  '<b class="map-cluster-count">' + count + '</b>' +
+                  '<i class="map-cluster-label">stays</i>' +
+                '</span>' +
+              '</div>',
+        className: 'map-cluster-icon',
+        iconSize: L.point(54, 54)
       });
     }
   });
@@ -5519,13 +5655,14 @@ function addPropertyMarkers() {
 
   exploreMapInstance.addLayer(mapClusterGroup);
 
-  // Apply fade-in animation after markers are on the DOM
+  // Stagger the marker entrance. The animation itself lives on the inner
+  // `.map-marker` div — animating the Leaflet icon element would override the
+  // translate3d Leaflet uses to position it, stacking every pin at the origin.
   requestAnimationFrame(() => {
     mapPropertyMarkers.forEach((marker, idx) => {
       const markerEl = marker.getElement();
       if (markerEl) {
-        markerEl.style.opacity = '0';
-        markerEl.style.animation = `markerFadeIn .3s cubic-bezier(.34,1.56,.64,1) ${idx * 40}ms forwards`;
+        markerEl.style.setProperty('--marker-delay', `${idx * 45}ms`);
         markerEl.setAttribute('aria-label', `${PROPERTIES[idx].name} in ${PROPERTIES[idx].city}, ${PROPERTIES[idx].state}`);
       }
     });
@@ -5727,7 +5864,18 @@ function updateMapPropStrip(activeIdx) {
 }
 
 /* ── Map expand/collapse with cinematic FLIP animation ── */
+let mapInteractionBound = false;
 function initMapInteraction() {
+  // Also called lazily from initExploreMap(); only wire the DOM handlers once.
+  if (mapInteractionBound) {
+    if (exploreMapInstance) {
+      exploreMapInstance.on('click', () => {
+        if (!mapIsExpanded && !mapExpandAnimating) openMapModal();
+      });
+    }
+    return;
+  }
+  mapInteractionBound = true;
   const wrap = document.getElementById('mapWrap');
   const expandBtn = document.getElementById('mapExpandBtn');
   const closeBtn = document.getElementById('mapCloseBtn');
@@ -5862,7 +6010,7 @@ function expandMap(skipHistory) {
       if (exploreMapInstance) {
         exploreMapInstance.scrollWheelZoom.enable();
         exploreMapInstance.invalidateSize();
-        exploreMapInstance.fitBounds(getMapBounds().pad(0.15), { animate: true, duration: 0.6 });
+        fitMapToProperties({ animate: true, duration: 0.6 });
       }
     }, 260);
   });
@@ -5909,8 +6057,13 @@ function collapseMap(skipHistory) {
 
     if (exploreMapInstance) {
       exploreMapInstance.scrollWheelZoom.disable();
-      exploreMapInstance.invalidateSize();
-      exploreMapInstance.fitBounds(getMapBounds().pad(0.1), { animate: false });
+      // Wait a frame: the wrap has only just dropped out of its fixed
+      // full-screen layout, so measuring now would fit to the old size.
+      requestAnimationFrame(() => {
+        if (!exploreMapInstance) return;
+        exploreMapInstance.invalidateSize({ animate: false });
+        fitMapToProperties();
+      });
     }
   }, 210);
 }
@@ -5924,7 +6077,7 @@ function updateExploreMap() {
 
   // Fit bounds to property markers + user location
   if (PROPERTIES.length > 1 && mapActiveProperty === null) {
-    exploreMapInstance.fitBounds(getMapBounds(), { padding: [40, 40], maxZoom: 13 });
+    fitMapToProperties();
   }
 }
 
@@ -5942,6 +6095,52 @@ async function fetchEvents() {
   }
 }
 
+/* Events come from a third-party feed — never trust their strings in markup. */
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
+/* Watermark glyphs for events whose feed gives us no photo. */
+const EVENT_GLYPHS = {
+  'music':      '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  'sports':     '<path d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M6 3h12v5a6 6 0 01-12 0z"/><path d="M9 21h6M12 14v7"/>',
+  'arts':       '<path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/>',
+  'film':       '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 10h20M2 14h20"/>',
+  'family':     '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20a6 6 0 0112 0M14 20a5 5 0 017-4.6"/>',
+  'default':    '<path d="M3 8a2 2 0 002-2h14a2 2 0 002 2v2a2 2 0 000 4v2a2 2 0 00-2 2H5a2 2 0 00-2-2v-2a2 2 0 000-4z"/><path d="M12 6v12" stroke-dasharray="2 3"/>'
+};
+function eventGlyphKey(category) {
+  const c = String(category || '').toLowerCase();
+  if (c.includes('music')) return 'music';
+  if (c.includes('sport')) return 'sports';
+  if (c.includes('film')) return 'film';
+  if (c.includes('family') || c.includes('child')) return 'family';
+  if (c.includes('art') || c.includes('theat')) return 'arts';
+  return 'default';
+}
+
+/* The feed's genre ("Soccer", "Cinema") is both shorter and more interesting
+   than its top-level segment ("Sports", "Film"), so prefer it for the eyebrow. */
+function eventCatLabel(ev) {
+  const raw = (ev.subcategory || ev.category || 'Event').trim();
+  if (/^(undefined|miscellaneous|other)$/i.test(raw)) return ev.category || 'Event';
+  return raw.replace(/^Arts & Theatre$/i, 'Arts').replace(/^Miscellaneous$/i, 'Event');
+}
+
+/* "Tonight" reads better than "Starts in 4h 12m" on a luxury page. */
+function eventWhenLabel(eventDate, now) {
+  const startOfDay = dt => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+  const dayGap = Math.round((startOfDay(eventDate) - startOfDay(now)) / 86400000);
+  if (eventDate - now < 0) return null;
+  if (dayGap <= 0) return { text: 'Tonight', soon: true };
+  if (dayGap === 1) return { text: 'Tomorrow', soon: true };
+  if (dayGap < 7) return { text: `In ${dayGap} days`, soon: dayGap <= 2 };
+  if (dayGap < 14) return { text: 'Next week', soon: false };
+  return null;
+}
+
 function renderEvents(events) {
   const grid = document.getElementById('exploreEventsGrid');
   if (!grid) return;
@@ -5956,38 +6155,60 @@ function renderEvents(events) {
   }
 
   const now = new Date();
-  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
   grid.innerHTML = events.slice(0, 8).map((ev, i) => {
     const d = new Date(ev.date + 'T' + (ev.time || '00:00:00'));
-    const diffMs = d - now;
-    const diffDays = Math.floor(diffMs / 86400000);
-    const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
-    let countdown = '';
-    if (diffMs > 0) {
-      countdown = diffDays > 0 ? `${diffDays}d ${diffHrs}h` : `${diffHrs}h`;
-    }
+    const when = eventWhenLabel(d, now);
 
     const price = ev.priceRange
-      ? (ev.priceRange.min === 0 ? 'FREE' : `$${ev.priceRange.min}${ev.priceRange.max > ev.priceRange.min ? '–$'+ev.priceRange.max : ''}`)
+      ? (ev.priceRange.min === 0 ? 'Free' : `$${ev.priceRange.min}${ev.priceRange.max > ev.priceRange.min ? '–$' + ev.priceRange.max : '+'}`)
       : '';
 
+    const time = ev.time
+      ? new Date('2000-01-01T' + ev.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : 'Time TBA';
+
+    const glyph = eventGlyphKey(ev.category);
+    const photo = ev.image
+      ? `<span class="event-photo" style="background-image:url('${encodeURI(ev.image).replace(/'/g, '%27')}')"></span>`
+      : `<span class="event-photo no-photo">
+           <svg class="event-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${EVENT_GLYPHS[glyph]}</svg>
+         </span>`;
+
     return `
-      <a href="${ev.url}" target="_blank" rel="noopener" class="explore-event-card" style="transition-delay:${i * 80}ms;text-decoration:none">
-        <div class="event-date-block">
-          <span class="event-date-month">${months[d.getMonth()]}</span>
-          <span class="event-date-day">${d.getDate()}</span>
-          <span class="event-date-dow">${days[d.getDay()]}</span>
+      <a href="${escHtml(ev.url)}" target="_blank" rel="noopener" class="explore-event-card" style="transition-delay:${i * 70}ms">
+        <div class="event-media">
+          ${photo}
+          <span class="event-media-scrim"></span>
+          <span class="event-date-chip">
+            <b>${d.getDate()}</b>
+            <i>${months[d.getMonth()]}</i>
+          </span>
         </div>
         <div class="event-info">
-          <div class="event-name">${ev.name}</div>
-          <div class="event-detail">
-            <span><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${ev.venue}</span>
-            <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${ev.time ? new Date('2000-01-01T'+ev.time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : 'TBD'}</span>
+          <div class="event-eyebrow">
+            <span class="event-cat">${escHtml(eventCatLabel(ev))}</span>
+            ${when ? `<span class="event-when${when.soon ? ' soon' : ''}">${when.soon ? '<span class="event-when-dot"></span>' : ''}${when.text}</span>` : ''}
           </div>
-          ${countdown ? `<div class="event-countdown"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Starts in ${countdown}</div>` : ''}
-          ${price ? `<span class="event-price">${price}</span>` : ''}
+          <h4 class="event-name">${escHtml(ev.name)}</h4>
+          <div class="event-meta">
+            <span class="event-meta-row">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="event-venue">${escHtml(ev.venue || 'Venue TBA')}</span>
+            </span>
+            <span class="event-meta-row">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>${days[d.getDay()]}, ${time}</span>
+            </span>
+          </div>
+          <div class="event-foot">
+            ${price ? `<span class="event-price${price === 'Free' ? ' is-free' : ''}">${price}</span>` : '<span></span>'}
+            <span class="event-cta">Tickets
+              <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+            </span>
+          </div>
         </div>
       </a>
     `;
@@ -6017,9 +6238,29 @@ function initExploreReveals() {
   document.querySelectorAll('.xplr-card, .explore-event-card').forEach(el => observer.observe(el));
 }
 
+/* Build the map only once the guest is heading towards it. Saves ~20 tile
+   requests plus the Leaflet layout work on first paint, and — because it now
+   runs against a laid-out container — the initial fit is correct. */
+function initExploreMapWhenNear() {
+  const section = document.getElementById('propertyMapSection');
+  if (!section) return;
+  if (!('IntersectionObserver' in window)) { initExploreMap(); return; }
+
+  // Expand/close/keyboard handlers bind immediately so the frame is live even
+  // before Leaflet has painted a single tile.
+  initMapInteraction();
+
+  const obs = new IntersectionObserver((entries) => {
+    if (!entries.some(e => e.isIntersecting)) return;
+    obs.disconnect();
+    initExploreMap();
+  }, { rootMargin: '600px 0px' });
+  obs.observe(section);
+}
+
 function initExplore() {
   renderExploreGrid();
-  initExploreMap();
+  initExploreMapWhenNear();
   fetchEvents();
 
   // Animate hero stat counters on scroll
