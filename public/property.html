@@ -845,12 +845,14 @@ ul { list-style: none; }
   font-weight: 400; line-height: 1.12; letter-spacing: -0.02em;
   margin-bottom: 14px; color: var(--text);
   background: linear-gradient(100deg,
-    #EDEDEA 0%, #F7F7F5 34%, #FFFFFF 44%, #EDEDEA 56%, #9E9E99 100%);
+    #EDEDEA 0%, #F7F7F5 34%, #FFFFFF 44%, #EDEDEA 56%, #C6C6C1 100%);
   background-size: 260% 100%;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
   animation: bk-sweep 8s var(--ease) infinite;
 }
+/* keeps "experience it?" together so the line never breaks to a lone "it?" */
+.bk-keep { white-space: nowrap; }
 .booking-title em {
   font-style: italic;
   background: linear-gradient(100deg,
@@ -878,23 +880,25 @@ ul { list-style: none; }
   animation: bk-halo 5s var(--ease) infinite;
   transition: opacity 0.5s var(--ease);
 }
-.bk-cta-wrap:hover::before { opacity: 0.85; }
+.bk-cta-wrap:hover::before, .bk-cta-wrap.lit::before { opacity: 0.85; }
 @keyframes bk-halo {
   0%, 100% { transform: scale(1);    opacity: 0.4; }
   50%      { transform: scale(1.14); opacity: 0.7; }
 }
 
 .booking-btn {
-  --mx: 50%; --my: 50%;
+  --mx: 50%; --my: 50%; --bk-press: 1;
   position: relative; overflow: hidden; isolation: isolate;
   display: flex; align-items: center; justify-content: center; gap: 11px;
   color: #fff; text-decoration: none;
   font-family: var(--sans); font-size: 15px; font-weight: 600;
   letter-spacing: 0.03em;
   padding: 19px 50px; border-radius: 100px;
-  background: linear-gradient(135deg, #C97046 0%, #A94E2B 52%, #C36239 100%);
-  box-shadow: 0 10px 30px rgba(199, 107, 66, 0.22),
-              inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  /* Kept in the luminous copper band — the old mid stop (#A94E2B) sat far
+     darker than --accent and read muddy next to the sticky book bar. */
+  background: linear-gradient(135deg, #D67E51 0%, #BC6238 52%, #CD7245 100%);
+  box-shadow: 0 10px 30px rgba(199, 107, 66, 0.28),
+              inset 0 1px 0 rgba(255, 255, 255, 0.24);
   transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease);
 }
 /* cursor spotlight */
@@ -904,7 +908,9 @@ ul { list-style: none; }
     rgba(255, 235, 220, 0.3), transparent 64%);
   opacity: 0; transition: opacity 0.45s var(--ease);
 }
-.booking-btn:hover::before { opacity: 1; }
+/* .lit is set by touch — a finger has no hover, so the spotlight is driven
+   from touchstart/touchmove instead and tracks the contact point. */
+.booking-btn:hover::before, .booking-btn.lit::before { opacity: 1; }
 /* shimmer sweep */
 .booking-btn::after {
   content: ''; position: absolute; inset: 0 auto 0 -60%; z-index: -1;
@@ -917,9 +923,17 @@ ul { list-style: none; }
   0%, 62%, 100% { left: -60%; }
   92%           { left: 130%; }
 }
-.booking-btn:hover {
+.booking-btn:hover, .booking-btn.lit {
   box-shadow: 0 18px 46px rgba(199, 107, 66, 0.4),
               inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+/* tactile press — the button gives under the finger, then springs back.
+   The scale rides a variable because the magnet writes an inline transform. */
+.booking-btn.pressed {
+  --bk-press: 0.962;
+  transition: transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease);
+  box-shadow: 0 6px 18px rgba(199, 107, 66, 0.34),
+              inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .booking-btn svg {
   width: 17px; height: 17px; stroke: currentColor;
@@ -1072,10 +1086,12 @@ ul { list-style: none; }
   .building-amenity-grid { grid-template-columns: 1fr; }
   .building-amenities-callout { padding: 28px; }
   .loc-panel {
-    grid-template-columns: 1fr; gap: 16px;
-    padding: 26px 24px 28px; text-align: center;
+    grid-template-columns: 1fr; gap: 2px;
+    padding: 20px 24px 24px; text-align: center;
   }
-  .loc-plot { width: 116px; height: 116px; }
+  /* A larger instrument earns its keep on a phone — the gap and padding above
+     are tightened to pay for it, so the card is no taller than before. */
+  .loc-plot { width: 140px; height: 140px; }
   .loc-coords { justify-content: center; gap: 12px; font-size: 9.5px; margin-bottom: 6px; }
   .loc-coords em { display: none; }
   .loc-body h3 { font-size: 25px; }
@@ -1088,6 +1104,26 @@ ul { list-style: none; }
   .booking-inner { padding: 44px 24px 40px; }
   .booking-subtitle { margin-bottom: 28px; }
   .booking-btn { padding: 17px 38px; }
+  /* The aurora is sized in percentages, so on a ~330px-wide card the blobs
+     collapse to a few dozen pixels and a 74px blur erases them entirely.
+     Scale them past the card edges and cut the blur so the field still reads
+     as light on a phone. */
+  .bk-aurora { inset: -34%; }
+  .bk-aurora b { filter: blur(46px); }
+  .bk-aurora b:nth-child(1) {
+    width: 78%; height: 58%; left: -4%; top: 8%;
+    background: radial-gradient(circle, rgba(199, 107, 66, 0.34), transparent 70%);
+  }
+  .bk-aurora b:nth-child(2) {
+    width: 68%; height: 52%; right: -6%; top: 12%;
+    background: radial-gradient(circle, rgba(197, 165, 114, 0.2), transparent 70%);
+  }
+  .bk-aurora b:nth-child(3) {
+    width: 82%; height: 46%; left: 9%; bottom: 2%;
+    background: radial-gradient(circle, rgba(224, 168, 138, 0.18), transparent 72%);
+  }
+  /* the weave reads as noise at 58px on a narrow card */
+  .bk-weave { background-size: 46px 46px; opacity: 0.7; }
   .lightbox-prev { left: 12px; }
   .lightbox-next { right: 12px; }
   .lightbox-nav { width: 44px; height: 44px; }
@@ -1579,7 +1615,7 @@ ul { list-style: none; }
       <div class="bk-motes" aria-hidden="true"><b></b><b></b><b></b><b></b><b></b></div>
 
       <span class="booking-eyebrow"><s></s>Reserve Direct<s></s></span>
-      <h2 class="booking-title">Ready to <em>experience</em> it?</h2>
+      <h2 class="booking-title">Ready to <span class="bk-keep"><em>experience</em> it?</span></h2>
       <p class="booking-subtitle">Secure your dates and enjoy a curated luxury stay</p>
       <span class="bk-cta-wrap" id="bkMagnet">
         <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="booking-btn" id="bookingBtn">
@@ -1915,12 +1951,30 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
   });
 
   if (chips.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    var at = 0;
+    var at = 0, heldUntil = 0;
+
+    function lightOnly(el) {
+      chips.forEach(function(c) { c.classList.toggle('lit', c === el); });
+    }
+
     setInterval(function() {
-      chips.forEach(function(c) { c.classList.remove('lit'); });
-      chips[at].classList.add('lit');
+      // a chip the guest just touched keeps the highlight for a few beats
+      if (performance.now() < heldUntil) return;
+      lightOnly(chips[at]);
       at = (at + 1) % chips.length;
     }, 2200);
+
+    // Touch has no hover, so the highlight is the only way these read as
+    // responsive — a tap claims it and parks the travelling cycle.
+    if (!matchMedia('(hover: hover)').matches) {
+      chips.forEach(function(el, i) {
+        el.addEventListener('touchstart', function() {
+          lightOnly(el);
+          heldUntil = performance.now() + 4200;
+          at = (i + 1) % chips.length;
+        }, { passive: true });
+      });
+    }
   }
 })();
 
@@ -1986,60 +2040,171 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
   }
 })();
 
-// ── Location: cursor parallax on the plot ──
+// ── Location: parallax on the plot ──
+// A cursor is only one of three ways to drive this. On a phone there is no
+// hover, so the layers are steered by dragging a finger across the panel and,
+// with no input at all, by the panel's own travel through the viewport — the
+// instrument is never frozen.
 (function() {
   var panel = document.getElementById('locationCard');
   var plot = document.getElementById('locPlot');
   if (!panel || !plot) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!matchMedia('(hover: hover)').matches) return;
 
-  var frame = null;
-  panel.addEventListener('pointermove', function(e) {
-    if (frame) return;
-    frame = requestAnimationFrame(function() {
-      frame = null;
-      var r = panel.getBoundingClientRect();
-      plot.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
-      plot.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
-    });
+  var frame = null, px = 0, py = 0;
+
+  function commit() {
+    frame = null;
+    plot.style.setProperty('--px', px.toFixed(3));
+    plot.style.setProperty('--py', py.toFixed(3));
+  }
+  function schedule() { if (!frame) frame = requestAnimationFrame(commit); }
+
+  function steerTo(clientX, clientY) {
+    var r = panel.getBoundingClientRect();
+    px = (clientX - r.left) / r.width - 0.5;
+    py = (clientY - r.top) / r.height - 0.5;
+    schedule();
+  }
+  function release() { px = 0; py = 0; schedule(); }
+
+  if (matchMedia('(hover: hover)').matches) {
+    panel.addEventListener('pointermove', function(e) {
+      steerTo(e.clientX, e.clientY);
+    }, { passive: true });
+    panel.addEventListener('pointerleave', release);
+    return;
+  }
+
+  // ── Touch devices ──
+  var dragging = false, settle = null;
+
+  panel.addEventListener('touchstart', function(e) {
+    var t = e.touches[0];
+    if (!t) return;
+    dragging = true;
+    clearTimeout(settle);
+    steerTo(t.clientX, t.clientY);
   }, { passive: true });
 
-  panel.addEventListener('pointerleave', function() {
-    plot.style.setProperty('--px', 0);
-    plot.style.setProperty('--py', 0);
-  });
+  panel.addEventListener('touchmove', function(e) {
+    var t = e.touches[0];
+    if (!t || !dragging) return;
+    steerTo(t.clientX, t.clientY);
+  }, { passive: true });
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    // hold the reading briefly, then let it fall back to the scroll drift
+    settle = setTimeout(function() { drift(); }, 550);
+  }
+  panel.addEventListener('touchend', endDrag, { passive: true });
+  panel.addEventListener('touchcancel', endDrag, { passive: true });
+
+  // Scroll drift — the resting behaviour when nothing is touching the panel.
+  var live = false, scrollFrame = null;
+
+  function drift() {
+    scrollFrame = null;
+    if (dragging) return;
+    var r = panel.getBoundingClientRect();
+    // -0.5 (panel below the fold) → 0.5 (panel above it)
+    var p = (r.top + r.height / 2) / window.innerHeight - 0.5;
+    py = Math.max(-0.5, Math.min(0.5, p)) * 0.9;
+    px = py * 0.32;
+    schedule();
+  }
+
+  function onScroll() {
+    if (live && !scrollFrame) scrollFrame = requestAnimationFrame(drift);
+  }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) { live = en.isIntersecting; if (live) drift(); });
+    }, { rootMargin: '140px 0px' }).observe(panel);
+  } else {
+    live = true;
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  drift();
 })();
 
-// ── Booking CTA: magnetic button + cursor spotlight ──
+// ── Booking CTA: magnetic button + spotlight ──
+// On a pointer device the button leans toward the cursor. On a touch device
+// there is no hover to lean into, so the same magnetism is driven by the
+// contact point: the spotlight lights where the finger lands, the button
+// leans toward it while the finger drags, and it gives on press. Without
+// this the button is inert on the one device most guests book from.
 (function() {
   var zone = document.getElementById('bkMagnet');
   var btn = document.getElementById('bookingBtn');
   if (!zone || !btn) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!matchMedia('(hover: hover)').matches) return;
 
   var frame = null;
-  zone.addEventListener('pointermove', function(e) {
+
+  function lean(clientX, clientY, pull) {
     if (frame) return;
     frame = requestAnimationFrame(function() {
       frame = null;
       var r = btn.getBoundingClientRect();
-      var dx = e.clientX - (r.left + r.width / 2);
-      var dy = e.clientY - (r.top + r.height / 2);
-      // pull toward the cursor, capped so the button never detaches
-      btn.style.transform = 'translate3d(' + (dx * 0.16).toFixed(2) + 'px,' +
-        (dy * 0.28 - 2).toFixed(2) + 'px,0)';
-      btn.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      btn.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      var dx = clientX - (r.left + r.width / 2);
+      var dy = clientY - (r.top + r.height / 2);
+      // pull toward the contact point, capped so the button never detaches
+      btn.style.transform = 'translate3d(' + (dx * 0.16 * pull).toFixed(2) + 'px,' +
+        (dy * 0.28 * pull - 2).toFixed(2) + 'px,0) scale(var(--bk-press))';
+      btn.style.setProperty('--mx', (clientX - r.left) + 'px');
+      btn.style.setProperty('--my', (clientY - r.top) + 'px');
     });
-  }, { passive: true });
+  }
 
-  zone.addEventListener('pointerleave', function() {
+  function reset() {
     btn.style.transform = '';
     btn.style.setProperty('--mx', '50%');
     btn.style.setProperty('--my', '50%');
-  });
+  }
+
+  if (matchMedia('(hover: hover)').matches) {
+    zone.addEventListener('pointermove', function(e) {
+      lean(e.clientX, e.clientY, 1);
+    }, { passive: true });
+    zone.addEventListener('pointerleave', reset);
+    return;
+  }
+
+  // ── Touch devices ──
+  function light(e) {
+    var t = e.touches[0];
+    if (!t) return;
+    btn.classList.add('lit', 'pressed');
+    zone.classList.add('lit');
+    lean(t.clientX, t.clientY, 0.5);
+  }
+
+  zone.addEventListener('touchstart', light, { passive: true });
+
+  zone.addEventListener('touchmove', function(e) {
+    var t = e.touches[0];
+    if (!t) return;
+    btn.classList.remove('pressed');
+    lean(t.clientX, t.clientY, 0.5);
+  }, { passive: true });
+
+  function letGo() {
+    btn.classList.remove('pressed');
+    // the glow lingers a beat after the finger leaves, then settles
+    setTimeout(function() {
+      btn.classList.remove('lit');
+      zone.classList.remove('lit');
+      reset();
+    }, 420);
+  }
+  zone.addEventListener('touchend', letGo, { passive: true });
+  zone.addEventListener('touchcancel', letGo, { passive: true });
 })();
 
 // ── Booking CTA: scroll-linked drift of the weave ──
