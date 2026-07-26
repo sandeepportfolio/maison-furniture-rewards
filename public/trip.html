@@ -1291,6 +1291,14 @@ function showLogin(){
   document.getElementById('trip-portal').classList.remove('active');
 }
 
+// Lift the loading overlay and fade the portal in. Idempotent: safe to call
+// from both the animation frame and its timer fallback.
+function revealPortal(){
+  var portal=document.getElementById('trip-portal'),loading=document.getElementById('loading-screen');
+  if(portal)portal.classList.add('active');
+  if(loading)loading.classList.add('hidden');
+}
+
 async function showPortal(){
   // Show loading, hide login
   document.getElementById('loading-screen').classList.remove('hidden');
@@ -1305,11 +1313,14 @@ async function showPortal(){
     // Show portal container, render content, THEN hide loading
     document.getElementById('trip-portal').style.display='block';
     renderPortal(data);
-    // Slight delay for DOM paint, then reveal
-    requestAnimationFrame(function(){
-      document.getElementById('trip-portal').classList.add('active');
-      document.getElementById('loading-screen').classList.add('hidden');
-    });
+    // Reveal on the next frame so the portal paints before the fade begins.
+    // requestAnimationFrame is frozen while the page is hidden — a guest who
+    // locks the phone or switches apps during the (multi-second) Guesty fetch
+    // came back to the loading spinner for good, with the finished portal
+    // sitting invisible behind it at opacity 0. A timer backs the frame up;
+    // both paths only add classes, so whichever runs first wins harmlessly.
+    requestAnimationFrame(revealPortal);
+    setTimeout(revealPortal,80);
 
     initNavScroll();
     initParallax();
