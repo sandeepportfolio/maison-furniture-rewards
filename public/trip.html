@@ -1127,7 +1127,7 @@ function renderCanceledPortal(data){
   if(cxIn){cxIn.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'});cxIn.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCxMessage()}})}
 
   apiPost('/api/trip/messages/context',{guestName:(guest.firstName||'')+' '+(guest.lastName||''),propertyName:lst.title||''}).catch(function(){});
-  setInterval(function(){apiGet('/api/trip/messages').then(function(r){if(r.messages)renderCxMessages(r.messages)}).catch(function(){})},30000);
+  msgPoll=setInterval(function(){apiGet('/api/trip/messages').then(function(r){if(r.messages)renderCxMessages(r.messages)}).catch(function(){})},30000);
 }
 
 function renderCxMessages(msgs){
@@ -1157,7 +1157,7 @@ function spawnConfetti(el){
     (function(el){setTimeout(function(){el.remove()},1200)})(d);
   }
 }
-function logoutTrip(){clearTripToken();apiPost('/api/trip/logout').then(function(){window.location.reload()}).catch(function(){window.location.reload()})}
+function logoutTrip(){clearTripToken();if(msgPoll){clearInterval(msgPoll);msgPoll=null}if(cdInterval){clearInterval(cdInterval);cdInterval=null}apiPost('/api/trip/logout').then(function(){window.location.reload()}).catch(function(){window.location.reload()})}
 
 // ── Messages (normal portal) ──
 function renderMessages(msgs){
@@ -1313,6 +1313,10 @@ async function showPortal(){
     // Show portal container, render content, THEN hide loading
     document.getElementById('trip-portal').style.display='block';
     renderPortal(data);
+    // Canceled portal is a separate DOM tree appended to body —
+    // skip the active-portal reveal/init to avoid double polling and
+    // attaching scroll/resize listeners to hidden elements.
+    if(data.isCanceled)return;
     // Reveal on the next frame so the portal paints before the fade begins.
     // requestAnimationFrame is frozen while the page is hidden — a guest who
     // locks the phone or switches apps during the (multi-second) Guesty fetch
