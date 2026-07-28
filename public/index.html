@@ -210,7 +210,7 @@ ul{list-style:none}
 .bento-main-img{width:100%;height:100%;object-fit:cover;animation:kenBurns 20s ease-in-out infinite alternate}
 @keyframes kenBurns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-1%,-1%)}}
 .bento-main-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,20,.15) 0%,rgba(26,23,20,.35) 40%,rgba(26,23,20,.82) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:28px 32px}
-.bento-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(26,23,20,.6);backdrop-filter:blur(10px);padding:8px 16px;border-radius:100px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#fff;width:fit-content}
+.bento-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(26,23,20,.78);backdrop-filter:blur(10px);padding:8px 16px;border-radius:100px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#fff;width:fit-content}
 .badge-dot{width:6px;height:6px;border-radius:50%;background:#6FCF97;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .bento-main-bottom{display:flex;flex-direction:column;gap:16px}
@@ -295,8 +295,8 @@ ul{list-style:none}
 
 /* ── Property Type Badge ── */
 .prop-type-badge{position:absolute;top:16px;left:16px;z-index:3;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:6px 14px;border-radius:100px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:7px;pointer-events:none}
-.prop-type-badge.villa-badge{background:rgba(197,165,114,.22);color:var(--brass-light);border:1px solid rgba(197,165,114,.35)}
-.prop-type-badge.suite-badge{background:rgba(255,255,255,.16);color:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.22)}
+.prop-type-badge.villa-badge{background:rgba(40,32,18,.82);color:#E8C87A;border:1px solid rgba(197,165,114,.45);text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.prop-type-badge.suite-badge{background:rgba(20,20,20,.78);color:rgba(255,255,255,.95);border:1px solid rgba(255,255,255,.3);text-shadow:0 1px 3px rgba(0,0,0,.4)}
 .prop-type-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse 2s ease-in-out infinite}
 
 /* ── Villa Horizontal Layout ── */
@@ -791,8 +791,8 @@ ul{list-style:none}
 .xplr-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.23,1,.32,1);will-change:transform}
 @media(hover:hover){.xplr-card:hover .xplr-card-img img{transform:scale(1.06)}}
 .xplr-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(13,13,13,.7) 100%)}
-.xplr-card-badge{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(13,13,13,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--accent-light);padding:5px 12px;border-radius:100px;z-index:2;border:1px solid rgba(201,152,69,.15)}
-.xplr-card-rating-badge{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:11px;background:rgba(13,13,13,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--brass-light);padding:5px 12px;border-radius:100px;z-index:2;display:flex;align-items:center;gap:4px;border:1px solid rgba(255,255,255,.06)}
+.xplr-card-badge{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(13,13,13,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--accent-light);padding:5px 12px;border-radius:100px;z-index:2;border:1px solid rgba(201,152,69,.15);text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.xplr-card-rating-badge{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:11px;background:rgba(13,13,13,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--brass-light);padding:5px 12px;border-radius:100px;z-index:2;display:flex;align-items:center;gap:4px;border:1px solid rgba(255,255,255,.08);text-shadow:0 1px 2px rgba(0,0,0,.3)}
 .xplr-card-rating-badge svg{width:11px;height:11px;fill:var(--brass);stroke:none}
 .xplr-card-body{padding:20px 20px 18px}
 .xplr-card-name{font-family:var(--serif);font-size:20px;color:var(--text-inv);margin-bottom:6px;line-height:1.25;letter-spacing:-.01em}
