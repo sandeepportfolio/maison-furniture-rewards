@@ -489,58 +489,99 @@ ul { list-style: none; }
 }
 .amenity-pill.has-photo:hover .photo-link-icon { opacity: 1; }
 
-/* ── Building Amenities Callout ── */
+/* ── Building Amenities Showcase ── */
 .building-amenities-callout {
-  background: linear-gradient(135deg, rgba(199, 107, 66, 0.06), rgba(199, 107, 66, 0.02));
-  border: 1px solid rgba(199, 107, 66, 0.18);
-  border-radius: var(--radius-xl);
-  padding: 40px 44px;
-  position: relative; overflow: hidden;
-  margin-top: 48px;
+  margin-top: 56px; position: relative;
 }
-.building-amenities-callout::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 4px; height: 100%; background: var(--accent);
-  border-radius: 4px 0 0 4px;
+.building-callout-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 32px;
 }
-.building-callout-label {
-  font-family: var(--sans); font-size: 11px; font-weight: 600;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 24px;
-  display: flex; align-items: center; gap: 8px;
+.building-callout-header-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), rgba(199, 107, 66, 0.7));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(199, 107, 66, 0.25);
 }
-.building-callout-label svg {
-  width: 16px; height: 16px; stroke: var(--accent);
-  fill: none; stroke-width: 2;
+.building-callout-header-icon svg {
+  width: 24px; height: 24px; stroke: #fff; fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.building-callout-header-text h3 {
+  font-family: var(--sans); font-size: 22px; font-weight: 700;
+  color: var(--text); letter-spacing: -0.02em; margin: 0;
+}
+.building-callout-header-text p {
+  font-family: var(--sans); font-size: 14px; font-weight: 400;
+  color: var(--text-muted); margin: 2px 0 0;
 }
 .building-amenity-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
 }
 .building-amenity-item {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px 20px; background: rgba(199, 107, 66, 0.04);
-  border-radius: var(--radius); border: 1px solid rgba(199, 107, 66, 0.1);
-  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 0;
+  padding: 32px 20px 28px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  transition: border-color 0.4s var(--ease), transform 0.4s var(--ease),
+              box-shadow 0.4s var(--ease);
+  cursor: default;
+}
+.building-amenity-item::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(199, 107, 66, 0.08) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.4s var(--ease);
+  pointer-events: none;
 }
 .building-amenity-item:hover {
-  border-color: rgba(199, 107, 66, 0.3);
-  transform: translateY(-2px);
+  border-color: rgba(199, 107, 66, 0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(199, 107, 66, 0.08);
 }
+.building-amenity-item:hover::before { opacity: 1; }
 .building-amenity-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(199, 107, 66, 0.1);
+  position: relative; z-index: 1;
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(199, 107, 66, 0.15), rgba(199, 107, 66, 0.05));
+  border: 1px solid rgba(199, 107, 66, 0.12);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  margin-bottom: 16px;
+  transition: background 0.4s var(--ease), border-color 0.4s var(--ease),
+              transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.building-amenity-item:hover .building-amenity-icon {
+  background: linear-gradient(135deg, rgba(199, 107, 66, 0.25), rgba(199, 107, 66, 0.1));
+  border-color: rgba(199, 107, 66, 0.3);
+  transform: scale(1.08);
+  box-shadow: 0 0 24px rgba(199, 107, 66, 0.15);
 }
 .building-amenity-icon svg {
-  width: 22px; height: 22px; stroke: var(--accent);
+  width: 26px; height: 26px; stroke: var(--accent);
   fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke 0.3s var(--ease);
+}
+.building-amenity-item:hover .building-amenity-icon svg {
+  stroke: var(--accent-hover);
+}
+.building-amenity-text {
+  position: relative; z-index: 1;
 }
 .building-amenity-text strong {
-  display: block; font-size: 15px; font-weight: 600;
-  color: var(--text); margin-bottom: 2px;
+  display: block; font-family: var(--sans); font-size: 15px; font-weight: 600;
+  color: var(--text); margin-bottom: 4px; letter-spacing: -0.01em;
 }
 .building-amenity-text span {
-  font-size: 12px; color: var(--text-muted); font-weight: 400;
+  font-family: var(--sans); font-size: 12px; line-height: 1.5;
+  color: var(--text-muted); font-weight: 400;
+}
+.building-amenity-stagger {
+  opacity: 0; transform: translateY(16px);
+  animation: buildingAmenityIn 0.5s var(--ease-out) forwards;
+}
+@keyframes buildingAmenityIn {
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1053,7 +1094,7 @@ ul { list-style: none; }
     grid-template-columns: 1fr;
   }
   .building-amenity-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); gap: 14px;
   }
   .loc-panel {
     grid-template-columns: 156px 1fr; gap: 34px; padding: 30px 34px;
@@ -1085,8 +1126,15 @@ ul { list-style: none; }
   }
   .gallery-item.large { grid-column: span 2; grid-row: span 2; }
   .description-section .description-text { font-size: 16px; }
-  .building-amenity-grid { grid-template-columns: 1fr; }
-  .building-amenities-callout { padding: 28px; }
+  .building-amenity-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .building-amenity-item { padding: 24px 16px 22px; }
+  .building-amenity-icon { width: 48px; height: 48px; border-radius: 14px; margin-bottom: 12px; }
+  .building-amenity-icon svg { width: 22px; height: 22px; }
+  .building-amenity-text strong { font-size: 13px; }
+  .building-amenity-text span { font-size: 11px; }
+  .building-callout-header h3 { font-size: 18px; }
+  .building-callout-header-icon { width: 40px; height: 40px; border-radius: 12px; }
+  .building-callout-header-icon svg { width: 20px; height: 20px; }
   .loc-panel {
     grid-template-columns: 1fr; gap: 2px;
     padding: 20px 24px 24px; text-align: center;
@@ -1889,29 +1937,43 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
 
   grid.innerHTML = html;
 
-  // Building amenities callout for non-villa properties
+  // Building amenities showcase for non-villa properties
   if (!IS_VILLA) {
+    var bAmenities = [
+      { name: 'Swimming Pool', desc: 'Resort-style pool & lounge area', icon: '<svg viewBox="0 0 24 24"><path d="M2 6l1.5 1.5S5 6 6.5 6 9 7.5 9 7.5 10.5 6 12 6s3 1.5 3 1.5S16.5 6 18 6s3 1.5 3 1.5L22.5 6"/><path d="M2 12l1.5 1.5S5 12 6.5 12 9 13.5 9 13.5 10.5 12 12 12s3 1.5 3 1.5S16.5 12 18 12s3 1.5 3 1.5L22.5 12"/><path d="M9 6V3m6 3V3"/></svg>' },
+      { name: 'Fitness Center', desc: 'Fully equipped gym, open 24/7', icon: '<svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M12 6.5v11"/><path d="M3 9.5V14a1 1 0 001 1h1V8.5H4a1 1 0 00-1 1z"/><path d="M5.5 7v10a1 1 0 001 1h1V6h-1a1 1 0 00-1 1z"/><path d="M21 9.5V14a1 1 0 01-1 1h-1V8.5h1a1 1 0 011 1z"/><path d="M18.5 7v10a1 1 0 01-1 1h-1V6h1a1 1 0 011 1z"/></svg>' },
+      { name: 'Concierge', desc: 'On-site team for guest services', icon: '<svg viewBox="0 0 24 24"><path d="M18 16.5a2 2 0 01-2 2H8a2 2 0 01-2-2"/><path d="M12 3v2"/><path d="M6 16.5V12a6 6 0 0112 0v4.5"/><path d="M4 20h16"/></svg>' },
+      { name: 'Covered Parking', desc: 'Secure garage with assigned spaces', icon: '<svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><rect x="7" y="13" width="10" height="8" rx="1"/><path d="M10 17h4"/></svg>' },
+      { name: 'Package Lockers', desc: 'Smart lockers for deliveries', icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 6v3M17.5 6v3M6.5 16.5v1.5M17.5 16.5v1.5"/></svg>' },
+      { name: 'Pet Friendly', desc: 'Dog park & grooming station', icon: '<svg viewBox="0 0 24 24"><path d="M10 5.172C10 3.782 8.884 2.5 7.5 2.5S5 3.782 5 5.172C5 7.5 7.5 9 7.5 9S10 7.5 10 5.172z"/><path d="M19 5.172C19 3.782 17.884 2.5 16.5 2.5S14 3.782 14 5.172C14 7.5 16.5 9 16.5 9S19 7.5 19 5.172z"/><path d="M7.5 14c-2 0-4 1.5-4 4s2.5 4 5 4h7c2.5 0 5-1.5 5-4s-2-4-4-4c-1.5 0-2.5.5-4 .5S9 14 7.5 14z"/></svg>' },
+      { name: 'Rooftop Lounge', desc: 'Skyline views & outdoor seating', icon: '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/><path d="M3 11h18"/></svg>' },
+      { name: 'EV Charging', desc: 'Level 2 stations in garage', icon: '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
+      { name: 'Business Center', desc: 'Co-working & meeting rooms', icon: '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' }
+    ];
+
     var callout = document.getElementById('buildingAmenitiesCallout');
-    callout.innerHTML = '<div class="building-amenities-callout reveal">' +
-      '<div class="building-callout-label">' +
-        '<svg viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>' +
-        'Building Amenities' +
-      '</div>' +
-      '<div class="building-amenity-grid">' +
-        '<div class="building-amenity-item">' +
-          '<div class="building-amenity-icon"><svg viewBox="0 0 24 24"><path d="M2 12h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/><path d="M14 12h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-6z"/><path d="M2 2h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2z"/><line x1="12" y1="2" x2="12" y2="12"/></svg></div>' +
-          '<div class="building-amenity-text"><strong>Swimming Pool</strong><span>Resort-style pool with lounge area</span></div>' +
+    var bHtml = '<div class="building-amenities-callout reveal">' +
+      '<div class="building-callout-header">' +
+        '<div class="building-callout-header-icon">' +
+          '<svg viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>' +
         '</div>' +
-        '<div class="building-amenity-item">' +
-          '<div class="building-amenity-icon"><svg viewBox="0 0 24 24"><path d="M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14"/><path d="M2 20h20"/><path d="M14 12v.01"/></svg></div>' +
-          '<div class="building-amenity-text"><strong>24/7 Fitness Center</strong><span>Fully equipped gym, always open</span></div>' +
-        '</div>' +
-        '<div class="building-amenity-item">' +
-          '<div class="building-amenity-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>' +
-          '<div class="building-amenity-text"><strong>Workspaces</strong><span>Business center & co-working areas</span></div>' +
+        '<div class="building-callout-header-text">' +
+          '<h3>Building Amenities</h3>' +
+          '<p>Shared spaces &amp; services for all residents</p>' +
         '</div>' +
       '</div>' +
-    '</div>';
+      '<div class="building-amenity-grid">';
+
+    for (var b = 0; b < bAmenities.length; b++) {
+      var a = bAmenities[b];
+      bHtml += '<div class="building-amenity-item building-amenity-stagger" style="animation-delay: ' + (b * 0.07) + 's">' +
+        '<div class="building-amenity-icon">' + a.icon + '</div>' +
+        '<div class="building-amenity-text"><strong>' + a.name + '</strong><span>' + a.desc + '</span></div>' +
+      '</div>';
+    }
+
+    bHtml += '</div></div>';
+    callout.innerHTML = bHtml;
   }
 })();
 
