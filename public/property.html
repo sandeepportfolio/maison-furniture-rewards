@@ -489,100 +489,166 @@ ul { list-style: none; }
 }
 .amenity-pill.has-photo:hover .photo-link-icon { opacity: 1; }
 
-/* ── Building Amenities Showcase ── */
-.building-amenities-callout {
-  margin-top: 56px; position: relative;
+/* ── Building Amenities — Immersive Bento ── */
+.building-amenities-callout { margin-top: 64px; position: relative; }
+
+/* ── Section header ── */
+.ba-header { text-align: center; margin-bottom: 48px; }
+.ba-header-label {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
 }
-.building-callout-header {
-  display: flex; align-items: center; gap: 14px;
-  margin-bottom: 32px;
+.ba-header-label::before, .ba-header-label::after {
+  content: ''; width: 32px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent));
 }
-.building-callout-header-icon {
-  width: 48px; height: 48px; border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), rgba(199, 107, 66, 0.7));
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(199, 107, 66, 0.25);
+.ba-header-label::after {
+  background: linear-gradient(90deg, var(--accent), transparent);
 }
-.building-callout-header-icon svg {
-  width: 24px; height: 24px; stroke: #fff; fill: none;
-  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+.ba-header h3 {
+  font-family: var(--serif, Georgia, serif); font-size: 32px; font-weight: 400;
+  color: var(--text); letter-spacing: -0.02em; margin: 0 0 8px;
 }
-.building-callout-header-text h3 {
-  font-family: var(--sans); font-size: 22px; font-weight: 700;
-  color: var(--text); letter-spacing: -0.02em; margin: 0;
+.ba-header h3 em {
+  font-style: italic; color: var(--accent);
 }
-.building-callout-header-text p {
-  font-family: var(--sans); font-size: 14px; font-weight: 400;
-  color: var(--text-muted); margin: 2px 0 0;
+.ba-header p {
+  font-family: var(--sans); font-size: 15px; color: var(--text-muted);
+  margin: 0; font-weight: 300;
 }
-.building-amenity-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+
+/* ── Category groups ── */
+.ba-category { margin-bottom: 40px; }
+.ba-category:last-child { margin-bottom: 0; }
+.ba-cat-label {
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 16px;
+  padding-left: 4px;
 }
-.building-amenity-item {
+
+/* ── Bento grid ── */
+.ba-bento {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
+  gap: 14px;
+}
+
+/* ── Base card — glassmorphism ── */
+.ba-card {
   position: relative; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center; gap: 0;
-  padding: 32px 20px 28px;
-  background: var(--bg-card);
-  border-radius: var(--radius-lg); border: 1px solid var(--border);
-  transition: border-color 0.4s var(--ease), transform 0.4s var(--ease),
-              box-shadow 0.4s var(--ease);
+  padding: 28px 24px 24px;
+  background: rgba(22, 22, 22, 0.65);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
+              box-shadow 0.5s var(--ease);
   cursor: default;
 }
-.building-amenity-item::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(199, 107, 66, 0.08) 0%, transparent 70%);
-  opacity: 0; transition: opacity 0.4s var(--ease);
-  pointer-events: none;
+.ba-card::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% -20%, rgba(199,107,66,0.07) 0%, transparent 65%);
+  opacity: 0; transition: opacity 0.5s var(--ease);
 }
-.building-amenity-item:hover {
-  border-color: rgba(199, 107, 66, 0.35);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(199, 107, 66, 0.08);
+.ba-card::after {
+  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(199,107,66,0.2), transparent);
+  opacity: 0; transition: opacity 0.5s var(--ease);
 }
-.building-amenity-item:hover::before { opacity: 1; }
-.building-amenity-icon {
+.ba-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(199,107,66,0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 40px rgba(199,107,66,0.06);
+}
+.ba-card:hover::before, .ba-card:hover::after { opacity: 1; }
+
+/* ── Hero cards span 2 columns, taller ── */
+.ba-card.ba-hero {
+  grid-column: span 2;
+  padding: 36px 32px 32px;
+  background: linear-gradient(160deg, rgba(199,107,66,0.06) 0%, rgba(22,22,22,0.7) 40%);
+  border-color: rgba(199,107,66,0.15);
+}
+.ba-card.ba-hero .ba-icon-wrap {
+  width: 72px; height: 72px; border-radius: 22px; margin-bottom: 20px;
+}
+.ba-card.ba-hero .ba-icon-wrap svg { width: 34px; height: 34px; }
+.ba-card.ba-hero .ba-icon-ring { width: 82px; height: 82px; }
+.ba-card.ba-hero .ba-card-name { font-size: 20px; }
+.ba-card.ba-hero .ba-card-desc { font-size: 14px; max-width: 360px; }
+.ba-card.ba-hero .ba-card-tag {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 12px;
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent); opacity: 0.7;
+}
+.ba-card.ba-hero .ba-card-tag svg {
+  width: 12px; height: 12px; stroke: var(--accent); fill: none; stroke-width: 2;
+}
+
+/* ── Icon with animated ring ── */
+.ba-icon-wrap {
   position: relative; z-index: 1;
-  width: 56px; height: 56px; border-radius: 16px;
-  background: linear-gradient(135deg, rgba(199, 107, 66, 0.15), rgba(199, 107, 66, 0.05));
-  border: 1px solid rgba(199, 107, 66, 0.12);
+  width: 56px; height: 56px; border-radius: 18px;
+  background: linear-gradient(145deg, rgba(199,107,66,0.14), rgba(199,107,66,0.04));
+  border: 1px solid rgba(199,107,66,0.1);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   margin-bottom: 16px;
-  transition: background 0.4s var(--ease), border-color 0.4s var(--ease),
-              transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease),
+              background 0.5s var(--ease), border-color 0.5s var(--ease);
 }
-.building-amenity-item:hover .building-amenity-icon {
-  background: linear-gradient(135deg, rgba(199, 107, 66, 0.25), rgba(199, 107, 66, 0.1));
-  border-color: rgba(199, 107, 66, 0.3);
-  transform: scale(1.08);
-  box-shadow: 0 0 24px rgba(199, 107, 66, 0.15);
-}
-.building-amenity-icon svg {
+.ba-icon-wrap svg {
   width: 26px; height: 26px; stroke: var(--accent);
   fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
-  transition: stroke 0.3s var(--ease);
+  transition: stroke 0.4s var(--ease), filter 0.4s var(--ease);
 }
-.building-amenity-item:hover .building-amenity-icon svg {
+.ba-icon-ring {
+  position: absolute; inset: -5px; width: 66px; height: 66px;
+  border-radius: inherit; pointer-events: none;
+  border: 1.5px dashed rgba(199,107,66,0.15);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+  animation: baRingSpin 24s linear infinite paused;
+}
+@keyframes baRingSpin { to { transform: rotate(360deg); } }
+
+.ba-card:hover .ba-icon-wrap {
+  transform: scale(1.1);
+  background: linear-gradient(145deg, rgba(199,107,66,0.22), rgba(199,107,66,0.08));
+  border-color: rgba(199,107,66,0.35);
+  box-shadow: 0 0 28px rgba(199,107,66,0.18);
+}
+.ba-card:hover .ba-icon-wrap svg {
   stroke: var(--accent-hover);
+  filter: drop-shadow(0 0 6px rgba(199,107,66,0.3));
 }
-.building-amenity-text {
+.ba-card:hover .ba-icon-ring {
+  opacity: 1; animation-play-state: running;
+}
+
+/* ── Card text ── */
+.ba-card-name {
   position: relative; z-index: 1;
-}
-.building-amenity-text strong {
-  display: block; font-family: var(--sans); font-size: 15px; font-weight: 600;
+  font-family: var(--sans); font-size: 16px; font-weight: 600;
   color: var(--text); margin-bottom: 4px; letter-spacing: -0.01em;
 }
-.building-amenity-text span {
-  font-family: var(--sans); font-size: 12px; line-height: 1.5;
-  color: var(--text-muted); font-weight: 400;
+.ba-card-desc {
+  position: relative; z-index: 1;
+  font-family: var(--sans); font-size: 13px; line-height: 1.55;
+  color: var(--text-muted); font-weight: 300;
 }
-.building-amenity-stagger {
-  opacity: 0; transform: translateY(16px);
-  animation: buildingAmenityIn 0.5s var(--ease-out) forwards;
+
+/* ── Stagger entrance ── */
+.ba-stagger {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
 }
-@keyframes buildingAmenityIn {
-  to { opacity: 1; transform: translateY(0); }
-}
+.ba-stagger.revealed { opacity: 1; transform: translateY(0); }
 
 /* ══════════════════════════════════════════════════════════════
    LOCATION — "The Plot"
@@ -1093,9 +1159,9 @@ ul { list-style: none; }
   .amenities-section .amenity-categories {
     grid-template-columns: 1fr;
   }
-  .building-amenity-grid {
-    grid-template-columns: repeat(2, 1fr); gap: 14px;
-  }
+  .ba-bento { grid-template-columns: repeat(2, 1fr); }
+  .ba-card.ba-hero { grid-column: span 2; }
+  .ba-header h3 { font-size: 28px; }
   .loc-panel {
     grid-template-columns: 156px 1fr; gap: 34px; padding: 30px 34px;
   }
@@ -1126,15 +1192,21 @@ ul { list-style: none; }
   }
   .gallery-item.large { grid-column: span 2; grid-row: span 2; }
   .description-section .description-text { font-size: 16px; }
-  .building-amenity-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .building-amenity-item { padding: 24px 16px 22px; }
-  .building-amenity-icon { width: 48px; height: 48px; border-radius: 14px; margin-bottom: 12px; }
-  .building-amenity-icon svg { width: 22px; height: 22px; }
-  .building-amenity-text strong { font-size: 13px; }
-  .building-amenity-text span { font-size: 11px; }
-  .building-callout-header h3 { font-size: 18px; }
-  .building-callout-header-icon { width: 40px; height: 40px; border-radius: 12px; }
-  .building-callout-header-icon svg { width: 20px; height: 20px; }
+  .ba-bento { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .ba-card.ba-hero { grid-column: span 2; padding: 28px 24px 24px; }
+  .ba-card.ba-hero .ba-icon-wrap { width: 60px; height: 60px; }
+  .ba-card.ba-hero .ba-icon-wrap svg { width: 28px; height: 28px; }
+  .ba-card.ba-hero .ba-icon-ring { width: 70px; height: 70px; }
+  .ba-card.ba-hero .ba-card-name { font-size: 17px; }
+  .ba-card { padding: 22px 18px 20px; }
+  .ba-icon-wrap { width: 48px; height: 48px; border-radius: 14px; margin-bottom: 12px; }
+  .ba-icon-wrap svg { width: 22px; height: 22px; }
+  .ba-icon-ring { width: 58px; height: 58px; }
+  .ba-card-name { font-size: 14px; }
+  .ba-card-desc { font-size: 12px; }
+  .ba-header h3 { font-size: 24px; }
+  .ba-header { margin-bottom: 36px; }
+  .ba-category { margin-bottom: 32px; }
   .loc-panel {
     grid-template-columns: 1fr; gap: 2px;
     padding: 20px 24px 24px; text-align: center;
@@ -1937,43 +2009,81 @@ document.getElementById('lightbox').addEventListener('click', function(e) {
 
   grid.innerHTML = html;
 
-  // Building amenities showcase for non-villa properties
+  // Building amenities — immersive bento showcase (non-villa only)
   if (!IS_VILLA) {
-    var bAmenities = [
-      { name: 'Swimming Pool', desc: 'Resort-style pool & lounge area', icon: '<svg viewBox="0 0 24 24"><path d="M2 6l1.5 1.5S5 6 6.5 6 9 7.5 9 7.5 10.5 6 12 6s3 1.5 3 1.5S16.5 6 18 6s3 1.5 3 1.5L22.5 6"/><path d="M2 12l1.5 1.5S5 12 6.5 12 9 13.5 9 13.5 10.5 12 12 12s3 1.5 3 1.5S16.5 12 18 12s3 1.5 3 1.5L22.5 12"/><path d="M9 6V3m6 3V3"/></svg>' },
-      { name: 'Fitness Center', desc: 'Fully equipped gym, open 24/7', icon: '<svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M12 6.5v11"/><path d="M3 9.5V14a1 1 0 001 1h1V8.5H4a1 1 0 00-1 1z"/><path d="M5.5 7v10a1 1 0 001 1h1V6h-1a1 1 0 00-1 1z"/><path d="M21 9.5V14a1 1 0 01-1 1h-1V8.5h1a1 1 0 011 1z"/><path d="M18.5 7v10a1 1 0 01-1 1h-1V6h1a1 1 0 011 1z"/></svg>' },
-      { name: 'Concierge', desc: 'On-site team for guest services', icon: '<svg viewBox="0 0 24 24"><path d="M18 16.5a2 2 0 01-2 2H8a2 2 0 01-2-2"/><path d="M12 3v2"/><path d="M6 16.5V12a6 6 0 0112 0v4.5"/><path d="M4 20h16"/></svg>' },
-      { name: 'Covered Parking', desc: 'Secure garage with assigned spaces', icon: '<svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><rect x="7" y="13" width="10" height="8" rx="1"/><path d="M10 17h4"/></svg>' },
-      { name: 'Package Lockers', desc: 'Smart lockers for deliveries', icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 6v3M17.5 6v3M6.5 16.5v1.5M17.5 16.5v1.5"/></svg>' },
-      { name: 'Pet Friendly', desc: 'Dog park & grooming station', icon: '<svg viewBox="0 0 24 24"><path d="M10 5.172C10 3.782 8.884 2.5 7.5 2.5S5 3.782 5 5.172C5 7.5 7.5 9 7.5 9S10 7.5 10 5.172z"/><path d="M19 5.172C19 3.782 17.884 2.5 16.5 2.5S14 3.782 14 5.172C14 7.5 16.5 9 16.5 9S19 7.5 19 5.172z"/><path d="M7.5 14c-2 0-4 1.5-4 4s2.5 4 5 4h7c2.5 0 5-1.5 5-4s-2-4-4-4c-1.5 0-2.5.5-4 .5S9 14 7.5 14z"/></svg>' },
-      { name: 'Rooftop Lounge', desc: 'Skyline views & outdoor seating', icon: '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/><path d="M3 11h18"/></svg>' },
-      { name: 'EV Charging', desc: 'Level 2 stations in garage', icon: '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
-      { name: 'Business Center', desc: 'Co-working & meeting rooms', icon: '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' }
+    var baCategories = [
+      { label: 'Wellness & Recreation', items: [
+        { name: 'Resort Pool & Spa', desc: 'Heated resort-style pool with cabana lounge, sun deck, and relaxation area — the perfect urban oasis', hero: true, tag: 'Most Loved',
+          icon: '<svg viewBox="0 0 24 24"><path d="M2 6l1.5 1.5S5 6 6.5 6 9 7.5 9 7.5 10.5 6 12 6s3 1.5 3 1.5S16.5 6 18 6s3 1.5 3 1.5L22.5 6"/><path d="M2 12l1.5 1.5S5 12 6.5 12 9 13.5 9 13.5 10.5 12 12 12s3 1.5 3 1.5S16.5 12 18 12s3 1.5 3 1.5L22.5 12"/><path d="M9 6V3m6 3V3"/></svg>' },
+        { name: 'Fitness Center', desc: 'State-of-the-art equipment, open around the clock',
+          icon: '<svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M12 6.5v11"/><path d="M3 9.5V14a1 1 0 001 1h1V8.5H4a1 1 0 00-1 1z"/><path d="M5.5 7v10a1 1 0 001 1h1V6h-1a1 1 0 00-1 1z"/><path d="M21 9.5V14a1 1 0 01-1 1h-1V8.5h1a1 1 0 011 1z"/><path d="M18.5 7v10a1 1 0 01-1 1h-1V6h1a1 1 0 011 1z"/></svg>' },
+        { name: 'Pet Friendly', desc: 'Bark park, pet spa, and grooming station',
+          icon: '<svg viewBox="0 0 24 24"><path d="M10 5.172C10 3.782 8.884 2.5 7.5 2.5S5 3.782 5 5.172C5 7.5 7.5 9 7.5 9S10 7.5 10 5.172z"/><path d="M19 5.172C19 3.782 17.884 2.5 16.5 2.5S14 3.782 14 5.172C14 7.5 16.5 9 16.5 9S19 7.5 19 5.172z"/><path d="M7.5 14c-2 0-4 1.5-4 4s2.5 4 5 4h7c2.5 0 5-1.5 5-4s-2-4-4-4c-1.5 0-2.5.5-4 .5S9 14 7.5 14z"/></svg>' }
+      ]},
+      { label: 'Lifestyle', items: [
+        { name: 'Sky Lounge', desc: 'Panoramic rooftop terrace with fire pits, lounge seating, and sunset views over the skyline', hero: true, tag: 'Signature Space',
+          icon: '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/><path d="M3 11h18"/></svg>' },
+        { name: 'Concierge', desc: 'Dedicated on-site team for your every need',
+          icon: '<svg viewBox="0 0 24 24"><path d="M18 16.5a2 2 0 01-2 2H8a2 2 0 01-2-2"/><path d="M12 3v2"/><path d="M6 16.5V12a6 6 0 0112 0v4.5"/><path d="M4 20h16"/></svg>' },
+        { name: 'Business Center', desc: 'Co-working spaces and private meeting rooms',
+          icon: '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' }
+      ]},
+      { label: 'Convenience', items: [
+        { name: 'Covered Parking', desc: 'Secure garage with reserved spaces',
+          icon: '<svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><rect x="7" y="13" width="10" height="8" rx="1"/><path d="M10 17h4"/></svg>' },
+        { name: 'Package Lockers', desc: 'Smart Amazon-style lockers for 24/7 pickup',
+          icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 6v3M17.5 6v3M6.5 16.5v1.5M17.5 16.5v1.5"/></svg>' },
+        { name: 'EV Charging', desc: 'Level 2 stations in the parking garage',
+          icon: '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' }
+      ]}
     ];
 
     var callout = document.getElementById('buildingAmenitiesCallout');
     var bHtml = '<div class="building-amenities-callout reveal">' +
-      '<div class="building-callout-header">' +
-        '<div class="building-callout-header-icon">' +
-          '<svg viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>' +
-        '</div>' +
-        '<div class="building-callout-header-text">' +
-          '<h3>Building Amenities</h3>' +
-          '<p>Shared spaces &amp; services for all residents</p>' +
-        '</div>' +
-      '</div>' +
-      '<div class="building-amenity-grid">';
-
-    for (var b = 0; b < bAmenities.length; b++) {
-      var a = bAmenities[b];
-      bHtml += '<div class="building-amenity-item building-amenity-stagger" style="animation-delay: ' + (b * 0.07) + 's">' +
-        '<div class="building-amenity-icon">' + a.icon + '</div>' +
-        '<div class="building-amenity-text"><strong>' + a.name + '</strong><span>' + a.desc + '</span></div>' +
+      '<div class="ba-header">' +
+        '<div class="ba-header-label">Building Amenities</div>' +
+        '<h3>Beyond your <em>door</em></h3>' +
+        '<p>Premium shared spaces and services included with every stay</p>' +
       '</div>';
-    }
 
-    bHtml += '</div></div>';
+    var stIdx = 0;
+    for (var ci = 0; ci < baCategories.length; ci++) {
+      var cat = baCategories[ci];
+      bHtml += '<div class="ba-category">' +
+        '<div class="ba-cat-label ba-stagger" style="transition-delay: ' + (stIdx * 0.06) + 's">' + cat.label + '</div>' +
+        '<div class="ba-bento">';
+      stIdx++;
+
+      for (var ai = 0; ai < cat.items.length; ai++) {
+        var am = cat.items[ai];
+        var heroClass = am.hero ? ' ba-hero' : '';
+        var tagHtml = am.tag ? '<div class="ba-card-tag"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' + am.tag + '</div>' : '';
+
+        bHtml += '<div class="ba-card' + heroClass + ' ba-stagger" style="transition-delay: ' + (stIdx * 0.06) + 's">' +
+          '<div class="ba-icon-wrap"><div class="ba-icon-ring"></div>' + am.icon + '</div>' +
+          '<div class="ba-card-name">' + am.name + '</div>' +
+          '<div class="ba-card-desc">' + am.desc + '</div>' +
+          tagHtml +
+        '</div>';
+        stIdx++;
+      }
+      bHtml += '</div></div>';
+    }
+    bHtml += '</div>';
     callout.innerHTML = bHtml;
+
+    // Scroll-triggered stagger reveal
+    var baCards = callout.querySelectorAll('.ba-stagger');
+    if (baCards.length && 'IntersectionObserver' in window) {
+      var baObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.classList.add('revealed'); baObs.unobserve(e.target); }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      baCards.forEach(function(c) { baObs.observe(c); });
+    } else {
+      baCards.forEach(function(c) { c.classList.add('revealed'); });
+    }
   }
 })();
 
