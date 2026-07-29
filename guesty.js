@@ -31,6 +31,8 @@ try {
   beapi = null;
 }
 
+const START_TIME = Date.now();
+
 const TOKEN_URL = 'https://open-api.guesty.com/oauth2/token';
 const API_BASE = 'https://open-api.guesty.com/v1';
 const SCOPE = 'open-api';
@@ -410,6 +412,31 @@ async function getToken() {
   } finally {
     inflight = null;
   }
+}
+
+/**
+ * Non-secret snapshot of auth state, for diagnosing a degraded deploy without
+ * shell access to the host. Deliberately reports only booleans, timestamps and
+ * lengths — never any part of a token or credential.
+ */
+function tokenStatus() {
+  const bootstrap = process.env.GUESTY_ACCESS_TOKEN || null;
+  return {
+    startedAt: new Date(START_TIME).toISOString(),
+    hasToken: Boolean(cachedToken),
+    tokenExpiry: tokenExpiry ? new Date(tokenExpiry).toISOString() : null,
+    tokenPastStatedExpiry: Boolean(cachedToken) && Date.now() >= tokenExpiry - 60_000,
+    bootstrapEnvSet: Boolean(bootstrap),
+    bootstrapEnvLength: bootstrap ? bootstrap.length : 0,
+    bootstrapEnvExpiryRaw: process.env.GUESTY_ACCESS_TOKEN_EXPIRY || null,
+    bootstrapBurned: Boolean(bootstrap && burnedTokens.has(bootstrap)),
+    burnedCount: burnedTokens.size,
+    hasOAuthCredentials: Boolean(process.env.GUESTY_CLIENT_ID && process.env.GUESTY_CLIENT_SECRET),
+    rateLimited: isRateLimited(),
+    rateLimitScope,
+    retryAfter: rateLimitRetryAfter(),
+    skippingLiveFetch: shouldSkipLiveFetch(),
+  };
 }
 
 /** Re-adopt a token past its stated expiry for another re-validation window. */
@@ -1321,6 +1348,7 @@ module.exports = {
   countNights,
   isRateLimited,
   rateLimitRetryAfter,
+  tokenStatus,
   getCachedCalendar,
   clearAllCaches,
   // BEAPI extensions

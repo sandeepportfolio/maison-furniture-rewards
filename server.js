@@ -868,6 +868,14 @@ app.post('/api/guesty/quote', async (req, res) => {
   }
 });
 
+// Auth/rate-limit health — booleans and timestamps only, no secrets. Exists so a
+// degraded deploy can be diagnosed ("is the env token present? has Guesty burned
+// it? are we in a cooldown?") without shell access to the host.
+app.get('/api/guesty/token-status', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(guesty.tokenStatus());
+});
+
 // BEAPI status — lets the frontend know whether BEAPI features are available.
 app.get('/api/guesty/beapi-status', (req, res) => {
   res.json({ enabled: guesty.beapiAvailable() });
