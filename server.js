@@ -608,6 +608,64 @@ app.get('/api/availability/now', async (req, res) => {
   }
 });
 
+// Check availability for a specific date across all listings.
+//   GET /api/availability/check?date=YYYY-MM-DD
+// Returns { date, properties: [{ slug, name, city, guests, beds, baths,
+//   photo, available, minNights, price, currency }] }
+app.get('/api/availability/check', async (req, res) => {
+  try {
+    const date = req.query.date;
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'date parameter required (YYYY-MM-DD)' });
+    }
+    if (date < todayUTC()) {
+      return res.status(400).json({ error: 'Date cannot be in the past' });
+    }
+
+    const nextDay = new Date(date + 'T00:00:00Z');
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    const to = nextDay.toISOString().slice(0, 10);
+
+    const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+    const slugs = Object.keys(PROPERTY_DATA);
+
+    const results = await Promise.allSettled(
+      slugs.map(async (slug) => {
+        const prop = PROPERTY_DATA[slug];
+        const listingId = guesty.resolveListingId(slug);
+        if (!listingId) return null;
+
+        const days = await guesty.getCalendar(listingId, date, to);
+        const day = (days || []).find(d => d.date === date) || {};
+
+        return {
+          slug,
+          name: prop.name,
+          city: prop.city,
+          guests: prop.guests,
+          beds: prop.beds,
+          baths: prop.baths,
+          photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+          available: !!day.available && !day.cta,
+          minNights: day.minNights || null,
+          price: day.price || null,
+          currency: day.currency || 'USD'
+        };
+      })
+    );
+
+    const properties = results
+      .filter(r => r.status === 'fulfilled' && r.value)
+      .map(r => r.value);
+
+    res.set('Cache-Control', 'no-store');
+    res.json({ date, properties });
+  } catch (err) {
+    console.error('Availability/check error:', err.message);
+    res.status(502).json({ error: 'Could not load availability' });
+  }
+});
+
 // Availability calendar for one listing.
 //   GET /api/guesty/calendar?listing=<slug|id>&from=YYYY-MM-DD&to=YYYY-MM-DD
 app.get('/api/guesty/calendar', async (req, res) => {

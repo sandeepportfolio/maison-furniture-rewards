@@ -1915,6 +1915,39 @@ ul{list-style:none}
 }
 .avail-card-book:hover{background:var(--accent-hover);transform:translateY(-1px)}
 
+/* ── Custom date picker ── */
+.avail-custom-dates{margin-bottom:28px;padding-top:4px}
+.avail-custom-dates .avail-day-label{margin-bottom:12px}
+.avail-date-picker-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.avail-date-input{
+  flex:1;appearance:none;-webkit-appearance:none;
+  background:var(--bg-card);border:1px solid var(--border);
+  color:var(--text);font-family:var(--sans);font-size:14px;font-weight:500;
+  padding:10px 14px;border-radius:var(--radius);
+  transition:border-color .3s var(--ease),box-shadow .3s var(--ease);
+  cursor:pointer;
+}
+.avail-date-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.12)}
+.avail-date-input::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}
+.avail-date-btn{
+  background:var(--accent);color:var(--accent-ink);border:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  padding:10px 18px;border-radius:var(--radius);cursor:pointer;
+  transition:background .25s var(--ease),transform .2s var(--ease);white-space:nowrap;
+}
+.avail-date-btn:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.avail-date-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.avail-date-results{min-height:0;transition:min-height .3s var(--ease)}
+.avail-date-empty{
+  font-family:var(--sans);font-size:13px;color:var(--text-dim);
+  padding:12px 0;font-style:italic;
+}
+.avail-date-error{
+  font-family:var(--sans);font-size:13px;color:#f87171;
+  padding:12px 0;display:flex;align-items:center;gap:6px;
+}
+.avail-date-error svg{width:14px;height:14px;stroke:#f87171;fill:none;stroke-width:2;flex-shrink:0}
+
 /* ── Loading skeleton ── */
 .avail-skeleton{display:flex;gap:16px;padding:16px;margin-bottom:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg)}
 .avail-skel-photo{width:100px;height:100px;border-radius:var(--radius);background:var(--border);animation:skelPulse 1.5s ease-in-out infinite}
@@ -6982,18 +7015,19 @@ if (bar) {
   }
 
   function renderCard(p, when) {
-    var badgeClass = when === 'today' ? 'today' : 'tomorrow';
-    var isMobile = window.innerWidth <= 768;
-    var badgeText = when === 'today' ? 'Today' : (isMobile ? 'Tmrw' : 'Tomorrow');
-    var day = p[when];
+    var day = when === 'custom' ? p : p[when];
     var price = day.price ? '$' + Math.round(day.price) : '';
     var minN = day.minNights || 1;
     var nightsLabel = minN === 1 ? '1 night min' : minN + ' nights min';
+    var badgeHtml = '';
+    if (when === 'today') {
+      badgeHtml = '<span class="avail-card-badge today">Today</span>';
+    }
 
     return '<a href="/property/' + p.slug + '" class="avail-card">' +
       '<div class="avail-card-photo">' +
         '<img src="' + p.photo + '" alt="' + p.name + '" loading="lazy">' +
-        '<span class="avail-card-badge ' + badgeClass + '">' + badgeText + '</span>' +
+        badgeHtml +
       '</div>' +
       '<div class="avail-card-info">' +
         '<div class="avail-card-name">' + p.name + '</div>' +
@@ -7032,7 +7066,9 @@ if (bar) {
     if (totalAvail === 0) {
       fab.classList.add('no-avail');
       fabLabel.textContent = 'Check Availability';
-      body.innerHTML = '<div class="avail-none">All properties are booked for today and tomorrow. Check back soon!</div>';
+      body.innerHTML = '<div class="avail-none">All properties are booked for today and tomorrow.</div>' +
+        customDateSection();
+      bindDatePicker();
       return;
     }
 
@@ -7054,12 +7090,85 @@ if (bar) {
       h += '</div>';
     }
 
+    h += customDateSection();
+
     h += '<div class="avail-refresh" id="availRefreshInd">' +
       '<svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>' +
       '<span>Auto-refreshes every 5 min</span>' +
     '</div>';
 
     body.innerHTML = h;
+    bindDatePicker();
+  }
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function customDateSection() {
+    var today = todayStr();
+    return '<div class="avail-custom-dates">' +
+      '<div class="avail-day-label">Custom dates</div>' +
+      '<div class="avail-date-picker-row">' +
+        '<input type="date" class="avail-date-input" id="availDateInput" min="' + today + '" value="">' +
+        '<button class="avail-date-btn" id="availDateBtn" disabled>Check</button>' +
+      '</div>' +
+      '<div class="avail-date-results" id="availDateResults"></div>' +
+    '</div>';
+  }
+
+  function bindDatePicker() {
+    var input = document.getElementById('availDateInput');
+    var btn = document.getElementById('availDateBtn');
+    var results = document.getElementById('availDateResults');
+    if (!input || !btn) return;
+
+    input.addEventListener('change', function() {
+      btn.disabled = !input.value;
+    });
+
+    btn.addEventListener('click', function() {
+      var date = input.value;
+      if (!date) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Checking...';
+      results.innerHTML = skeleton();
+
+      fetch('/api/availability/check?date=' + encodeURIComponent(date), { cache: 'no-store' })
+        .then(function(r) {
+          if (!r.ok) throw new Error('API error');
+          return r.json();
+        })
+        .then(function(data) {
+          var avail = (data.properties || []).filter(function(p) { return p.available; });
+          if (avail.length === 0) {
+            results.innerHTML = '<div class="avail-date-empty">No properties available on ' + formatDateLabel(date) + '.</div>';
+          } else {
+            var h = '';
+            avail.forEach(function(p) { h += renderCard(p, 'custom'); });
+            results.innerHTML = h;
+          }
+        })
+        .catch(function() {
+          results.innerHTML = '<div class="avail-date-error">' +
+            '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+            'Unable to check availability. Please try again.</div>';
+        })
+        .finally(function() {
+          btn.disabled = false;
+          btn.textContent = 'Check';
+        });
+    });
+  }
+
+  function formatDateLabel(dateStr) {
+    var parts = dateStr.split('-');
+    var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
   }
 
   function formatTime(iso) {
