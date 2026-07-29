@@ -559,7 +559,32 @@ app.get('/api/availability/now', async (req, res) => {
         const listingId = guesty.resolveListingId(slug);
         if (!listingId) return null;
 
-        const days = await guesty.getCalendar(listingId, today, to);
+        const base = {
+          slug,
+          name: prop.name,
+          city: prop.city,
+          category: prop.category,
+          guests: prop.guests,
+          beds: prop.beds,
+          baths: prop.baths,
+          photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+        };
+
+        let days;
+        try {
+          days = await guesty.getCalendar(listingId, today, to);
+        } catch (calErr) {
+          console.warn(`Calendar fetch failed for ${slug}:`, calErr.message);
+          const listing = guesty.LISTINGS[slug];
+          const fallbackPrice = listing?.basePrice || null;
+          return {
+            ...base,
+            today:    { available: false, minNights: listing?.minNights || 1, price: fallbackPrice, currency: 'USD' },
+            tomorrow: { available: false, minNights: listing?.minNights || 1, price: fallbackPrice, currency: 'USD' },
+            _fallback: true,
+          };
+        }
+
         const dayMap = {};
         (days || []).forEach(d => { dayMap[d.date] = d; });
 
@@ -572,14 +597,7 @@ app.get('/api/availability/now', async (req, res) => {
         const tomorrowDay = dayMap[tomorrowStr] || {};
 
         return {
-          slug,
-          name: prop.name,
-          city: prop.city,
-          category: prop.category,
-          guests: prop.guests,
-          beds: prop.beds,
-          baths: prop.baths,
-          photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+          ...base,
           today: {
             available: !!todayDay.available && !todayDay.cta,
             minNights: todayDay.minNights || null,
@@ -635,10 +653,7 @@ app.get('/api/availability/check', async (req, res) => {
         const listingId = guesty.resolveListingId(slug);
         if (!listingId) return null;
 
-        const days = await guesty.getCalendar(listingId, date, to);
-        const day = (days || []).find(d => d.date === date) || {};
-
-        return {
+        const base = {
           slug,
           name: prop.name,
           city: prop.city,
@@ -646,6 +661,28 @@ app.get('/api/availability/check', async (req, res) => {
           beds: prop.beds,
           baths: prop.baths,
           photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+        };
+
+        let days;
+        try {
+          days = await guesty.getCalendar(listingId, date, to);
+        } catch (calErr) {
+          console.warn(`Calendar check failed for ${slug} on ${date}:`, calErr.message);
+          const listing = guesty.LISTINGS[slug];
+          return {
+            ...base,
+            available: false,
+            minNights: listing?.minNights || 1,
+            price: listing?.basePrice || null,
+            currency: 'USD',
+            _fallback: true,
+          };
+        }
+
+        const day = (days || []).find(d => d.date === date) || {};
+
+        return {
+          ...base,
           available: !!day.available && !day.cta,
           minNights: day.minNights || null,
           price: day.price || null,
