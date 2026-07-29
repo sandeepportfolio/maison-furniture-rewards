@@ -626,23 +626,39 @@ app.get('/api/availability/now', async (req, res) => {
   }
 });
 
-// Check availability for a specific date across all listings.
-//   GET /api/availability/check?date=YYYY-MM-DD
-// Returns { date, properties: [{ slug, name, city, guests, beds, baths,
-//   photo, available, minNights, price, currency }] }
+// Check availability for a date range across all listings.
+//   GET /api/availability/check?checkIn=YYYY-MM-DD&checkOut=YYYY-MM-DD
+//   Legacy single-date:  ?date=YYYY-MM-DD  (still supported)
+// Returns { checkIn, checkOut, nights, properties: [{ slug, name, city,
+//   guests, beds, baths, photo, available, minNights, nightlyRate, totalPrice, currency }] }
 app.get('/api/availability/check', async (req, res) => {
   try {
-    const date = req.query.date;
-    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return res.status(400).json({ error: 'date parameter required (YYYY-MM-DD)' });
+    const dateFmt = /^\d{4}-\d{2}-\d{2}$/;
+    let checkIn = req.query.checkIn || req.query.date;
+    let checkOut = req.query.checkOut;
+
+    if (!checkIn || !dateFmt.test(checkIn)) {
+      return res.status(400).json({ error: 'checkIn date required (YYYY-MM-DD)' });
     }
-    if (date < todayUTC()) {
-      return res.status(400).json({ error: 'Date cannot be in the past' });
+    if (checkIn < todayUTC()) {
+      return res.status(400).json({ error: 'Check-in cannot be in the past' });
+    }
+    if (!checkOut) {
+      const next = new Date(checkIn + 'T00:00:00Z');
+      next.setUTCDate(next.getUTCDate() + 1);
+      checkOut = next.toISOString().slice(0, 10);
+    }
+    if (!dateFmt.test(checkOut)) {
+      return res.status(400).json({ error: 'checkOut must be YYYY-MM-DD' });
+    }
+    if (checkOut <= checkIn) {
+      return res.status(400).json({ error: 'Check-out must be after check-in' });
     }
 
-    const nextDay = new Date(date + 'T00:00:00Z');
-    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-    const to = nextDay.toISOString().slice(0, 10);
+    const nights = Math.round((new Date(checkOut + 'T00:00:00Z') - new Date(checkIn + 'T00:00:00Z')) / 86_400_000);
+    if (nights > 90) {
+      return res.status(400).json({ error: 'Maximum 90 nights' });
+    }
 
     const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
     const slugs = Object.keys(PROPERTY_DATA);
@@ -665,28 +681,35 @@ app.get('/api/availability/check', async (req, res) => {
 
         let days;
         try {
-          days = await guesty.getCalendar(listingId, date, to);
+          days = await guesty.getCalendar(listingId, checkIn, checkOut);
         } catch (calErr) {
-          console.warn(`Calendar check failed for ${slug} on ${date}:`, calErr.message);
+          console.warn(`Calendar check failed for ${slug} on ${checkIn}:`, calErr.message);
           const listing = guesty.LISTINGS[slug];
           return {
             ...base,
             available: false,
             minNights: listing?.minNights || 1,
-            price: listing?.basePrice || null,
+            nightlyRate: listing?.basePrice || null,
+            totalPrice: null,
             currency: 'USD',
             _fallback: true,
           };
         }
 
-        const day = (days || []).find(d => d.date === date) || {};
+        const stayDays = (days || []).filter(d => d.date >= checkIn && d.date < checkOut);
+        const firstDay = stayDays[0] || {};
+        const minN = firstDay.minNights || 1;
+        const allAvailable = stayDays.length === nights && stayDays.every(d => d.available && !d.cta);
+        const totalPrice = allAvailable ? stayDays.reduce((s, d) => s + (d.price || 0), 0) : null;
+        const avgNightly = allAvailable && nights > 0 ? Math.round(totalPrice / nights) : (firstDay.price || null);
 
         return {
           ...base,
-          available: !!day.available && !day.cta,
-          minNights: day.minNights || null,
-          price: day.price || null,
-          currency: day.currency || 'USD'
+          available: allAvailable,
+          minNights: minN,
+          nightlyRate: avgNightly,
+          totalPrice,
+          currency: firstDay.currency || 'USD',
         };
       })
     );
@@ -696,7 +719,7 @@ app.get('/api/availability/check', async (req, res) => {
       .map(r => r.value);
 
     res.set('Cache-Control', 'no-store');
-    res.json({ date, properties });
+    res.json({ checkIn, checkOut, nights, properties });
   } catch (err) {
     console.error('Availability/check error:', err.message);
     res.status(502).json({ error: 'Could not load availability' });

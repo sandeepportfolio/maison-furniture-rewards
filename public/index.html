@@ -123,6 +123,7 @@ ul{list-style:none}
 @keyframes v2bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes v2bob2{0%,100%{transform:translateY(-7px)}50%{transform:translateY(8px)}}
 @keyframes v2spin{to{transform:rotate(360deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes v2shimmer{to{background-position:200% center}}
 @keyframes v2blink{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes v2mq{to{transform:translateX(-50%)}}
@@ -1924,37 +1925,74 @@ ul{list-style:none}
 .avail-card-book:hover{background:var(--accent-hover);transform:translateY(-1px)}
 
 /* ── Custom date picker ── */
-.avail-custom-dates{margin-bottom:28px;padding-top:4px}
-.avail-custom-dates .avail-day-label{margin-bottom:12px}
-.avail-date-picker-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+/* ── Custom date range search (top of drawer) ── */
+.avail-custom-dates{margin-bottom:24px;padding:20px;background:rgba(201,152,69,.04);border:1px solid rgba(201,152,69,.15);border-radius:var(--radius-lg)}
+.avail-custom-dates .avail-day-label{margin-bottom:14px;color:var(--accent-light)}
+.avail-date-fields{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-bottom:0}
+.avail-date-field{flex:1;min-width:120px;display:flex;flex-direction:column;gap:4px}
+.avail-date-label{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
 .avail-date-input{
-  flex:1;appearance:none;-webkit-appearance:none;
-  background:var(--bg-card);border:1px solid var(--border);
+  width:100%;appearance:none;-webkit-appearance:none;
+  background:var(--bg-dark);border:1px solid var(--border);
   color:var(--text);font-family:var(--sans);font-size:14px;font-weight:500;
-  padding:10px 14px;border-radius:var(--radius);
+  padding:10px 12px;border-radius:var(--radius);
   transition:border-color .3s var(--ease),box-shadow .3s var(--ease);
   cursor:pointer;
 }
 .avail-date-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.12)}
 .avail-date-input::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}
-.avail-date-btn{
+.avail-date-search{
   background:var(--accent);color:var(--accent-ink);border:none;
   font-family:var(--sans);font-size:13px;font-weight:600;
-  padding:10px 18px;border-radius:var(--radius);cursor:pointer;
+  padding:10px 20px;border-radius:var(--radius);cursor:pointer;
   transition:background .25s var(--ease),transform .2s var(--ease);white-space:nowrap;
+  height:40px;display:flex;align-items:center;justify-content:center;gap:6px;
+  flex-basis:100%;
 }
-.avail-date-btn:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.avail-date-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.avail-date-results{min-height:0;transition:min-height .3s var(--ease)}
-.avail-date-empty{
-  font-family:var(--sans);font-size:13px;color:var(--text-dim);
-  padding:12px 0;font-style:italic;
+.avail-date-search svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.avail-date-search:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.avail-date-search:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.avail-date-hint{font-family:var(--sans);font-size:11px;color:var(--accent);margin-top:8px;display:none;padding:0 2px}
+.avail-date-hint.visible{display:block}
+
+/* ── Search results view (replaces drawer body) ── */
+.avail-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 0 16px;border-bottom:1px solid var(--border-dark);margin-bottom:16px;
 }
-.avail-date-error{
+.avail-modal-title{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--text-inv)}
+.avail-modal-subtitle{font-family:var(--sans);font-size:12px;color:var(--text-dim);margin-top:2px}
+.avail-modal-close{
+  width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:1px solid var(--border-dark);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0;
+}
+.avail-modal-close:hover{background:rgba(255,255,255,.12);border-color:var(--accent)}
+.avail-modal-close svg{width:14px;height:14px;stroke:var(--text-inv-muted);fill:none;stroke-width:2}
+.avail-modal-body{padding:16px 24px 24px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.avail-modal-body .avail-card{margin-bottom:12px}
+.avail-modal-body .avail-card:last-child{margin-bottom:0}
+.avail-modal-summary{font-family:var(--sans);font-size:12px;color:var(--text-dim);padding-bottom:12px;border-bottom:1px solid var(--border-dark);margin-bottom:16px}
+.avail-modal-empty{
+  text-align:center;padding:40px 20px;
+  font-family:var(--sans);font-size:14px;color:var(--text-dim);
+}
+.avail-modal-empty svg{width:40px;height:40px;stroke:var(--border);fill:none;stroke-width:1.5;margin-bottom:12px}
+.avail-modal-empty p{margin:0;line-height:1.6}
+.avail-modal-error{
   font-family:var(--sans);font-size:13px;color:#f87171;
-  padding:12px 0;display:flex;align-items:center;gap:6px;
+  padding:20px 0;display:flex;align-items:center;gap:8px;justify-content:center;
 }
-.avail-date-error svg{width:14px;height:14px;stroke:#f87171;fill:none;stroke-width:2;flex-shrink:0}
+.avail-modal-error svg{width:16px;height:16px;stroke:#f87171;fill:none;stroke-width:2;flex-shrink:0}
+/* range card total pricing */
+.avail-card-total{font-family:var(--sans);font-size:18px;font-weight:600;color:var(--text-inv)}
+.avail-card-total span{font-size:12px;font-weight:400;color:var(--text-dim);margin-left:2px}
+.avail-card-pernight{font-family:var(--sans);font-size:11px;color:var(--text-dim)}
+
+@media(max-width:480px){
+  .avail-custom-dates{padding:14px}
+  .avail-date-fields{gap:6px}
+}
 
 /* ── Loading skeleton ── */
 .avail-skeleton{display:flex;gap:16px;padding:16px;margin-bottom:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg)}
@@ -7076,18 +7114,19 @@ if (bar) {
     fabCount.textContent = totalAvail;
 
     fab.classList.remove('hidden');
+    var h = customDateSection();
+
     if (totalAvail === 0) {
       fab.classList.add('no-avail');
       fabLabel.textContent = 'Check Availability';
-      body.innerHTML = '<div class="avail-none">All properties are booked for today and tomorrow.</div>' +
-        customDateSection();
+      h += '<div class="avail-none">All properties are booked for today and tomorrow.</div>';
+      body.innerHTML = h;
       bindDatePicker();
       return;
     }
 
     fab.classList.remove('no-avail');
     fabLabel.textContent = 'Available Now';
-    var h = '';
 
     if (todayProps.length) {
       h += '<div class="avail-day-group">' +
@@ -7102,8 +7141,6 @@ if (bar) {
       tomorrowOnly.forEach(function(p) { h += renderCard(p, 'tomorrow'); });
       h += '</div>';
     }
-
-    h += customDateSection();
 
     h += '<div class="avail-refresh" id="availRefreshInd">' +
       '<svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>' +
@@ -7122,56 +7159,165 @@ if (bar) {
   function customDateSection() {
     var today = todayStr();
     return '<div class="avail-custom-dates">' +
-      '<div class="avail-day-label">Custom dates</div>' +
-      '<div class="avail-date-picker-row">' +
-        '<input type="date" class="avail-date-input" id="availDateInput" min="' + today + '" value="">' +
-        '<button class="avail-date-btn" id="availDateBtn" disabled>Check</button>' +
+      '<div class="avail-day-label">Search by dates</div>' +
+      '<div class="avail-date-fields">' +
+        '<div class="avail-date-field">' +
+          '<label class="avail-date-label" for="availCheckIn">Check-in</label>' +
+          '<input type="date" class="avail-date-input" id="availCheckIn" min="' + today + '" value="">' +
+        '</div>' +
+        '<div class="avail-date-field">' +
+          '<label class="avail-date-label" for="availCheckOut">Check-out</label>' +
+          '<input type="date" class="avail-date-input" id="availCheckOut" min="' + today + '" value="" disabled>' +
+        '</div>' +
+        '<button class="avail-date-search" id="availDateSearch" disabled>' +
+          '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+          'Search' +
+        '</button>' +
       '</div>' +
-      '<div class="avail-date-results" id="availDateResults"></div>' +
+      '<div class="avail-date-hint" id="availDateHint"></div>' +
     '</div>';
   }
 
-  function bindDatePicker() {
-    var input = document.getElementById('availDateInput');
-    var btn = document.getElementById('availDateBtn');
-    var results = document.getElementById('availDateResults');
-    if (!input || !btn) return;
+  function addDays(dateStr, n) {
+    var parts = dateStr.split('-');
+    var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    d.setDate(d.getDate() + n);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
 
-    input.addEventListener('change', function() {
-      btn.disabled = !input.value;
+  function nightsBetween(a, b) {
+    var da = new Date(a), db = new Date(b);
+    return Math.round((db - da) / 86400000);
+  }
+
+  function renderRangeCard(p, nights) {
+    var totalPrice = p.totalPrice ? '$' + Math.round(p.totalPrice).toLocaleString() : '';
+    var perNight = p.nightlyRate ? '$' + Math.round(p.nightlyRate) : '';
+    var minN = p.minNights || 1;
+    return '<a href="/property/' + p.slug + '" class="avail-card">' +
+      '<div class="avail-card-photo">' +
+        '<img src="' + p.photo + '" alt="' + p.name + '" loading="lazy">' +
+      '</div>' +
+      '<div class="avail-card-info">' +
+        '<div class="avail-card-name">' + p.name + '</div>' +
+        '<div class="avail-card-meta">' +
+          '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+          p.city +
+          ' &middot; ' + p.guests + ' guests &middot; ' + p.beds + ' bed' + (p.beds > 1 ? 's' : '') +
+        '</div>' +
+        '<div class="avail-card-bottom">' +
+          (totalPrice ? '<span class="avail-card-total">' + totalPrice + '<span> total</span></span>' : '') +
+          (perNight ? '<span class="avail-card-pernight">' + perNight + '/night &middot; ' + nights + ' night' + (nights > 1 ? 's' : '') + '</span>' : '') +
+          '<span class="avail-card-book">Book</span>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
+  }
+
+  var savedDrawerHTML = '';
+
+  function openResultsModal(checkIn, checkOut, nights, properties) {
+    var avail = properties.filter(function(p) { return p.available; });
+    var ciLabel = formatDateLabel(checkIn);
+    var coLabel = formatDateLabel(checkOut);
+
+    savedDrawerHTML = body.innerHTML;
+
+    var h = '<div class="avail-modal-header">' +
+      '<div>' +
+        '<div class="avail-modal-title">' + ciLabel + ' — ' + coLabel + '</div>' +
+        '<div class="avail-modal-subtitle">' + nights + ' night' + (nights > 1 ? 's' : '') + '</div>' +
+      '</div>' +
+      '<button class="avail-modal-close" id="availModalBack">' +
+        '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>' +
+      '</button>' +
+    '</div>';
+
+    if (avail.length === 0) {
+      h += '<div class="avail-modal-empty">' +
+        '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
+        '<p>No properties available for<br><strong>' + ciLabel + '</strong> — <strong>' + coLabel + '</strong></p>' +
+        '<p style="margin-top:8px;font-size:12px;">Try different dates or a shorter stay.</p>' +
+      '</div>';
+    } else {
+      h += '<div class="avail-modal-summary">' +
+        avail.length + ' propert' + (avail.length === 1 ? 'y' : 'ies') + ' available &middot; ' +
+        nights + ' night' + (nights > 1 ? 's' : '') +
+      '</div>';
+      avail.forEach(function(p) { h += renderRangeCard(p, nights); });
+    }
+
+    body.innerHTML = h;
+    body.scrollTop = 0;
+
+    document.getElementById('availModalBack').addEventListener('click', function() {
+      body.innerHTML = savedDrawerHTML;
+      body.scrollTop = 0;
+      bindDatePicker();
+    });
+  }
+
+  function bindDatePicker() {
+    var checkIn = document.getElementById('availCheckIn');
+    var checkOut = document.getElementById('availCheckOut');
+    var searchBtn = document.getElementById('availDateSearch');
+    var hint = document.getElementById('availDateHint');
+    if (!checkIn || !checkOut || !searchBtn) return;
+
+    checkIn.addEventListener('change', function() {
+      if (!checkIn.value) {
+        checkOut.disabled = true;
+        checkOut.value = '';
+        searchBtn.disabled = true;
+        hint.classList.remove('visible');
+        hint.textContent = '';
+        return;
+      }
+      var minCheckOut = addDays(checkIn.value, 1);
+      checkOut.min = minCheckOut;
+      checkOut.disabled = false;
+      if (checkOut.value && checkOut.value <= checkIn.value) {
+        checkOut.value = minCheckOut;
+      }
+      if (!checkOut.value) {
+        checkOut.value = minCheckOut;
+      }
+      searchBtn.disabled = !checkOut.value;
+      hint.textContent = 'Min-night requirements vary by property and check-in date.';
+      hint.classList.add('visible');
     });
 
-    btn.addEventListener('click', function() {
-      var date = input.value;
-      if (!date) return;
+    checkOut.addEventListener('change', function() {
+      if (checkOut.value && checkOut.value <= checkIn.value) {
+        checkOut.value = addDays(checkIn.value, 1);
+      }
+      searchBtn.disabled = !(checkIn.value && checkOut.value);
+    });
 
-      btn.disabled = true;
-      btn.textContent = 'Checking...';
-      results.innerHTML = skeleton();
+    searchBtn.addEventListener('click', function() {
+      var ci = checkIn.value;
+      var co = checkOut.value;
+      if (!ci || !co) return;
+      var nights = nightsBetween(ci, co);
+      if (nights < 1) return;
 
-      fetch('/api/availability/check?date=' + encodeURIComponent(date), { cache: 'no-store' })
+      searchBtn.disabled = true;
+      searchBtn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Searching...';
+
+      fetch('/api/availability/check?checkIn=' + encodeURIComponent(ci) + '&checkOut=' + encodeURIComponent(co), { cache: 'no-store' })
         .then(function(r) {
           if (!r.ok) throw new Error('API error');
           return r.json();
         })
         .then(function(data) {
-          var avail = (data.properties || []).filter(function(p) { return p.available; });
-          if (avail.length === 0) {
-            results.innerHTML = '<div class="avail-date-empty">No properties available on ' + formatDateLabel(date) + '.</div>';
-          } else {
-            var h = '';
-            avail.forEach(function(p) { h += renderCard(p, 'custom'); });
-            results.innerHTML = h;
-          }
+          openResultsModal(ci, co, data.nights || nights, data.properties || []);
         })
         .catch(function() {
-          results.innerHTML = '<div class="avail-date-error">' +
-            '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
-            'Unable to check availability. Please try again.</div>';
+          openResultsModal(ci, co, nights, []);
         })
         .finally(function() {
-          btn.disabled = false;
-          btn.textContent = 'Check';
+          searchBtn.disabled = false;
+          searchBtn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search';
         });
     });
   }
