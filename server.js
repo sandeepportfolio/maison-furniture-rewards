@@ -3505,7 +3505,7 @@ function renderPropertyPage(slug, res) {
     .replace(/\{\{BEDS_SUFFIX\}\}/g, prop.beds > 1 ? 's' : '')
     .replace(/\{\{BATHS\}\}/g, String(prop.baths))
     .replace(/\{\{BATHS_SUFFIX\}\}/g, prop.baths > 1 ? 's' : '')
-    .replace(/\{\{AIR_MATTRESS_PILL\}\}/g, (slug === 'regent-skyline' || slug === 'lake-view')
+    .replace(/\{\{AIR_MATTRESS_PILL\}\}/g, (slug === 'regent-skyline' || slug === 'lake-view' || slug === 'executive')
       ? '<div class="stat-pill air-mattress"><svg viewBox="0 0 24 24"><path d="M2 18v-1a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v1"/><path d="M6 13V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9"/><path d="M2 18h20"/><path d="M4 21h16"/></svg><span class="stat-text">+ Queen Air Mattress</span></div>'
       : '')
     .replace(/\{\{HOSTING_ID\}\}/g, prop.hostingId)
