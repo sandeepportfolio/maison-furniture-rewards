@@ -287,8 +287,8 @@ const upload = multer({
 });
 
 app.use(express.json());
-app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Property page route is defined below (before app.listen) using property.html template
 
