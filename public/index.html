@@ -7014,9 +7014,14 @@ if (bar) {
         <span id="availLastUpdate">Checking availability...</span>
       </div>
     </div>
-    <button class="avail-close" id="availClose" aria-label="Close">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <a href="/availability" class="avail-close" aria-label="Full page" title="Open full page" style="text-decoration:none">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--text-inv-muted);fill:none;stroke-width:2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </a>
+      <button class="avail-close" id="availClose" aria-label="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
   </div>
   <div class="avail-drawer-body" id="availBody">
     <!-- Populated by JS -->

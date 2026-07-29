@@ -346,6 +346,11 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+// Availability page
+app.get('/availability', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'availability.html'));
+});
+
 // ── Admin Login / Logout ──
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body || {};
