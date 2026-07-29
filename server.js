@@ -539,6 +539,75 @@ app.get('/api/guesty/lowest-prices', async (req, res) => {
   }
 });
 
+// "Available Now" — today+tomorrow availability for all listings.
+//   GET /api/availability/now
+// Returns { asOf, properties: [{ slug, name, city, guests, beds, baths,
+//   photo, today: {available, minNights, price}, tomorrow: {…} }] }
+app.get('/api/availability/now', async (req, res) => {
+  try {
+    const today = todayUTC();
+    const dayAfterTomorrow = new Date(today + 'T00:00:00Z');
+    dayAfterTomorrow.setUTCDate(dayAfterTomorrow.getUTCDate() + 2);
+    const to = dayAfterTomorrow.toISOString().slice(0, 10);
+
+    const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+    const slugs = Object.keys(PROPERTY_DATA);
+
+    const results = await Promise.allSettled(
+      slugs.map(async (slug) => {
+        const prop = PROPERTY_DATA[slug];
+        const listingId = guesty.resolveListingId(slug);
+        if (!listingId) return null;
+
+        const days = await guesty.getCalendar(listingId, today, to);
+        const dayMap = {};
+        (days || []).forEach(d => { dayMap[d.date] = d; });
+
+        const todayDate = today;
+        const tomorrowDate = new Date(today + 'T00:00:00Z');
+        tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1);
+        const tomorrowStr = tomorrowDate.toISOString().slice(0, 10);
+
+        const todayDay = dayMap[todayDate] || {};
+        const tomorrowDay = dayMap[tomorrowStr] || {};
+
+        return {
+          slug,
+          name: prop.name,
+          city: prop.city,
+          category: prop.category,
+          guests: prop.guests,
+          beds: prop.beds,
+          baths: prop.baths,
+          photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+          today: {
+            available: !!todayDay.available && !todayDay.cta,
+            minNights: todayDay.minNights || null,
+            price: todayDay.price || null,
+            currency: todayDay.currency || 'USD'
+          },
+          tomorrow: {
+            available: !!tomorrowDay.available && !tomorrowDay.cta,
+            minNights: tomorrowDay.minNights || null,
+            price: tomorrowDay.price || null,
+            currency: tomorrowDay.currency || 'USD'
+          }
+        };
+      })
+    );
+
+    const properties = results
+      .filter(r => r.status === 'fulfilled' && r.value)
+      .map(r => r.value);
+
+    res.set('Cache-Control', 'no-store');
+    res.json({ asOf: new Date().toISOString(), properties });
+  } catch (err) {
+    console.error('Availability/now error:', err.message);
+    res.status(502).json({ error: 'Could not load availability' });
+  }
+});
+
 // Availability calendar for one listing.
 //   GET /api/guesty/calendar?listing=<slug|id>&from=YYYY-MM-DD&to=YYYY-MM-DD
 app.get('/api/guesty/calendar', async (req, res) => {

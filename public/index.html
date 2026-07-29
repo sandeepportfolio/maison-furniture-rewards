@@ -1713,6 +1713,212 @@ ul{list-style:none}
 @media(min-width:769px) and (max-width:1024px){
   .rewards-page{max-width:520px}
 }
+
+/* ══════════════════════════════════════════════════
+   AVAILABLE NOW — floating button + drawer
+   ══════════════════════════════════════════════════ */
+
+/* ── Floating trigger ── */
+.avail-fab{
+  position:fixed;bottom:28px;right:28px;z-index:9980;
+  display:flex;align-items:center;gap:10px;
+  background:var(--accent);color:var(--accent-ink);
+  font-family:var(--sans);font-size:14px;font-weight:700;
+  padding:14px 24px 14px 18px;border-radius:999px;border:none;
+  cursor:pointer;box-shadow:0 8px 32px rgba(201,152,69,.35);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s;
+  white-space:nowrap;
+}
+.avail-fab:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 44px rgba(201,152,69,.45);
+  background:var(--accent-hover);
+}
+.avail-fab svg{width:20px;height:20px;flex-shrink:0}
+.avail-fab-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#4ADE80;flex-shrink:0;
+  animation:availPulse 2s ease-in-out infinite;
+}
+@keyframes availPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.5)}
+  50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}
+}
+.avail-fab-count{
+  min-width:22px;height:22px;border-radius:99px;
+  background:rgba(0,0,0,.25);color:#fff;
+  font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 6px;margin-left:2px;
+}
+.avail-fab.hidden{
+  pointer-events:none;opacity:0;transform:translateY(20px);
+}
+
+/* ── Drawer overlay ── */
+.avail-overlay{
+  position:fixed;inset:0;z-index:9990;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;
+  transition:opacity .35s var(--ease);
+}
+.avail-overlay.open{opacity:1;pointer-events:auto}
+
+/* ── Drawer panel ── */
+.avail-drawer{
+  position:fixed;top:0;right:0;bottom:0;z-index:9991;
+  width:420px;max-width:100vw;
+  background:var(--bg);border-left:1px solid var(--border);
+  transform:translateX(100%);
+  transition:transform .4s var(--ease);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.avail-drawer.open{transform:translateX(0)}
+
+/* ── Drawer header ── */
+.avail-drawer-head{
+  padding:24px 24px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  flex-shrink:0;
+}
+.avail-drawer-title{
+  font-family:var(--serif);font-size:24px;font-weight:400;
+  color:var(--text);letter-spacing:-.02em;margin:0;
+}
+.avail-drawer-title em{font-style:italic;color:var(--accent)}
+.avail-drawer-sub{
+  font-family:var(--sans);font-size:13px;color:var(--text-muted);
+  margin:4px 0 0;display:flex;align-items:center;gap:6px;
+}
+.avail-drawer-sub .avail-live-dot{
+  width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;
+  animation:availPulse 2s ease-in-out infinite;
+}
+.avail-close{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--border);
+  background:transparent;color:var(--text-muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.avail-close:hover{background:var(--bg-card);border-color:var(--accent);color:var(--text)}
+.avail-close svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ── Drawer body ── */
+.avail-drawer-body{
+  flex:1;overflow-y:auto;padding:20px 24px 32px;
+  -webkit-overflow-scrolling:touch;
+}
+.avail-drawer-body::-webkit-scrollbar{width:4px}
+.avail-drawer-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ── Day group ── */
+.avail-day-label{
+  font-family:var(--sans);font-size:11px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 14px;padding-left:2px;
+  display:flex;align-items:center;gap:8px;
+}
+.avail-day-label::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(201,152,69,.25),transparent);
+}
+.avail-day-group{margin-bottom:28px}
+.avail-day-group:last-child{margin-bottom:0}
+.avail-none{
+  font-family:var(--sans);font-size:14px;color:var(--text-dim);
+  padding:12px 0;font-style:italic;
+}
+
+/* ── Property card ── */
+.avail-card{
+  display:flex;align-items:stretch;gap:16px;
+  padding:16px;margin-bottom:12px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  transition:border-color .3s var(--ease),transform .3s var(--ease),box-shadow .3s var(--ease);
+  text-decoration:none;color:inherit;
+}
+.avail-card:last-child{margin-bottom:0}
+.avail-card:hover{
+  border-color:rgba(201,152,69,.3);transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+}
+.avail-card-photo{
+  width:100px;min-width:100px;height:100px;
+  border-radius:var(--radius);overflow:hidden;flex-shrink:0;
+  position:relative;
+}
+.avail-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.avail-card-badge{
+  position:absolute;top:6px;left:6px;
+  font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:6px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.avail-card-badge.today{background:rgba(74,222,128,.2);color:#4ADE80;border:1px solid rgba(74,222,128,.25)}
+.avail-card-badge.tomorrow{background:rgba(201,152,69,.2);color:var(--accent);border:1px solid rgba(201,152,69,.25)}
+
+.avail-card-info{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.avail-card-name{
+  font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text);
+  margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.avail-card-meta{
+  font-family:var(--sans);font-size:12px;color:var(--text-muted);
+  display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;
+}
+.avail-card-meta svg{width:12px;height:12px;stroke:var(--text-dim);fill:none;stroke-width:2;flex-shrink:0}
+.avail-card-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.avail-card-price{
+  font-family:var(--sans);font-size:16px;font-weight:700;color:var(--text);
+}
+.avail-card-price span{font-size:12px;font-weight:400;color:var(--text-muted)}
+.avail-card-nights{
+  font-family:var(--sans);font-size:11px;font-weight:500;
+  color:var(--accent);background:var(--accent-pale);
+  padding:3px 10px;border-radius:100px;white-space:nowrap;
+}
+.avail-card-book{
+  margin-left:auto;
+  font-family:var(--sans);font-size:12px;font-weight:600;
+  color:var(--accent-ink);background:var(--accent);
+  padding:7px 16px;border-radius:100px;border:none;cursor:pointer;
+  transition:background .25s,transform .2s;white-space:nowrap;
+  text-decoration:none;
+}
+.avail-card-book:hover{background:var(--accent-hover);transform:translateY(-1px)}
+
+/* ── Loading skeleton ── */
+.avail-skeleton{display:flex;gap:16px;padding:16px;margin-bottom:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.avail-skel-photo{width:100px;height:100px;border-radius:var(--radius);background:var(--border);animation:skelPulse 1.5s ease-in-out infinite}
+.avail-skel-lines{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.avail-skel-line{height:14px;border-radius:6px;background:var(--border);animation:skelPulse 1.5s ease-in-out infinite}
+.avail-skel-line:nth-child(1){width:70%}
+.avail-skel-line:nth-child(2){width:50%;animation-delay:.15s}
+.avail-skel-line:nth-child(3){width:40%;animation-delay:.3s}
+@keyframes skelPulse{0%,100%{opacity:.4}50%{opacity:.8}}
+
+/* ── Refresh indicator ── */
+.avail-refresh{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 0 4px;
+  font-family:var(--sans);font-size:11px;color:var(--text-dim);
+}
+.avail-refresh svg{width:12px;height:12px;stroke:var(--text-dim);fill:none;stroke-width:2}
+.avail-refresh.refreshing svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .avail-fab{bottom:20px;right:16px;font-size:13px;padding:12px 18px 12px 14px}
+  .avail-drawer{width:100vw;border-left:none;border-radius:0}
+  .avail-drawer-head{padding:20px 20px 16px}
+  .avail-drawer-body{padding:16px 20px 28px}
+  .avail-card-photo{width:80px;min-width:80px;height:80px}
+}
 </style>
 </head>
 <body>
@@ -6681,6 +6887,192 @@ if (bar) {
     bar.classList.toggle('on', window.scrollY > 480);
   }, { passive: true });
 }
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════
+     AVAILABLE NOW — floating FAB + slide-out drawer
+     ═══════════════════════════════════════════════ -->
+<button class="avail-fab hidden" id="availFab" aria-label="Available Now">
+  <div class="avail-fab-dot"></div>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
+  Available Now
+  <span class="avail-fab-count" id="availFabCount">0</span>
+</button>
+
+<div class="avail-overlay" id="availOverlay"></div>
+<div class="avail-drawer" id="availDrawer">
+  <div class="avail-drawer-head">
+    <div>
+      <h2 class="avail-drawer-title">Available <em>now</em></h2>
+      <div class="avail-drawer-sub">
+        <span class="avail-live-dot"></span>
+        <span id="availLastUpdate">Checking availability...</span>
+      </div>
+    </div>
+    <button class="avail-close" id="availClose" aria-label="Close">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="avail-drawer-body" id="availBody">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<script>
+(function() {
+  var fab = document.getElementById('availFab');
+  var fabCount = document.getElementById('availFabCount');
+  var overlay = document.getElementById('availOverlay');
+  var drawer = document.getElementById('availDrawer');
+  var closeBtn = document.getElementById('availClose');
+  var body = document.getElementById('availBody');
+  var lastUpdate = document.getElementById('availLastUpdate');
+  var refreshTimer = null;
+  var availData = null;
+
+  function openDrawer() {
+    overlay.classList.add('open');
+    drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    overlay.classList.remove('open');
+    drawer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  fab.addEventListener('click', openDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+  });
+
+  function skeleton() {
+    var h = '';
+    for (var i = 0; i < 3; i++) {
+      h += '<div class="avail-skeleton">' +
+        '<div class="avail-skel-photo"></div>' +
+        '<div class="avail-skel-lines"><div class="avail-skel-line"></div><div class="avail-skel-line"></div><div class="avail-skel-line"></div></div>' +
+      '</div>';
+    }
+    return h;
+  }
+
+  function renderCard(p, when) {
+    var badgeClass = when === 'today' ? 'today' : 'tomorrow';
+    var badgeText = when === 'today' ? 'Today' : 'Tomorrow';
+    var day = p[when];
+    var price = day.price ? '$' + Math.round(day.price) : '';
+    var minN = day.minNights || 1;
+    var nightsLabel = minN === 1 ? '1 night min' : minN + ' nights min';
+
+    return '<a href="/property/' + p.slug + '" class="avail-card">' +
+      '<div class="avail-card-photo">' +
+        '<img src="' + p.photo + '" alt="' + p.name + '" loading="lazy">' +
+        '<span class="avail-card-badge ' + badgeClass + '">' + badgeText + '</span>' +
+      '</div>' +
+      '<div class="avail-card-info">' +
+        '<div class="avail-card-name">' + p.name + '</div>' +
+        '<div class="avail-card-meta">' +
+          '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+          p.city +
+          ' &middot; ' + p.guests + ' guests &middot; ' + p.beds + ' bed' + (p.beds > 1 ? 's' : '') +
+        '</div>' +
+        '<div class="avail-card-bottom">' +
+          (price ? '<span class="avail-card-price">' + price + ' <span>/night</span></span>' : '') +
+          '<span class="avail-card-nights">' + nightsLabel + '</span>' +
+          '<span class="avail-card-book">Book</span>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
+  }
+
+  function render(data) {
+    if (!data || !data.properties) {
+      body.innerHTML = '<div class="avail-none">Unable to load availability.</div>';
+      return;
+    }
+
+    var todayProps = [];
+    var tomorrowOnly = [];
+
+    data.properties.forEach(function(p) {
+      if (p.today.available) todayProps.push(p);
+      else if (p.tomorrow.available) tomorrowOnly.push(p);
+    });
+
+    var totalAvail = todayProps.length + tomorrowOnly.length;
+    fabCount.textContent = totalAvail;
+
+    if (totalAvail === 0) {
+      fab.classList.add('hidden');
+      body.innerHTML = '<div class="avail-none">All properties are booked for today and tomorrow. Check back soon!</div>';
+      return;
+    }
+
+    fab.classList.remove('hidden');
+    var h = '';
+
+    if (todayProps.length) {
+      h += '<div class="avail-day-group">' +
+        '<div class="avail-day-label">Check in today</div>';
+      todayProps.forEach(function(p) { h += renderCard(p, 'today'); });
+      h += '</div>';
+    }
+
+    if (tomorrowOnly.length) {
+      h += '<div class="avail-day-group">' +
+        '<div class="avail-day-label">Check in tomorrow</div>';
+      tomorrowOnly.forEach(function(p) { h += renderCard(p, 'tomorrow'); });
+      h += '</div>';
+    }
+
+    h += '<div class="avail-refresh" id="availRefreshInd">' +
+      '<svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>' +
+      '<span>Auto-refreshes every 5 min</span>' +
+    '</div>';
+
+    body.innerHTML = h;
+  }
+
+  function formatTime(iso) {
+    var d = new Date(iso);
+    var h = d.getHours();
+    var m = d.getMinutes();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return 'Updated ' + h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+  }
+
+  function fetchAvailability(isRefresh) {
+    var ind = document.getElementById('availRefreshInd');
+    if (isRefresh && ind) ind.classList.add('refreshing');
+
+    if (!isRefresh) {
+      body.innerHTML = skeleton();
+    }
+
+    fetch('/api/availability/now', { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        availData = data;
+        render(data);
+        lastUpdate.textContent = formatTime(data.asOf);
+      })
+      .catch(function() {
+        if (!availData) {
+          body.innerHTML = '<div class="avail-none">Unable to check availability right now.</div>';
+        }
+      });
+  }
+
+  // Initial fetch after a short delay so it doesn't compete with page load
+  setTimeout(function() { fetchAvailability(false); }, 1500);
+
+  // Auto-refresh every 5 minutes
+  refreshTimer = setInterval(function() { fetchAvailability(true); }, 5 * 60 * 1000);
 })();
 </script>
 </body>
