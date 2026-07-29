@@ -2028,9 +2028,11 @@ ul{list-style:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── Responsive ── */
-/* clear the fixed mobile Book Now bar (bottom:16px + ~47px tall) */
+/* clear the fixed mobile Book Now bar (bottom:16px + ~47px tall), and stay
+   stowed over the hero so the floating photo card isn't covered */
 @media(max-width:1080px){
   .avail-fab{bottom:80px}
+  .avail-fab.stowed{pointer-events:none;opacity:0;transform:translateY(16px) scale(.96)}
 }
 @media(max-width:768px){
   .avail-fab{bottom:80px;right:14px;font-size:12px;padding:10px 15px;gap:8px}
@@ -7073,6 +7075,15 @@ if (bar) {
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
   });
+
+  // On narrow viewports the FAB shares the bottom edge with the hero's floating
+  // photo card, so hold it back until the hero is scrolled past — same threshold
+  // the Book Now bar uses, so the two appear together.
+  function syncStow() {
+    fab.classList.toggle('stowed', window.scrollY <= 480);
+  }
+  syncStow();
+  window.addEventListener('scroll', syncStow, { passive: true });
 
   function skeleton() {
     var h = '';
