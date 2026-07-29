@@ -363,10 +363,12 @@ ul{list-style:none}
 .prop-location{font-family:var(--sans);font-size:12px;font-weight:400;letter-spacing:.01em;color:var(--text-muted);margin-bottom:10px}
 
 /* Spec Pills */
-.prop-specs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.prop-specs span{font-family:var(--sans);font-size:12px;font-weight:400;padding:4px 0;color:var(--text-muted);display:inline-flex;align-items:center;gap:4px;transition:color .3s var(--ease);border:none;background:none;letter-spacing:0}
-.prop-specs span::after{content:'·';margin-left:6px;color:var(--border)}
-.prop-specs span:last-child::after{display:none}
+.prop-specs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.prop-specs .spec-pill{font-family:var(--sans);font-size:11px;font-weight:500;padding:5px 10px;color:var(--text-muted);display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:rgba(201,152,69,.04);border-radius:999px;letter-spacing:.01em;transition:border-color .3s var(--ease),background .3s var(--ease)}
+.prop-specs .spec-pill:hover{border-color:rgba(201,152,69,.35);background:rgba(201,152,69,.08)}
+.prop-specs .spec-pill svg{width:13px;height:13px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.prop-specs .spec-pill.air-mattress{font-size:10px;padding:4px 9px;border-color:rgba(201,152,69,.25);background:rgba(201,152,69,.06);color:var(--accent)}
+.prop-specs .spec-pill.air-mattress svg{width:12px;height:12px}
 
 /* Rating */
 .prop-rating{display:flex;align-items:center;gap:6px;margin-bottom:16px}
@@ -1210,6 +1212,7 @@ ul{list-style:none}
 .detail-specs span{display:flex;align-items:center;gap:5px;padding:0 12px;border-right:1px solid var(--border)}
 .detail-specs span:first-child{padding-left:0}
 .detail-specs span:last-child{border-right:none}
+.detail-specs span svg{stroke:var(--accent);flex-shrink:0}
 
 /* Description section */
 .detail-section{margin-bottom:40px;animation:detailContentFadeIn .5s var(--ease-out) forwards;opacity:0}
@@ -1383,7 +1386,9 @@ ul{list-style:none}
   .prop-info{padding:20px}
   .prop-name{font-size:clamp(24px,4vw,30px)}
   .prop-carousel{aspect-ratio:4/3}
-  .prop-specs span{padding:4px 10px;font-size:11px}
+  .prop-specs .spec-pill{padding:4px 8px;font-size:10px;gap:4px}
+  .prop-specs .spec-pill svg{width:12px;height:12px}
+  .prop-specs .spec-pill.air-mattress{font-size:9px;padding:3px 7px}
   .detail-modal{padding:0}
   .detail-body{margin:0;border-radius:0;min-height:100vh}
   .detail-close{top:12px;right:12px;width:40px;height:40px}
@@ -1488,7 +1493,9 @@ ul{list-style:none}
   .stat-number{font-size:28px}
   .stat-label{font-size:9px;letter-spacing:.06em}
   .prop-name{font-size:clamp(20px,5vw,24px)}
-  .prop-specs span{font-size:10px;padding:3px 0}
+  .prop-specs .spec-pill{font-size:9px;padding:3px 7px;gap:3px}
+  .prop-specs .spec-pill svg{width:11px;height:11px}
+  .prop-specs .spec-pill.air-mattress{font-size:8px;padding:3px 6px}
   .prop-actions{flex-wrap:wrap;gap:6px}
   .prop-actions a,.prop-actions button{font-size:12px;padding:9px 14px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
   .detail-specs{flex-direction:row;flex-wrap:wrap;gap:0}
@@ -3607,9 +3614,9 @@ function renderPropertyCard(p) {
         <div class="prop-name">${p.name}</div>
       </div>
       <div class="prop-specs">
-        <span>${p.guests} guest${p.guests>1?'s':''}</span>
-        <span>${p.beds} bed${p.beds>1?'s':''}</span>
-        <span>${p.baths} bath${p.baths>1?'s':''}</span>
+        <span class="spec-pill"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>${p.guests} guest${p.guests>1?'s':''}</span>
+        <span class="spec-pill"><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>${p.beds} bed${p.beds>1?'s':''}</span>
+        <span class="spec-pill"><svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>${p.baths} bath${p.baths>1?'s':''}</span>${p.slug==='regent-skyline'||p.slug==='lake-view'?'<span class="spec-pill air-mattress"><svg viewBox="0 0 24 24"><path d="M2 18v-1a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v1"/><path d="M6 13V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9"/><path d="M2 18h20"/><path d="M4 21h16"/></svg>+ Queen Air Mattress</span>':''}
       </div>
       <div class="prop-rating">${ratingHtml}</div>
       <div class="prop-amenities">${amenityHtml}</div>
@@ -4847,9 +4854,9 @@ function openDetail(slug, skipHistory) {
           <div class="detail-loc">${prop.city.toUpperCase()}, ${prop.state.toUpperCase()}</div>
           <h2>${prop.name}</h2>
           <div class="detail-specs">
-            <span>${prop.guests} guest${prop.guests>1?'s':''}</span>
-            <span>${prop.beds} bed${prop.beds>1?'s':''}</span>
-            <span>${prop.baths} bath${prop.baths>1?'s':''}</span>
+            <span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>${prop.guests} guest${prop.guests>1?'s':''}</span>
+            <span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>${prop.beds} bed${prop.beds>1?'s':''}</span>
+            <span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>${prop.baths} bath${prop.baths>1?'s':''}</span>
           </div>
           <div class="detail-price" data-slug="${prop.slug}">${(prop.basePrice || prop.lowestPrice) ? renderDiscountedPrice(prop.basePrice, 'card', prop.lowestPrice) : '<span class="prop-price-loading"></span>'}</div>
         </div>

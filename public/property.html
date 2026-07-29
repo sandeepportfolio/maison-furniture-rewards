@@ -239,31 +239,37 @@ ul { list-style: none; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 48px;
 }
-.stats-left { display: flex; align-items: center; gap: 36px; }
-.stat-item { display: flex; align-items: center; gap: 10px; }
-.stat-icon {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--accent-subtle);
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+.stats-left { display: flex; align-items: center; gap: 12px; }
+.stat-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid rgba(199, 107, 66, 0.2);
+  background: rgba(199, 107, 66, 0.06);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
 }
-.stat-item:hover .stat-icon {
-  background: var(--accent-glow); transform: scale(1.06);
+.stat-pill:hover {
+  border-color: rgba(199, 107, 66, 0.35);
+  background: rgba(199, 107, 66, 0.08);
 }
-.stat-icon svg {
-  width: 18px; height: 18px; stroke: var(--accent);
+.stat-pill svg {
+  width: 16px; height: 16px; stroke: var(--accent);
   fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  flex-shrink: 0;
 }
-.stat-label {
-  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--text-muted);
+.stat-pill .stat-text {
+  font-family: var(--body); font-size: 13px; font-weight: 500;
+  color: var(--text); letter-spacing: 0.01em; white-space: nowrap;
 }
-.stat-value {
-  font-size: 18px; font-weight: 600; color: var(--text);
-  letter-spacing: -0.01em; line-height: 1;
+.stat-pill .stat-text small {
+  font-weight: 400; color: var(--text-muted); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.06em; margin-left: 2px;
 }
-.stat-divider {
-  width: 1px; height: 32px; background: var(--border);
+.stat-pill.air-mattress {
+  border-color: rgba(199, 107, 66, 0.25);
+  background: rgba(199, 107, 66, 0.06);
+}
+.stat-pill.air-mattress .stat-text {
+  color: var(--accent); font-size: 12px;
 }
 .stats-book-btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1181,8 +1187,12 @@ ul { list-style: none; }
     padding: 14px 20px;
     flex-wrap: wrap; gap: 12px;
   }
-  .stats-left { gap: 16px; flex-wrap: wrap; }
-  .stat-divider { display: none; }
+  .stats-left { gap: 8px; flex-wrap: wrap; }
+  .stat-pill { padding: 6px 12px; gap: 6px; }
+  .stat-pill svg { width: 14px; height: 14px; }
+  .stat-pill .stat-text { font-size: 12px; }
+  .stat-pill .stat-text small { font-size: 10px; }
+  .stat-pill.air-mattress .stat-text { font-size: 11px; }
   .stats-book-btn { display: none; }
   .content { padding: 0 20px; }
   .section { padding: 64px 0; }
@@ -1538,35 +1548,19 @@ ul { list-style: none; }
 <div class="stats-bar" id="statsBar">
   <div class="stats-inner">
     <div class="stats-left">
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div>
-          <div class="stat-label">Guests</div>
-          <div class="stat-value">{{GUESTS}}</div>
-        </div>
+      <div class="stat-pill">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="stat-text">{{GUESTS}} <small>Guests</small></span>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
-        </div>
-        <div>
-          <div class="stat-label">Bedrooms</div>
-          <div class="stat-value">{{BEDS}}</div>
-        </div>
+      <div class="stat-pill">
+        <svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+        <span class="stat-text">{{BEDS}} <small>Bed{{BEDS_SUFFIX}}</small></span>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>
-        </div>
-        <div>
-          <div class="stat-label">Bathrooms</div>
-          <div class="stat-value">{{BATHS}}</div>
-        </div>
+      <div class="stat-pill">
+        <svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>
+        <span class="stat-text">{{BATHS}} <small>Bath{{BATHS_SUFFIX}}</small></span>
       </div>
+      {{AIR_MATTRESS_PILL}}
     </div>
     <a href="{{GUESTY_BOOKING_URL}}" target="_blank" rel="noopener" class="stats-book-btn">
       Book Now
