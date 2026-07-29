@@ -5287,8 +5287,7 @@ function requestGeoPosition() {
     pos => { cacheGeoPosition(pos); onGeoSuccess(pos); startGeoWatch(); },
     err => {
       if (err.code === 1) {
-        setGeoStorage({ denied: true });
-        showGeoReEnableBanner();
+        setGeoStorage({ prompted: true, denied: true });
       }
     },
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
@@ -5298,45 +5297,42 @@ function requestGeoPosition() {
 function initGeolocation() {
   if (!navigator.geolocation) return;
 
-  // If user previously dismissed the banner, don't prompt again
   var geoState = getGeoStorage();
-  if (geoState.dismissed) return;
 
-  // Check localStorage for cached location
+  // If user previously dismissed the banner or denied, don't prompt again
+  if (geoState.dismissed || geoState.denied) return;
+
+  // Check localStorage for cached location (valid for 30 days)
   const cachedLat = parseFloat(localStorage.getItem('regent_geo_lat'));
   const cachedLng = parseFloat(localStorage.getItem('regent_geo_lng'));
   const cachedTs = parseInt(localStorage.getItem('regent_geo_ts'), 10);
-  const ONE_HOUR = 60 * 60 * 1000;
-  const cacheValid = !isNaN(cachedLat) && !isNaN(cachedLng) && !isNaN(cachedTs) && (Date.now() - cachedTs < ONE_HOUR);
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const cacheValid = !isNaN(cachedLat) && !isNaN(cachedLng) && !isNaN(cachedTs) && (Date.now() - cachedTs < THIRTY_DAYS);
 
   if (cacheValid) {
-    // Cached coords exist and are fresh — but verify permission wasn't revoked
     if (navigator.permissions && navigator.permissions.query) {
       navigator.permissions.query({ name: 'geolocation' }).then(result => {
         if (result.state === 'denied') {
-          // Permission revoked externally — clear stale cache
           clearGeoCache();
           setGeoStorage({ denied: true });
-          showGeoReEnableBanner();
         } else {
-          // Use cached coords immediately via synthetic position
           onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
           startGeoWatch();
         }
       }).catch(() => {
-        // Permissions API unavailable, trust the cache
         onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
         startGeoWatch();
       });
     } else {
-      // No Permissions API, use cached coords
       onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
       startGeoWatch();
     }
     return;
   }
 
-  // No valid cache — check permission state before prompting
+  // No valid cache — check if we already asked the user once
+  if (geoState.prompted) return;
+
   // Clear any expired cache
   if (!isNaN(cachedTs)) clearGeoCache();
 
@@ -5345,20 +5341,20 @@ function initGeolocation() {
       if (result.state === 'denied') {
         clearGeoCache();
         setGeoStorage({ denied: true });
-        showGeoReEnableBanner();
       } else if (result.state === 'granted') {
-        // Already granted — proceed without prompting
+        setGeoStorage({ prompted: true });
         requestGeoPosition();
       } else {
-        // 'prompt' — ask the user normally
+        // 'prompt' — first-time ask only
+        setGeoStorage({ prompted: true });
         requestGeoPosition();
       }
     }).catch(() => {
-      // Permissions API failed, fall back to normal prompt
+      setGeoStorage({ prompted: true });
       requestGeoPosition();
     });
   } else {
-    // No Permissions API, fall back to normal prompt
+    setGeoStorage({ prompted: true });
     requestGeoPosition();
   }
 }
@@ -5370,8 +5366,7 @@ function startGeoWatch() {
     err => {
       if (err.code === 1) {
         if (geoWatchId) { navigator.geolocation.clearWatch(geoWatchId); geoWatchId = null; }
-        setGeoStorage({ denied: true });
-        showGeoReEnableBanner();
+        setGeoStorage({ prompted: true, denied: true });
       }
     },
     { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
@@ -5397,14 +5392,13 @@ function dismissGeoBanner() {
 function retryGeolocation() {
   const banner = document.getElementById('geoReEnableBanner');
   if (banner) banner.remove();
-  setGeoStorage({});
+  setGeoStorage({ prompted: true });
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
-    pos => { onGeoSuccess(pos); startGeoWatch(); },
+    pos => { cacheGeoPosition(pos); onGeoSuccess(pos); startGeoWatch(); },
     err => {
       if (err.code === 1) {
-        setGeoStorage({ denied: true });
-        showGeoReEnableBanner();
+        setGeoStorage({ prompted: true, denied: true });
       }
     },
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
