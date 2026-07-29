@@ -518,6 +518,50 @@ function isValidDate(s) {
 }
 function todayUTC() { return new Date().toISOString().slice(0, 10); }
 
+// Named sleepMs rather than `delay` — getTruviBackoff() already has a local
+// `delay` const that would shadow it.
+function sleepMs(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Staggered fan-out over the 7 listings ─────────────────────────────
+// Firing all 7 calendar requests at once is what turns a single cold-start
+// request into a burst that trips Guesty's rate limit — and once the limiter
+// engages, all 7 fail together. Run them in small batches with a short gap
+// instead. `isCached` lets us skip the gap entirely when a listing is already
+// cached, so the warm path stays fast (no added latency at all on cache hits).
+const AVAILABILITY_BATCH_SIZE = 2;
+const AVAILABILITY_BATCH_GAP_MS = 350;
+
+async function staggeredMap(items, fn, { isCached } = {}) {
+  const out = [];
+  let pendingGap = false;
+
+  for (let i = 0; i < items.length; i += AVAILABILITY_BATCH_SIZE) {
+    const batch = items.slice(i, i + AVAILABILITY_BATCH_SIZE);
+    // Only pay the delay when the previous batch actually hit the network.
+    if (pendingGap) await sleepMs(AVAILABILITY_BATCH_GAP_MS);
+    pendingGap = isCached ? batch.some(item => !isCached(item)) : true;
+    out.push(...await Promise.allSettled(batch.map(fn)));
+  }
+  return out;
+}
+
+// Shared shape for "we could not reach Guesty" so both availability endpoints
+// report degradation the same way.
+function availabilityDegradation(errors) {
+  if (!errors.length) return null;
+  const retryAfter = Math.max(0, ...errors.map(e => e.retryAfter || 0));
+  const rateLimited = errors.some(e => e.status === 429);
+  return {
+    degraded: true,
+    degradedCount: errors.length,
+    reason: rateLimited ? 'rate_limited' : 'upstream_error',
+    notice: rateLimited
+      ? 'Live availability is temporarily unavailable while our booking system catches up. Please retry in a few minutes or contact us to confirm these dates.'
+      : 'Live availability could not be confirmed for some properties. Please retry shortly or contact us to confirm these dates.',
+    ...(retryAfter ? { retryAfter } : {}),
+  };
+}
+
 // List the bookable properties (live data from Guesty, cached 60 min server-side).
 app.get('/api/guesty/listings', async (req, res) => {
   try {
@@ -557,9 +601,9 @@ app.get('/api/availability/now', async (req, res) => {
 
     const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
     const slugs = Object.keys(PROPERTY_DATA);
+    const errors = [];
 
-    const results = await Promise.allSettled(
-      slugs.map(async (slug) => {
+    const results = await staggeredMap(slugs, async (slug) => {
         const prop = PROPERTY_DATA[slug];
         const listingId = guesty.resolveListingId(slug);
         if (!listingId) return null;
@@ -580,12 +624,18 @@ app.get('/api/availability/now', async (req, res) => {
           days = await guesty.getCalendar(listingId, today, to);
         } catch (calErr) {
           console.warn(`Calendar fetch failed for ${slug}:`, calErr.message);
+          errors.push(calErr);
           const listing = guesty.LISTINGS[slug];
           const fallbackPrice = listing?.basePrice || null;
+          // availabilityUnknown distinguishes "we could not check" from "these
+          // dates are genuinely booked" — without it the UI renders a confident
+          // and wrong "not available" for every property.
+          const unknown = { available: false, availabilityUnknown: true, minNights: listing?.minNights || 1, price: fallbackPrice, currency: 'USD' };
           return {
             ...base,
-            today:    { available: false, minNights: listing?.minNights || 1, price: fallbackPrice, currency: 'USD' },
-            tomorrow: { available: false, minNights: listing?.minNights || 1, price: fallbackPrice, currency: 'USD' },
+            today: { ...unknown },
+            tomorrow: { ...unknown },
+            availabilityUnknown: true,
             _fallback: true,
           };
         }
@@ -616,15 +666,19 @@ app.get('/api/availability/now', async (req, res) => {
             currency: tomorrowDay.currency || 'USD'
           }
         };
-      })
+      },
+      { isCached: (slug) => !!guesty.getCachedCalendar(guesty.resolveListingId(slug), today, to) }
     );
 
     const properties = results
       .filter(r => r.status === 'fulfilled' && r.value)
       .map(r => r.value);
 
+    const degradation = availabilityDegradation(errors);
+
     res.set('Cache-Control', 'no-store');
-    res.json({ asOf: new Date().toISOString(), properties });
+    if (degradation?.retryAfter) res.set('Retry-After', String(degradation.retryAfter));
+    res.json({ asOf: new Date().toISOString(), properties, ...(degradation || {}) });
   } catch (err) {
     console.error('Availability/now error:', err.message);
     res.status(502).json({ error: 'Could not load availability' });
@@ -667,9 +721,9 @@ app.get('/api/availability/check', async (req, res) => {
 
     const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
     const slugs = Object.keys(PROPERTY_DATA);
+    const errors = [];
 
-    const results = await Promise.allSettled(
-      slugs.map(async (slug) => {
+    const results = await staggeredMap(slugs, async (slug) => {
         const prop = PROPERTY_DATA[slug];
         const listingId = guesty.resolveListingId(slug);
         if (!listingId) return null;
@@ -689,10 +743,13 @@ app.get('/api/availability/check', async (req, res) => {
           days = await guesty.getCalendar(listingId, checkIn, checkOut);
         } catch (calErr) {
           console.warn(`Calendar check failed for ${slug} on ${checkIn}:`, calErr.message);
+          errors.push(calErr);
           const listing = guesty.LISTINGS[slug];
           return {
             ...base,
             available: false,
+            // We could not reach Guesty — this is NOT a "booked" answer.
+            availabilityUnknown: true,
             minNights: listing?.minNights || 1,
             nightlyRate: listing?.basePrice || null,
             totalPrice: null,
@@ -716,15 +773,19 @@ app.get('/api/availability/check', async (req, res) => {
           totalPrice,
           currency: firstDay.currency || 'USD',
         };
-      })
+      },
+      { isCached: (slug) => !!guesty.getCachedCalendar(guesty.resolveListingId(slug), checkIn, checkOut) }
     );
 
     const properties = results
       .filter(r => r.status === 'fulfilled' && r.value)
       .map(r => r.value);
 
+    const degradation = availabilityDegradation(errors);
+
     res.set('Cache-Control', 'no-store');
-    res.json({ checkIn, checkOut, nights, properties });
+    if (degradation?.retryAfter) res.set('Retry-After', String(degradation.retryAfter));
+    res.json({ checkIn, checkOut, nights, properties, ...(degradation || {}) });
   } catch (err) {
     console.error('Availability/check error:', err.message);
     res.status(502).json({ error: 'Could not load availability' });
