@@ -7150,7 +7150,15 @@ if (bar) {
     if (totalAvail === 0) {
       fab.classList.add('no-avail');
       fabLabel.textContent = 'Check Availability';
-      h += '<div class="avail-none">All properties are booked for today and tomorrow.</div>';
+      // The API marks properties it could not reach with availabilityUnknown.
+      // Claiming they are booked would be confidently wrong, so say what we
+      // actually know and point at the date search instead.
+      var unknown = data.properties.filter(function(p) {
+        return p.availabilityUnknown || (p.today && p.today.availabilityUnknown);
+      }).length;
+      h += unknown === data.properties.length
+        ? '<div class="avail-none">Live availability is temporarily unavailable. Search your dates below, or contact us and we’ll confirm right away.</div>'
+        : '<div class="avail-none">All properties are booked for today and tomorrow.</div>';
       body.innerHTML = h;
       bindDatePicker();
       return;
