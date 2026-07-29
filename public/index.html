@@ -1735,57 +1735,70 @@ ul{list-style:none}
    AVAILABLE NOW — floating button + drawer
    ══════════════════════════════════════════════════ */
 
-/* ── Floating trigger ── */
+/* ── Floating trigger — solid brass pill ── */
 .avail-fab{
   position:fixed;bottom:28px;right:28px;z-index:9980;
-  display:flex;align-items:center;gap:0;
-  background:rgba(20,16,10,.88);color:var(--accent);
-  font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.03em;
-  padding:10px 14px;border-radius:999px;border:1px solid rgba(201,152,69,.3);
-  cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.35);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  transition:all .35s var(--ease);
-  white-space:nowrap;overflow:hidden;
+  display:inline-flex;align-items:center;gap:9px;
+  background:linear-gradient(158deg,#E0B15C 0%,#C99845 48%,#AC7F32 100%);
+  color:#10130F;
+  font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.015em;
+  padding:12px 18px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.24);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 -1px 0 rgba(90,62,16,.28),
+    0 10px 26px rgba(0,0,0,.34),
+    0 3px 10px rgba(157,113,40,.34);
+  transition:transform .26s var(--ease),box-shadow .26s var(--ease),filter .26s var(--ease),opacity .3s var(--ease);
+  white-space:nowrap;
 }
 .avail-fab:hover{
-  transform:translateY(-2px);gap:8px;
-  box-shadow:0 10px 36px rgba(0,0,0,.45);
-  border-color:var(--accent);
-  padding:10px 16px 10px 14px;
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.5),
+    inset 0 -1px 0 rgba(90,62,16,.28),
+    0 16px 34px rgba(0,0,0,.4),
+    0 4px 14px rgba(157,113,40,.42);
 }
-.avail-fab svg{width:18px;height:18px;flex-shrink:0;stroke:var(--accent)}
+.avail-fab:active{transform:translateY(0) scale(.985)}
+.avail-fab:focus-visible{outline:2px solid #F5E3BC;outline-offset:3px}
+/* live status dot + halo (calendar glyph retired — the dot carries status) */
 .avail-fab-dot{
-  position:absolute;top:8px;right:8px;
-  width:7px;height:7px;border-radius:50%;
-  background:#4ADE80;flex-shrink:0;
-  animation:availPulse 2s ease-in-out infinite;
+  position:relative;flex-shrink:0;
+  width:8px;height:8px;border-radius:50%;
+  background:#12813C;
+  box-shadow:0 0 0 1px rgba(16,19,15,.18);
 }
-.avail-fab.no-avail .avail-fab-dot{
-  background:#94a3b8;animation:none;
+.avail-fab-dot::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:#12813C;
+  animation:availDotPulse 2.4s cubic-bezier(.2,.6,.3,1) infinite;
 }
+@keyframes availDotPulse{
+  0%{transform:scale(1);opacity:.55}
+  70%{transform:scale(2.8);opacity:0}
+  100%{transform:scale(2.8);opacity:0}
+}
+.avail-fab.no-avail .avail-fab-dot{background:#6B6257;box-shadow:none}
+.avail-fab.no-avail .avail-fab-dot::after{display:none}
+.avail-fab.no-avail{background:linear-gradient(158deg,#D3A960 0%,#BC8E45 48%,#A0762F 100%)}
 .avail-fab.no-avail .avail-fab-count{display:none}
-.avail-fab.no-avail{opacity:.7}
-@keyframes availPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.5)}
-  50%{box-shadow:0 0 0 5px rgba(74,222,128,0)}
-}
-.avail-fab #availFabLabel{
-  max-width:0;opacity:0;overflow:hidden;
-  transition:max-width .35s var(--ease),opacity .25s var(--ease),margin .35s var(--ease);
-  margin-left:0;
-}
-.avail-fab:hover #availFabLabel{
-  max-width:120px;opacity:1;margin-left:6px;
-}
+
+.avail-fab #availFabLabel{white-space:nowrap}
 .avail-fab-count{
-  min-width:18px;height:18px;border-radius:99px;
-  background:var(--accent);color:var(--accent-ink);
-  font-size:10px;font-weight:700;
+  min-width:20px;height:20px;border-radius:99px;
+  background:#10130F;color:#F0D293;
+  font-size:10.5px;font-weight:700;letter-spacing:.02em;
   display:flex;align-items:center;justify-content:center;
-  padding:0 5px;margin-left:8px;flex-shrink:0;
+  padding:0 6px;flex-shrink:0;
 }
 .avail-fab.hidden{
-  pointer-events:none;opacity:0;transform:translateY(20px);
+  pointer-events:none;opacity:0;transform:translateY(16px) scale(.96);
+}
+@media(prefers-reduced-motion:reduce){
+  .avail-fab-dot::after{animation:none}
 }
 
 /* ── Drawer overlay ── */
@@ -2015,10 +2028,13 @@ ul{list-style:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── Responsive ── */
+/* clear the fixed mobile Book Now bar (bottom:16px + ~47px tall) */
+@media(max-width:1080px){
+  .avail-fab{bottom:80px}
+}
 @media(max-width:768px){
-  .avail-fab{bottom:72px;right:16px;font-size:11px;padding:9px 12px}
-  .avail-fab:hover{padding:9px 14px 9px 12px}
-  .avail-fab-count{min-width:16px;height:16px;font-size:9px;margin-left:6px}
+  .avail-fab{bottom:80px;right:14px;font-size:12px;padding:10px 15px;gap:8px}
+  .avail-fab-count{min-width:18px;height:18px;font-size:10px;padding:0 5px}
   .avail-drawer{width:100vw;border-left:none;border-radius:0}
   .avail-drawer-head{padding:20px 20px 16px}
   .avail-drawer-body{padding:16px 20px 28px}
@@ -6998,8 +7014,7 @@ if (bar) {
      AVAILABLE NOW — floating FAB + slide-out drawer
      ═══════════════════════════════════════════════ -->
 <button class="avail-fab hidden" id="availFab" aria-label="Available Now">
-  <div class="avail-fab-dot"></div>
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
+  <div class="avail-fab-dot" aria-hidden="true"></div>
   <span id="availFabLabel">Available Now</span>
   <span class="avail-fab-count" id="availFabCount">0</span>
 </button>
