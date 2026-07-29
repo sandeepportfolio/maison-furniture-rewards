@@ -1740,6 +1740,11 @@ ul{list-style:none}
   background:#4ADE80;flex-shrink:0;
   animation:availPulse 2s ease-in-out infinite;
 }
+.avail-fab.no-avail .avail-fab-dot{
+  background:#94a3b8;animation:none;
+}
+.avail-fab.no-avail .avail-fab-count{display:none}
+.avail-fab.no-avail{opacity:.85}
 @keyframes availPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.5)}
   50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}
@@ -6890,7 +6895,7 @@ if (bar) {
 <button class="avail-fab hidden" id="availFab" aria-label="Available Now">
   <div class="avail-fab-dot"></div>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg>
-  Available Now
+  <span id="availFabLabel">Available Now</span>
   <span class="avail-fab-count" id="availFabCount">0</span>
 </button>
 
@@ -6916,6 +6921,7 @@ if (bar) {
 <script>
 (function() {
   var fab = document.getElementById('availFab');
+  var fabLabel = document.getElementById('availFabLabel');
   var fabCount = document.getElementById('availFabCount');
   var overlay = document.getElementById('availOverlay');
   var drawer = document.getElementById('availDrawer');
@@ -7000,13 +7006,16 @@ if (bar) {
     var totalAvail = todayProps.length + tomorrowOnly.length;
     fabCount.textContent = totalAvail;
 
+    fab.classList.remove('hidden');
     if (totalAvail === 0) {
-      fab.classList.add('hidden');
+      fab.classList.add('no-avail');
+      fabLabel.textContent = 'Check Availability';
       body.innerHTML = '<div class="avail-none">All properties are booked for today and tomorrow. Check back soon!</div>';
       return;
     }
 
-    fab.classList.remove('hidden');
+    fab.classList.remove('no-avail');
+    fabLabel.textContent = 'Available Now';
     var h = '';
 
     if (todayProps.length) {
@@ -7056,6 +7065,9 @@ if (bar) {
         lastUpdate.textContent = formatTime(data.asOf);
       })
       .catch(function() {
+        fab.classList.remove('hidden');
+        fab.classList.add('no-avail');
+        fabLabel.textContent = 'Check Availability';
         if (!availData) {
           body.innerHTML = '<div class="avail-none">Unable to check availability right now.</div>';
         }
