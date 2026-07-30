@@ -1298,11 +1298,21 @@ function scheduleStartupRetry() {
     return;
   }
   // Long delays: 5 min, 15 min, 30 min — gives Guesty's rate limit time to fully reset
-  const delay = Math.min(5 * 60_000 * Math.pow(3, startupRetryCount - 1), 30 * 60_000);
-  console.log(`Startup retry: scheduling attempt ${startupRetryCount}/${STARTUP_MAX_RETRIES} in ${Math.round(delay / 60_000)}m`);
+  const backoff = Math.min(5 * 60_000 * Math.pow(3, startupRetryCount - 1), 30 * 60_000);
+
+  // Never retry before Guesty's own cooldown has elapsed. This used to call
+  // clearRateLimit() and retry regardless, which threw away an advised
+  // Retry-After (Guesty's OAuth endpoint sends 1800s) to retry up to 25 min
+  // early — earning a fresh 429 and a renewed 1800s penalty every cycle. The
+  // observable signature was retryAfter counting down and then jumping back to
+  // ~1800s forever. Waiting the cooldown out is the whole point of having one.
+  const cooldownMs = rateLimitRetryAfter() * 1000;
+  const delay = Math.max(backoff, cooldownMs ? cooldownMs + 5_000 : 0);
+  console.log(`Startup retry: scheduling attempt ${startupRetryCount}/${STARTUP_MAX_RETRIES} in ${Math.round(delay / 60_000)}m${cooldownMs > backoff ? ' (waiting out Guesty cooldown)' : ''}`);
   setTimeout(() => {
-    // Reset circuit breaker before retry — the Guesty-side rate limit may have cleared
-    clearRateLimit();
+    // Do NOT reset the breaker here. If the cooldown has genuinely expired,
+    // isRateLimited() is already false; if it has not, the retry must stay
+    // blocked. Backoff escalation is reset by the next successful call.
     doStartupPrewarm(true);
   }, delay);
 }
