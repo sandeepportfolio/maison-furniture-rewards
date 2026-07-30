@@ -685,11 +685,81 @@ app.get('/api/availability/now', async (req, res) => {
   }
 });
 
+// ── "Similar dates" search ────────────────────────────────────────────
+// When a property is booked for the requested window we shift the whole stay
+// by ±1..3 days and look for the nearest window that IS open. The scan uses
+// the SAME single calendar fetch per listing as the exact-date check — we just
+// widen that one request by ALT_SHIFT_DAYS on each side and slice locally, so
+// suggesting alternatives costs zero additional Guesty calls.
+const ALT_SHIFT_DAYS = 3;
+const ALT_MAX_SUGGESTIONS = 3;
+
+function addDaysUTC(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Offsets ordered by closeness to the requested dates; later dates win ties. */
+function shiftOffsets(max) {
+  const out = [];
+  for (let i = 1; i <= max; i++) out.push(i, -i);
+  return out;
+}
+
+/** Evaluate one [from, to) window against an already-fetched day map. */
+function evaluateWindow(dayMap, from, to, nights) {
+  const stayDays = [];
+  for (let i = 0; i < nights; i++) {
+    const day = dayMap[addDaysUTC(from, i)];
+    if (!day) return null; // outside the fetched calendar — can't judge it
+    stayDays.push(day);
+  }
+  const first = stayDays[0];
+  const available = stayDays.every(d => d.available && !d.cta);
+  const totalPrice = available ? stayDays.reduce((s, d) => s + (d.price || 0), 0) : null;
+  return {
+    available,
+    minNights: first.minNights || 1,
+    totalPrice,
+    nightlyRate: available && nights > 0 ? Math.round(totalPrice / nights) : (first.price || null),
+    currency: first.currency || 'USD',
+  };
+}
+
+/** Nearest open windows of the same length, closest first. */
+function findAlternativeWindows(dayMap, checkIn, checkOut, nights, today) {
+  const out = [];
+  for (const offset of shiftOffsets(ALT_SHIFT_DAYS)) {
+    const altIn = addDaysUTC(checkIn, offset);
+    if (altIn < today) continue; // never suggest a check-in in the past
+    const win = evaluateWindow(dayMap, altIn, addDaysUTC(checkOut, offset), nights);
+    if (!win || !win.available) continue;
+    // A window the guest could not actually book is noise, not a suggestion.
+    if (win.minNights > nights) continue;
+    out.push({
+      checkIn: altIn,
+      checkOut: addDaysUTC(checkOut, offset),
+      nights,
+      offset,
+      available: true,
+      minNights: win.minNights,
+      price: win.totalPrice,
+      totalPrice: win.totalPrice,
+      nightlyRate: win.nightlyRate,
+      currency: win.currency,
+    });
+    if (out.length >= ALT_MAX_SUGGESTIONS) break;
+  }
+  return out;
+}
+
 // Check availability for a date range across all listings.
 //   GET /api/availability/check?checkIn=YYYY-MM-DD&checkOut=YYYY-MM-DD
 //   Legacy single-date:  ?date=YYYY-MM-DD  (still supported)
 // Returns { checkIn, checkOut, nights, properties: [{ slug, name, city,
-//   guests, beds, baths, photo, available, minNights, nightlyRate, totalPrice, currency }] }
+//   guests, beds, baths, photo, available, minNights, nightlyRate, totalPrice,
+//   currency, alternativeDates: [{ checkIn, checkOut, price, available }] }] }
 app.get('/api/availability/check', async (req, res) => {
   try {
     const dateFmt = /^\d{4}-\d{2}-\d{2}$/;
@@ -723,6 +793,15 @@ app.get('/api/availability/check', async (req, res) => {
     const slugs = Object.keys(PROPERTY_DATA);
     const errors = [];
 
+    // One widened calendar fetch per listing covers both the exact window and
+    // every ±3-day alternative, so the API-call count is unchanged.
+    const today = todayUTC();
+    const scanFrom = (() => {
+      const earliest = addDaysUTC(checkIn, -ALT_SHIFT_DAYS);
+      return earliest < today ? today : earliest;
+    })();
+    const scanTo = addDaysUTC(checkOut, ALT_SHIFT_DAYS);
+
     const results = await staggeredMap(slugs, async (slug) => {
         const prop = PROPERTY_DATA[slug];
         const listingId = guesty.resolveListingId(slug);
@@ -740,7 +819,7 @@ app.get('/api/availability/check', async (req, res) => {
 
         let days;
         try {
-          days = await guesty.getCalendar(listingId, checkIn, checkOut);
+          days = await guesty.getCalendar(listingId, scanFrom, scanTo);
         } catch (calErr) {
           console.warn(`Calendar check failed for ${slug} on ${checkIn}:`, calErr.message);
           errors.push(calErr);
@@ -754,9 +833,13 @@ app.get('/api/availability/check', async (req, res) => {
             nightlyRate: listing?.basePrice || null,
             totalPrice: null,
             currency: 'USD',
+            alternativeDates: [],
             _fallback: true,
           };
         }
+
+        const dayMap = {};
+        (days || []).forEach(d => { dayMap[d.date] = d; });
 
         const stayDays = (days || []).filter(d => d.date >= checkIn && d.date < checkOut);
         const firstDay = stayDays[0] || {};
@@ -772,9 +855,12 @@ app.get('/api/availability/check', async (req, res) => {
           nightlyRate: avgNightly,
           totalPrice,
           currency: firstDay.currency || 'USD',
+          alternativeDates: allAvailable
+            ? []
+            : findAlternativeWindows(dayMap, checkIn, checkOut, nights, today),
         };
       },
-      { isCached: (slug) => !!guesty.getCachedCalendar(guesty.resolveListingId(slug), checkIn, checkOut) }
+      { isCached: (slug) => !!guesty.getCachedCalendar(guesty.resolveListingId(slug), scanFrom, scanTo) }
     );
 
     const properties = results
@@ -782,10 +868,19 @@ app.get('/api/availability/check', async (req, res) => {
       .map(r => r.value);
 
     const degradation = availabilityDegradation(errors);
+    const alternativeCount = properties.reduce((n, p) => n + (p.alternativeDates?.length || 0), 0);
 
     res.set('Cache-Control', 'no-store');
     if (degradation?.retryAfter) res.set('Retry-After', String(degradation.retryAfter));
-    res.json({ checkIn, checkOut, nights, properties, ...(degradation || {}) });
+    res.json({
+      checkIn,
+      checkOut,
+      nights,
+      properties,
+      availableCount: properties.filter(p => p.available).length,
+      alternativeCount,
+      ...(degradation || {}),
+    });
   } catch (err) {
     console.error('Availability/check error:', err.message);
     res.status(502).json({ error: 'Could not load availability' });
