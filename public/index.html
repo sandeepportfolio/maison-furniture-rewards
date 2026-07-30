@@ -1917,7 +1917,8 @@ ul{list-style:none}
   display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;
 }
 .avail-card-meta svg{width:12px;height:12px;stroke:var(--text-dim);fill:none;stroke-width:2;flex-shrink:0}
-.avail-card-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.avail-card-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap}
+.avail-card-price-group{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 .avail-card-price{
   font-family:var(--sans);font-size:16px;font-weight:700;color:var(--text);
 }
@@ -1937,36 +1938,147 @@ ul{list-style:none}
 }
 .avail-card-book:hover{background:var(--accent-hover);transform:translateY(-1px)}
 
-/* ── Custom date picker ── */
 /* ── Custom date range search (top of drawer) ── */
 .avail-custom-dates{margin-bottom:24px;padding:20px;background:rgba(201,152,69,.04);border:1px solid rgba(201,152,69,.15);border-radius:var(--radius-lg)}
 .avail-custom-dates .avail-day-label{margin-bottom:14px;color:var(--accent-light)}
-.avail-date-fields{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-bottom:0}
-.avail-date-field{flex:1;min-width:120px;display:flex;flex-direction:column;gap:4px}
-.avail-date-label{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
-.avail-date-input{
+.avail-date-trigger{
   width:100%;appearance:none;-webkit-appearance:none;
   background:var(--bg-dark);border:1px solid var(--border);
   color:var(--text);font-family:var(--sans);font-size:14px;font-weight:500;
-  padding:10px 12px;border-radius:var(--radius);
+  padding:12px 14px;border-radius:var(--radius);cursor:pointer;
   transition:border-color .3s var(--ease),box-shadow .3s var(--ease);
-  cursor:pointer;
+  display:flex;align-items:center;gap:10px;
 }
-.avail-date-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.12)}
-.avail-date-input::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}
+.avail-date-trigger:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.12)}
+.avail-date-trigger svg{width:16px;height:16px;stroke:var(--text-dim);fill:none;stroke-width:2;flex-shrink:0}
+.avail-date-trigger-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avail-date-trigger.has-dates{border-color:rgba(201,152,69,.4)}
+.avail-date-trigger.has-dates .avail-date-trigger-text{color:var(--text);font-weight:600}
+.avail-date-clear{
+  width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;
+}
+.avail-date-clear svg{width:10px;height:10px;stroke:var(--text-muted);fill:none;stroke-width:2.5}
+.avail-date-trigger.has-dates .avail-date-clear{display:flex}
+/* ── Calendar popup ── */
+.avail-cal-popup{
+  display:none;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-lg);margin-top:8px;padding:16px;
+  box-shadow:0 12px 40px rgba(0,0,0,.4);
+}
+.avail-cal-popup.open{display:block}
+.avail-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.avail-cal-nav-btn{
+  width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:1px solid var(--border-dark);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .2s,border-color .2s;
+}
+.avail-cal-nav-btn:hover{background:rgba(255,255,255,.12);border-color:var(--accent)}
+.avail-cal-nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.avail-cal-nav-btn svg{width:14px;height:14px;stroke:var(--text-inv-muted);fill:none;stroke-width:2}
+.avail-cal-month{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--text-inv)}
+.avail-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.avail-cal-dow{font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);padding:6px 0}
+.avail-cal-day{
+  font-family:var(--sans);font-size:13px;color:var(--text);
+  padding:8px 0;border-radius:50%;cursor:pointer;position:relative;
+  transition:background .15s,color .15s;border:none;background:transparent;
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+}
+.avail-cal-day:hover:not(.past):not(.empty){background:rgba(201,152,69,.12)}
+.avail-cal-day.past{color:var(--text-dim);opacity:.35;cursor:default;pointer-events:none}
+.avail-cal-day.empty{pointer-events:none}
+.avail-cal-day.today-dot::after{
+  content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--accent);
+}
+.avail-cal-day.range-start,.avail-cal-day.range-end{
+  background:var(--accent)!important;color:var(--accent-ink)!important;font-weight:700;
+}
+.avail-cal-day.in-range{background:rgba(201,152,69,.18);border-radius:4px}
+.avail-cal-day.range-start{border-radius:50% 4px 4px 50%}
+.avail-cal-day.range-end{border-radius:4px 50% 50% 4px}
+.avail-cal-day.range-start.range-end{border-radius:50%}
+.avail-cal-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:8px}
+.avail-cal-clear{
+  font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text-muted);
+  background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:var(--radius);
+  transition:color .2s,background .2s;
+}
+.avail-cal-clear:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.avail-cal-hint{font-family:var(--sans);font-size:11px;color:var(--accent);flex:1;text-align:right}
 .avail-date-search{
   background:var(--accent);color:var(--accent-ink);border:none;
   font-family:var(--sans);font-size:13px;font-weight:600;
   padding:10px 20px;border-radius:var(--radius);cursor:pointer;
   transition:background .25s var(--ease),transform .2s var(--ease);white-space:nowrap;
   height:40px;display:flex;align-items:center;justify-content:center;gap:6px;
-  flex-basis:100%;
+  width:100%;margin-top:12px;
 }
 .avail-date-search svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
 .avail-date-search:hover{background:var(--accent-hover);transform:translateY(-1px)}
 .avail-date-search:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.avail-date-hint{font-family:var(--sans);font-size:11px;color:var(--accent);margin-top:8px;display:none;padding:0 2px}
-.avail-date-hint.visible{display:block}
+/* ── Similar dates (alt cards) ── */
+.alt-intro{
+  padding:clamp(16px,3vw,20px);margin-bottom:16px;
+  background:linear-gradient(180deg,rgba(201,152,69,.1),rgba(201,152,69,.03));
+  border:1px solid rgba(201,152,69,.22);border-radius:var(--radius-lg);
+}
+.alt-intro-title{font-family:var(--serif);font-size:clamp(16px,3vw,19px);font-weight:400;color:var(--text);line-height:1.3}
+.alt-intro-title em{font-style:italic;color:var(--accent)}
+.alt-intro-sub{font-family:var(--sans);font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.5}
+.alt-section{margin-top:20px}
+.alt-section-label{
+  font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 12px;padding-left:2px;
+  display:flex;align-items:center;gap:8px;
+}
+.alt-section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,152,69,.25),transparent)}
+.alt-card{
+  display:block;padding:14px;margin-bottom:10px;
+  background:var(--card-glass);border:1px solid var(--border-dark);
+  border-radius:var(--radius-lg);
+  transition:border-color .3s var(--ease),background .3s var(--ease);
+}
+.alt-card:last-child{margin-bottom:0}
+.alt-card:hover{border-color:rgba(201,152,69,.26);background:rgba(242,237,225,.055)}
+.alt-card-head{display:flex;align-items:center;gap:12px}
+.alt-card-photo{width:64px;min-width:64px;height:64px;border-radius:var(--radius);overflow:hidden;flex-shrink:0}
+.alt-card-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.8) brightness(.86)}
+.alt-card-info{flex:1;min-width:0}
+.alt-card-info .avail-card-name{margin-bottom:3px;white-space:normal;overflow:visible;line-height:1.3}
+.alt-card-unavail{
+  font-family:var(--sans);font-size:11px;color:var(--text-dim);
+  margin-top:5px;display:flex;align-items:center;gap:5px;line-height:1.4;
+}
+.alt-card-unavail svg{width:11px;height:11px;stroke:var(--text-dim);fill:none;stroke-width:2;flex-shrink:0}
+.alt-card-divider{height:1px;background:var(--border-dark);margin:12px 0 10px}
+.alt-avail-label{
+  font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:8px;
+}
+.alt-chips{display:flex;flex-direction:column;gap:6px}
+.alt-chip{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 11px 10px 13px;border-radius:14px;
+  background:rgba(201,152,69,.07);border:1px solid rgba(201,152,69,.22);
+  text-decoration:none;color:inherit;
+  transition:background .25s var(--ease),border-color .25s var(--ease),transform .2s var(--ease);
+}
+.alt-chip:hover{background:rgba(201,152,69,.14);border-color:rgba(201,152,69,.45);transform:translateY(-1px)}
+.alt-chip.closest{background:rgba(201,152,69,.12);border-color:rgba(201,152,69,.34)}
+.alt-chip-main{min-width:0;display:flex;flex-direction:column;gap:2px}
+.alt-chip-dates{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alt-chip-meta{font-family:var(--sans);font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.alt-chip-shift{font-family:var(--sans);font-size:9.5px;font-weight:600;letter-spacing:.04em;color:var(--accent);background:var(--accent-pale);padding:2px 6px;border-radius:100px;white-space:nowrap}
+.alt-chip-book{
+  font-family:var(--sans);font-size:11px;font-weight:600;
+  color:var(--accent-ink);background:var(--accent);
+  padding:7px 14px;border-radius:100px;white-space:nowrap;flex-shrink:0;
+  transition:background .25s var(--ease);
+}
+.alt-chip:hover .alt-chip-book{background:var(--accent-hover)}
 
 /* ── Search results view (replaces drawer body) ── */
 .avail-modal-header{
@@ -2004,7 +2116,12 @@ ul{list-style:none}
 
 @media(max-width:480px){
   .avail-custom-dates{padding:14px}
-  .avail-date-fields{gap:6px}
+  .avail-cal-popup{padding:12px}
+  .avail-cal-day{font-size:12px;padding:6px 0}
+  .alt-card-photo{width:56px;min-width:56px;height:56px}
+  .alt-chip{padding:9px 10px 9px 12px}
+  .alt-chip-dates{font-size:12px;white-space:normal}
+  .alt-chip-book{padding:6px 12px;font-size:10px}
 }
 
 /* ── Loading skeleton ── */
@@ -7119,8 +7236,10 @@ if (bar) {
           ' &middot; ' + p.guests + ' guests &middot; ' + p.beds + ' bed' + (p.beds > 1 ? 's' : '') +
         '</div>' +
         '<div class="avail-card-bottom">' +
-          (price ? '<span class="avail-card-price">' + price + ' <span>/night</span></span>' : '') +
-          '<span class="avail-card-nights">' + nightsLabel + '</span>' +
+          '<div class="avail-card-price-group">' +
+            (price ? '<span class="avail-card-price">' + price + ' <span>/night</span></span>' : '') +
+            '<span class="avail-card-nights">' + nightsLabel + '</span>' +
+          '</div>' +
           '<span class="avail-card-book">Book</span>' +
         '</div>' +
       '</div>' +
@@ -7196,24 +7315,35 @@ if (bar) {
   }
 
   function customDateSection() {
-    var today = todayStr();
     return '<div class="avail-custom-dates">' +
       '<div class="avail-day-label">Search by dates</div>' +
-      '<div class="avail-date-fields">' +
-        '<div class="avail-date-field">' +
-          '<label class="avail-date-label" for="availCheckIn">Check-in</label>' +
-          '<input type="date" class="avail-date-input" id="availCheckIn" min="' + today + '" value="">' +
-        '</div>' +
-        '<div class="avail-date-field">' +
-          '<label class="avail-date-label" for="availCheckOut">Check-out</label>' +
-          '<input type="date" class="avail-date-input" id="availCheckOut" min="' + today + '" value="" disabled>' +
-        '</div>' +
-        '<button class="avail-date-search" id="availDateSearch" disabled>' +
-          '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
-          'Search' +
+      '<div class="avail-date-trigger" id="availDateTrigger" tabindex="0">' +
+        '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
+        '<span class="avail-date-trigger-text" id="availTriggerText">Select dates</span>' +
+        '<button class="avail-date-clear" id="availDateClear" type="button" aria-label="Clear dates">' +
+          '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '</button>' +
       '</div>' +
-      '<div class="avail-date-hint" id="availDateHint"></div>' +
+      '<div class="avail-cal-popup" id="availCalPopup">' +
+        '<div class="avail-cal-nav">' +
+          '<button class="avail-cal-nav-btn" id="availCalPrev" type="button" aria-label="Previous month">' +
+            '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>' +
+          '</button>' +
+          '<span class="avail-cal-month" id="availCalMonth"></span>' +
+          '<button class="avail-cal-nav-btn" id="availCalNext" type="button" aria-label="Next month">' +
+            '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="avail-cal-grid" id="availCalGrid"></div>' +
+        '<div class="avail-cal-footer">' +
+          '<button class="avail-cal-clear" id="availCalClear" type="button">Clear</button>' +
+          '<span class="avail-cal-hint" id="availCalHint">Select check-in</span>' +
+        '</div>' +
+      '</div>' +
+      '<button class="avail-date-search" id="availDateSearch" disabled>' +
+        '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+        'Search' +
+      '</button>' +
     '</div>';
   }
 
@@ -7245,18 +7375,77 @@ if (bar) {
           ' &middot; ' + p.guests + ' guests &middot; ' + p.beds + ' bed' + (p.beds > 1 ? 's' : '') +
         '</div>' +
         '<div class="avail-card-bottom">' +
-          (totalPrice ? '<span class="avail-card-total">' + totalPrice + '<span> total</span></span>' : '') +
-          (perNight ? '<span class="avail-card-pernight">' + perNight + '/night &middot; ' + nights + ' night' + (nights > 1 ? 's' : '') + '</span>' : '') +
+          '<div class="avail-card-price-group">' +
+            (totalPrice ? '<span class="avail-card-total">' + totalPrice + '<span> total</span></span>' : '') +
+            (perNight ? '<span class="avail-card-pernight">' + perNight + '/night &middot; ' + nights + ' night' + (nights > 1 ? 's' : '') + '</span>' : '') +
+          '</div>' +
           '<span class="avail-card-book">Book</span>' +
         '</div>' +
       '</div>' +
     '</a>';
   }
 
+  function formatShortDate(dateStr) {
+    var parts = dateStr.split('-');
+    var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[d.getMonth()] + ' ' + d.getDate();
+  }
+  function formatShortRange(a, b) { return formatShortDate(a) + ' – ' + formatShortDate(b); }
+  function shiftLabel(offset) {
+    if (!offset) return '';
+    var n = Math.abs(offset);
+    return (offset > 0 ? '+' : '−') + n + ' day' + (n > 1 ? 's' : '');
+  }
+  function money(n) { return '$' + Math.round(n).toLocaleString(); }
+
+  function renderAltCard(p, checkIn, checkOut) {
+    var alts = p.alternativeDates || [];
+    var chips = alts.map(function(alt, i) {
+      var priceTotal = alt.totalPrice != null ? alt.totalPrice : alt.price;
+      var meta = [];
+      meta.push(alt.nights + ' night' + (alt.nights > 1 ? 's' : ''));
+      if (priceTotal) meta.push(money(priceTotal) + ' total');
+      var shift = shiftLabel(alt.offset);
+      return '<a class="alt-chip' + (i === 0 ? ' closest' : '') + '" ' +
+        'href="/property/' + p.slug + '?checkin=' + alt.checkIn + '&checkout=' + alt.checkOut + '">' +
+        '<span class="alt-chip-main">' +
+          '<span class="alt-chip-dates">' + formatShortRange(alt.checkIn, alt.checkOut) + '</span>' +
+          '<span class="alt-chip-meta">' + meta.join(' \xb7 ') +
+            (shift ? '<span class="alt-chip-shift">' + shift + '</span>' : '') +
+          '</span>' +
+        '</span>' +
+        '<span class="alt-chip-book">Book</span>' +
+      '</a>';
+    }).join('');
+    return '<div class="alt-card">' +
+      '<div class="alt-card-head">' +
+        '<div class="alt-card-photo"><img src="' + p.photo + '" alt="' + p.name + '" loading="lazy"></div>' +
+        '<div class="alt-card-info">' +
+          '<div class="avail-card-name">' + p.name + '</div>' +
+          '<div class="avail-card-meta">' +
+            '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
+            p.city + ' &middot; ' + p.guests + ' guests &middot; ' + p.beds + ' bed' + (p.beds > 1 ? 's' : '') +
+          '</div>' +
+          '<div class="alt-card-unavail">' +
+            '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' +
+            'Not available ' + formatShortRange(checkIn, checkOut) +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="alt-card-divider"></div>' +
+      '<div class="alt-avail-label">Available nearby</div>' +
+      '<div class="alt-chips">' + chips + '</div>' +
+    '</div>';
+  }
+
   var savedDrawerHTML = '';
 
   function openResultsModal(checkIn, checkOut, nights, properties) {
     var avail = properties.filter(function(p) { return p.available; });
+    var withAlts = properties.filter(function(p) {
+      return !p.available && p.alternativeDates && p.alternativeDates.length;
+    });
     var ciLabel = formatDateLabel(checkIn);
     var coLabel = formatDateLabel(checkOut);
 
@@ -7272,78 +7461,229 @@ if (bar) {
       '</button>' +
     '</div>';
 
-    if (avail.length === 0) {
+    if (avail.length === 0 && withAlts.length === 0) {
       h += '<div class="avail-modal-empty">' +
         '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
         '<p>No properties available for<br><strong>' + ciLabel + '</strong> — <strong>' + coLabel + '</strong></p>' +
         '<p style="margin-top:8px;font-size:12px;">Try different dates or a shorter stay.</p>' +
       '</div>';
     } else {
-      h += '<div class="avail-modal-summary">' +
-        avail.length + ' propert' + (avail.length === 1 ? 'y' : 'ies') + ' available &middot; ' +
-        nights + ' night' + (nights > 1 ? 's' : '') +
-      '</div>';
-      avail.forEach(function(p) { h += renderRangeCard(p, nights); });
+      if (avail.length) {
+        h += '<div class="avail-modal-summary">' +
+          avail.length + ' propert' + (avail.length === 1 ? 'y' : 'ies') + ' available &middot; ' +
+          nights + ' night' + (nights > 1 ? 's' : '') +
+        '</div>';
+        avail.forEach(function(p) { h += renderRangeCard(p, nights); });
+      }
+
+      if (withAlts.length) {
+        if (avail.length === 0) {
+          h += '<div class="alt-intro">' +
+            '<div class="alt-intro-title">No properties available for these dates. ' +
+              '<em>Here are some similar options.</em></div>' +
+            '<div class="alt-intro-sub">Same length of stay, shifted by a few days.</div>' +
+          '</div>';
+        } else {
+          h += '<div class="alt-section"><div class="alt-section-label">Similar dates for other properties</div></div>';
+        }
+        withAlts.forEach(function(p) { h += renderAltCard(p, checkIn, checkOut); });
+      }
     }
 
     body.innerHTML = h;
     body.scrollTop = 0;
 
     document.getElementById('availModalBack').addEventListener('click', function() {
+      removeAvailParams();
       body.innerHTML = savedDrawerHTML;
       body.scrollTop = 0;
       bindDatePicker();
     });
   }
 
+  // ── State persistence via URL params ──
+  function setAvailParams(ci, co) {
+    var url = new URL(window.location);
+    url.searchParams.set('avail_checkin', ci);
+    url.searchParams.set('avail_checkout', co);
+    history.replaceState(null, '', url);
+  }
+  function removeAvailParams() {
+    var url = new URL(window.location);
+    url.searchParams.delete('avail_checkin');
+    url.searchParams.delete('avail_checkout');
+    history.replaceState(null, '', url);
+  }
+  function getAvailParams() {
+    var url = new URL(window.location);
+    var ci = url.searchParams.get('avail_checkin');
+    var co = url.searchParams.get('avail_checkout');
+    if (ci && co && ci < co && ci >= todayStr()) return { checkIn: ci, checkOut: co };
+    return null;
+  }
+
   function bindDatePicker() {
-    var checkIn = document.getElementById('availCheckIn');
-    var checkOut = document.getElementById('availCheckOut');
+    var trigger = document.getElementById('availDateTrigger');
+    var triggerText = document.getElementById('availTriggerText');
+    var clearBtn = document.getElementById('availDateClear');
+    var popup = document.getElementById('availCalPopup');
+    var grid = document.getElementById('availCalGrid');
+    var monthLabel = document.getElementById('availCalMonth');
+    var prevBtn = document.getElementById('availCalPrev');
+    var nextBtn = document.getElementById('availCalNext');
+    var calClear = document.getElementById('availCalClear');
+    var calHint = document.getElementById('availCalHint');
     var searchBtn = document.getElementById('availDateSearch');
-    var hint = document.getElementById('availDateHint');
-    if (!checkIn || !checkOut || !searchBtn) return;
+    if (!trigger || !popup || !searchBtn) return;
 
-    checkIn.addEventListener('change', function() {
-      if (!checkIn.value) {
-        checkOut.disabled = true;
-        checkOut.value = '';
+    var cal = { checkIn: null, checkOut: null, viewYear: 0, viewMonth: 0, isOpen: false };
+    var todayParts = todayStr().split('-');
+    var todayDate = { y: parseInt(todayParts[0]), m: parseInt(todayParts[1]) - 1, d: parseInt(todayParts[2]) };
+    cal.viewYear = todayDate.y;
+    cal.viewMonth = todayDate.m;
+
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var DOWS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+    function dateToStr(y, m, d) {
+      return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    }
+
+    function updateTrigger() {
+      if (cal.checkIn && cal.checkOut) {
+        triggerText.textContent = formatShortDate(cal.checkIn) + ' – ' + formatShortDate(cal.checkOut);
+        trigger.classList.add('has-dates');
+        searchBtn.disabled = false;
+      } else if (cal.checkIn) {
+        triggerText.textContent = formatShortDate(cal.checkIn) + ' – ?';
+        trigger.classList.add('has-dates');
         searchBtn.disabled = true;
-        hint.classList.remove('visible');
-        hint.textContent = '';
-        return;
+      } else {
+        triggerText.textContent = 'Select dates';
+        trigger.classList.remove('has-dates');
+        searchBtn.disabled = true;
       }
-      var minCheckOut = addDays(checkIn.value, 1);
-      checkOut.min = minCheckOut;
-      checkOut.disabled = false;
-      if (checkOut.value && checkOut.value <= checkIn.value) {
-        checkOut.value = minCheckOut;
-      }
-      if (!checkOut.value) {
-        checkOut.value = minCheckOut;
-      }
-      searchBtn.disabled = !checkOut.value;
-      hint.textContent = 'Min-night requirements vary by property and check-in date.';
-      hint.classList.add('visible');
-    });
+    }
 
-    checkOut.addEventListener('change', function() {
-      if (checkOut.value && checkOut.value <= checkIn.value) {
-        checkOut.value = addDays(checkIn.value, 1);
+    function updateHint() {
+      if (!cal.checkIn) calHint.textContent = 'Select check-in';
+      else if (!cal.checkOut) calHint.textContent = 'Select check-out';
+      else calHint.textContent = nightsBetween(cal.checkIn, cal.checkOut) + ' nights selected';
+    }
+
+    function renderCalendar() {
+      var y = cal.viewYear, m = cal.viewMonth;
+      monthLabel.textContent = MONTHS[m] + ' ' + y;
+
+      var isPastMonth = (y < todayDate.y) || (y === todayDate.y && m < todayDate.m);
+      prevBtn.disabled = isPastMonth;
+
+      var h = '';
+      DOWS.forEach(function(d) { h += '<span class="avail-cal-dow">' + d + '</span>'; });
+
+      var firstDay = new Date(y, m, 1).getDay();
+      var daysInMonth = new Date(y, m + 1, 0).getDate();
+
+      for (var e = 0; e < firstDay; e++) h += '<span class="avail-cal-day empty"></span>';
+
+      for (var day = 1; day <= daysInMonth; day++) {
+        var ds = dateToStr(y, m, day);
+        var cls = 'avail-cal-day';
+        var isPast = (y < todayDate.y) || (y === todayDate.y && m < todayDate.m) || (y === todayDate.y && m === todayDate.m && day < todayDate.d);
+        if (isPast) cls += ' past';
+        if (y === todayDate.y && m === todayDate.m && day === todayDate.d) cls += ' today-dot';
+        if (cal.checkIn === ds) cls += ' range-start';
+        if (cal.checkOut === ds) cls += ' range-end';
+        if (cal.checkIn && cal.checkOut && ds > cal.checkIn && ds < cal.checkOut) cls += ' in-range';
+        h += '<button class="' + cls + '" data-date="' + ds + '" type="button">' + day + '</button>';
       }
-      searchBtn.disabled = !(checkIn.value && checkOut.value);
+      grid.innerHTML = h;
+    }
+
+    function onDayClick(e) {
+      var btn = e.target.closest('.avail-cal-day');
+      if (!btn || btn.classList.contains('past') || btn.classList.contains('empty')) return;
+      var ds = btn.getAttribute('data-date');
+
+      if (!cal.checkIn || cal.checkOut || ds <= cal.checkIn) {
+        cal.checkIn = ds;
+        cal.checkOut = null;
+      } else {
+        cal.checkOut = ds;
+      }
+      updateTrigger();
+      updateHint();
+      renderCalendar();
+    }
+
+    function openCalendar() {
+      cal.isOpen = true;
+      popup.classList.add('open');
+      if (cal.checkIn) {
+        var parts = cal.checkIn.split('-');
+        cal.viewYear = parseInt(parts[0]);
+        cal.viewMonth = parseInt(parts[1]) - 1;
+      }
+      renderCalendar();
+    }
+    function closeCalendar() {
+      cal.isOpen = false;
+      popup.classList.remove('open');
+    }
+    function clearDates() {
+      cal.checkIn = null;
+      cal.checkOut = null;
+      cal.viewYear = todayDate.y;
+      cal.viewMonth = todayDate.m;
+      updateTrigger();
+      updateHint();
+      if (cal.isOpen) renderCalendar();
+    }
+
+    trigger.addEventListener('click', function(e) {
+      if (e.target.closest('.avail-date-clear')) return;
+      e.stopPropagation();
+      if (cal.isOpen) closeCalendar(); else openCalendar();
+    });
+    clearBtn.addEventListener('click', function(e) { e.stopPropagation(); clearDates(); removeAvailParams(); });
+    calClear.addEventListener('click', function(e) { e.stopPropagation(); clearDates(); });
+    prevBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      cal.viewMonth--;
+      if (cal.viewMonth < 0) { cal.viewMonth = 11; cal.viewYear--; }
+      renderCalendar();
+    });
+    nextBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      cal.viewMonth++;
+      if (cal.viewMonth > 11) { cal.viewMonth = 0; cal.viewYear++; }
+      renderCalendar();
+    });
+    grid.addEventListener('click', onDayClick);
+
+    document.addEventListener('click', function(e) {
+      if (cal.isOpen && !e.target.closest('.avail-custom-dates')) closeCalendar();
     });
 
     searchBtn.addEventListener('click', function() {
-      var ci = checkIn.value;
-      var co = checkOut.value;
+      var ci = cal.checkIn;
+      var co = cal.checkOut;
       if (!ci || !co) return;
       var nights = nightsBetween(ci, co);
       if (nights < 1) return;
 
+      closeCalendar();
+      setAvailParams(ci, co);
       searchBtn.disabled = true;
       searchBtn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Searching...';
 
-      fetch('/api/availability/check?checkIn=' + encodeURIComponent(ci) + '&checkOut=' + encodeURIComponent(co), { cache: 'no-store' })
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timeoutId = setTimeout(function() {
+        if (controller) controller.abort();
+      }, 15000);
+
+      fetch('/api/availability/check?checkIn=' + encodeURIComponent(ci) + '&checkOut=' + encodeURIComponent(co),
+        { cache: 'no-store', signal: controller ? controller.signal : undefined })
         .then(function(r) {
           if (!r.ok) throw new Error('API error');
           return r.json();
@@ -7355,10 +7695,17 @@ if (bar) {
           openResultsModal(ci, co, nights, []);
         })
         .finally(function() {
+          clearTimeout(timeoutId);
           searchBtn.disabled = false;
           searchBtn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search';
         });
     });
+
+    // Expose for auto-search on page load
+    bindDatePicker._cal = cal;
+    bindDatePicker._updateTrigger = updateTrigger;
+    bindDatePicker._updateHint = updateHint;
+    bindDatePicker._searchBtn = searchBtn;
   }
 
   function formatDateLabel(dateStr) {
@@ -7404,7 +7751,28 @@ if (bar) {
   }
 
   // Initial fetch after a short delay so it doesn't compete with page load
-  setTimeout(function() { fetchAvailability(false); }, 1500);
+  setTimeout(function() {
+    fetchAvailability(false);
+
+    // If URL has avail params, auto-open drawer and search after data loads
+    var params = getAvailParams();
+    if (params) {
+      setTimeout(function() {
+        openDrawer();
+        // Wait for render to finish and bind the picker
+        setTimeout(function() {
+          if (bindDatePicker._cal) {
+            var cal = bindDatePicker._cal;
+            cal.checkIn = params.checkIn;
+            cal.checkOut = params.checkOut;
+            if (bindDatePicker._updateTrigger) bindDatePicker._updateTrigger();
+            if (bindDatePicker._updateHint) bindDatePicker._updateHint();
+            if (bindDatePicker._searchBtn) bindDatePicker._searchBtn.click();
+          }
+        }, 200);
+      }, 500);
+    }
+  }, 1500);
 
   // Auto-refresh every 5 minutes
   refreshTimer = setInterval(function() { fetchAvailability(true); }, 5 * 60 * 1000);
