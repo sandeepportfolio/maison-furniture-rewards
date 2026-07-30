@@ -147,14 +147,19 @@ ul { list-style: none; }
 .nav-links a:hover { color: var(--text); }
 .nav-links a:hover::after { width: 100%; }
 .nav-cta {
-  color: var(--accent) !important; font-weight: 600 !important;
-  padding: 10px 24px; border: 1px solid rgba(199, 107, 66, 0.3);
-  border-radius: 100px; transition: all 0.3s var(--ease) !important;
+  color: var(--accent) !important; font-weight: 500 !important;
+  font-size: 12.5px !important; letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  padding: 10px 24px; border: 1px solid rgba(199, 107, 66, 0.4);
+  border-radius: 100px; transition: all 0.4s var(--ease) !important;
+  background: transparent !important;
 }
 .nav-cta::after { display: none !important; }
 .nav-cta:hover {
   background: var(--accent) !important; color: #fff !important;
   border-color: var(--accent) !important;
+  box-shadow: 0 8px 28px rgba(199, 107, 66, 0.25);
+  transform: translateY(-1px);
 }
 
 /* ── Hero ── */
