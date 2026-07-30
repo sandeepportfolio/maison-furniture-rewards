@@ -71,84 +71,92 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .mobile-menu a:hover{color:var(--accent)}
 
 /* ── Page layout ── */
-.page-hero{padding:clamp(110px,14vw,160px) clamp(16px,4vw,48px) clamp(32px,5vw,56px);max-width:900px;margin:0 auto;text-align:center}
-.page-hero h1{font-family:var(--serif);font-size:clamp(32px,6vw,52px);font-weight:400;color:var(--text);margin-bottom:8px}
+.page-hero{padding:clamp(110px,14vw,160px) clamp(16px,4vw,48px) clamp(24px,4vw,40px);max-width:900px;margin:0 auto;text-align:center}
+.page-hero h1{font-family:var(--serif);font-size:clamp(32px,6vw,52px);font-weight:400;color:var(--text);margin-bottom:0}
 .page-hero h1 em{font-style:italic;color:var(--accent)}
+.hero-rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:18px auto 16px}
 .page-hero p{font-family:var(--sans);font-size:clamp(14px,1.6vw,16px);color:var(--text-muted);max-width:520px;margin:0 auto}
 .page-status{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-family:var(--sans);font-size:12px;color:var(--text-dim)}
 .page-status .dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0}
 
+/* ── Entrance animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.anim-in{opacity:0;animation:fadeUp .7s var(--ease) forwards}
+.anim-in-d1{animation-delay:.1s}
+.anim-in-d2{animation-delay:.22s}
+.anim-in-d3{animation-delay:.34s}
+.anim-in-d4{animation-delay:.46s}
+.anim-in-d5{animation-delay:.58s}
+
 .page-content{flex:1;max-width:720px;width:100%;margin:0 auto;padding:0 clamp(16px,4vw,48px) 60px}
 
-/* ── Date search bar ── */
-.search-bar{margin-bottom:clamp(32px,5vw,48px);padding:clamp(16px,3vw,24px);background:rgba(201,152,69,.04);border:1px solid rgba(201,152,69,.15);border-radius:var(--radius-lg)}
-.search-bar-label{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+/* ── Search bar ── */
+.search-bar{margin-bottom:clamp(32px,5vw,48px);padding:clamp(20px,3vw,28px);background:rgba(201,152,69,.035);border:1px solid rgba(201,152,69,.14);border-radius:var(--radius-xl);position:relative}
+.search-bar-label{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .search-bar-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,152,69,.25),transparent)}
-.search-fields{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.search-fields{display:flex;gap:12px;align-items:stretch}
 
-/* ── Date picker ── */
+/* ── Split date inputs (Airbnb-style) ── */
 .date-picker-wrap{position:relative;flex:1;min-width:0}
-.date-picker-trigger{
-  width:100%;display:flex;align-items:center;gap:10px;
-  background:var(--bg-dark);border:1px solid var(--border);
-  color:var(--text);font-family:var(--sans);font-size:16px;font-weight:500;
-  padding:14px 16px;border-radius:var(--radius);height:52px;min-height:52px;
-  transition:border-color .3s var(--ease),box-shadow .3s var(--ease);cursor:pointer;
-  text-align:left;
-}
-.date-picker-trigger:focus,.date-picker-trigger.active{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.12)}
-.date-picker-icon{width:18px;height:18px;stroke:var(--text-muted);fill:none;stroke-width:2;flex-shrink:0}
-.date-picker-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.date-picker-text.placeholder{color:var(--text-muted);font-weight:400}
-.date-picker-clear{
-  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:rgba(242,237,225,.08);border:none;cursor:pointer;flex-shrink:0;
-  transition:background .2s var(--ease);
-}
-.date-picker-clear:hover{background:rgba(242,237,225,.16)}
-.date-picker-clear svg{width:14px;height:14px;stroke:var(--text-muted);fill:none;stroke-width:2}
+.date-inputs{display:flex;align-items:stretch;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .3s var(--ease),box-shadow .3s var(--ease);height:56px}
+.date-inputs.focused{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,152,69,.1)}
+.date-input{flex:1;display:flex;flex-direction:column;justify-content:center;padding:8px 16px;background:transparent;border:none;cursor:pointer;text-align:left;transition:background .2s var(--ease);min-width:0;position:relative}
+.date-input:hover{background:rgba(242,237,225,.03)}
+.date-input.active{background:rgba(201,152,69,.07)}
+.date-input-label{font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1px;transition:color .2s var(--ease)}
+.date-input.active .date-input-label{color:var(--accent)}
+.date-input-value{font-family:var(--sans);font-size:15px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.date-input-value.placeholder{color:var(--text-dim);font-weight:400;font-size:14px}
+.date-input-divider{width:1px;background:var(--border);align-self:stretch;flex-shrink:0}
+.date-clear-btn{display:flex;align-items:center;justify-content:center;width:40px;flex-shrink:0;background:transparent;border:none;border-left:1px solid var(--border);cursor:pointer;transition:background .2s var(--ease)}
+.date-clear-btn:hover{background:rgba(242,237,225,.06)}
+.date-clear-btn svg{width:14px;height:14px;stroke:var(--text-dim);fill:none;stroke-width:2;transition:stroke .2s}
+.date-clear-btn:hover svg{stroke:var(--text-muted)}
 
 /* ── Calendar popup ── */
 .calendar-popup{
-  position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(-6px);
-  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);
-  box-shadow:0 20px 60px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3);
-  z-index:500;opacity:0;visibility:hidden;
-  transition:opacity .25s var(--ease),visibility .25s,transform .25s var(--ease);
+  position:absolute;top:calc(100% + 10px);left:50%;
+  transform:translateX(-50%) translateY(-8px) scale(.98);
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-xl);
+  box-shadow:0 24px 80px rgba(0,0,0,.55),0 4px 20px rgba(0,0,0,.35);
+  z-index:500;opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .22s var(--ease),visibility .22s,transform .22s var(--ease);
   overflow:hidden;
 }
-.calendar-popup.open{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.calendar-popup.open{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
 .calendar-mobile-header{display:none}
 .calendar-months{display:flex}
-.calendar-month{padding:20px 22px;min-width:0}
+.calendar-month{padding:22px 24px 18px;width:300px}
 .calendar-month+.calendar-month{border-left:1px solid var(--border-dark)}
-.calendar-month-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
-.calendar-month-title{font-family:var(--serif);font-size:16px;color:var(--text);flex:1;text-align:center;white-space:nowrap}
+.calendar-month-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:8px}
+.calendar-month-title{font-family:var(--serif);font-size:16px;color:var(--text);flex:1;text-align:center;white-space:nowrap;letter-spacing:.02em}
 .calendar-nav-btn{
-  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:transparent;border:1px solid var(--border);cursor:pointer;flex-shrink:0;
-  transition:background .2s var(--ease),border-color .2s var(--ease);
+  transition:background .2s var(--ease),border-color .2s var(--ease),transform .15s var(--ease);
 }
-.calendar-nav-btn:hover:not(:disabled){background:rgba(242,237,225,.08);border-color:var(--accent)}
-.calendar-nav-btn:disabled{opacity:.25;cursor:default}
+.calendar-nav-btn:hover:not(:disabled){background:rgba(242,237,225,.08);border-color:rgba(201,152,69,.4);transform:scale(1.06)}
+.calendar-nav-btn:active:not(:disabled){transform:scale(.95)}
+.calendar-nav-btn:disabled{opacity:.2;cursor:default}
 .calendar-nav-btn svg{width:14px;height:14px;stroke:var(--text-muted);fill:none;stroke-width:2}
-.calendar-nav-spacer{width:30px;flex-shrink:0}
+.calendar-nav-spacer{width:32px;flex-shrink:0}
 .calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
 .calendar-weekday{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-dim);text-align:center;padding:6px 0}
-.calendar-days{display:grid;grid-template-columns:repeat(7,1fr)}
+.calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:1px 0}
 .calendar-day{
   position:relative;display:flex;align-items:center;justify-content:center;
-  height:40px;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--text);
-  cursor:pointer;transition:background .1s;
+  height:42px;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--text);
+  cursor:pointer;transition:background .08s;user-select:none;-webkit-user-select:none;
 }
 .calendar-day.empty{visibility:hidden;cursor:default}
-.calendar-day.disabled{color:var(--text-dim);opacity:.35;cursor:default}
+.calendar-day.disabled{color:var(--text-dim);opacity:.3;cursor:default;pointer-events:none}
 .calendar-day-num{
-  position:relative;z-index:1;width:36px;height:36px;
+  position:relative;z-index:1;width:38px;height:38px;
   display:flex;align-items:center;justify-content:center;
-  border-radius:50%;transition:background .15s var(--ease),color .15s var(--ease);
+  border-radius:50%;transition:background .15s var(--ease),color .15s var(--ease),transform .15s var(--ease);
 }
-.calendar-day:not(.disabled):not(.empty):hover .calendar-day-num{background:rgba(201,152,69,.12)}
+.calendar-day:not(.disabled):not(.empty):hover .calendar-day-num{background:rgba(201,152,69,.1)}
+.calendar-day:not(.disabled):not(.empty):active .calendar-day-num{transform:scale(.92)}
 .calendar-day.today .calendar-day-num::after{
   content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
   width:4px;height:4px;border-radius:50%;background:var(--accent);
@@ -160,15 +168,16 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .calendar-day.range-end{background:linear-gradient(90deg,rgba(201,152,69,.1) 50%,transparent 50%);border-radius:0}
 .calendar-day.range-start.range-end{background:transparent}
 .calendar-day.hover-range{background:rgba(201,152,69,.06)}
-.calendar-day.hover-end .calendar-day-num{background:rgba(201,152,69,.2)}
+.calendar-day.hover-end .calendar-day-num{background:rgba(201,152,69,.18)}
 .calendar-footer{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:12px 22px 16px;border-top:1px solid var(--border-dark);
+  padding:14px 24px 18px;border-top:1px solid var(--border-dark);
 }
-.calendar-footer-hint{font-family:var(--sans);font-size:11px;color:var(--text-dim);flex:1}
+.calendar-footer-hint{font-family:var(--sans);font-size:12px;color:var(--text-muted);flex:1;font-weight:500}
+.calendar-footer-hint .night-count{color:var(--accent);font-weight:600}
 .calendar-clear-btn{
   font-family:var(--sans);font-size:12px;font-weight:600;color:var(--accent);
-  background:none;border:none;cursor:pointer;padding:6px 12px;border-radius:8px;
+  background:none;border:none;cursor:pointer;padding:7px 14px;border-radius:8px;
   transition:background .2s var(--ease);
 }
 .calendar-clear-btn:hover{background:rgba(201,152,69,.1)}
@@ -176,15 +185,16 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .search-btn{
   background:var(--accent);color:var(--accent-ink);border:none;
   font-family:var(--sans);font-size:15px;font-weight:600;
-  padding:14px 28px;border-radius:var(--radius);cursor:pointer;height:52px;min-height:52px;
-  transition:background .25s var(--ease),transform .2s var(--ease);white-space:nowrap;
+  padding:14px 28px;border-radius:var(--radius);cursor:pointer;
+  transition:background .25s var(--ease),transform .2s var(--ease),box-shadow .25s var(--ease);white-space:nowrap;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  flex-basis:100%;
+  flex-shrink:0;min-width:180px;
 }
 .search-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
-.search-btn:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.search-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.search-hint{font-family:var(--sans);font-size:11px;color:var(--accent);margin-top:10px;display:none;padding:0 2px}
+.search-btn:hover:not(:disabled){background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,152,69,.3)}
+.search-btn:active:not(:disabled){transform:translateY(0)}
+.search-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.search-hint{font-family:var(--sans);font-size:11px;color:var(--accent);opacity:.7;margin-top:12px;display:none;padding:0 4px}
 .search-hint.visible{display:block}
 
 /* ── Results header (date range view) ── */
@@ -194,12 +204,12 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .results-back{
   width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);
   border:1px solid var(--border-dark);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0;
+  cursor:pointer;transition:background .2s,border-color .2s,transform .15s;flex-shrink:0;
 }
-.results-back:hover{background:rgba(255,255,255,.12);border-color:var(--accent)}
+.results-back:hover{background:rgba(255,255,255,.12);border-color:var(--accent);transform:scale(1.06)}
 .results-back svg{width:16px;height:16px;stroke:var(--text-inv-muted);fill:none;stroke-width:2}
 
-/* ── Cards (reused from main site) ── */
+/* ── Cards ── */
 .avail-day-label{
   font-family:var(--sans);font-size:11px;font-weight:700;
   letter-spacing:.14em;text-transform:uppercase;
@@ -252,7 +262,6 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .alt-intro-title{font-family:var(--serif);font-size:clamp(18px,3vw,22px);font-weight:400;color:var(--text);line-height:1.3}
 .alt-intro-title em{font-style:italic;color:var(--accent)}
 .alt-intro-sub{font-family:var(--sans);font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.5}
-
 .alt-section{margin-top:clamp(30px,5vw,42px)}
 .alt-section-label{
   font-family:var(--sans);font-size:11px;font-weight:700;
@@ -261,7 +270,6 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   display:flex;align-items:center;gap:8px;
 }
 .alt-section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,152,69,.25),transparent)}
-
 .alt-card{
   display:block;padding:16px;margin-bottom:12px;
   background:var(--card-glass);border:1px solid var(--border-dark);
@@ -336,9 +344,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 /* ── Mobile ── */
 @media(max-width:600px){
   .avail-card-photo{width:90px;min-width:90px;height:90px}
-  .search-fields{gap:10px}
-  .date-picker-trigger{height:54px;min-height:54px;padding:15px 16px;font-size:16px}
-  .search-btn{height:54px;min-height:54px;font-size:16px;flex-basis:100%}
+  .search-fields{flex-direction:column;gap:10px}
+  .date-inputs{height:58px}
+  .date-input{padding:8px 14px}
+  .date-input-value{font-size:16px}
+  .search-btn{width:100%;height:54px;min-height:54px;font-size:16px}
   .avail-card-price{font-size:14px}
   .avail-card-total{font-size:16px}
   .avail-card-book{padding:7px 12px;font-size:11px}
@@ -349,31 +359,32 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   .alt-chip-book{padding:8px 14px}
   .footer-links{flex-direction:column;align-items:center;gap:16px}
 
-  /* Calendar: full-screen overlay on mobile */
   .calendar-popup{
-    position:fixed;inset:0;
+    position:fixed;inset:0;left:0;
     border-radius:0;z-index:1002;
-    transform:translateX(0) translateY(100%);
+    transform:translateX(0) translateY(100%) scale(1);
     display:flex;flex-direction:column;
     overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
-  .calendar-popup.open{transform:translateX(0) translateY(0)}
+  .calendar-popup.open{transform:translateX(0) translateY(0) scale(1)}
   .calendar-mobile-header{
     display:flex;align-items:center;justify-content:space-between;
     padding:16px 20px;border-bottom:1px solid var(--border-dark);flex-shrink:0;
   }
-  .calendar-mobile-header span{font-family:var(--serif);font-size:18px;color:var(--text)}
+  .calendar-mobile-title{font-family:var(--serif);font-size:18px;color:var(--text)}
   .calendar-mobile-close{
     width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     background:rgba(242,237,225,.08);border:none;cursor:pointer;
+    transition:background .2s;
   }
+  .calendar-mobile-close:hover{background:rgba(242,237,225,.14)}
   .calendar-mobile-close svg{width:16px;height:16px;stroke:var(--text-muted);fill:none;stroke-width:2}
   .calendar-months{flex-direction:column;flex:1}
-  .calendar-month{padding:16px 20px}
+  .calendar-month{width:auto;padding:18px 20px 14px}
   .calendar-month+.calendar-month{border-left:none;border-top:1px solid var(--border-dark)}
-  .calendar-day{height:46px}
-  .calendar-day-num{width:42px;height:42px}
-  .calendar-footer{padding:14px 20px 24px;flex-shrink:0}
+  .calendar-day{height:48px}
+  .calendar-day-num{width:44px;height:44px}
+  .calendar-footer{padding:14px 20px calc(24px + env(safe-area-inset-bottom,0px));flex-shrink:0}
 }
 @media(min-width:601px){
   .calendar-mobile-header{display:none}
@@ -415,9 +426,10 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
 <!-- Hero -->
 <div class="page-hero">
-  <h1>Check <em>Availability</em></h1>
-  <p>Real-time availability across all Regent properties. Search by date range or browse what's open today.</p>
-  <div class="page-status" id="pageStatus">
+  <h1 class="anim-in anim-in-d1">Check <em>Availability</em></h1>
+  <div class="hero-rule anim-in anim-in-d2"></div>
+  <p class="anim-in anim-in-d3">Real-time availability across all Regent properties. Search by date range or browse what's open today.</p>
+  <div class="page-status anim-in anim-in-d4" id="pageStatus">
     <span class="dot"></span>
     <span id="statusText">Loading...</span>
   </div>
@@ -426,20 +438,27 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 <!-- Main content -->
 <main class="page-content" id="pageContent">
   <!-- Search bar -->
-  <div class="search-bar" id="searchBar">
+  <div class="search-bar anim-in anim-in-d5" id="searchBar">
     <div class="search-bar-label">Search by dates</div>
     <div class="search-fields">
       <div class="date-picker-wrap" id="datePickerWrap">
-        <button class="date-picker-trigger" id="dateTrigger" type="button">
-          <svg class="date-picker-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span class="date-picker-text placeholder" id="triggerText">Select dates</span>
-        </button>
-        <button class="date-picker-clear" id="clearDates" type="button" style="display:none" title="Clear dates">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+        <div class="date-inputs" id="dateInputs">
+          <button class="date-input" id="checkinInput" type="button">
+            <span class="date-input-label">Check-in</span>
+            <span class="date-input-value placeholder" id="checkinValue">Add date</span>
+          </button>
+          <div class="date-input-divider"></div>
+          <button class="date-input" id="checkoutInput" type="button">
+            <span class="date-input-label">Check-out</span>
+            <span class="date-input-value placeholder" id="checkoutValue">Add date</span>
+          </button>
+          <button class="date-clear-btn" id="clearDates" type="button" style="display:none" title="Clear dates">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
         <div class="calendar-popup" id="calendarPopup">
           <div class="calendar-mobile-header">
-            <span>Select dates</span>
+            <span class="calendar-mobile-title" id="calMobileTitle">Select dates</span>
             <button class="calendar-mobile-close" id="calMobileClose" type="button">
               <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -453,7 +472,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       </div>
       <button class="search-btn" id="searchBtn" disabled>
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Search Availability
+        Search
       </button>
     </div>
     <div class="search-hint" id="searchHint"></div>
@@ -505,18 +524,23 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   };
 
   // ── DOM refs ──
-  var dateTrigger = document.getElementById('dateTrigger');
-  var triggerText = document.getElementById('triggerText');
-  var clearDatesBtn = document.getElementById('clearDates');
-  var calPopup = document.getElementById('calendarPopup');
-  var calMonths = document.getElementById('calMonths');
+  var datePickerWrap = document.getElementById('datePickerWrap');
+  var dateInputs     = document.getElementById('dateInputs');
+  var checkinInput   = document.getElementById('checkinInput');
+  var checkoutInput  = document.getElementById('checkoutInput');
+  var checkinValue   = document.getElementById('checkinValue');
+  var checkoutValue  = document.getElementById('checkoutValue');
+  var clearDatesBtn  = document.getElementById('clearDates');
+  var calPopup       = document.getElementById('calendarPopup');
+  var calMonths      = document.getElementById('calMonths');
   var calMobileClose = document.getElementById('calMobileClose');
-  var calClearBtn = document.getElementById('calClearBtn');
-  var calFooterHint = document.getElementById('calFooterHint');
-  var searchBtn  = document.getElementById('searchBtn');
-  var searchHint = document.getElementById('searchHint');
-  var results    = document.getElementById('availResults');
-  var statusText = document.getElementById('statusText');
+  var calMobileTitle = document.getElementById('calMobileTitle');
+  var calClearBtn    = document.getElementById('calClearBtn');
+  var calFooterHint  = document.getElementById('calFooterHint');
+  var searchBtn      = document.getElementById('searchBtn');
+  var searchHint     = document.getElementById('searchHint');
+  var results        = document.getElementById('availResults');
+  var statusText     = document.getElementById('statusText');
 
   var refreshTimer = null;
   var availData = null;
@@ -610,25 +634,22 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
   function openCalendar() {
-    if (cal.isOpen) return;
-    cal.isOpen = true;
-    if (!cal.checkIn) {
-      initViewDate();
-      cal.selecting = 'checkIn';
-    } else if (!cal.checkOut) {
-      cal.viewDate = new Date(parseInt(cal.checkIn.split('-')[0]), parseInt(cal.checkIn.split('-')[1]) - 1, 1);
-      cal.selecting = 'checkOut';
-    } else {
-      cal.viewDate = new Date(parseInt(cal.checkIn.split('-')[0]), parseInt(cal.checkIn.split('-')[1]) - 1, 1);
-      cal.selecting = 'checkIn';
+    if (!cal.isOpen) {
+      cal.isOpen = true;
+      if (!cal.checkIn) {
+        initViewDate();
+      } else {
+        var parts = cal.checkIn.split('-');
+        cal.viewDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
+      }
+      renderCalendar();
+      calPopup.classList.add('open');
+      if (isMobile()) document.body.style.overflow = 'hidden';
+      setTimeout(function() {
+        document.addEventListener('click', calOutsideClick);
+      }, 0);
     }
-    dateTrigger.classList.add('active');
-    renderCalendar();
-    calPopup.classList.add('open');
-    if (isMobile()) document.body.style.overflow = 'hidden';
-    setTimeout(function() {
-      document.addEventListener('click', calOutsideClick, true);
-    }, 0);
+    updateActiveInput();
   }
 
   function closeCalendar() {
@@ -636,14 +657,27 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     cal.isOpen = false;
     cal.hoveredDate = null;
     calPopup.classList.remove('open');
-    dateTrigger.classList.remove('active');
     if (isMobile()) document.body.style.overflow = '';
-    document.removeEventListener('click', calOutsideClick, true);
+    document.removeEventListener('click', calOutsideClick);
+    updateActiveInput();
   }
 
-  function calOutsideClick(e) {
-    if (calPopup.contains(e.target) || dateTrigger.contains(e.target) || clearDatesBtn.contains(e.target)) return;
+  function calOutsideClick() {
     closeCalendar();
+  }
+
+  // Prevent clicks inside the date picker area from reaching the document outside-click handler
+  datePickerWrap.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  function updateActiveInput() {
+    checkinInput.classList.toggle('active', cal.isOpen && cal.selecting === 'checkIn');
+    checkoutInput.classList.toggle('active', cal.isOpen && cal.selecting === 'checkOut');
+    dateInputs.classList.toggle('focused', cal.isOpen);
+    if (calMobileTitle) {
+      calMobileTitle.textContent = cal.selecting === 'checkIn' ? 'Select check-in' : 'Select check-out';
+    }
   }
 
   function renderCalendar() {
@@ -728,6 +762,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       (function(el) {
         el.addEventListener('click', function(e) {
           e.stopPropagation();
+          e.preventDefault();
           handleDayClick(el.dataset.date);
         });
         el.addEventListener('mouseenter', function() {
@@ -738,6 +773,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     calMonths.addEventListener('mouseleave', function() {
       cal.hoveredDate = null;
       updateDayClasses();
+      updateCalFooter();
     });
 
     var navBtns = calMonths.querySelectorAll('.calendar-nav-btn');
@@ -745,6 +781,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       (function(btn) {
         btn.addEventListener('click', function(e) {
           e.stopPropagation();
+          e.preventDefault();
           if (btn.disabled) return;
           var dir = parseInt(btn.dataset.dir);
           cal.viewDate = new Date(cal.viewDate.getFullYear(), cal.viewDate.getMonth() + dir, 1);
@@ -764,7 +801,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       cal.selecting = 'checkOut';
       cal.hoveredDate = null;
       searchBtn.disabled = true;
-      updateTrigger();
+      updateInputValues();
+      updateActiveInput();
       renderCalendar();
     } else {
       if (dateStr <= cal.checkIn) {
@@ -773,14 +811,15 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
         cal.selecting = 'checkOut';
         cal.hoveredDate = null;
         searchBtn.disabled = true;
-        updateTrigger();
+        updateInputValues();
+        updateActiveInput();
         renderCalendar();
       } else {
         cal.checkOut = dateStr;
         cal.selecting = 'checkIn';
         cal.hoveredDate = null;
         searchBtn.disabled = false;
-        updateTrigger();
+        updateInputValues();
         closeCalendar();
         searchHint.textContent = 'Min-night requirements vary by property and check-in date.';
         searchHint.classList.add('visible');
@@ -792,6 +831,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     if (cal.checkIn && !cal.checkOut && cal.selecting === 'checkOut') {
       cal.hoveredDate = dateStr;
       updateDayClasses();
+      updateCalFooter();
     }
   }
 
@@ -818,7 +858,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
   function updateCalFooter() {
     if (cal.checkIn && cal.checkOut) {
-      calFooterHint.textContent = formatShortDate(cal.checkIn) + ' – ' + formatShortDate(cal.checkOut);
+      var n = nightsBetween(cal.checkIn, cal.checkOut);
+      calFooterHint.innerHTML = formatShortDate(cal.checkIn) + ' → ' + formatShortDate(cal.checkOut) + ' &middot; <span class="night-count">' + n + ' night' + (n !== 1 ? 's' : '') + '</span>';
+    } else if (cal.checkIn && cal.hoveredDate && cal.hoveredDate > cal.checkIn) {
+      var n = nightsBetween(cal.checkIn, cal.hoveredDate);
+      calFooterHint.innerHTML = '<span class="night-count">' + n + ' night' + (n !== 1 ? 's' : '') + '</span>';
     } else if (cal.checkIn) {
       calFooterHint.textContent = 'Select check-out date';
     } else {
@@ -826,20 +870,24 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     }
   }
 
-  function updateTrigger() {
-    if (cal.checkIn && cal.checkOut) {
-      triggerText.textContent = formatShortDate(cal.checkIn) + ' – ' + formatShortDate(cal.checkOut);
-      triggerText.classList.remove('placeholder');
-      clearDatesBtn.style.display = '';
-    } else if (cal.checkIn) {
-      triggerText.textContent = formatShortDate(cal.checkIn) + ' – ...';
-      triggerText.classList.remove('placeholder');
-      clearDatesBtn.style.display = '';
+  function updateInputValues() {
+    if (cal.checkIn) {
+      checkinValue.textContent = formatShortDate(cal.checkIn);
+      checkinValue.classList.remove('placeholder');
     } else {
-      triggerText.textContent = 'Select dates';
-      triggerText.classList.add('placeholder');
-      clearDatesBtn.style.display = 'none';
+      checkinValue.textContent = 'Add date';
+      checkinValue.classList.add('placeholder');
     }
+
+    if (cal.checkOut) {
+      checkoutValue.textContent = formatShortDate(cal.checkOut);
+      checkoutValue.classList.remove('placeholder');
+    } else {
+      checkoutValue.textContent = 'Add date';
+      checkoutValue.classList.add('placeholder');
+    }
+
+    clearDatesBtn.style.display = (cal.checkIn || cal.checkOut) ? '' : 'none';
   }
 
   function clearDates() {
@@ -850,18 +898,40 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     searchBtn.disabled = true;
     searchHint.classList.remove('visible');
     searchHint.textContent = '';
-    updateTrigger();
+    updateInputValues();
+    updateActiveInput();
     if (cal.isOpen) renderCalendar();
   }
 
-  dateTrigger.addEventListener('click', function(e) {
+  // ── Input click handlers ──
+  checkinInput.addEventListener('click', function(e) {
     e.stopPropagation();
-    if (cal.isOpen) closeCalendar();
-    else openCalendar();
+    if (cal.isOpen && cal.selecting === 'checkIn') {
+      closeCalendar();
+      return;
+    }
+    cal.selecting = 'checkIn';
+    openCalendar();
+  });
+
+  checkoutInput.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!cal.checkIn) {
+      cal.selecting = 'checkIn';
+      openCalendar();
+      return;
+    }
+    if (cal.isOpen && cal.selecting === 'checkOut') {
+      closeCalendar();
+      return;
+    }
+    cal.selecting = 'checkOut';
+    openCalendar();
   });
 
   clearDatesBtn.addEventListener('click', function(e) {
     e.stopPropagation();
+    e.preventDefault();
     clearDates();
   });
 
@@ -872,7 +942,22 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
   calClearBtn.addEventListener('click', function(e) {
     e.stopPropagation();
+    e.preventDefault();
     clearDates();
+  });
+
+  // ── Resize handler: re-render calendar on breakpoint change ──
+  var lastMobile = isMobile();
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var nowMobile = isMobile();
+      if (nowMobile !== lastMobile) {
+        lastMobile = nowMobile;
+        if (cal.isOpen) renderCalendar();
+      }
+    }, 150);
   });
 
   // ── Card renderers ──
@@ -1134,7 +1219,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       })
       .finally(function() {
         searchBtn.disabled = !(cal.checkIn && cal.checkOut);
-        searchBtn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search Availability';
+        searchBtn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search';
       });
   }
 
@@ -1155,7 +1240,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     cal.checkOut = paramCO;
     cal.selecting = 'checkIn';
     searchBtn.disabled = false;
-    updateTrigger();
+    updateInputValues();
     searchHint.textContent = 'Min-night requirements vary by property and check-in date.';
     searchHint.classList.add('visible');
     fetchRange(paramCI, paramCO);
@@ -1165,6 +1250,16 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       .catch(function() {});
   } else {
     fetchAvailability();
+  }
+
+  // ── Clear transforms after entrance animations to fix mobile fixed-position calendar ──
+  var animEls = document.querySelectorAll('.anim-in');
+  for (var ai = 0; ai < animEls.length; ai++) {
+    (function(el) {
+      el.addEventListener('animationend', function() {
+        el.classList.remove('anim-in');
+      });
+    })(animEls[ai]);
   }
 
   // ── Auto-refresh every 5 min ──
