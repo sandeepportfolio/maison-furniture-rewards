@@ -976,12 +976,13 @@ app.get('/api/guesty/token-status', (req, res) => {
 app.post('/api/guesty/inject-token', (req, res) => {
   const secret = process.env.GUESTY_CLIENT_SECRET;
   const beSecret = process.env.GUESTY_BE_CLIENT_SECRET;
-  if (!secret && !beSecret) {
-    return res.status(500).json({ error: 'No GUESTY_CLIENT_SECRET or GUESTY_BE_CLIENT_SECRET configured — cannot verify caller' });
+  const injectSecret = process.env.INJECT_TOKEN_SECRET;
+  if (!secret && !beSecret && !injectSecret) {
+    return res.status(500).json({ error: 'No auth secret configured — cannot verify caller' });
   }
 
   const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-  const validSecrets = [secret, beSecret].filter(Boolean);
+  const validSecrets = [secret, beSecret, injectSecret].filter(Boolean);
   if (!auth || !validSecrets.includes(auth)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
