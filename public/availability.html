@@ -113,10 +113,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .date-input-value{font-family:var(--sans);font-size:15px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .date-input-value.placeholder{color:var(--text-dim);font-weight:400;font-size:14px}
 .date-input-divider{width:1px;background:var(--border);align-self:stretch;flex-shrink:0}
-.date-clear-btn{display:flex;align-items:center;justify-content:center;width:40px;flex-shrink:0;background:transparent;border:none;border-left:1px solid var(--border);cursor:pointer;transition:background .2s var(--ease)}
-.date-clear-btn:hover{background:rgba(242,237,225,.06)}
-.date-clear-btn svg{width:14px;height:14px;stroke:var(--text-dim);fill:none;stroke-width:2;transition:stroke .2s}
-.date-clear-btn:hover svg{stroke:var(--text-muted)}
+.clear-dates-link{background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;color:var(--accent);padding:8px 0 0;letter-spacing:.02em;transition:opacity .2s var(--ease);opacity:.7}
+.clear-dates-link:hover{opacity:1;text-decoration:underline;text-underline-offset:3px}
 
 /* ── Calendar popup ── */
 .calendar-popup{
@@ -467,10 +465,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
             <span class="date-input-label">Check-out</span>
             <span class="date-input-value placeholder" id="checkoutValue">Add date</span>
           </button>
-          <button class="date-clear-btn" id="clearDates" type="button" style="display:none" title="Clear dates">
-            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
         </div>
+        <button class="clear-dates-link" id="clearDates" type="button" style="display:none">Clear dates</button>
         <div class="calendar-popup" id="calendarPopup">
           <div class="calendar-mobile-header">
             <span class="calendar-mobile-title" id="calMobileTitle">Select dates</span>
