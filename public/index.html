@@ -7619,6 +7619,7 @@ if (bar) {
     }
 
     function onDayClick(e) {
+      e.stopPropagation();
       var btn = e.target.closest('.avail-cal-day');
       if (!btn || btn.classList.contains('past') || btn.classList.contains('empty')) return;
       var ds = btn.getAttribute('data-date');
@@ -7628,6 +7629,7 @@ if (bar) {
         cal.checkOut = null;
       } else {
         cal.checkOut = ds;
+        closeCalendar();
       }
       updateTrigger();
       updateHint();
