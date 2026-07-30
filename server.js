@@ -881,12 +881,14 @@ app.get('/api/guesty/token-status', (req, res) => {
 // Auth: requires Authorization header matching GUESTY_CLIENT_SECRET.
 app.post('/api/guesty/inject-token', (req, res) => {
   const secret = process.env.GUESTY_CLIENT_SECRET;
-  if (!secret) {
-    return res.status(500).json({ error: 'GUESTY_CLIENT_SECRET not configured — cannot verify caller' });
+  const beSecret = process.env.GUESTY_BE_CLIENT_SECRET;
+  if (!secret && !beSecret) {
+    return res.status(500).json({ error: 'No GUESTY_CLIENT_SECRET or GUESTY_BE_CLIENT_SECRET configured — cannot verify caller' });
   }
 
   const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-  if (!auth || auth !== secret) {
+  const validSecrets = [secret, beSecret].filter(Boolean);
+  if (!auth || !validSecrets.includes(auth)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
