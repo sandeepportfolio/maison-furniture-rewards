@@ -270,11 +270,16 @@ function loadPersistedToken() {
       );
       console.warn(`Startup: resuming Guesty ${rateLimitScope} rate-limit cooldown until ${new Date(rateLimitedUntil).toISOString()}`);
     }
-    if (useToken(raw?.token, raw?.expiry)) return;
   } catch (_) { /* no/invalid cache file — ignore */ }
 
-  // A live env bootstrap beats a cache file of unknown age.
+  // The env bootstrap wins outright — before the cache file, and regardless of
+  // its stated expiry. It is deployed deliberately and is the freshest thing we
+  // have; a cache file is of unknown age. Only a 401 from Guesty retires it.
   if (loadBootstrapToken()) return;
+
+  // No usable bootstrap: fall back to the cache file while its own clock says
+  // it is still good.
+  if (useToken(persisted?.token, persisted?.expiry)) return;
 
   // Still nothing: try the persisted token even though its stated expiry has
   // passed, for the same reason as the bootstrap token above.
