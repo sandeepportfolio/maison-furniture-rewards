@@ -1269,8 +1269,13 @@ async function doStartupPrewarm(isRetry = false) {
   // Only attempt pre-warm if we have a valid cached token.
   // If the token is expired or missing, don't hit OAuth — serve static data
   // until a user request naturally triggers a token refresh.
-  if (!cachedToken || Date.now() >= tokenExpiry - 60_000) {
-    console.log('Startup: no valid token available — serving static data (token refresh will happen on first user request)');
+  // "Usable" means a token exists that isn't burned — deliberately NOT a local
+  // clock comparison against tokenExpiry. A bootstrap token whose stated expiry
+  // has passed is still worth one request; only a 401 from Guesty retires it.
+  // The old clock gate meant a redeploy carrying a good token still served
+  // static data until the first user request happened to wander in.
+  if (!haveUsableToken()) {
+    console.log('Startup: no usable token available — serving static data (token refresh will happen on first user request)');
     return;
   }
 
