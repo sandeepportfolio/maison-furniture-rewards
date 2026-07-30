@@ -102,7 +102,7 @@ ul{list-style:none}
 }
 
 /* ── Mobile Menu ── */
-.mobile-menu{position:fixed;inset:0;z-index:1001;background:#0A0D0A;padding:22px 24px 34px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;overflow:auto}
+.mobile-menu{position:fixed;inset:0;z-index:1001;background:#0A0D0A;padding:22px 24px 34px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .mobile-menu.open{opacity:1;visibility:visible}
 .mobile-menu::before{content:'REGENT';font-family:var(--serif);font-size:19px;letter-spacing:.42em;color:var(--text);padding:10px 0 9vh}
 .mobile-menu a{font-family:var(--serif);font-size:clamp(34px,9vw,52px);line-height:1.25;font-weight:400;color:var(--text);padding:2px 0}
@@ -4887,19 +4887,37 @@ function initNav() {
 }
 
 /* ═══ Mobile Menu ═══ */
+var _menuScrollY = 0;
+function _lockBody() {
+  _menuScrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-' + _menuScrollY + 'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.overflow = 'hidden';
+}
+function _unlockBody() {
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.overflow = '';
+  window.scrollTo(0, _menuScrollY);
+}
 function initMobileMenu() {
   const burger = document.getElementById('burger');
   const menu = document.getElementById('mobileMenu');
   burger.addEventListener('click', () => {
     burger.classList.toggle('open');
     menu.classList.toggle('open');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+    if (menu.classList.contains('open')) _lockBody();
+    else _unlockBody();
   });
 }
 function closeMobile() {
   document.getElementById('burger').classList.remove('open');
   document.getElementById('mobileMenu').classList.remove('open');
-  document.body.style.overflow = '';
+  _unlockBody();
 }
 
 /* ═══ Card Click Handler ═══ */
