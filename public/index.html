@@ -102,12 +102,16 @@ ul{list-style:none}
 }
 
 /* ── Mobile Menu ── */
-.mobile-menu{position:fixed;inset:0;z-index:1001;background:#0A0D0A;padding:22px 24px 34px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.mobile-menu{position:fixed;inset:0;z-index:1001;background:var(--bg-dark,#0A0D0A);padding:80px 24px 34px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .mobile-menu.open{opacity:1;visibility:visible}
-.mobile-menu::before{content:'REGENT';font-family:var(--serif);font-size:19px;letter-spacing:.42em;color:var(--text);padding:10px 0 9vh}
+.nav.menu-open{z-index:1002}
+.nav.menu-open .nav-inner{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.mobile-menu::before{content:'';display:none}
 .mobile-menu a{font-family:var(--serif);font-size:clamp(34px,9vw,52px);line-height:1.25;font-weight:400;color:var(--text);padding:2px 0}
 .mobile-menu a:hover{color:var(--accent)}
-.mobile-menu a:last-child{margin-top:auto;font-family:var(--mono);font-size:13px;letter-spacing:.18em;color:var(--accent);padding-top:40px}
+.mobile-menu .mobile-menu-phone{margin-top:auto;font-family:var(--mono);font-size:13px;letter-spacing:.18em;color:var(--accent);padding-top:40px}
+.mobile-menu-book{font-family:var(--sans)!important;font-size:16px!important;font-weight:600!important;letter-spacing:.06em!important;color:var(--accent-ink)!important;background:var(--accent);padding:16px 32px!important;border-radius:999px;text-align:center;margin-top:5vh;box-shadow:0 8px 26px rgba(201,152,69,.3);transition:background .25s var(--ease),transform .2s var(--ease)}
+.mobile-menu-book:hover{background:var(--accent-hover)!important;color:var(--accent-ink)!important;transform:translateY(-1px)}
 
 /* ═══ V2 GLOBAL ═══ */
 .v2-progress{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#C99845,#E0B15C);z-index:1100;pointer-events:none}
@@ -1081,7 +1085,7 @@ ul{list-style:none}
 }
 @media(max-width:768px){
   .nav{top:10px}
-  .mobile-menu{top:70px}
+  .mobile-menu{top:0}
   .bento{grid-template-columns:1fr;grid-template-rows:360px 160px;gap:10px;padding:80px 16px 24px}
   .bento-main{grid-column:1;grid-row:1}
   .bento-map-tile{grid-column:1;grid-row:2}
@@ -2197,7 +2201,8 @@ ul{list-style:none}
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="/management" onclick="closeMobile()">Management</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
-  <a href="#properties" onclick="closeMobile()">BOOK NOW · (281) 307-1280</a>
+  <a href="/availability" class="mobile-menu-book" onclick="closeMobile()">Book Now</a>
+  <a href="tel:+12813071280" class="mobile-menu-phone" onclick="closeMobile()">(281) 307-1280</a>
 </div>
 
 <!-- ═══ BENTO HERO ═══ -->
@@ -4907,16 +4912,23 @@ function _unlockBody() {
 function initMobileMenu() {
   const burger = document.getElementById('burger');
   const menu = document.getElementById('mobileMenu');
+  const nav = document.getElementById('nav');
   burger.addEventListener('click', () => {
     burger.classList.toggle('open');
     menu.classList.toggle('open');
-    if (menu.classList.contains('open')) _lockBody();
-    else _unlockBody();
+    if (menu.classList.contains('open')) {
+      nav.classList.add('menu-open');
+      _lockBody();
+    } else {
+      nav.classList.remove('menu-open');
+      _unlockBody();
+    }
   });
 }
 function closeMobile() {
   document.getElementById('burger').classList.remove('open');
   document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('nav').classList.remove('menu-open');
   _unlockBody();
 }
 
