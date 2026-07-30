@@ -239,44 +239,63 @@ ul { list-style: none; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 48px;
 }
-.stats-left { display: flex; align-items: center; gap: 12px; }
+.stats-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 .stat-pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border-radius: 999px;
-  border: 1px solid rgba(199, 107, 66, 0.2);
-  background: rgba(199, 107, 66, 0.06);
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 18px; border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  flex: 1; justify-content: center; min-width: 0;
 }
 .stat-pill:hover {
-  border-color: rgba(199, 107, 66, 0.35);
-  background: rgba(199, 107, 66, 0.08);
+  border-color: rgba(199, 107, 66, 0.3);
+  background: rgba(199, 107, 66, 0.06);
+  box-shadow: 0 2px 12px rgba(199, 107, 66, 0.08);
+}
+.stat-pill .stat-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(145deg, rgba(199, 107, 66, 0.14), rgba(199, 107, 66, 0.04));
+  border: 1px solid rgba(199, 107, 66, 0.12);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .stat-pill svg {
   width: 16px; height: 16px; stroke: var(--accent);
   fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
   flex-shrink: 0;
 }
-.stat-pill .stat-text {
-  font-family: var(--body); font-size: 13px; font-weight: 500;
-  color: var(--text); letter-spacing: 0.01em; white-space: nowrap;
+.stat-pill .stat-content {
+  display: flex; flex-direction: column; gap: 1px; min-width: 0;
 }
-.stat-pill .stat-text small {
-  font-weight: 400; color: var(--text-muted); font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.06em; margin-left: 2px;
+.stat-pill .stat-value {
+  font-family: var(--sans); font-size: 16px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.01em; line-height: 1.2;
+}
+.stat-pill .stat-label {
+  font-family: var(--sans); font-size: 11px; font-weight: 400;
+  color: var(--text-muted); letter-spacing: 0.04em;
+  text-transform: uppercase; line-height: 1.2;
 }
 .stat-pill.air-mattress {
-  border-color: rgba(199, 107, 66, 0.25);
-  background: rgba(199, 107, 66, 0.06);
+  border-color: rgba(199, 107, 66, 0.2);
+  background: rgba(199, 107, 66, 0.04);
+  flex: none;
 }
-.stat-pill.air-mattress .stat-text {
-  color: var(--accent); font-size: 12px;
+.stat-pill.air-mattress .stat-content {
+  flex-direction: row; align-items: center; gap: 0;
 }
+.stat-pill.air-mattress .stat-value {
+  font-size: 12px; font-weight: 500; color: var(--accent);
+}
+.stat-pill.air-mattress .stat-label { display: none; }
 .stats-book-btn {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--accent); color: #fff;
-  font-size: 14px; font-weight: 500; padding: 12px 28px;
-  border-radius: 100px; letter-spacing: 0.01em;
+  font-size: 14px; font-weight: 600; padding: 12px 28px;
+  border-radius: var(--radius); letter-spacing: 0.02em;
   transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  flex-shrink: 0;
 }
 .stats-book-btn:hover {
   background: var(--accent-hover);
@@ -422,13 +441,13 @@ ul { list-style: none; }
 
 /* ── Description ── */
 .description-section .description-text {
-  font-family: var(--sans); font-size: 18px; line-height: 1.8;
+  font-family: var(--sans); font-size: 18px; line-height: 1.85;
   color: var(--text-secondary); font-weight: 300;
-  max-width: 800px; letter-spacing: 0.01em;
+  max-width: 780px; letter-spacing: 0.015em;
 }
 .description-section .description-text::first-letter {
-  font-family: var(--serif); font-size: 56px; float: left;
-  line-height: 1; margin-right: 12px; margin-top: 4px;
+  font-family: var(--serif); font-size: 60px; float: left;
+  line-height: 0.85; margin-right: 14px; margin-top: 6px;
   color: var(--accent); font-weight: 400;
 }
 
@@ -1187,12 +1206,13 @@ ul { list-style: none; }
     padding: 14px 20px;
     flex-wrap: wrap; gap: 12px;
   }
-  .stats-left { gap: 8px; flex-wrap: wrap; }
-  .stat-pill { padding: 6px 12px; gap: 6px; }
+  .stats-left { gap: 6px; flex-wrap: nowrap; }
+  .stat-pill { padding: 8px 10px; gap: 8px; border-radius: 10px; }
+  .stat-pill .stat-icon { width: 30px; height: 30px; border-radius: 8px; }
   .stat-pill svg { width: 14px; height: 14px; }
-  .stat-pill .stat-text { font-size: 12px; }
-  .stat-pill .stat-text small { font-size: 10px; }
-  .stat-pill.air-mattress .stat-text { font-size: 11px; }
+  .stat-pill .stat-value { font-size: 14px; }
+  .stat-pill .stat-label { font-size: 9px; letter-spacing: 0.06em; }
+  .stat-pill.air-mattress { display: none; }
   .stats-book-btn { display: none; }
   .content { padding: 0 20px; }
   .section { padding: 64px 0; }
@@ -1264,9 +1284,11 @@ ul { list-style: none; }
 }
 
 @media (max-width: 480px) {
-  .stat-label { display: none; }
-  .stat-item { gap: 8px; }
-  .stat-icon { width: 34px; height: 34px; }
+  .stat-pill { padding: 6px 8px; gap: 6px; }
+  .stat-pill .stat-icon { width: 26px; height: 26px; border-radius: 6px; }
+  .stat-pill svg { width: 12px; height: 12px; }
+  .stat-pill .stat-value { font-size: 13px; }
+  .stat-pill .stat-label { font-size: 8px; }
 }
 
 /* ── Luxury Book Now CTA (Hero Inline) ── */
@@ -1292,10 +1314,10 @@ ul { list-style: none; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
-  background: linear-gradient(135deg, var(--accent) 0%, #B85A34 50%, var(--accent) 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #D4794F 50%, var(--accent) 100%);
   background-size: 200% 200%;
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius);
   text-decoration: none;
   overflow: hidden;
   transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), background-position 0.5s var(--ease);
@@ -1308,6 +1330,7 @@ ul { list-style: none; }
   position: absolute;
   inset: -3px;
   border: 1px solid rgba(199, 107, 66, 0.35);
+  border-radius: calc(var(--radius) + 3px);
   pointer-events: none;
   transition: border-color 0.5s var(--ease), inset 0.5s var(--ease-out);
 }
@@ -1457,7 +1480,7 @@ ul { list-style: none; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
-  border-radius: 0;
+  border-radius: var(--radius);
   transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 
@@ -1549,16 +1572,16 @@ ul { list-style: none; }
   <div class="stats-inner">
     <div class="stats-left">
       <div class="stat-pill">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span class="stat-text">{{GUESTS}} <small>Guests</small></span>
+        <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="stat-content"><span class="stat-value">{{GUESTS}}</span><span class="stat-label">Guests</span></div>
       </div>
       <div class="stat-pill">
-        <svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
-        <span class="stat-text">{{BEDS}} <small>Bed{{BEDS_SUFFIX}}</small></span>
+        <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg></div>
+        <div class="stat-content"><span class="stat-value">{{BEDS}}</span><span class="stat-label">Bed{{BEDS_SUFFIX}}</span></div>
       </div>
       <div class="stat-pill">
-        <svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>
-        <span class="stat-text">{{BATHS}} <small>Bath{{BATHS_SUFFIX}}</small></span>
+        <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg></div>
+        <div class="stat-content"><span class="stat-value">{{BATHS}}</span><span class="stat-label">Bath{{BATHS_SUFFIX}}</span></div>
       </div>
       {{AIR_MATTRESS_PILL}}
     </div>

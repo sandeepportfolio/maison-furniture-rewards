@@ -432,13 +432,13 @@ ul{list-style:none}
 /* Divider before actions */
 .prop-divider{height:1px;background:var(--border);margin-bottom:20px}
 
-/* Action buttons */
-.prop-actions{display:flex;flex-direction:column;gap:8px}
-.prop-actions-primary{display:flex;gap:8px;width:100%}
-.prop-actions-primary button{flex:1;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.02em;padding:11px 16px;border-radius:var(--radius);transition:all .3s var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;cursor:pointer}
-.prop-actions-primary button svg{width:14px;height:14px;flex-shrink:0}
-.prop-actions-secondary{display:flex;gap:6px;flex-wrap:wrap}
-.prop-actions-secondary a,.prop-actions-secondary button{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0;padding:8px 14px;border-radius:var(--radius);transition:all .3s var(--ease);cursor:pointer}
+/* Action buttons — single inline row */
+.prop-actions{display:flex;flex-wrap:nowrap;gap:5px;align-items:center}
+.prop-actions-primary{display:contents}
+.prop-actions-primary button,.prop-actions-primary a{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.01em;padding:8px 12px;border-radius:var(--radius);transition:all .3s var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;cursor:pointer}
+.prop-actions-primary button svg,.prop-actions-primary a svg{width:12px;height:12px;flex-shrink:0}
+.prop-actions-secondary{display:contents}
+.prop-actions-secondary a,.prop-actions-secondary button{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:0;padding:8px 10px;border-radius:var(--radius);transition:all .3s var(--ease);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:3px}
 .btn-book{background:var(--accent);color:var(--accent-ink);border:1.5px solid var(--accent);position:relative;overflow:hidden}
 .btn-book:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,152,69,.3);background:var(--accent-hover);border-color:var(--accent-hover)}
 .btn-book svg{stroke:var(--accent-ink);fill:none;stroke-width:2}
@@ -1506,11 +1506,11 @@ ul{list-style:none}
   .prop-specs .spec-pill{font-size:9px;padding:3px 7px;gap:3px}
   .prop-specs .spec-pill svg{width:11px;height:11px}
   .prop-specs .spec-pill.air-mattress{font-size:8px;padding:3px 6px}
-  .prop-actions{gap:6px}
-  .prop-actions-primary{gap:6px}
-  .prop-actions-primary button{font-size:12px;padding:9px 10px;min-height:44px}
-  .prop-actions-secondary{gap:4px}
-  .prop-actions-secondary a,.prop-actions-secondary button{font-size:11px;padding:7px 10px;min-height:38px;display:inline-flex;align-items:center;justify-content:center}
+  .prop-actions{gap:3px}
+  .prop-actions-primary button,.prop-actions-primary a{font-size:10px;padding:7px 8px;gap:3px}
+  .prop-actions-primary button svg,.prop-actions-primary a svg{width:11px;height:11px}
+  .prop-actions-secondary a,.prop-actions-secondary button{font-size:10px;padding:7px 8px;gap:2px}
+  .prop-actions-secondary a svg,.prop-actions-secondary button svg{width:11px;height:11px}
   .detail-specs{flex-direction:row;flex-wrap:wrap;gap:0}
   .detail-specs span{padding:2px 8px 2px 0;border-right:1px solid var(--border);font-size:11px}
   .detail-specs span:last-child{border-right:none}
@@ -3844,11 +3844,10 @@ function renderPropertyCard(p) {
       <div class="prop-divider"></div>
       <div class="prop-actions" onclick="event.stopPropagation()">
         <div class="prop-actions-primary">
-          <button class="btn-book" onclick="openBooking('${p.slug}')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Book Now</button>
-          <button class="btn-check-avail" onclick="document.querySelector('.avail-fab')?.click()"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Check Availability</button>
+          <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
+          <button class="btn-check-avail" onclick="document.querySelector('.avail-fab')?.click()">Availability</button>
         </div>
         <div class="prop-actions-secondary">
-          <button class="btn-details" onclick="openDetail('${p.slug}')">Glance</button>
           <a href="/property/${p.slug}" class="btn-details" style="text-align:center;text-decoration:none">Full Page</a>
           <button class="btn-map-view" onclick="viewPropertyOnMap('${p.slug}')" title="View on Map"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
         </div>
