@@ -1336,6 +1336,25 @@ function clearAllCaches() {
   console.log('All Guesty caches cleared');
 }
 
+/**
+ * Inject a fresh OAuth token from an external source (e.g. a manual POST).
+ * This bypasses the rate-limited OAuth endpoint entirely and resets the
+ * circuit breaker so the server immediately resumes live API calls.
+ *
+ * @param {string} accessToken - A valid Guesty access token
+ * @param {number} expiresIn   - Token lifetime in seconds (default 86400)
+ */
+function injectToken(accessToken, expiresIn = 86400) {
+  if (!accessToken || typeof accessToken !== 'string') {
+    throw new Error('accessToken is required');
+  }
+  cachedToken = accessToken;
+  tokenExpiry = Date.now() + expiresIn * 1000;
+  clearRateLimit();
+  persistToken();
+  console.log(`Token injected externally — valid until ${new Date(tokenExpiry).toISOString()}, rate-limit state cleared`);
+}
+
 module.exports = {
   LISTINGS,
   isAllowedListing,
@@ -1361,6 +1380,7 @@ module.exports = {
   tokenStatus,
   getCachedCalendar,
   clearAllCaches,
+  injectToken,
   // BEAPI extensions
   beapiAvailable,
   beapiGetQuote,

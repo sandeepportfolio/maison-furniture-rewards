@@ -7,3 +7,4 @@ uploads/
 .env.local
 .claude/
 .worktrees/
+guesty-token*.json

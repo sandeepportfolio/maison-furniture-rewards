@@ -876,6 +876,42 @@ app.get('/api/guesty/token-status', (req, res) => {
   res.json(guesty.tokenStatus());
 });
 
+// Inject a fresh OAuth token into the running server. This breaks the
+// rate-limit death spiral by bypassing Guesty's OAuth endpoint entirely.
+// Auth: requires Authorization header matching GUESTY_CLIENT_SECRET.
+app.post('/api/guesty/inject-token', (req, res) => {
+  const secret = process.env.GUESTY_CLIENT_SECRET;
+  if (!secret) {
+    return res.status(500).json({ error: 'GUESTY_CLIENT_SECRET not configured — cannot verify caller' });
+  }
+
+  const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+  if (!auth || auth !== secret) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { access_token, expires_in } = req.body || {};
+  if (!access_token || typeof access_token !== 'string') {
+    return res.status(400).json({ error: 'access_token (string) is required' });
+  }
+
+  const expiresIn = Number(expires_in) || 86400;
+
+  try {
+    guesty.injectToken(access_token, expiresIn);
+    const status = guesty.tokenStatus();
+    res.json({
+      ok: true,
+      message: 'Token injected successfully',
+      tokenExpiry: status.tokenExpiry,
+      rateLimited: status.rateLimited,
+    });
+  } catch (err) {
+    console.error('Token injection failed:', err.message);
+    res.status(500).json({ error: 'Token injection failed', detail: err.message });
+  }
+});
+
 // BEAPI status — lets the frontend know whether BEAPI features are available.
 app.get('/api/guesty/beapi-status', (req, res) => {
   res.json({ enabled: guesty.beapiAvailable() });
