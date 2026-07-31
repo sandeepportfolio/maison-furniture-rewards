@@ -457,7 +457,8 @@ function init() {
   var rating = PROP.rating;
   var reviews = PROP.reviews || 0;
   if (rating && reviews > 0) {
-    ratingHtml = '<span class="star">★</span> ' + rating;
+    var ratingStr = Number(rating).toFixed(1);
+    ratingHtml = '<span class="star">★</span> ' + ratingStr;
     ratingHtml += '<span class="sep">—</span>' + reviews + ' REVIEW' + (reviews !== 1 ? 'S' : '');
     ratingHtml += '<span class="sep">—</span>GUEST FAVOURITE';
   } else if (reviews > 0) {
@@ -467,15 +468,14 @@ function init() {
   }
   document.getElementById('glRating').innerHTML = ratingHtml;
 
-  // Ticker
+  // Ticker (order: bedrooms, beds, baths, then extras)
   var tickerItems = [];
-  if (PROP.isVilla) tickerItems.push('PET-FRIENDLY');
-  tickerItems.push(PROP.guests + ' GUESTS');
   tickerItems.push(PROP.beds + ' BEDROOM' + (PROP.beds !== 1 ? 'S' : ''));
-  // Count total beds from fullAmenities or use beds count
   var totalBeds = countTotalBeds();
   tickerItems.push(totalBeds + ' BED' + (totalBeds !== 1 ? 'S' : ''));
   tickerItems.push(PROP.baths + ' BATH' + (PROP.baths > 1 ? 'S' : ''));
+  if (PROP.isVilla) tickerItems.push('PET-FRIENDLY');
+  tickerItems.push(PROP.guests + ' GUESTS');
   var tickerHtml = '';
   // Duplicate for seamless loop
   for (var t = 0; t < 2; t++) {
