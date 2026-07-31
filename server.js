@@ -3302,7 +3302,7 @@ const PROPERTY_DATA = {
     city: 'Plano',
     state: 'Texas',
     hostingId: '1711340298974810369',
-    guests: 14, beds: 3, baths: 3.5,
+    guests: 14, beds: 4, baths: 3.5,
     rating: 5.0, reviews: 7,
     lat: 33.02050, lng: -96.75080,
     isVilla: true,
