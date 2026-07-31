@@ -745,7 +745,7 @@ function scrollToAmenityPhoto(amenityName) {
 
 function buildBedrooms() {
   var beds = getBedrooms();
-  var totalBR = beds.length;
+  var totalBR = PROP.beds;
   var totalBeds = countTotalBeds();
   document.getElementById('sleepSummary').textContent = totalBR + ' BR · ' + totalBeds + ' BED' + (totalBeds !== 1 ? 'S' : '');
 
