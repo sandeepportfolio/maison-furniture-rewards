@@ -709,7 +709,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       var meta = [alt.nights+' night'+(alt.nights>1?'s':'')];
       if(priceTotal) meta.push(money(priceTotal)+' total');
       var shift = shiftLabel(alt.offset);
-      return '<a class="alt-chip'+(i===0?' closest':'')+'" href="/property/'+p.slug+'?checkin='+alt.checkIn+'&checkout='+alt.checkOut+'">'+
+      return '<a class="alt-chip'+(i===0?' closest':'')+'" href="/glance/'+p.slug+'?checkin='+alt.checkIn+'&checkout='+alt.checkOut+'">'+
         '<span class="alt-chip-main"><span class="alt-chip-dates">'+formatShortRange(alt.checkIn,alt.checkOut)+'</span><span class="alt-chip-meta">'+meta.join(' \xb7 ')+(shift?'<span class="alt-chip-shift">'+shift+'</span>':'')+'</span></span>'+
         '<span class="alt-chip-book">Book</span></a>';
     }).join('');
