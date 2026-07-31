@@ -7244,7 +7244,7 @@ if (bar) {
     document.body.style.overflow = '';
   }
 
-  fab.addEventListener('click', openDrawer);
+  fab.addEventListener('click', function() { window.location.href = '/availability'; });
   overlay.addEventListener('click', closeDrawer);
   closeBtn.addEventListener('click', closeDrawer);
   document.addEventListener('keydown', function(e) {

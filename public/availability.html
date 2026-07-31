@@ -75,14 +75,43 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .mobile-menu-book:hover{background:var(--accent-hover)!important;transform:translateY(-1px)}
 
 /* ── Page layout ── */
-.page-hero{padding:clamp(120px,16vw,180px) clamp(16px,4vw,48px) clamp(32px,5vw,52px);max-width:900px;margin:0 auto;text-align:center}
-.page-hero h1{font-family:var(--serif);font-size:clamp(36px,7vw,58px);font-weight:400;color:var(--text);margin-bottom:0;letter-spacing:-.01em;line-height:1.1}
+.page-hero{padding:clamp(120px,16vw,160px) clamp(16px,4vw,48px) clamp(24px,4vw,36px);max-width:900px;margin:0 auto;text-align:center;position:relative}
+.page-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse at center,rgba(201,152,69,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.page-hero h1{font-family:var(--serif);font-size:clamp(40px,8vw,64px);font-weight:400;color:var(--text);margin-bottom:0;letter-spacing:-.02em;line-height:1.05;position:relative;z-index:1}
 .page-hero h1 em{font-style:italic;color:var(--accent)}
-.hero-rule{width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:22px auto 18px}
-.page-hero p{font-family:var(--sans);font-size:clamp(14px,1.6vw,16.5px);color:var(--text-muted);max-width:480px;margin:0 auto;line-height:1.7;font-weight:400}
-.page-status{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px;font-family:var(--sans);font-size:11.5px;color:var(--text-dim);letter-spacing:.02em}
+.hero-rule{width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:22px auto 18px;position:relative;z-index:1}
+.page-hero p{font-family:var(--sans);font-size:clamp(14px,1.6vw,16.5px);color:var(--text-muted);max-width:480px;margin:0 auto;line-height:1.7;font-weight:400;position:relative;z-index:1}
+.page-status{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:14px;font-family:var(--sans);font-size:11.5px;color:var(--text-dim);letter-spacing:.02em;position:relative;z-index:1}
 .page-status .dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:statusPulse 2.5s ease-in-out infinite}
 @keyframes statusPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(74,222,128,.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(74,222,128,0)}}
+
+/* ── Featured Showcase (Available Now) ── */
+.featured-showcase{max-width:900px;width:100%;margin:0 auto;padding:0 clamp(16px,4vw,48px) clamp(28px,4vw,40px)}
+.featured-label{font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.featured-label .feat-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;animation:statusPulse 2.5s ease-in-out infinite}
+.featured-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,152,69,.2),transparent)}
+.featured-scroll{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:8px;scrollbar-width:none}
+.featured-scroll::-webkit-scrollbar{display:none}
+.featured-card{
+  flex:0 0 260px;scroll-snap-align:start;position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  background:var(--bg-card);border:1px solid rgba(242,237,225,.08);
+  transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease);
+  text-decoration:none;color:inherit;display:block;
+}
+.featured-card:hover{border-color:rgba(201,152,69,.3);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4),0 0 0 1px rgba(201,152,69,.1) inset}
+.featured-card-img{width:100%;height:160px;object-fit:cover;display:block;filter:brightness(.92)}
+.featured-card-body{padding:14px 16px 16px}
+.featured-card-loc{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.featured-card-name{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--text);margin-bottom:8px;line-height:1.2}
+.featured-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.featured-card-price{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--text)}
+.featured-card-price span{font-size:11px;font-weight:400;color:var(--text-muted)}
+.featured-card-tag{font-family:var(--sans);font-size:10px;font-weight:600;color:#4ADE80;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.2);padding:2px 8px;border-radius:100px;letter-spacing:.02em}
+.featured-empty{display:none}
+@media(max-width:600px){
+  .featured-card{flex:0 0 220px}
+  .featured-card-img{height:130px}
+}
 
 /* ── Entrance animations ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -96,7 +125,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .page-content{flex:1;max-width:720px;width:100%;margin:0 auto;padding:0 clamp(16px,4vw,48px) 60px}
 
 /* ── Search bar ── */
-.search-bar{margin-bottom:clamp(36px,6vw,56px);padding:clamp(24px,4vw,36px);background:rgba(242,237,225,.025);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(201,152,69,.1);border-radius:var(--radius-xl);position:relative;box-shadow:0 8px 40px rgba(0,0,0,.12),0 0 0 1px rgba(242,237,225,.04) inset}
+.search-bar{margin-bottom:clamp(36px,6vw,56px);padding:clamp(28px,4vw,40px);background:rgba(242,237,225,.025);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(201,152,69,.12);border-radius:var(--radius-xl);position:relative;box-shadow:0 12px 48px rgba(0,0,0,.18),0 0 0 1px rgba(242,237,225,.04) inset,0 0 80px rgba(201,152,69,.03) inset}
 .search-bar-label{font-family:var(--serif);font-size:13px;font-weight:400;font-style:italic;letter-spacing:.03em;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .search-bar-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,152,69,.2),transparent)}
 .search-fields{display:flex;gap:12px;align-items:stretch}
@@ -237,9 +266,10 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   border-radius:var(--radius-lg);
   transition:border-color .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease),background .4s var(--ease);
   text-decoration:none;color:inherit;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
 .avail-card:last-child{margin-bottom:0}
-.avail-card:hover{border-color:rgba(201,152,69,.25);transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.3),0 0 0 1px rgba(201,152,69,.08) inset;background:rgba(20,26,21,.8)}
+.avail-card:hover{border-color:rgba(201,152,69,.3);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.35),0 0 0 1px rgba(201,152,69,.12) inset;background:rgba(20,26,21,.85)}
 .avail-card-photo{width:110px;min-width:110px;height:110px;border-radius:var(--radius);overflow:hidden;flex-shrink:0;position:relative}
 .avail-card-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .avail-card-badge{position:absolute;top:6px;left:6px;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
@@ -441,12 +471,18 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 <div class="page-hero">
   <h1 class="anim-in anim-in-d1">Check <em>Availability</em></h1>
   <div class="hero-rule anim-in anim-in-d2"></div>
-  <p class="anim-in anim-in-d3">Real-time availability across all Regent properties. Search by date range or browse what's open today.</p>
+  <p class="anim-in anim-in-d3">Real-time availability across all Regent properties.<br>Search by date range or browse what's open today.</p>
   <div class="page-status anim-in anim-in-d4" id="pageStatus">
     <span class="dot"></span>
     <span id="statusText">Loading...</span>
   </div>
 </div>
+
+<!-- Featured: Available Now -->
+<section class="featured-showcase anim-in anim-in-d4" id="featuredShowcase" style="display:none">
+  <div class="featured-label"><span class="feat-dot"></span> Available now</div>
+  <div class="featured-scroll" id="featuredScroll"></div>
+</section>
 
 <!-- Main content -->
 <main class="page-content" id="pageContent">
@@ -1189,6 +1225,41 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     });
   }
 
+  // ── Featured showcase ──
+  var featuredShowcase = document.getElementById('featuredShowcase');
+  var featuredScroll = document.getElementById('featuredScroll');
+
+  function renderFeatured(data) {
+    if (!data || !data.properties) return;
+    var available = data.properties.filter(function(p) { return p.today && p.today.available; });
+    if (!available.length) {
+      available = data.properties.filter(function(p) { return p.tomorrow && p.tomorrow.available; });
+    }
+    if (!available.length) {
+      featuredShowcase.style.display = 'none';
+      return;
+    }
+    var h = '';
+    available.forEach(function(p) {
+      var day = p.today && p.today.available ? p.today : p.tomorrow;
+      var price = day && day.price ? '$' + Math.round(day.price) : '';
+      var tag = p.today && p.today.available ? 'Tonight' : 'Tomorrow';
+      h += '<a href="/property/' + p.slug + '" class="featured-card">' +
+        '<img class="featured-card-img" src="' + p.photo + '" alt="' + p.name + '" loading="lazy">' +
+        '<div class="featured-card-body">' +
+          '<div class="featured-card-loc">' + (p.city || '') + '</div>' +
+          '<div class="featured-card-name">' + p.name + '</div>' +
+          '<div class="featured-card-meta">' +
+            (price ? '<span class="featured-card-price">' + price + ' <span>/night</span></span>' : '') +
+            '<span class="featured-card-tag">' + tag + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</a>';
+    });
+    featuredScroll.innerHTML = h;
+    featuredShowcase.style.display = '';
+  }
+
   // ── Fetch today/tomorrow ──
   function fetchAvailability() {
     if (currentView === 'default') results.innerHTML = skeleton(4);
@@ -1198,6 +1269,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
         availData = data;
         statusText.textContent = 'Updated ' + formatTime(new Date().toISOString());
         if (currentView === 'default') renderDefault(data);
+        renderFeatured(data);
       })
       .catch(function() {
         if (currentView === 'default') {
@@ -1259,7 +1331,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     fetchRange(paramCI, paramCO);
     fetch('/api/availability/now', { cache: 'no-store' })
       .then(function(r) { return r.json(); })
-      .then(function(data) { availData = data; })
+      .then(function(data) { availData = data; renderFeatured(data); })
       .catch(function() {});
   } else {
     fetchAvailability();
