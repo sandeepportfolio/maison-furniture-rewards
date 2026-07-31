@@ -739,7 +739,7 @@ function scrollToAmenityPhoto(amenityName) {
 
 function buildBedrooms() {
   var beds = getBedrooms();
-  var totalBR = beds.filter(function(b) { return b.label.indexOf('LIVING') < 0; }).length;
+  var totalBR = beds.length;
   var totalBeds = countTotalBeds();
   document.getElementById('sleepSummary').textContent = totalBR + ' BR · ' + totalBeds + ' BED' + (totalBeds !== 1 ? 'S' : '');
 
