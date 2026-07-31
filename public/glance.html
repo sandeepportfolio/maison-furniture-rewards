@@ -390,9 +390,9 @@ if (PROP.amenityPhotos) {
 }
 
 function getPhotoLabel(idx) {
+  // Use amenity mapping if available, but prefer descriptive name for cover
+  if (idx === 0) return PHOTO_LABELS[idx] || 'The Residence';
   if (PHOTO_LABELS[idx]) return PHOTO_LABELS[idx];
-  // Fallback generic labels based on common patterns
-  if (idx === 0) return 'The Residence';
   return 'Photo ' + (idx + 1);
 }
 
@@ -803,11 +803,12 @@ function loadPrices() {
     .then(function(r) { return r.ok ? r.json() : null; })
     .catch(function() { return null; })
     .then(function(data) {
-      var price = null;
+      var priceObj = null;
       if (data && data.prices && data.prices[SLUG]) {
-        price = data.prices[SLUG];
+        priceObj = data.prices[SLUG];
       }
-      if (price) {
+      var price = priceObj ? (typeof priceObj === 'object' ? priceObj.lowestPrice : priceObj) : null;
+      if (price && !isNaN(price)) {
         var disc = Math.round(price * 0.95);
         document.getElementById('priceBig').textContent = '$' + disc;
         document.getElementById('priceOriginal').textContent = '$' + price;
