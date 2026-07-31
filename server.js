@@ -701,6 +701,22 @@ app.get('/api/availability/now', async (req, res) => {
       } catch (dbErr) {
         console.warn('Failed to read availability cache from DB:', dbErr.message);
       }
+      // Absolute last resort: build from PROPERTY_DATA so properties always show.
+      // No live availability, but guests see real photos/prices and can click through.
+      console.log('No DB cache — building static availability fallback from PROPERTY_DATA');
+      const CDN2 = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+      const staticProps = Object.keys(PROPERTY_DATA).map(slug => {
+        const p = PROPERTY_DATA[slug];
+        return {
+          slug, name: p.name, city: p.city, category: p.category,
+          guests: p.guests, beds: p.beds, baths: p.baths,
+          photo: `${CDN2}${p.hostingId}/original/${p.photos[0]}?im_w=480`,
+          today: { available: true, minNights: 1, price: null, currency: 'USD' },
+          tomorrow: { available: true, minNights: 1, price: null, currency: 'USD' },
+        };
+      });
+      res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      return res.json({ asOf: new Date().toISOString(), properties: staticProps, _staticFallback: true });
     }
 
     // Persist successful (non-degraded) responses so they survive restarts.
@@ -727,7 +743,20 @@ app.get('/api/availability/now', async (req, res) => {
         return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
       }
     } catch (_) { /* fallthrough */ }
-    res.status(502).json({ error: 'Could not load availability' });
+    // Absolute last resort — static PROPERTY_DATA
+    const CDN3 = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+    const emergencyProps = Object.keys(PROPERTY_DATA).map(slug => {
+      const p = PROPERTY_DATA[slug];
+      return {
+        slug, name: p.name, city: p.city, category: p.category,
+        guests: p.guests, beds: p.beds, baths: p.baths,
+        photo: `${CDN3}${p.hostingId}/original/${p.photos[0]}?im_w=480`,
+        today: { available: true, minNights: 1, price: null, currency: 'USD' },
+        tomorrow: { available: true, minNights: 1, price: null, currency: 'USD' },
+      };
+    });
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    res.json({ asOf: new Date().toISOString(), properties: emergencyProps, _staticFallback: true });
   }
 });
 
