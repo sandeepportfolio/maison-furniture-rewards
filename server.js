@@ -3652,7 +3652,7 @@ const PROPERTY_DATA = {
     state: 'Texas',
     hostingId: '1622247533469388804',
     guests: 5, beds: 1, baths: 1,
-    rating: 4.95, reviews: 21,
+    rating: 4.86, reviews: 35,
     lat: 32.984401, lng: -96.710101,
     isVilla: false,
     amenities: [
@@ -3711,7 +3711,7 @@ const PROPERTY_DATA = {
     state: 'Texas',
     hostingId: '862596563097784023',
     guests: 3, beds: 1, baths: 1,
-    rating: 4.83, reviews: 23,
+    rating: 4.74, reviews: 34,
     lat: 32.8686393, lng: -96.9340601,
     isVilla: false,
     amenities: [

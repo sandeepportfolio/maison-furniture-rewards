@@ -35,7 +35,7 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 /* ── Header ── */
 .gl-header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg);border-bottom:1px solid rgba(255,255,255,0.04)}
 .gl-back{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:var(--text);text-decoration:none;font-size:20px;border:none;background:none;cursor:pointer}
-.gl-brand{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0.35em;color:var(--text);text-transform:uppercase}
+.gl-brand{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0.35em;color:var(--text);text-transform:uppercase;text-decoration:none}
 .gl-header-actions{display:flex;gap:16px}
 .gl-header-actions button{background:none;border:none;color:var(--text);cursor:pointer;padding:4px;opacity:0.7;transition:opacity 0.2s}
 .gl-header-actions button:hover{opacity:1}
@@ -207,7 +207,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   <button class="gl-back" onclick="history.back()" aria-label="Go back">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
   </button>
-  <span class="gl-brand">R E G E N T</span>
+  <a href="/" class="gl-brand">R E G E N T</a>
   <div class="gl-header-actions">
     <button onclick="shareProperty()" aria-label="Share">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
@@ -617,11 +617,12 @@ function getBedrooms() {
       { label: 'BEDROOM', type: '1 king bed', note: 'LAKE VIEW · WALK-IN CLOSET' }
     ],
     'executive': [
-      { label: 'BEDROOM', type: '1 king bed', note: '75" TV · WALK-IN CLOSET' },
+      { label: 'BEDROOM', type: '1 queen bed + 1 bunk bed', note: '75" TV · WALK-IN CLOSET' },
       { label: 'LIVING ROOM', type: 'Air mattress', note: 'SLEEPS UP TO 5 TOTAL' }
     ],
     'stunning-lake': [
-      { label: 'BEDROOM', type: '1 king bed', note: 'LAKE VIEW · 50" TV' }
+      { label: 'BEDROOM', type: '1 queen bed + 1 bunk bed', note: 'LAKE VIEW · 50" TV' },
+      { label: 'LIVING ROOM', type: '1 couch + air mattress', note: 'SLEEPS UP TO 3' }
     ]
   };
   return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
