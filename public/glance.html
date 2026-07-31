@@ -764,7 +764,9 @@ var NEIGHBOURHOODS = {
 
 function buildNeighbourhood() {
   var n = NEIGHBOURHOODS[SLUG] || { desc: PROP.description, tags: [] };
-  document.getElementById('neighCity').textContent = PROP.city.toUpperCase() + ', ' + PROP.state.substring(0, 2).toUpperCase();
+  var stateAbbrevs = { 'texas': 'TX', 'california': 'CA', 'florida': 'FL', 'new york': 'NY', 'illinois': 'IL', 'georgia': 'GA', 'ohio': 'OH', 'colorado': 'CO' };
+  var stAbbr = stateAbbrevs[PROP.state.toLowerCase()] || PROP.state.substring(0, 2).toUpperCase();
+  document.getElementById('neighCity').textContent = PROP.city.toUpperCase() + ', ' + stAbbr;
   document.getElementById('neighDesc').textContent = n.desc;
 
   var html = '';
