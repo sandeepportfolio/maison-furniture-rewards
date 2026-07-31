@@ -56,11 +56,14 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
 /* ── Page ── */
 .page-wrap{max-width:1080px;width:100%;margin:0 auto;padding:clamp(100px,14vw,140px) clamp(16px,4vw,40px) 60px}
-.page-header{margin-bottom:clamp(28px,4vw,40px)}
-.page-title{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:400;letter-spacing:-.01em;line-height:1.15;margin-bottom:6px}
-.page-sub{font-size:15px;color:var(--text-muted);display:flex;align-items:center;gap:8px}
-.page-sub .live-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2.5s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.page-header{margin-bottom:clamp(32px,5vw,48px)}
+.page-kicker{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.page-kicker::before{content:'';width:24px;height:1px;background:var(--accent);display:inline-block}
+.page-title{font-family:var(--serif);font-size:clamp(32px,6vw,52px);font-weight:400;letter-spacing:-.02em;line-height:1.08;margin-bottom:10px}
+.page-title em{font-style:italic;color:var(--accent)}
+.page-sub{font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:8px}
+.page-sub .live-dot{width:5px;height:5px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ── Search ── */
 .search-row{display:flex;align-items:stretch;gap:12px;margin-bottom:clamp(32px,5vw,48px);padding:16px;background:rgba(242,237,225,.03);border:1px solid var(--border);border-radius:var(--radius-lg)}
@@ -72,8 +75,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .date-input.active{background:rgba(201,152,69,.06)}
 .date-input-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1px}
 .date-input.active .date-input-label{color:var(--accent)}
-.date-input-value{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.date-input-value{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s}
 .date-input-value.placeholder{color:var(--text-dim);font-weight:400}
+.date-input-value.has-date{color:var(--text);font-weight:600}
+.date-inputs.has-range{border-color:rgba(201,152,69,.25)}
+.date-inputs.has-range .date-input-label{color:var(--accent);opacity:.8}
 .date-input-divider{width:1px;background:var(--border);align-self:stretch;flex-shrink:0}
 .clear-dates-link{font-size:12px;font-weight:500;color:var(--accent);padding:6px 0 0;opacity:.7;transition:opacity .2s}
 .clear-dates-link:hover{opacity:1;text-decoration:underline;text-underline-offset:3px}
@@ -170,7 +176,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
 /* ── Property cards ── */
 .avail-day-group{margin-bottom:32px}
-.avail-day-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px}
+.avail-day-label{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--text-muted);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.avail-day-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .avail-none{font-size:14px;color:var(--text-dim);padding:12px 0;font-style:italic}
 .property-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
 .prop-card{
@@ -351,7 +358,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 <!-- Page -->
 <div class="page-wrap">
   <div class="page-header">
-    <h1 class="page-title">Availability</h1>
+    <div class="page-kicker">Real-time availability</div>
+    <h1 class="page-title">Find your <em>perfect</em> stay</h1>
     <div class="page-sub"><span class="live-dot"></span><span id="statusText">Loading...</span></div>
   </div>
 
@@ -568,7 +576,13 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       updateInputValues();updateActiveInput();renderCalendar();
     } else {
       if(ds<=cal.checkIn){cal.checkIn=ds;cal.checkOut=null;cal.selecting='checkOut';cal.hoveredDate=null;searchBtn.disabled=true;updateInputValues();updateActiveInput();renderCalendar();}
-      else{cal.checkOut=ds;cal.selecting='checkIn';cal.hoveredDate=null;searchBtn.disabled=false;updateInputValues();closeCalendar();searchHint.textContent='Min-night requirements vary by property and check-in date.';searchHint.classList.add('visible');}
+      else{
+        cal.checkOut=ds;cal.selecting='checkIn';cal.hoveredDate=null;searchBtn.disabled=false;
+        updateInputValues();renderCalendar();
+        searchHint.textContent='Min-night requirements vary by property and check-in date.';searchHint.classList.add('visible');
+        // Close calendar after brief delay so user sees the range highlight
+        setTimeout(function(){ closeCalendar(); }, isMobile() ? 350 : 200);
+      }
     }
   }
   function handleDayHover(ds){if(cal.checkIn&&!cal.checkOut&&cal.selecting==='checkOut'){cal.hoveredDate=ds;updateDayClasses();updateCalFooter();}}
@@ -595,10 +609,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   }
 
   function updateInputValues() {
-    if(cal.checkIn){checkinValue.textContent=formatShortDate(cal.checkIn);checkinValue.classList.remove('placeholder');}
-    else{checkinValue.textContent='Add date';checkinValue.classList.add('placeholder');}
-    if(cal.checkOut){checkoutValue.textContent=formatShortDate(cal.checkOut);checkoutValue.classList.remove('placeholder');}
-    else{checkoutValue.textContent='Add date';checkoutValue.classList.add('placeholder');}
+    if(cal.checkIn){checkinValue.textContent=formatShortDate(cal.checkIn);checkinValue.classList.remove('placeholder');checkinValue.classList.add('has-date');}
+    else{checkinValue.textContent='Add date';checkinValue.classList.add('placeholder');checkinValue.classList.remove('has-date');}
+    if(cal.checkOut){checkoutValue.textContent=formatShortDate(cal.checkOut);checkoutValue.classList.remove('placeholder');checkoutValue.classList.add('has-date');}
+    else{checkoutValue.textContent='Add date';checkoutValue.classList.add('placeholder');checkoutValue.classList.remove('has-date');}
+    dateInputs.classList.toggle('has-range',!!(cal.checkIn&&cal.checkOut));
     clearDatesBtn.style.display=(cal.checkIn||cal.checkOut)?'':'none';
   }
 
