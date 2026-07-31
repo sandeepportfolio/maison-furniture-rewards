@@ -574,13 +574,18 @@ function init() {
 }
 
 function countTotalBeds() {
-  // Villa has multiple bedrooms
   var bedData = getBedrooms();
   var total = 0;
   bedData.forEach(function(b) {
-    var m = b.type.match(/(\d+)/);
-    if (m) total += parseInt(m[1]);
-    if (b.type.toLowerCase().indexOf('couch') >= 0 || b.type.toLowerCase().indexOf('sofa') >= 0) total += 1;
+    var t = b.type.toLowerCase();
+    var m = t.match(/(\d+)/);
+    if (t.indexOf('bunk') >= 0) {
+      total += (m ? parseInt(m[1]) : 1) * 2;
+    } else if (m) {
+      total += parseInt(m[1]);
+    } else if (t.indexOf('couch') >= 0 || t.indexOf('sofa') >= 0 || t.indexOf('mattress') >= 0) {
+      total += 1;
+    }
   });
   return total || PROP.beds;
 }
@@ -590,8 +595,9 @@ function getBedrooms() {
     'regent-villa': [
       { label: 'BEDROOM 1 · MASTER', type: '1 king bed', note: 'MINI GOLF · EN-SUITE' },
       { label: 'BEDROOM 2', type: '1 king bed', note: 'SMART TV' },
-      { label: 'BEDROOM 3', type: '2 queen beds', note: 'SMART TV · BUNK STYLE' },
-      { label: 'BEDROOM 4 · LIVING', type: '2 single beds + sofa bed', note: 'SLEEPS UP TO 14' }
+      { label: 'BEDROOM 3', type: '1 bunk bed', note: 'SMART TV' },
+      { label: 'THIRD FLOOR', type: 'couch', note: 'ADDITIONAL SLEEPING' },
+      { label: 'LIVING ROOM', type: '1 pull-out king sofa bed', note: 'SLEEPS UP TO 14' }
     ],
     'regent-skyline': [
       { label: 'BEDROOM · LOFT', type: '1 king bed', note: 'EXPOSED BRICK · SMART TV' },
