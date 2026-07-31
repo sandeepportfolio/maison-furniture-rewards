@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{{NAME}} | Regent — Luxury Short-Term Rentals</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{OG_URL}}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{NAME}} — Regent Luxury Rentals">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:image" content="{{COVER_IMAGE}}">
+<meta property="og:url" content="{{OG_URL}}">
+<meta property="og:site_name" content="Regent">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{NAME}} — Regent Luxury Rentals">
+<meta name="twitter:description" content="{{DESCRIPTION}}">
+<meta name="twitter:image" content="{{COVER_IMAGE}}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0D0A;--bg-card:#141A15;--accent:#C99845;--accent-hover:#E0B15C;
+  --text:#E8E4DD;--text-dim:#8A8578;--text-faint:#5A5549;
+  --serif:'Playfair Display',Georgia,serif;--sans:'Outfit',system-ui,sans-serif;
+  --mono:'Outfit',monospace;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+html{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-text-size-adjust:100%}
+body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;overflow-x:hidden}
+
+/* ── Header ── */
+.gl-header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg);border-bottom:1px solid rgba(255,255,255,0.04)}
+.gl-back{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:var(--text);text-decoration:none;font-size:20px;border:none;background:none;cursor:pointer}
+.gl-brand{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0.35em;color:var(--text);text-transform:uppercase}
+.gl-header-actions{display:flex;gap:16px}
+.gl-header-actions button{background:none;border:none;color:var(--text);cursor:pointer;padding:4px;opacity:0.7;transition:opacity 0.2s}
+.gl-header-actions button:hover{opacity:1}
+
+/* ── Hero ── */
+.gl-hero{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;cursor:pointer}
+.gl-hero img{width:100%;height:100%;object-fit:cover}
+.gl-hero-chip{position:absolute;top:16px;right:16px;background:rgba(10,13,10,0.75);backdrop-filter:blur(8px);color:var(--text);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:8px 14px;border-radius:6px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.gl-hero-chip svg{width:12px;height:12px}
+
+/* ── Caption Row ── */
+.gl-caption{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.gl-caption-text{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase}
+.gl-photo-count{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase;cursor:pointer}
+
+/* ── Meta ── */
+.gl-meta{padding:16px 20px 0}
+.gl-location{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.14em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.gl-title{font-family:var(--serif);font-size:42px;font-weight:700;line-height:1.05;color:var(--text);margin-bottom:12px}
+.gl-tags{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px}
+.gl-rating-row{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:16px}
+.gl-rating-row .star{color:var(--accent)}
+.gl-rating-row .sep{color:var(--text-faint);margin:0 4px}
+
+/* ── Ticker ── */
+.gl-ticker-wrap{overflow:hidden;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 0}
+.gl-ticker{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 20s linear infinite;width:max-content}
+.gl-ticker:hover{animation-play-state:paused}
+.gl-ticker span{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase;padding:0 12px}
+.gl-ticker .plus{color:var(--accent);font-size:10px}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── Photo Strip ── */
+.gl-strip{display:flex;gap:4px;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.gl-strip::-webkit-scrollbar{display:none}
+.gl-strip-item{flex:0 0 auto;width:140px;height:100px;border-radius:0;overflow:hidden;cursor:pointer;position:relative}
+.gl-strip-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s}
+.gl-strip-item:hover img{transform:scale(1.05)}
+.gl-strip-label{position:absolute;bottom:0;left:0;right:0;padding:4px 8px;background:linear-gradient(transparent,rgba(0,0,0,0.7));font-family:var(--mono);font-size:8px;letter-spacing:0.08em;color:rgba(255,255,255,0.8);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Price Block ── */
+.gl-price-block{padding:28px 20px 20px}
+.gl-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.gl-price-big{font-family:var(--serif);font-size:48px;font-weight:700;color:var(--text)}
+.gl-price-original{font-family:var(--sans);font-size:16px;color:var(--text-faint);text-decoration:line-through}
+.gl-price-period{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-left:auto}
+.gl-price-save{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase;margin-bottom:20px}
+.gl-book-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:18px 24px;background:var(--accent);color:var(--bg);font-family:var(--sans);font-size:16px;font-weight:600;border:none;border-radius:4px;cursor:pointer;transition:background 0.2s}
+.gl-book-btn:hover{background:var(--accent-hover)}
+.gl-book-btn .arrow{font-size:18px}
+.gl-secondary-btns{display:flex;gap:4px;margin-top:4px}
+.gl-secondary-btns a,.gl-secondary-btns button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 12px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);background:none;border:1px solid rgba(255,255,255,0.12);border-radius:4px;text-decoration:none;cursor:pointer;transition:border-color 0.2s}
+.gl-secondary-btns a:hover,.gl-secondary-btns button:hover{border-color:var(--accent)}
+
+/* ── Sections ── */
+.gl-section{padding:28px 20px;border-top:1px solid rgba(255,255,255,0.06)}
+.gl-section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+.gl-section-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase}
+.gl-section-right{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase}
+.gl-tagline{font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:16px}
+.gl-desc{font-family:var(--sans);font-size:14px;line-height:1.7;color:var(--text-dim)}
+
+/* ── Amenity List ── */
+.gl-amenity-item{display:flex;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.gl-amenity-num{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:0.06em;width:28px;flex-shrink:0}
+.gl-amenity-name{font-family:var(--sans);font-size:15px;font-weight:500;color:var(--text);cursor:pointer}
+.gl-amenity-name:hover{color:var(--accent)}
+.gl-amenity-detail{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;text-align:right;max-width:40%;white-space:nowrap}
+.gl-amenity-dots{flex:1;border-bottom:1px dotted rgba(255,255,255,0.08);margin:0 12px;min-width:20px;position:relative;top:-4px}
+.gl-all-amenities-btn{display:block;width:100%;padding:14px;margin-top:16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-align:center;color:var(--text);background:none;border:1px solid rgba(255,255,255,0.12);border-radius:4px;cursor:pointer;transition:border-color 0.2s}
+.gl-all-amenities-btn:hover{border-color:var(--accent)}
+
+/* ── Bedroom Grid ── */
+.gl-bed-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;overflow:hidden}
+.gl-bed-cell{padding:16px;background:rgba(255,255,255,0.02)}
+.gl-bed-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase;margin-bottom:6px}
+.gl-bed-type{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+.gl-bed-note{font-family:var(--mono);font-size:8px;letter-spacing:0.06em;color:var(--text-faint);text-transform:uppercase}
+
+/* ── Rules List ── */
+.gl-rule-item{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.gl-rule-name{font-family:var(--sans);font-size:15px;font-weight:500;color:var(--text)}
+.gl-rule-dots{flex:1;border-bottom:1px dotted rgba(255,255,255,0.08);margin:0 12px;min-width:20px;position:relative;top:-4px}
+.gl-rule-detail{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;text-align:right;white-space:nowrap}
+
+/* ── Location Tags ── */
+.gl-loc-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.gl-loc-tag{padding:8px 14px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--text);text-transform:uppercase;border:1px solid rgba(255,255,255,0.12);border-radius:4px;text-decoration:none;transition:border-color 0.2s}
+.gl-loc-tag:hover{border-color:var(--accent)}
+
+/* ── Reviews Section ── */
+.gl-review-hero{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:6px;margin-bottom:16px}
+.gl-review-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5)}
+.gl-review-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.gl-review-score{font-family:var(--serif);font-size:64px;font-weight:700;color:var(--text)}
+.gl-review-stars{color:var(--accent);font-size:14px;letter-spacing:4px;margin:4px 0}
+.gl-review-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase}
+.gl-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,0.06)}
+.gl-score-item{text-align:center;padding:14px 8px}
+.gl-score-cat{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px}
+.gl-score-val{font-family:var(--sans);font-size:18px;font-weight:600;color:var(--text)}
+
+/* ── Host ── */
+.gl-host{display:flex;align-items:center;gap:14px;padding:20px 0}
+.gl-host-avatar{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;font-weight:600;color:var(--bg);flex-shrink:0}
+.gl-host-info{flex:1}
+.gl-host-name{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text)}
+.gl-host-detail{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;color:var(--text-dim);text-transform:uppercase;margin-top:2px}
+.gl-host-msg{padding:10px 16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);background:none;border:1px solid rgba(255,255,255,0.15);border-radius:4px;cursor:pointer;text-decoration:none;transition:border-color 0.2s}
+.gl-host-msg:hover{border-color:var(--accent)}
+
+/* ── Footer Text ── */
+.gl-footer-text{text-align:center;padding:20px;font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--text-faint);text-transform:uppercase}
+
+/* ── Sticky Bar ── */
+.gl-sticky{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(to right,var(--bg) 0%,#111511 100%);border-top:1px solid rgba(201,152,69,0.2);padding:14px 20px calc(14px + var(--safe-b));display:flex;align-items:center;justify-content:space-between}
+.gl-sticky-inner{max-width:480px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.gl-sticky-price{display:flex;align-items:baseline;gap:6px}
+.gl-sticky-amount{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--text)}
+.gl-sticky-period{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase}
+.gl-sticky-btn{padding:14px 28px;background:var(--accent);color:var(--bg);font-family:var(--sans);font-size:14px;font-weight:600;border:none;border-radius:4px;cursor:pointer;transition:background 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.gl-sticky-btn:hover{background:var(--accent-hover)}
+
+/* ── Gallery Modal ── */
+.gl-gallery{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);flex-direction:column}
+.gl-gallery.active{display:flex}
+.gl-gallery-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-shrink:0}
+.gl-gallery-counter{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase}
+.gl-gallery-close{background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px 8px}
+.gl-gallery-viewport{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y}
+.gl-gallery-img{max-width:100%;max-height:100%;object-fit:contain;transition:opacity 0.2s}
+.gl-gallery-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);border:none;color:var(--text);width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:5}
+.gl-gallery-nav:hover{background:rgba(255,255,255,0.15)}
+.gl-gallery-prev{left:12px}
+.gl-gallery-next{right:12px}
+.gl-gallery-caption{padding:12px 20px 20px;text-align:center;flex-shrink:0}
+.gl-gallery-caption-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase}
+
+/* ── All Amenities Modal ── */
+.gl-amenities-modal{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto}
+.gl-amenities-modal.active{display:block}
+.gl-amenities-modal-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg);border-bottom:1px solid rgba(255,255,255,0.06)}
+.gl-amenities-modal-title{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;color:var(--text);text-transform:uppercase}
+.gl-amenities-modal-close{background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px 8px}
+.gl-amenities-category{padding:20px 20px 8px}
+.gl-amenities-cat-name{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.gl-amenities-cat-item{padding:10px 0;font-family:var(--sans);font-size:14px;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:color 0.2s}
+.gl-amenities-cat-item:hover{color:var(--accent)}
+.gl-amenities-cat-item.has-photo{color:var(--text)}
+
+/* ── Responsive ── */
+@media(min-width:481px){
+  .gl-sticky{padding-left:calc((100% - 480px)/2 + 20px);padding-right:calc((100% - 480px)/2 + 20px)}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="gl-header">
+  <button class="gl-back" onclick="history.back()" aria-label="Go back">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  </button>
+  <span class="gl-brand">R E G E N T</span>
+  <div class="gl-header-actions">
+    <button onclick="shareProperty()" aria-label="Share">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+    </button>
+    <button onclick="toggleFavorite(this)" aria-label="Save">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Hero Photo -->
+<div class="gl-hero" id="heroPhoto" onclick="openGallery(0)">
+  <img id="heroImg" src="" alt="">
+  <div class="gl-hero-chip" onclick="event.stopPropagation();openGallery(0)">
+    TAP TO EXPAND
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+  </div>
+</div>
+
+<!-- Caption -->
+<div class="gl-caption">
+  <span class="gl-caption-text" id="captionText">FIG. 01 — </span>
+  <span class="gl-photo-count" id="photoCount" onclick="openGallery(0)"></span>
+</div>
+
+<!-- Meta -->
+<div class="gl-meta">
+  <div class="gl-location" id="glLocation"></div>
+  <h1 class="gl-title" id="glTitle"></h1>
+  <div class="gl-tags" id="glTags"></div>
+  <div class="gl-rating-row" id="glRating"></div>
+</div>
+
+<!-- Ticker -->
+<div class="gl-ticker-wrap">
+  <div class="gl-ticker" id="glTicker"></div>
+</div>
+
+<!-- Photo Strip -->
+<div class="gl-strip" id="photoStrip"></div>
+
+<!-- Price Block -->
+<div class="gl-price-block">
+  <div class="gl-price-row">
+    <span class="gl-price-big" id="priceBig">—</span>
+    <span class="gl-price-original" id="priceOriginal"></span>
+    <span class="gl-price-period">FROM / NIGHT</span>
+  </div>
+  <div class="gl-price-save" id="priceSave">SAVE 5%+ BOOKING DIRECT — NO CHARGE YET</div>
+  <a class="gl-book-btn" id="bookBtn" href="">
+    Book now <span class="arrow">→</span>
+  </a>
+  <div class="gl-secondary-btns">
+    <a href="" id="contactBtn">CONTACT US</a>
+    <a href="" id="airbnbBtn" target="_blank" rel="noopener">VIEW ON AIRBNB <span style="font-size:12px">↗</span></a>
+  </div>
+</div>
+
+<!-- N°1 — THE RESIDENCE -->
+<div class="gl-section">
+  <div class="gl-section-head">
+    <span class="gl-section-label">N°1 — THE RESIDENCE</span>
+    <span class="gl-section-right">ABOUT</span>
+  </div>
+  <div class="gl-tagline" id="glTagline"></div>
+  <div class="gl-desc" id="glDesc"></div>
+</div>
+
+<!-- N°2 — AMENITIES -->
+<div class="gl-section">
+  <div class="gl-section-head">
+    <span class="gl-section-label">N°2 — AMENITIES</span>
+    <span class="gl-section-right" id="amenityCount"></span>
+  </div>
+  <div id="amenityList"></div>
+  <button class="gl-all-amenities-btn" id="allAmenitiesBtn" onclick="openAllAmenities()"></button>
+</div>
+
+<!-- N°3 — WHERE YOU SLEEP -->
+<div class="gl-section" id="sleepSection">
+  <div class="gl-section-head">
+    <span class="gl-section-label">N°3 — WHERE YOU SLEEP</span>
+    <span class="gl-section-right" id="sleepSummary"></span>
+  </div>
+  <div class="gl-bed-grid" id="bedGrid"></div>
+</div>
+
+<!-- N°4 — GOOD TO KNOW -->
+<div class="gl-section">
+  <div class="gl-section-head">
+    <span class="gl-section-label">N°4 — GOOD TO KNOW</span>
+    <span class="gl-section-right">HOUSE RULES</span>
+  </div>
+  <div id="rulesList"></div>
+</div>
+
+<!-- N°5 — THE NEIGHBOURHOOD -->
+<div class="gl-section">
+  <div class="gl-section-head">
+    <span class="gl-section-label">N°5 — THE NEIGHBOURHOOD</span>
+    <span class="gl-section-right" id="neighCity"></span>
+  </div>
+  <div class="gl-desc" id="neighDesc"></div>
+  <div class="gl-loc-tags" id="locTags"></div>
+</div>
+
+<!-- Reviews -->
+<div class="gl-section" id="reviewSection">
+  <div class="gl-review-hero">
+    <img id="reviewBgImg" src="" alt="">
+    <div class="gl-review-overlay">
+      <div class="gl-review-score" id="reviewScore"></div>
+      <div class="gl-review-stars" id="reviewStars"></div>
+      <div class="gl-review-label">PERFECT SCORES, EVERY CATEGORY</div>
+    </div>
+  </div>
+  <div class="gl-scores" id="reviewScores"></div>
+</div>
+
+<!-- Host -->
+<div class="gl-section">
+  <div class="gl-host">
+    <div class="gl-host-avatar" id="hostAvatar">J</div>
+    <div class="gl-host-info">
+      <div class="gl-host-name">Hosted by Jatin</div>
+      <div class="gl-host-detail">SUPERHOST · REPLIES IN 1H<br>CO-HOSTS SANDEEP & CHAMANTHI</div>
+    </div>
+    <a class="gl-host-msg" id="msgBtn" href="">MESSAGE</a>
+  </div>
+</div>
+
+<!-- Footer Text -->
+<div class="gl-footer-text" id="footerText"></div>
+
+<!-- Sticky Bar -->
+<div class="gl-sticky">
+  <div class="gl-sticky-inner">
+    <div class="gl-sticky-price">
+      <span class="gl-sticky-amount" id="stickyPrice">—</span>
+      <span class="gl-sticky-period">FROM / NIGHT</span>
+    </div>
+    <a class="gl-sticky-btn" id="stickyBookBtn" href="">Book now →</a>
+  </div>
+</div>
+
+<!-- Gallery Modal -->
+<div class="gl-gallery" id="galleryModal">
+  <div class="gl-gallery-header">
+    <span class="gl-gallery-counter" id="galleryCounter"></span>
+    <button class="gl-gallery-close" onclick="closeGallery()">✕</button>
+  </div>
+  <div class="gl-gallery-viewport" id="galleryViewport">
+    <img class="gl-gallery-img" id="galleryImg" src="" alt="">
+    <button class="gl-gallery-nav gl-gallery-prev" onclick="galleryNav(-1)">‹</button>
+    <button class="gl-gallery-nav gl-gallery-next" onclick="galleryNav(1)">›</button>
+  </div>
+  <div class="gl-gallery-caption">
+    <span class="gl-gallery-caption-text" id="galleryCaption"></span>
+  </div>
+</div>
+
+<!-- All Amenities Modal -->
+<div class="gl-amenities-modal" id="amenitiesModal">
+  <div class="gl-amenities-modal-header">
+    <span class="gl-amenities-modal-title" id="amenitiesModalTitle"></span>
+    <button class="gl-amenities-modal-close" onclick="closeAllAmenities()">✕</button>
+  </div>
+  <div id="amenitiesModalBody"></div>
+</div>
+
+<script>
+var PROP = JSON.parse('{{PROPERTY_JSON}}');
+var SLUG = '{{SLUG}}';
+var HOSTING_ID = '{{HOSTING_ID}}';
+var GUESTY_URL = '{{GUESTY_BOOKING_URL}}';
+var CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/';
+
+function photoUrl(filename, w) { return CDN + filename + '?im_w=' + (w || 720); }
+
+// ── Photo Labels ──
+var PHOTO_LABELS = {};
+// Build labels from amenityPhotos (reverse mapping: index -> amenity name)
+if (PROP.amenityPhotos) {
+  Object.keys(PROP.amenityPhotos).forEach(function(name) {
+    var idx = PROP.amenityPhotos[name];
+    if (!PHOTO_LABELS[idx]) PHOTO_LABELS[idx] = name;
+  });
+}
+
+function getPhotoLabel(idx) {
+  if (PHOTO_LABELS[idx]) return PHOTO_LABELS[idx];
+  // Fallback generic labels based on common patterns
+  if (idx === 0) return 'The Residence';
+  return 'Photo ' + (idx + 1);
+}
+
+// ── Gallery State ──
+var galleryIdx = 0;
+var totalPhotos = PROP.photos ? PROP.photos.length : 0;
+
+// ── Init ──
+function init() {
+  // Hero
+  if (PROP.photos && PROP.photos[0]) {
+    document.getElementById('heroImg').src = photoUrl(PROP.photos[0], 1200);
+    document.getElementById('heroImg').alt = PROP.name;
+  }
+
+  // Caption
+  var label0 = getPhotoLabel(0);
+  document.getElementById('captionText').textContent = 'FIG. 01 — ' + label0.toUpperCase();
+  document.getElementById('photoCount').textContent = totalPhotos + ' PHOTOS';
+
+  // Location
+  document.getElementById('glLocation').textContent = PROP.city.toUpperCase() + ', ' + PROP.state.toUpperCase() + ' — SLEEPS ' + PROP.guests;
+
+  // Title
+  document.getElementById('glTitle').textContent = PROP.name;
+
+  // Tags (top amenities)
+  if (PROP.amenities) {
+    var tags = PROP.amenities.filter(function(a) { return a.premium; }).slice(0, 4).map(function(a) { return a.label.toUpperCase(); });
+    document.getElementById('glTags').textContent = tags.join(' · ');
+  }
+
+  // Rating
+  var ratingHtml = '';
+  var rating = PROP.rating;
+  var reviews = PROP.reviews || 0;
+  if (rating && reviews > 0) {
+    ratingHtml = '<span class="star">★</span> ' + rating;
+    ratingHtml += '<span class="sep">—</span>' + reviews + ' REVIEW' + (reviews !== 1 ? 'S' : '');
+    ratingHtml += '<span class="sep">—</span>GUEST FAVOURITE';
+  } else if (reviews > 0) {
+    ratingHtml = reviews + ' REVIEW' + (reviews !== 1 ? 'S' : '');
+  } else {
+    ratingHtml = '<span class="star">★</span> NEW LISTING';
+  }
+  document.getElementById('glRating').innerHTML = ratingHtml;
+
+  // Ticker
+  var tickerItems = [];
+  if (PROP.isVilla) tickerItems.push('PET-FRIENDLY');
+  tickerItems.push(PROP.guests + ' GUESTS');
+  tickerItems.push(PROP.beds + ' BEDROOM' + (PROP.beds !== 1 ? 'S' : ''));
+  // Count total beds from fullAmenities or use beds count
+  var totalBeds = countTotalBeds();
+  tickerItems.push(totalBeds + ' BED' + (totalBeds !== 1 ? 'S' : ''));
+  tickerItems.push(PROP.baths + ' BATH' + (PROP.baths > 1 ? 'S' : ''));
+  var tickerHtml = '';
+  // Duplicate for seamless loop
+  for (var t = 0; t < 2; t++) {
+    tickerItems.forEach(function(item, i) {
+      if (i > 0 || t > 0) tickerHtml += '<span class="plus">✦</span>';
+      tickerHtml += '<span>' + item + '</span>';
+    });
+  }
+  document.getElementById('glTicker').innerHTML = tickerHtml;
+
+  // Photo Strip
+  var stripHtml = '';
+  var stripCount = Math.min(totalPhotos, 20);
+  for (var s = 0; s < stripCount; s++) {
+    var lbl = getPhotoLabel(s);
+    stripHtml += '<div class="gl-strip-item" onclick="openGallery(' + s + ')">';
+    stripHtml += '<img src="' + photoUrl(PROP.photos[s], 480) + '" alt="' + lbl + '" loading="lazy">';
+    stripHtml += '<div class="gl-strip-label">' + escHtml(lbl) + '</div>';
+    stripHtml += '</div>';
+  }
+  document.getElementById('photoStrip').innerHTML = stripHtml;
+
+  // Price (fetch from API)
+  loadPrices();
+
+  // Book & Contact links
+  document.getElementById('bookBtn').href = GUESTY_URL;
+  document.getElementById('stickyBookBtn').href = GUESTY_URL;
+  var contactUrl = '/contact?property=' + encodeURIComponent(PROP.name);
+  document.getElementById('contactBtn').href = contactUrl;
+  document.getElementById('msgBtn').href = contactUrl;
+
+  // Airbnb link
+  var airbnbUrl = 'https://www.airbnb.com/h/' + getAirbnbHandle(SLUG);
+  document.getElementById('airbnbBtn').href = airbnbUrl;
+
+  // About
+  var taglines = {
+    'regent-villa': 'Fourteen sleep here.\nNobody wants to leave.',
+    'regent-skyline': 'Millionaire views.\nIndustrial soul.',
+    'cozy-designer': 'Steps from everything.\nDesigned for staying in.',
+    'designer-game': 'Marble meets playful.\nLas Colinas at your door.',
+    'lake-view': 'Wake up to the lake.\nStay for everything else.',
+    'executive': 'Light pours in.\nThe city stays out.',
+    'stunning-lake': 'The lake is right there.\nSo is everything else.'
+  };
+  var tagline = taglines[SLUG] || PROP.name;
+  document.getElementById('glTagline').innerHTML = tagline.replace(/\n/g, '<br>');
+  document.getElementById('glDesc').textContent = PROP.description;
+
+  // Amenities
+  buildAmenities();
+
+  // Bedrooms
+  buildBedrooms();
+
+  // Rules
+  buildRules();
+
+  // Neighbourhood
+  buildNeighbourhood();
+
+  // Reviews
+  buildReviews();
+
+  // Footer
+  document.getElementById('footerText').textContent = 'REGENT · ' + PROP.city.toUpperCase() + ', ' + PROP.state.toUpperCase();
+
+  // Review BG image
+  if (PROP.photos && PROP.photos.length > 3) {
+    document.getElementById('reviewBgImg').src = photoUrl(PROP.photos[3], 720);
+  }
+}
+
+function countTotalBeds() {
+  // Villa has multiple bedrooms
+  var bedData = getBedrooms();
+  var total = 0;
+  bedData.forEach(function(b) {
+    var m = b.type.match(/(\d+)/);
+    if (m) total += parseInt(m[1]);
+    if (b.type.toLowerCase().indexOf('couch') >= 0) total += 1;
+  });
+  return total || PROP.beds;
+}
+
+function getBedrooms() {
+  var bedrooms = {
+    'regent-villa': [
+      { label: 'BEDROOM 1 · MASTER', type: '1 king bed', note: 'MINI GOLF · EN-SUITE' },
+      { label: 'BEDROOM 2', type: '1 queen bed', note: 'SMART TV' },
+      { label: 'BEDROOM 3', type: '1 queen bed', note: 'SMART TV' },
+      { label: 'BEDROOM 4 + LIVING', type: '3 beds + couch', note: 'SLEEPS UP TO 14 TOTAL' }
+    ],
+    'regent-skyline': [
+      { label: 'BEDROOM · LOFT', type: '1 king bed', note: 'EXPOSED BRICK · SMART TV' },
+      { label: 'LIVING ROOM', type: 'Air mattress', note: 'SLEEPS UP TO 5 TOTAL' }
+    ],
+    'cozy-designer': [
+      { label: 'BEDROOM', type: '1 king bed', note: 'DEEP SOAKING TUB · 65" TV' }
+    ],
+    'designer-game': [
+      { label: 'BEDROOM', type: '1 king bed', note: 'MARBLE FINISHES · 65" TV' }
+    ],
+    'lake-view': [
+      { label: 'BEDROOM', type: '1 king bed', note: 'LAKE VIEW · WALK-IN CLOSET' }
+    ],
+    'executive': [
+      { label: 'BEDROOM', type: '1 king bed', note: '75" TV · WALK-IN CLOSET' },
+      { label: 'LIVING ROOM', type: 'Air mattress', note: 'SLEEPS UP TO 5 TOTAL' }
+    ],
+    'stunning-lake': [
+      { label: 'BEDROOM', type: '1 king bed', note: 'LAKE VIEW · 50" TV' }
+    ]
+  };
+  return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
+}
+
+// ── Amenities ──
+var FEATURED_AMENITIES = {
+  'regent-villa': [
+    { name: 'Private hot tub', detail: 'OPEN-AIR' },
+    { name: 'Home theatre', detail: '85" · 7.1 SURROUND' },
+    { name: 'Game room', detail: 'FOOSBALL · HOOPS' },
+    { name: 'Mini golf & piano', detail: 'MASTER SUITE' },
+    { name: 'Six smart TVs', detail: 'EVERY ROOM' },
+    { name: 'BBQ & patio dining', detail: 'OUTDOOR' },
+    { name: 'Smart lighting', detail: 'WHOLE HOME' }
+  ],
+  'regent-skyline': [
+    { name: 'Downtown skyline views', detail: 'FLOOR-TO-CEILING' },
+    { name: 'Free valet parking', detail: 'BUTLER BROTHERS' },
+    { name: 'Private cinema room', detail: 'SCREENING ROOM' },
+    { name: 'Resort-style pool', detail: 'COURTYARD' },
+    { name: 'Karaoke lounge', detail: 'BUILDING AMENITY' },
+    { name: '24/7 Fitness center', detail: 'ON-SITE' },
+    { name: 'Exposed brick & 10ft ceilings', detail: 'LOFT' }
+  ],
+  'cozy-designer': [
+    { name: 'Deep soaking tub', detail: 'EN-SUITE' },
+    { name: '65" Smart TV', detail: 'LIVING ROOM' },
+    { name: 'Full kitchen', detail: 'PREP ISLAND' },
+    { name: 'Resort-style pool', detail: 'ON-SITE' },
+    { name: 'DART rail access', detail: '5-MIN WALK' },
+    { name: '24/7 Gym', detail: 'ON-SITE' },
+    { name: 'Lake Carolyn trails', detail: 'STEPS AWAY' }
+  ],
+  'designer-game': [
+    { name: 'Sky lounge', detail: 'SKYLINE VIEWS' },
+    { name: 'Mini golf & hoops', detail: 'IN-UNIT' },
+    { name: 'Full marble finishes', detail: 'DESIGNER' },
+    { name: 'EV charging stations', detail: 'ON-SITE' },
+    { name: 'Fully stocked coffee bar', detail: 'KEURIG' },
+    { name: 'DART rail access', detail: '3-MIN WALK' },
+    { name: 'Resort pool & gym', detail: 'ON-SITE' }
+  ],
+  'lake-view': [
+    { name: 'Lake view balcony', detail: 'PRIVATE' },
+    { name: '27" Monitor workspace', detail: 'DEDICATED' },
+    { name: 'Wine cooler', detail: 'IN-SUITE' },
+    { name: '500 Mbps fiber WiFi', detail: 'HIGH-SPEED' },
+    { name: 'UFC punching bag', detail: 'IN-UNIT' },
+    { name: 'Waterfront pool', detail: 'RESORT-STYLE' },
+    { name: '2-Story gym', detail: '24/7' }
+  ],
+  'executive': [
+    { name: '75" Smart TV', detail: 'LIVING ROOM' },
+    { name: 'EV charger', detail: 'ON-SITE' },
+    { name: 'Sky lounge', detail: 'PANORAMIC VIEWS' },
+    { name: 'Arcade & billiards', detail: 'LOUNGE' },
+    { name: 'Outdoor fire pit', detail: 'COURTYARD' },
+    { name: 'DART Station', detail: '0.2 MI WALK' },
+    { name: 'Star projector', detail: 'BEDROOM' }
+  ],
+  'stunning-lake': [
+    { name: 'Stunning lake views', detail: 'PRIVATE BALCONY' },
+    { name: '1GB Fiber internet', detail: 'BLAZING FAST' },
+    { name: 'Dual smart TVs', detail: '65" + 50"' },
+    { name: 'L-Shaped couch', detail: 'MASSIVE' },
+    { name: 'Waterfront pool', detail: 'RESORT-STYLE' },
+    { name: '2-Story gym', detail: '24/7' },
+    { name: '27" Monitor workspace', detail: 'DEDICATED' }
+  ]
+};
+
+function buildAmenities() {
+  var featured = FEATURED_AMENITIES[SLUG] || [];
+  var totalCount = 0;
+  if (PROP.fullAmenities) {
+    Object.keys(PROP.fullAmenities).forEach(function(cat) {
+      totalCount += PROP.fullAmenities[cat].length;
+    });
+  }
+  document.getElementById('amenityCount').textContent = totalCount + ' TOTAL';
+  document.getElementById('allAmenitiesBtn').textContent = 'ALL ' + totalCount + ' AMENITIES';
+
+  var html = '';
+  featured.forEach(function(a, i) {
+    var num = String(i + 1).padStart(2, '0');
+    html += '<div class="gl-amenity-item">';
+    html += '<span class="gl-amenity-num">' + num + '</span>';
+    html += '<span class="gl-amenity-name" onclick="scrollToAmenityPhoto(\'' + escAttr(a.name) + '\')">' + escHtml(a.name) + '</span>';
+    html += '<span class="gl-amenity-dots"></span>';
+    html += '<span class="gl-amenity-detail">' + escHtml(a.detail) + '</span>';
+    html += '</div>';
+  });
+  document.getElementById('amenityList').innerHTML = html;
+}
+
+function scrollToAmenityPhoto(amenityName) {
+  // Find photo index for this amenity
+  if (!PROP.amenityPhotos) return;
+  // Search for matching key (case-insensitive partial match)
+  var photoIdx = null;
+  var keys = Object.keys(PROP.amenityPhotos);
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].toLowerCase().indexOf(amenityName.toLowerCase()) >= 0 ||
+        amenityName.toLowerCase().indexOf(keys[i].toLowerCase()) >= 0) {
+      photoIdx = PROP.amenityPhotos[keys[i]];
+      break;
+    }
+  }
+  // Broader match: check if any word matches
+  if (photoIdx === null) {
+    var words = amenityName.toLowerCase().split(/[\s&,]+/).filter(function(w) { return w.length > 3; });
+    for (var j = 0; j < keys.length; j++) {
+      var keyLower = keys[j].toLowerCase();
+      for (var w = 0; w < words.length; w++) {
+        if (keyLower.indexOf(words[w]) >= 0) { photoIdx = PROP.amenityPhotos[keys[j]]; break; }
+      }
+      if (photoIdx !== null) break;
+    }
+  }
+  if (photoIdx !== null && photoIdx < totalPhotos) {
+    openGallery(photoIdx);
+  }
+}
+
+function buildBedrooms() {
+  var beds = getBedrooms();
+  var totalBR = beds.filter(function(b) { return b.label.indexOf('LIVING') < 0; }).length;
+  var totalBeds = countTotalBeds();
+  document.getElementById('sleepSummary').textContent = totalBR + ' BR · ' + totalBeds + ' BED' + (totalBeds !== 1 ? 'S' : '');
+
+  var html = '';
+  beds.forEach(function(b) {
+    html += '<div class="gl-bed-cell">';
+    html += '<div class="gl-bed-label">' + escHtml(b.label) + '</div>';
+    html += '<div class="gl-bed-type">' + escHtml(b.type) + '</div>';
+    if (b.note) html += '<div class="gl-bed-note">' + escHtml(b.note) + '</div>';
+    html += '</div>';
+  });
+  document.getElementById('bedGrid').innerHTML = html;
+
+  // Adjust grid for odd counts
+  if (beds.length === 1) {
+    document.getElementById('bedGrid').style.gridTemplateColumns = '1fr';
+  }
+}
+
+function buildRules() {
+  var rules = [
+    { name: 'Self check-in', detail: 'SMART LOCK · 3:00 PM' },
+    { name: 'Checkout', detail: '11:00 AM' }
+  ];
+  if (PROP.isVilla) {
+    rules.push({ name: 'Pets welcome', detail: 'PET-FRIENDLY HOME' });
+    rules.push({ name: 'Parking', detail: 'TWO-CAR GARAGE + DRIVE' });
+  } else {
+    rules.push({ name: 'Parking', detail: 'FREE COVERED PARKING' });
+  }
+  var html = '';
+  rules.forEach(function(r) {
+    html += '<div class="gl-rule-item">';
+    html += '<span class="gl-rule-name">' + escHtml(r.name) + '</span>';
+    html += '<span class="gl-rule-dots"></span>';
+    html += '<span class="gl-rule-detail">' + escHtml(r.detail) + '</span>';
+    html += '</div>';
+  });
+  document.getElementById('rulesList').innerHTML = html;
+}
+
+var NEIGHBOURHOODS = {
+  'regent-villa': {
+    desc: 'A quiet residential street in a vibrant, walkable pocket of Plano — minutes from Legacy West, The Shops at Legacy, Legacy Hall food hall, and The Star in Frisco.',
+    tags: ['LEGACY WEST', 'SHOPS AT LEGACY', 'LEGACY HALL', 'THE STAR, FRISCO']
+  },
+  'regent-skyline': {
+    desc: 'In the heart of Downtown Dallas inside the historic Butler Brothers Building. Steps from the Dallas Farmers Market, Deep Ellum, and the AT&T Discovery District.',
+    tags: ['DALLAS FARMERS MARKET', 'DEEP ELLUM', 'AT&T DISCOVERY', 'BUTLER BROTHERS']
+  },
+  'cozy-designer': {
+    desc: 'Steps from Toyota Music Factory and the Water Street dining district. Lake Carolyn trails at your doorstep, with DART rail 5 minutes away for easy airport and downtown access.',
+    tags: ['TOYOTA MUSIC FACTORY', 'WATER STREET', 'LAKE CAROLYN', 'DART RAIL']
+  },
+  'designer-game': {
+    desc: 'In the heart of Las Colinas, steps from the DART rail. Walk to Toyota Music Factory, Lake Carolyn, and Alamo Drafthouse. DFW Airport is 10 minutes by train.',
+    tags: ['LAS COLINAS', 'TOYOTA MUSIC FACTORY', 'ALAMO DRAFTHOUSE', 'DFW AIRPORT']
+  },
+  'lake-view': {
+    desc: 'Waterfront living in Las Colinas with lake views and gondola rides. Steps to DART Orange Line for downtown access. Near dining, trails, and entertainment.',
+    tags: ['LAS COLINAS WATERFRONT', 'DART ORANGE LINE', 'GONDOLA RIDES', 'LAKE CAROLYN']
+  },
+  'executive': {
+    desc: 'Right next to CityLine in Richardson, a 3-minute walk to the DART Galatyn Park station. Near UT Dallas, restaurants, and shopping. Easy access anywhere without a car.',
+    tags: ['CITYLINE', 'GALATYN PARK DART', 'UT DALLAS', 'RICHARDSON']
+  },
+  'stunning-lake': {
+    desc: 'Waterfront in Las Colinas with stunning lake views. Steps to DART Orange Line, dining, trails, and the Entertainment District.',
+    tags: ['LAKE CAROLYN', 'DART ORANGE LINE', 'LAS COLINAS', 'ENTERTAINMENT DISTRICT']
+  }
+};
+
+function buildNeighbourhood() {
+  var n = NEIGHBOURHOODS[SLUG] || { desc: PROP.description, tags: [] };
+  document.getElementById('neighCity').textContent = PROP.city.toUpperCase() + ', ' + PROP.state.substring(0, 2).toUpperCase();
+  document.getElementById('neighDesc').textContent = n.desc;
+
+  var html = '';
+  n.tags.forEach(function(tag) {
+    html += '<span class="gl-loc-tag">' + tag + '</span>';
+  });
+  document.getElementById('locTags').innerHTML = html;
+}
+
+function buildReviews() {
+  var rating = PROP.rating;
+  var reviews = PROP.reviews || 0;
+  if (!rating && reviews === 0) {
+    document.getElementById('reviewSection').style.display = 'none';
+    return;
+  }
+  var displayRating = rating || '5.0';
+  document.getElementById('reviewScore').textContent = displayRating;
+  var starsCount = Math.round(parseFloat(displayRating));
+  document.getElementById('reviewStars').textContent = '★'.repeat(starsCount);
+
+  var cats = ['CLEANLINESS', 'CHECK-IN', 'VALUE'];
+  var html = '';
+  cats.forEach(function(cat) {
+    html += '<div class="gl-score-item">';
+    html += '<div class="gl-score-cat">' + cat + '</div>';
+    html += '<div class="gl-score-val">' + displayRating + '</div>';
+    html += '</div>';
+  });
+  document.getElementById('reviewScores').innerHTML = html;
+}
+
+// ── Prices ──
+function loadPrices() {
+  fetch('/api/guesty/lowest-prices')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .catch(function() { return null; })
+    .then(function(data) {
+      var price = null;
+      if (data && data.prices && data.prices[SLUG]) {
+        price = data.prices[SLUG];
+      }
+      if (price) {
+        var disc = Math.round(price * 0.95);
+        document.getElementById('priceBig').textContent = '$' + disc;
+        document.getElementById('priceOriginal').textContent = '$' + price;
+        document.getElementById('stickyPrice').textContent = '$' + disc;
+      } else {
+        document.getElementById('priceSave').style.display = 'none';
+        document.getElementById('priceOriginal').style.display = 'none';
+      }
+    });
+}
+
+// ── Gallery ──
+function openGallery(idx) {
+  galleryIdx = idx;
+  var modal = document.getElementById('galleryModal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  updateGallery();
+}
+
+function closeGallery() {
+  document.getElementById('galleryModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function galleryNav(dir) {
+  galleryIdx = (galleryIdx + dir + totalPhotos) % totalPhotos;
+  updateGallery();
+}
+
+function updateGallery() {
+  document.getElementById('galleryImg').src = photoUrl(PROP.photos[galleryIdx], 1200);
+  document.getElementById('galleryCounter').textContent = (galleryIdx + 1) + ' / ' + totalPhotos;
+  var lbl = getPhotoLabel(galleryIdx);
+  document.getElementById('galleryCaption').textContent = 'FIG. ' + String(galleryIdx + 1).padStart(2, '0') + ' — ' + lbl.toUpperCase();
+}
+
+// Touch swipe for gallery
+(function() {
+  var vp = document.getElementById('galleryViewport');
+  var startX = 0;
+  vp.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; });
+  vp.addEventListener('touchend', function(e) {
+    var diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 50) galleryNav(diff < 0 ? 1 : -1);
+  });
+})();
+
+// Keyboard nav
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('galleryModal').classList.contains('active')) {
+    if (e.key === 'Escape') closeGallery();
+    if (e.key === 'ArrowLeft') galleryNav(-1);
+    if (e.key === 'ArrowRight') galleryNav(1);
+  }
+  if (document.getElementById('amenitiesModal').classList.contains('active')) {
+    if (e.key === 'Escape') closeAllAmenities();
+  }
+});
+
+// ── All Amenities Modal ──
+function openAllAmenities() {
+  var modal = document.getElementById('amenitiesModal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  var totalCount = 0;
+  if (PROP.fullAmenities) {
+    Object.keys(PROP.fullAmenities).forEach(function(cat) {
+      totalCount += PROP.fullAmenities[cat].length;
+    });
+  }
+  document.getElementById('amenitiesModalTitle').textContent = 'ALL ' + totalCount + ' AMENITIES';
+
+  var html = '';
+  if (PROP.fullAmenities) {
+    Object.keys(PROP.fullAmenities).forEach(function(cat) {
+      html += '<div class="gl-amenities-category">';
+      html += '<div class="gl-amenities-cat-name">' + escHtml(cat) + '</div>';
+      PROP.fullAmenities[cat].forEach(function(item) {
+        var hasPhoto = PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined;
+        html += '<div class="gl-amenities-cat-item' + (hasPhoto ? ' has-photo' : '') + '" onclick="amenityItemClick(\'' + escAttr(item) + '\')">' + escHtml(item) + (hasPhoto ? ' →' : '') + '</div>';
+      });
+      html += '</div>';
+    });
+  }
+  document.getElementById('amenitiesModalBody').innerHTML = html;
+}
+
+function amenityItemClick(item) {
+  if (PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined) {
+    closeAllAmenities();
+    setTimeout(function() { openGallery(PROP.amenityPhotos[item]); }, 200);
+  }
+}
+
+function closeAllAmenities() {
+  document.getElementById('amenitiesModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ── Share ──
+function shareProperty() {
+  var url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: PROP.name + ' — Regent', url: url });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url);
+    alert('Link copied!');
+  }
+}
+
+function toggleFavorite(btn) {
+  btn.classList.toggle('favorited');
+  var svg = btn.querySelector('svg');
+  if (btn.classList.contains('favorited')) {
+    svg.setAttribute('fill', 'var(--accent)');
+    svg.setAttribute('stroke', 'var(--accent)');
+  } else {
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+  }
+}
+
+function getAirbnbHandle(slug) {
+  var handles = {
+    'regent-villa': 'regentvilla',
+    'regent-skyline': 'regentskyline',
+    'cozy-designer': 'cozydesignersuite',
+    'designer-game': 'designergamesuite',
+    'lake-view': 'gorgeousluxurylakeviewsuite',
+    'executive': 'luxuryexecutiveliving',
+    'stunning-lake': 'stunninglakeviews'
+  };
+  return handles[slug] || slug;
+}
+
+// ── Utils ──
+function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function escAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+// ── Boot ──
+init();
+</script>
+</body>
+</html>

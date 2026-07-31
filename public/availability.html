@@ -665,7 +665,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       badge = when === 'today' ? '<span class="prop-card-badge-float today">Tonight</span>' : '<span class="prop-card-badge-float tomorrow">Tomorrow</span>';
     }
     var amenities = AMENITIES_MAP[p.slug] || '';
-    return '<a href="/property/'+p.slug+'" class="prop-card">'+
+    return '<a href="/glance/'+p.slug+'" class="prop-card">'+
       '<div class="prop-card-img-wrap">'+
         '<img class="prop-card-img" src="'+p.photo+'" alt="'+p.name+'" loading="lazy">'+
         badge+
@@ -688,7 +688,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     var total = p.totalPrice ? '$'+Math.round(p.totalPrice).toLocaleString() : '';
     var perNight = p.nightlyRate ? '$'+Math.round(p.nightlyRate) : '';
     var amenities = AMENITIES_MAP[p.slug] || '';
-    return '<a href="/property/'+p.slug+'" class="range-card">'+
+    return '<a href="/glance/'+p.slug+'" class="range-card">'+
       '<div class="range-card-photo"><img src="'+p.photo+'" alt="'+p.name+'" loading="lazy"></div>'+
       '<div class="range-card-info">'+
         '<div class="range-card-name">'+p.name+'</div>'+

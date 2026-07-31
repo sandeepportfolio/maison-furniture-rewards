@@ -3847,6 +3847,56 @@ function renderPropertyPage(slug, res) {
   res.send(html);
 }
 
+// ── Glance View (new mobile-first property preview) ──
+function renderGlancePage(slug, res) {
+  const prop = PROPERTY_DATA[slug];
+  if (!prop) {
+    return res.status(404).send(PROPERTY_NOT_FOUND_HTML);
+  }
+
+  const templatePath = path.join(__dirname, 'public', 'glance.html');
+  if (!fs.existsSync(templatePath)) {
+    return res.status(500).send('Glance template not found');
+  }
+  let html = fs.readFileSync(templatePath, 'utf8');
+
+  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+  const coverPhoto = prop.photos[0];
+  const coverImage = `${CDN}${prop.hostingId}/original/${coverPhoto}?im_w=1200`;
+  const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
+  const ogUrl = `https://bookwithregent.com/property/${slug}`;
+
+  const propertyJson = JSON.stringify(prop)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/<\//g, '<\\/');
+
+  html = html
+    .replace(/\{\{PROPERTY_JSON\}\}/g, propertyJson)
+    .replace(/\{\{SLUG\}\}/g, slug)
+    .replace(/\{\{NAME\}\}/g, prop.name)
+    .replace(/\{\{DESCRIPTION\}\}/g, prop.description)
+    .replace(/\{\{CITY\}\}/g, prop.city)
+    .replace(/\{\{STATE\}\}/g, prop.state)
+    .replace(/\{\{GUESTS\}\}/g, String(prop.guests))
+    .replace(/\{\{BEDS\}\}/g, String(prop.beds))
+    .replace(/\{\{BATHS\}\}/g, String(prop.baths))
+    .replace(/\{\{HOSTING_ID\}\}/g, prop.hostingId)
+    .replace(/\{\{COVER_IMAGE\}\}/g, coverImage)
+    .replace(/\{\{GUESTY_BOOKING_URL\}\}/g, guestyUrl)
+    .replace(/\{\{OG_URL\}\}/g, ogUrl)
+    .replace(/\{\{RATING\}\}/g, prop.rating !== null ? String(prop.rating) : '')
+    .replace(/\{\{REVIEWS\}\}/g, String(prop.reviews))
+    .replace(/\{\{IS_VILLA\}\}/g, String(prop.isVilla))
+    .replace(/\{\{CATEGORY\}\}/g, prop.category);
+
+  res.send(html);
+}
+
+app.get('/glance/:slug', (req, res) => {
+  renderGlancePage(req.params.slug, res);
+});
+
 // Canonical, slug-based property URL (unchanged behavior): /property/<slug>
 app.get('/property/:slug', (req, res) => {
   renderPropertyPage(req.params.slug, res);
