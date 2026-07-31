@@ -3870,7 +3870,7 @@ function renderPropertyCard(p) {
           <button class="btn-check-avail" onclick="document.querySelector('.avail-fab')?.click()">Availability</button>
         </div>
         <div class="prop-actions-secondary">
-          <a href="/property/${p.slug}" class="btn-details" style="text-align:center;text-decoration:none">Full Page</a>
+          <a href="/glance/${p.slug}" class="btn-details" style="text-align:center;text-decoration:none">Full Page</a>
           <button class="btn-map-view" onclick="viewPropertyOnMap('${p.slug}')" title="View on Map"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
         </div>
       </div>
@@ -4962,7 +4962,7 @@ function handleCardClick(e, slug) {
       target.closest('a[href]')) {
     return;
   }
-  openDetail(slug);
+  window.location.href = '/glance/' + slug;
 }
 
 /* ═══ Property Detail Modal ═══ */
@@ -5146,7 +5146,7 @@ function openDetail(slug, skipHistory) {
       <span class="detail-actions-sep"></span>
       <a href="https://www.airbnb.com/rooms/${prop.hostingId}" target="_blank" rel="noopener" class="btn-contact"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>View on Airbnb</a>
       <span class="detail-actions-sep"></span>
-      <a href="/property/${prop.slug}" class="btn-contact"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>Full Page</a>
+      <a href="/glance/${prop.slug}" class="btn-contact"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>Full Page</a>
     </div>
     <div class="detail-section">
       <div class="detail-desc">
@@ -6270,24 +6270,7 @@ function selectPropertyOnMap(idx) {
   }
   if (detailBtn) {
     detailBtn.onclick = () => {
-      const selectedSlug = prop.slug;
-      collapseMap(true); // Skip history — keep #map state on the stack
-      setTimeout(() => {
-        // Scroll to property section or open detail
-        if (typeof openDetail === 'function') {
-          openDetail(selectedSlug, true); // skipHistory — we push our own state below with fromMap
-        } else {
-          // Fallback: scroll to the property card on the main page
-          const propCard = document.querySelector(`.prop-card[data-slug="${selectedSlug}"]`);
-          if (propCard) {
-            propCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            propCard.style.boxShadow = '0 0 0 3px var(--accent), var(--shadow-xl)';
-            setTimeout(() => { propCard.style.boxShadow = ''; }, 2000);
-          }
-        }
-        // Push detail state on top of map state — back goes to map with this property
-        history.pushState({ detail: true, property: selectedSlug, fromMap: true }, '', '#property/' + selectedSlug);
-      }, 400);
+      window.location.href = '/glance/' + prop.slug;
     };
   }
 
@@ -7018,10 +7001,8 @@ function initDetailHash() {
   if (!slug) return;
   const prop = PROPERTIES.find(p => p.slug === slug);
   if (!prop) return;
-  // Replace current state so back goes to main page (not a duplicate entry)
-  history.replaceState({ detail: true, property: slug }, '', '#property/' + slug);
-  // Short delay to ensure DOM is ready
-  setTimeout(() => openDetail(slug, true), 200);
+  // Redirect to glance page instead of opening modal
+  window.location.href = '/glance/' + slug;
 }
 
 /* ═══ Init ═══ */
