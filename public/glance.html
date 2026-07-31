@@ -211,9 +211,9 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 </header>
 
 <!-- Hero Photo -->
-<div class="gl-hero" id="heroPhoto" onclick="openGallery(0)">
+<div class="gl-hero" id="heroPhoto" onclick="openGallery(HERO_INDEX)">
   <img id="heroImg" src="" alt="">
-  <div class="gl-hero-chip" onclick="event.stopPropagation();openGallery(0)">
+  <div class="gl-hero-chip" onclick="event.stopPropagation();openGallery(HERO_INDEX)">
     TAP TO EXPAND
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
   </div>
@@ -375,6 +375,7 @@ var PROP = JSON.parse('{{PROPERTY_JSON}}');
 var SLUG = '{{SLUG}}';
 var HOSTING_ID = '{{HOSTING_ID}}';
 var GUESTY_URL = '{{GUESTY_BOOKING_URL}}';
+var HERO_INDEX = parseInt('{{HERO_INDEX}}') || 0;
 var CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/';
 
 function photoUrl(filename, w) { return CDN + filename + '?im_w=' + (w || 720); }
@@ -400,17 +401,40 @@ function getPhotoLabel(idx) {
 var galleryIdx = 0;
 var totalPhotos = PROP.photos ? PROP.photos.length : 0;
 
+// ── Curated Hero Captions ──
+var HERO_CAPTIONS = {
+  'regent-villa': 'THE GREAT ROOM',
+  'regent-skyline': 'THE LOFT',
+  'cozy-designer': 'THE SUITE',
+  'designer-game': 'THE LIVING ROOM',
+  'lake-view': 'THE VIEW',
+  'executive': 'THE RESIDENCE',
+  'stunning-lake': 'THE LAKEFRONT'
+};
+
+// ── Curated Tag Lines (match Airbnb listing subtitles) ──
+var GLANCE_TAGS = {
+  'regent-villa': 'THEATRE · HOT TUB · GAME ROOM · BBQ',
+  'regent-skyline': 'SKYLINE VIEWS · VALET · CINEMA · POOL',
+  'cozy-designer': 'SOAKING TUB · POOL · DART RAIL · LAKE TRAILS',
+  'designer-game': 'SKY LOUNGE · MINI GOLF · MARBLE · EV CHARGING',
+  'lake-view': 'LAKE VIEW · WINE COOLER · POOL · GYM',
+  'executive': 'SKY LOUNGE · EV CHARGER · FIRE PIT · DART',
+  'stunning-lake': 'LAKE VIEWS · FIBER · DUAL TVS · POOL'
+};
+
 // ── Init ──
 function init() {
-  // Hero
-  if (PROP.photos && PROP.photos[0]) {
-    document.getElementById('heroImg').src = photoUrl(PROP.photos[0], 1200);
+  // Hero (use curated cover photo index from server)
+  var heroPhotoIdx = HERO_INDEX;
+  if (PROP.photos && PROP.photos[heroPhotoIdx]) {
+    document.getElementById('heroImg').src = photoUrl(PROP.photos[heroPhotoIdx], 1200);
     document.getElementById('heroImg').alt = PROP.name;
   }
 
-  // Caption
-  var label0 = getPhotoLabel(0);
-  document.getElementById('captionText').textContent = 'FIG. 01 — ' + label0.toUpperCase();
+  // Caption (curated hero label)
+  var heroCaption = HERO_CAPTIONS[SLUG] || getPhotoLabel(heroPhotoIdx);
+  document.getElementById('captionText').textContent = 'FIG. 01 — ' + heroCaption.toUpperCase();
   document.getElementById('photoCount').textContent = totalPhotos + ' PHOTOS';
 
   // Location
@@ -419,8 +443,11 @@ function init() {
   // Title
   document.getElementById('glTitle').textContent = PROP.name;
 
-  // Tags (top amenities)
-  if (PROP.amenities) {
+  // Tags (curated per-property)
+  var tagText = GLANCE_TAGS[SLUG];
+  if (tagText) {
+    document.getElementById('glTags').textContent = tagText;
+  } else if (PROP.amenities) {
     var tags = PROP.amenities.filter(function(a) { return a.premium; }).slice(0, 4).map(function(a) { return a.label.toUpperCase(); });
     document.getElementById('glTags').textContent = tags.join(' · ');
   }

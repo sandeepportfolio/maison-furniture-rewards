@@ -3303,7 +3303,7 @@ const PROPERTY_DATA = {
     state: 'Texas',
     hostingId: '1711340298974810369',
     guests: 14, beds: 4, baths: 3.5,
-    rating: null, reviews: 0,
+    rating: 5.0, reviews: 7,
     lat: 33.02050, lng: -96.75080,
     isVilla: true,
     amenities: [
@@ -3861,7 +3861,12 @@ function renderGlancePage(slug, res) {
   let html = fs.readFileSync(templatePath, 'utf8');
 
   const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
-  const coverPhoto = prop.photos[0];
+  // Per-property hero photo overrides (Airbnb cover photo index)
+  const HERO_PHOTO_INDEX = {
+    'regent-villa': 66 // outdoor patio wide-angle (hot tub, BBQ, Netflix TV)
+  };
+  const heroIdx = HERO_PHOTO_INDEX[slug] || 0;
+  const coverPhoto = prop.photos[heroIdx] || prop.photos[0];
   const coverImage = `${CDN}${prop.hostingId}/original/${coverPhoto}?im_w=1200`;
   const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
   const ogUrl = `https://bookwithregent.com/property/${slug}`;
@@ -3888,7 +3893,8 @@ function renderGlancePage(slug, res) {
     .replace(/\{\{RATING\}\}/g, prop.rating !== null ? String(prop.rating) : '')
     .replace(/\{\{REVIEWS\}\}/g, String(prop.reviews))
     .replace(/\{\{IS_VILLA\}\}/g, String(prop.isVilla))
-    .replace(/\{\{CATEGORY\}\}/g, prop.category);
+    .replace(/\{\{CATEGORY\}\}/g, prop.category)
+    .replace(/\{\{HERO_INDEX\}\}/g, String(heroIdx));
 
   res.send(html);
 }
