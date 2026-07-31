@@ -251,6 +251,17 @@ db.exec(`
   )
 `);
 
+// ── Availability response cache (survives restarts) ─────────────────
+// Persists the last successful /api/availability/now response so we never
+// show "temporarily unavailable" after a cold start or prolonged rate limit.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS availability_cache (
+    key TEXT PRIMARY KEY,
+    data TEXT NOT NULL,
+    updated_at TEXT DEFAULT (datetime('now'))
+  )
+`);
+
 // Seed default settings if empty
 const seedSettings = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
 seedSettings.run('contact_email', '');
@@ -676,11 +687,46 @@ app.get('/api/availability/now', async (req, res) => {
 
     const degradation = availabilityDegradation(errors);
 
-    res.set('Cache-Control', 'no-store');
+    // When ALL properties degraded, serve the last known good response from
+    // the DB so the page never shows "temporarily unavailable".
+    if (degradation && degradation.degradedCount >= properties.length) {
+      try {
+        const row = db.prepare('SELECT data, updated_at FROM availability_cache WHERE key = ?').get('now');
+        if (row) {
+          const cached = JSON.parse(row.data);
+          console.log(`Serving DB-cached availability (from ${row.updated_at}) — Guesty fully degraded`);
+          res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+          return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
+        }
+      } catch (dbErr) {
+        console.warn('Failed to read availability cache from DB:', dbErr.message);
+      }
+    }
+
+    // Persist successful (non-degraded) responses so they survive restarts.
+    if (!degradation) {
+      const payload = { asOf: new Date().toISOString(), properties };
+      try {
+        db.prepare('INSERT OR REPLACE INTO availability_cache (key, data, updated_at) VALUES (?, ?, datetime(\'now\'))').run('now', JSON.stringify(payload));
+      } catch (dbErr) {
+        console.warn('Failed to persist availability cache:', dbErr.message);
+      }
+    }
+
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     if (degradation?.retryAfter) res.set('Retry-After', String(degradation.retryAfter));
     res.json({ asOf: new Date().toISOString(), properties, ...(degradation || {}) });
   } catch (err) {
     console.error('Availability/now error:', err.message);
+    // Last resort: serve DB cache even on total crash
+    try {
+      const row = db.prepare('SELECT data, updated_at FROM availability_cache WHERE key = ?').get('now');
+      if (row) {
+        const cached = JSON.parse(row.data);
+        res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
+      }
+    } catch (_) { /* fallthrough */ }
     res.status(502).json({ error: 'Could not load availability' });
   }
 });
