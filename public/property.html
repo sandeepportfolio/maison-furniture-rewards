@@ -251,7 +251,7 @@ ul { list-style: none; }
   border: 1px solid var(--border);
   background: var(--bg-card);
   transition: border-color 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
-  flex: 1; justify-content: center; min-width: 0;
+  flex: 1; justify-content: center; min-width: 0; text-align: center;
 }
 .stat-pill:hover {
   border-color: rgba(199, 107, 66, 0.3);
@@ -271,7 +271,7 @@ ul { list-style: none; }
   flex-shrink: 0;
 }
 .stat-pill .stat-content {
-  display: flex; flex-direction: column; gap: 1px; min-width: 0;
+  display: flex; flex-direction: column; gap: 1px; min-width: 0; align-items: flex-start;
 }
 .stat-pill .stat-value {
   font-family: var(--sans); font-size: 16px; font-weight: 600;
@@ -295,17 +295,21 @@ ul { list-style: none; }
 }
 .stat-pill.air-mattress .stat-label { display: none; }
 .stats-book-btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--accent); color: #fff;
-  font-size: 14px; font-weight: 600; padding: 12px 28px;
-  border-radius: var(--radius); letter-spacing: 0.02em;
-  transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--accent) 0%, #D4794F 100%);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 14px; font-weight: 700; padding: 14px 36px;
+  border-radius: 999px; letter-spacing: 0.06em; text-transform: uppercase;
+  transition: all 0.4s var(--ease);
   flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(199, 107, 66, 0.25);
+  text-decoration: none;
 }
 .stats-book-btn:hover {
-  background: var(--accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(199, 107, 66, 0.3);
+  background: linear-gradient(135deg, var(--accent-hover) 0%, #E09060 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(199, 107, 66, 0.4);
 }
 
 /* ── Property Showcase ── */
@@ -1395,32 +1399,21 @@ ul { list-style: none; }
   align-items: center;
   justify-content: center;
   gap: 14px;
-  padding: 22px 64px;
+  padding: 20px 56px;
   font-family: var(--sans);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
-  background: linear-gradient(135deg, var(--accent) 0%, #D4794F 50%, var(--accent) 100%);
-  background-size: 200% 200%;
+  color: var(--accent-ink, #10130F);
+  background: var(--accent);
   border: none;
-  border-radius: var(--radius);
+  border-radius: 999px;
   text-decoration: none;
   overflow: hidden;
-  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), background-position 0.5s var(--ease);
+  transition: all 0.4s var(--ease);
   z-index: 1;
-}
-
-/* Outer border frame — luxury feel */
-.hero-book-btn::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border: 1px solid rgba(199, 107, 66, 0.35);
-  border-radius: calc(var(--radius) + 3px);
-  pointer-events: none;
-  transition: border-color 0.5s var(--ease), inset 0.5s var(--ease-out);
+  box-shadow: 0 6px 24px rgba(199, 107, 66, 0.3);
 }
 
 /* Shimmer sweep */
@@ -1434,14 +1427,14 @@ ul { list-style: none; }
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.08) 40%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.15) 60%,
     transparent 100%
   );
   transform: skewX(-20deg);
   transition: none;
-  animation: hero-btn-shimmer 4s var(--ease) infinite;
+  animation: hero-btn-shimmer 3.5s var(--ease) infinite;
   pointer-events: none;
 }
 
@@ -1451,20 +1444,13 @@ ul { list-style: none; }
 }
 
 .hero-book-btn:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 16px 48px rgba(199, 107, 66, 0.3),
-    0 0 0 1px rgba(199, 107, 66, 0.2);
-  background-position: 100% 100%;
-}
-
-.hero-book-btn:hover::before {
-  border-color: rgba(199, 107, 66, 0.6);
-  inset: -5px;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(199, 107, 66, 0.45);
+  background: var(--accent-hover, #E0B15C);
 }
 
 .hero-book-btn:active {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1);
 }
 
 .hero-book-btn svg {
@@ -1472,7 +1458,7 @@ ul { list-style: none; }
   height: 18px;
   stroke: currentColor;
   fill: none;
-  stroke-width: 1.5;
+  stroke-width: 2;
   transition: transform 0.4s var(--ease);
 }
 
