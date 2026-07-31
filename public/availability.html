@@ -199,8 +199,21 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .prop-card-price{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap}
 .prop-card-price span{font-size:13px;font-weight:400;color:var(--text-muted)}
 .prop-card-location{font-size:13px;color:var(--text-muted);margin-bottom:4px}
-.prop-card-details{display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--text-dim)}
-.prop-card-details span+span::before{content:'\b7';margin-right:4px}
+.prop-card-details{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-dim)}
+.prop-card-details svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.6}
+.prop-card-details .detail-item{display:flex;align-items:center;gap:3px}
+.prop-card-amenities{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.4;opacity:.7}
+
+/* ── Degraded / availability-unknown banner ── */
+.avail-degraded-banner{padding:14px 18px;margin-bottom:24px;background:rgba(201,152,69,.08);border:1px solid rgba(201,152,69,.2);border-radius:var(--radius);display:flex;align-items:flex-start;gap:10px}
+.avail-degraded-banner svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0;margin-top:1px}
+.avail-degraded-banner p{font-size:13px;color:var(--text-muted);line-height:1.5}
+.prop-card-badge-float.checking{background:rgba(201,152,69,.15);color:var(--accent);border:1px solid rgba(201,152,69,.2)}
+
+/* ── Back button ── */
+.page-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:16px;padding:6px 12px 6px 8px;border-radius:8px;transition:color .2s,background .2s;cursor:pointer;background:transparent;border:none}
+.page-back:hover{color:var(--text);background:rgba(242,237,225,.05)}
+.page-back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
 
 /* ── Range cards (date search results) ── */
 .range-card{
@@ -357,6 +370,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
 <!-- Page -->
 <div class="page-wrap">
+  <button class="page-back" onclick="history.length>1?history.back():location.href='/'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
   <div class="page-header">
     <div class="page-kicker">Real-time availability</div>
     <h1 class="page-title">Find your <em>perfect</em> stay</h1>
@@ -628,11 +642,29 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   var lastMobile=isMobile(),resizeTimer;
   window.addEventListener('resize',function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){var nm=isMobile();if(nm!==lastMobile){lastMobile=nm;if(cal.isOpen)renderCalendar();}},150);});
 
+  // ── Amenities map (top highlights per property) ──
+  var AMENITIES_MAP = {
+    'regent-villa': 'Hot Tub \xb7 85" TV \xb7 Game Room \xb7 Piano \xb7 Mini Golf',
+    'regent-skyline': 'Skyline Views \xb7 Cinema Room \xb7 Pool \xb7 Valet Parking',
+    'cozy-designer': 'Soaking Tub \xb7 65" TV \xb7 Pool \xb7 Gym \xb7 Lake Trails',
+    'designer-game': 'Sky Lounge \xb7 Mini Golf \xb7 EV Charging \xb7 Coffee Bar',
+    'lake-view': 'Lake View \xb7 Wine Cooler \xb7 500Mbps WiFi \xb7 Pool',
+    'executive': '75" TV \xb7 Sky Lounge \xb7 Arcade Room \xb7 EV Charger',
+    'stunning-lake': 'Lake View \xb7 1GB Fiber \xb7 Dual TVs \xb7 Pool \xb7 Gym'
+  };
+
   // ── Card renderers ──
   function renderCard(p, when) {
     var day = p[when];
     var price = day.price ? '$'+Math.round(day.price) : '';
-    var badge = when === 'today' ? '<span class="prop-card-badge-float today">Tonight</span>' : '<span class="prop-card-badge-float tomorrow">Tomorrow</span>';
+    var isDegraded = p.availabilityUnknown || (day && day.availabilityUnknown);
+    var badge;
+    if (isDegraded) {
+      badge = '<span class="prop-card-badge-float checking">Check Availability</span>';
+    } else {
+      badge = when === 'today' ? '<span class="prop-card-badge-float today">Tonight</span>' : '<span class="prop-card-badge-float tomorrow">Tomorrow</span>';
+    }
+    var amenities = AMENITIES_MAP[p.slug] || '';
     return '<a href="/property/'+p.slug+'" class="prop-card">'+
       '<div class="prop-card-img-wrap">'+
         '<img class="prop-card-img" src="'+p.photo+'" alt="'+p.name+'" loading="lazy">'+
@@ -641,22 +673,30 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       '<div class="prop-card-body">'+
         '<div class="prop-card-row"><span class="prop-card-name">'+p.name+'</span>'+(price?'<span class="prop-card-price">'+price+' <span>/night</span></span>':'')+'</div>'+
         '<div class="prop-card-location">'+p.city+'</div>'+
-        '<div class="prop-card-details"><span>'+p.guests+' guests</span><span>'+p.beds+' bed'+(p.beds>1?'s':'')+'</span><span>'+p.baths+' bath'+(p.baths>1?'s':'')+'</span></div>'+
+        '<div class="prop-card-details">'+
+          '<span class="detail-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+p.guests+'</span>'+
+          '<span class="detail-item"><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>'+p.beds+' bed'+(p.beds>1?'s':'')+'</span>'+
+          '<span class="detail-item"><svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3H3v-3a1 1 0 0 1 1-1z"/><path d="M3 16v4"/><path d="M21 16v4"/><path d="M6 12V7a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1"/></svg>'+p.baths+'</span>'+
+        '</div>'+
+        (amenities ? '<div class="prop-card-amenities">'+amenities+'</div>' : '')+
       '</div>'+
     '</a>';
   }
 
   function renderRangeCard(p, nights) {
+    var isDegraded = p.availabilityUnknown || p._fallback;
     var total = p.totalPrice ? '$'+Math.round(p.totalPrice).toLocaleString() : '';
     var perNight = p.nightlyRate ? '$'+Math.round(p.nightlyRate) : '';
+    var amenities = AMENITIES_MAP[p.slug] || '';
     return '<a href="/property/'+p.slug+'" class="range-card">'+
       '<div class="range-card-photo"><img src="'+p.photo+'" alt="'+p.name+'" loading="lazy"></div>'+
       '<div class="range-card-info">'+
         '<div class="range-card-name">'+p.name+'</div>'+
         '<div class="range-card-meta">'+p.city+' &middot; '+p.guests+' guests &middot; '+p.beds+' bed'+(p.beds>1?'s':'')+'</div>'+
+        (amenities ? '<div class="prop-card-amenities" style="margin-top:0;margin-bottom:6px">'+amenities+'</div>' : '')+
         '<div class="range-card-bottom">'+
-          '<div>'+(total?'<span class="range-card-price">'+total+'<span> total</span></span>':'')+(perNight?'<span class="range-card-nights">'+perNight+'/night</span>':'')+'</div>'+
-          '<span class="range-card-book">Book</span>'+
+          '<div>'+(isDegraded ? '<span class="range-card-nights">Check availability</span>' : (total?'<span class="range-card-price">'+total+'<span> total</span></span>':'')+(perNight?'<span class="range-card-nights">'+perNight+'/night</span>':''))+'</div>'+
+          '<span class="range-card-book">'+(isDegraded?'View':'Book')+'</span>'+
         '</div>'+
       '</div>'+
     '</a>';
@@ -680,35 +720,53 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   function renderDefault(data) {
     if (!data || !data.properties) { results.innerHTML='<div class="avail-none">Unable to load availability.</div>'; return; }
     currentView = 'default';
-    var todayProps = [], tomorrowOnly = [];
-    data.properties.forEach(function(p) {
-      if (p.today.available) todayProps.push(p);
-      else if (p.tomorrow.available) tomorrowOnly.push(p);
-    });
+    var isDegraded = data.degraded === true;
     var h = '';
-    if (todayProps.length) {
-      h += '<div class="avail-day-group"><div class="avail-day-label">Available tonight</div><div class="property-grid">';
-      todayProps.forEach(function(p) { h += renderCard(p, 'today'); });
-      h += '</div></div>';
+
+    // Show degraded banner if API is rate-limited
+    if (isDegraded) {
+      h += '<div class="avail-degraded-banner"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>'+(data.notice || 'Live availability is temporarily refreshing. Prices shown are starting rates. Tap any property to check exact availability.')+'</p></div>';
     }
-    if (tomorrowOnly.length) {
-      h += '<div class="avail-day-group"><div class="avail-day-label">Available tomorrow</div><div class="property-grid">';
-      tomorrowOnly.forEach(function(p) { h += renderCard(p, 'tomorrow'); });
+
+    if (isDegraded) {
+      // When degraded, show ALL properties so guests can still browse & click through
+      h += '<div class="avail-day-group"><div class="avail-day-label">Our properties</div><div class="property-grid">';
+      data.properties.forEach(function(p) { h += renderCard(p, 'today'); });
       h += '</div></div>';
-    }
-    if (!todayProps.length && !tomorrowOnly.length) {
-      h += '<div class="avail-none">All properties are booked for today and tomorrow. Try searching custom dates above.</div>';
+    } else {
+      var todayProps = [], tomorrowOnly = [];
+      data.properties.forEach(function(p) {
+        if (p.today && p.today.available) todayProps.push(p);
+        else if (p.tomorrow && p.tomorrow.available) tomorrowOnly.push(p);
+      });
+      if (todayProps.length) {
+        h += '<div class="avail-day-group"><div class="avail-day-label">Available tonight</div><div class="property-grid">';
+        todayProps.forEach(function(p) { h += renderCard(p, 'today'); });
+        h += '</div></div>';
+      }
+      if (tomorrowOnly.length) {
+        h += '<div class="avail-day-group"><div class="avail-day-label">Available tomorrow</div><div class="property-grid">';
+        tomorrowOnly.forEach(function(p) { h += renderCard(p, 'tomorrow'); });
+        h += '</div></div>';
+      }
+      if (!todayProps.length && !tomorrowOnly.length) {
+        h += '<div class="avail-none">All properties are booked for today and tomorrow. Try searching custom dates above.</div>';
+      }
     }
     h += '<div class="refresh-ind"><svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span>Auto-refreshes every 5 min</span></div>';
     results.innerHTML = h;
   }
 
   // ── Range results ──
-  function renderRange(checkIn, checkOut, nights, properties) {
+  function renderRange(checkIn, checkOut, nights, properties, apiData) {
     currentView = 'range';
+    var isDegraded = apiData && apiData.degraded === true;
     var avail = properties.filter(function(p) { return p.available; });
     var ciLabel = formatDateLabel(checkIn), coLabel = formatDateLabel(checkOut);
     var h = '<div class="results-header"><div><div class="results-title">'+ciLabel+' — '+coLabel+'</div><div class="results-subtitle">'+nights+' night'+(nights>1?'s':'')+'</div></div><button class="results-back" id="resultsBack" title="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button></div>';
+    if (isDegraded) {
+      h += '<div class="avail-degraded-banner"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>'+(apiData.notice || 'Live availability is temporarily refreshing. Tap any property to check exact availability.')+'</p></div>';
+    }
     var withAlts = properties.filter(function(p) { return !p.available && p.alternativeDates && p.alternativeDates.length; });
     if (avail.length === 0 && withAlts.length === 0) {
       h += '<div class="avail-modal-empty"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>No properties available for<br><strong>'+ciLabel+'</strong> — <strong>'+coLabel+'</strong></p><p style="margin-top:8px;font-size:12px;">Try different dates or a shorter stay.</p></div>';
@@ -755,8 +813,17 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     searchBtn.innerHTML='<svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Searching…';
     fetchWithTimeout('/api/availability/check?checkIn='+encodeURIComponent(ci)+'&checkOut='+encodeURIComponent(co),{cache:'no-store'},15000)
       .then(function(r){if(!r.ok)throw new Error('err');return r.json();})
-      .then(function(data){renderRange(ci,co,data.nights||nights,data.properties||[]);history.replaceState(null,'','/availability?checkin='+ci+'&checkout='+co);statusText.textContent='Results for '+formatDateLabel(ci)+' — '+formatDateLabel(co);})
-      .catch(function(){renderRange(ci,co,nights,[]);})
+      .then(function(data){
+        // If degraded, show all properties instead of filtering to available-only
+        if(data.degraded){
+          var props=(data.properties||[]).map(function(p){return Object.assign({},p,{available:true});});
+          renderRange(ci,co,data.nights||nights,props,data);
+        } else {
+          renderRange(ci,co,data.nights||nights,data.properties||[],data);
+        }
+        history.replaceState(null,'','/availability?checkin='+ci+'&checkout='+co);statusText.textContent='Results for '+formatDateLabel(ci)+' — '+formatDateLabel(co);
+      })
+      .catch(function(){renderRange(ci,co,nights,[],null);})
       .finally(function(){searchBtn.disabled=!(cal.checkIn&&cal.checkOut);searchBtn.classList.remove('is-searching');searchBtn.innerHTML='<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search';});
   }
 
