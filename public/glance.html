@@ -140,7 +140,8 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 
 /* ── Host ── */
 .gl-host{display:flex;align-items:center;gap:14px;padding:20px 0}
-.gl-host-avatar{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;font-weight:600;color:var(--bg);flex-shrink:0}
+.gl-host-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0}
+.gl-host-avatar img{width:100%;height:100%;object-fit:cover}
 .gl-host-info{flex:1}
 .gl-host-name{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text)}
 .gl-host-detail{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;color:var(--text-dim);text-transform:uppercase;margin-top:2px}
@@ -174,17 +175,24 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 .gl-gallery-caption{padding:12px 20px 20px;text-align:center;flex-shrink:0}
 .gl-gallery-caption-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase}
 
-/* ── All Amenities Modal ── */
-.gl-amenities-modal{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto}
-.gl-amenities-modal.active{display:block}
-.gl-amenities-modal-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg);border-bottom:1px solid rgba(255,255,255,0.06)}
-.gl-amenities-modal-title{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;color:var(--text);text-transform:uppercase}
-.gl-amenities-modal-close{background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px 8px}
-.gl-amenities-category{padding:20px 20px 8px}
+/* ── All Amenities Inline Expand ── */
+.gl-amenities-expand{max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1)}
+.gl-amenities-expand.open{max-height:4000px}
+.gl-amenities-category{padding:16px 0 8px}
 .gl-amenities-cat-name{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
 .gl-amenities-cat-item{padding:10px 0;font-family:var(--sans);font-size:14px;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:color 0.2s}
 .gl-amenities-cat-item:hover{color:var(--accent)}
 .gl-amenities-cat-item.has-photo{color:var(--text)}
+
+/* ── Contact Section ── */
+.gl-contact-form{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.gl-contact-input{width:100%;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:var(--text);font-family:var(--sans);font-size:14px;transition:border-color 0.2s;outline:none}
+.gl-contact-input:focus{border-color:var(--accent)}
+.gl-contact-input::placeholder{color:var(--text-faint)}
+textarea.gl-contact-input{min-height:100px;resize:vertical}
+.gl-contact-submit{padding:16px;background:var(--accent);color:var(--bg);font-family:var(--sans);font-size:15px;font-weight:600;border:none;border-radius:4px;cursor:pointer;transition:background 0.2s}
+.gl-contact-submit:hover{background:var(--accent-hover)}
+.gl-contact-success{display:none;padding:20px;text-align:center;font-family:var(--sans);font-size:15px;color:var(--accent)}
 
 /* ── Responsive ── */
 @media(min-width:481px){
@@ -275,7 +283,8 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
     <span class="gl-section-right" id="amenityCount"></span>
   </div>
   <div id="amenityList"></div>
-  <button class="gl-all-amenities-btn" id="allAmenitiesBtn" onclick="openAllAmenities()"></button>
+  <button class="gl-all-amenities-btn" id="allAmenitiesBtn" onclick="toggleAllAmenities()"></button>
+  <div class="gl-amenities-expand" id="amenitiesExpand"></div>
 </div>
 
 <!-- N°3 — WHERE YOU SLEEP -->
@@ -322,13 +331,30 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 <!-- Host -->
 <div class="gl-section">
   <div class="gl-host">
-    <div class="gl-host-avatar" id="hostAvatar">J</div>
+    <div class="gl-host-avatar"><img src="https://a0.muscache.com/im/pictures/user/User/original/cfcc56a0-6613-450a-bed5-6426106cf3ec.jpeg?im_w=120" alt="Host Jatin"></div>
     <div class="gl-host-info">
       <div class="gl-host-name">Hosted by Jatin</div>
       <div class="gl-host-detail">SUPERHOST · REPLIES IN 1H<br>CO-HOSTS SANDEEP & CHAMANTHI</div>
     </div>
     <a class="gl-host-msg" id="msgBtn" href="">MESSAGE</a>
   </div>
+</div>
+
+<!-- N°6 — CONTACT -->
+<div class="gl-section" id="contactSection">
+  <div class="gl-section-head">
+    <span class="gl-section-label">N°6 — CONTACT</span>
+    <span class="gl-section-right">GET IN TOUCH</span>
+  </div>
+  <div class="gl-tagline">Have a question?<br>We're here to help.</div>
+  <form class="gl-contact-form" id="contactForm" onsubmit="return submitContactForm(event)">
+    <input type="text" class="gl-contact-input" name="name" placeholder="Your name" required>
+    <input type="email" class="gl-contact-input" name="email" placeholder="Email address" required>
+    <input type="tel" class="gl-contact-input" name="phone" placeholder="Phone (optional)">
+    <textarea class="gl-contact-input" name="message" id="contactMessage" placeholder="Your message..." required></textarea>
+    <button type="submit" class="gl-contact-submit">Send Message →</button>
+  </form>
+  <div class="gl-contact-success" id="contactSuccess">✓ Message sent — we'll reply within a few hours.</div>
 </div>
 
 <!-- Footer Text -->
@@ -361,14 +387,6 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
   </div>
 </div>
 
-<!-- All Amenities Modal -->
-<div class="gl-amenities-modal" id="amenitiesModal">
-  <div class="gl-amenities-modal-header">
-    <span class="gl-amenities-modal-title" id="amenitiesModalTitle"></span>
-    <button class="gl-amenities-modal-close" onclick="closeAllAmenities()">✕</button>
-  </div>
-  <div id="amenitiesModalBody"></div>
-</div>
 
 <script>
 var PROP = JSON.parse('{{PROPERTY_JSON}}');
@@ -504,9 +522,14 @@ function init() {
   // Book & Contact links
   document.getElementById('bookBtn').href = GUESTY_URL;
   document.getElementById('stickyBookBtn').href = GUESTY_URL;
-  var contactUrl = '/contact?property=' + encodeURIComponent(PROP.name);
-  document.getElementById('contactBtn').href = contactUrl;
-  document.getElementById('msgBtn').href = contactUrl;
+  // Contact buttons scroll to inline contact section
+  document.getElementById('contactBtn').href = '#contactSection';
+  document.getElementById('contactBtn').onclick = function(e) { e.preventDefault(); scrollToContact(); };
+  document.getElementById('msgBtn').href = '#contactSection';
+  document.getElementById('msgBtn').onclick = function(e) { e.preventDefault(); scrollToContact(); };
+
+  // Pre-fill contact message with property name
+  document.getElementById('contactMessage').value = 'Hi, I have a question about ' + PROP.name + '. ';
 
   // Airbnb link
   var airbnbUrl = 'https://www.airbnb.com/h/' + getAirbnbHandle(SLUG);
@@ -557,7 +580,7 @@ function countTotalBeds() {
   bedData.forEach(function(b) {
     var m = b.type.match(/(\d+)/);
     if (m) total += parseInt(m[1]);
-    if (b.type.toLowerCase().indexOf('couch') >= 0) total += 1;
+    if (b.type.toLowerCase().indexOf('couch') >= 0 || b.type.toLowerCase().indexOf('sofa') >= 0) total += 1;
   });
   return total || PROP.beds;
 }
@@ -566,9 +589,9 @@ function getBedrooms() {
   var bedrooms = {
     'regent-villa': [
       { label: 'BEDROOM 1 · MASTER', type: '1 king bed', note: 'MINI GOLF · EN-SUITE' },
-      { label: 'BEDROOM 2', type: '1 queen bed', note: 'SMART TV' },
-      { label: 'BEDROOM 3', type: '1 queen bed', note: 'SMART TV' },
-      { label: 'BEDROOM 4 + LIVING', type: '3 beds + couch', note: 'SLEEPS UP TO 14 TOTAL' }
+      { label: 'BEDROOM 2', type: '1 king bed', note: 'SMART TV' },
+      { label: 'BEDROOM 3', type: '2 queen beds', note: 'SMART TV · BUNK STYLE' },
+      { label: 'BEDROOM 4 · LIVING', type: '2 single beds + sofa bed', note: 'SLEEPS UP TO 14' }
     ],
     'regent-skyline': [
       { label: 'BEDROOM · LOFT', type: '1 king bed', note: 'EXPOSED BRICK · SMART TV' },
@@ -815,7 +838,7 @@ function buildReviews() {
   var starsCount = Math.round(parseFloat(displayRating));
   document.getElementById('reviewStars').textContent = '★'.repeat(starsCount);
 
-  var cats = ['CLEANLINESS', 'CHECK-IN', 'VALUE'];
+  var cats = ['CLEANLINESS', 'ACCURACY', 'COMMUNICATION'];
   var html = '';
   cats.forEach(function(cat) {
     html += '<div class="gl-score-item">';
@@ -893,50 +916,48 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowLeft') galleryNav(-1);
     if (e.key === 'ArrowRight') galleryNav(1);
   }
-  if (document.getElementById('amenitiesModal').classList.contains('active')) {
-    if (e.key === 'Escape') closeAllAmenities();
-  }
 });
 
-// ── All Amenities Modal ──
-function openAllAmenities() {
-  var modal = document.getElementById('amenitiesModal');
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+// ── All Amenities Inline Toggle ──
+var amenitiesOpen = false;
+function toggleAllAmenities() {
+  var expand = document.getElementById('amenitiesExpand');
+  var btn = document.getElementById('allAmenitiesBtn');
+  amenitiesOpen = !amenitiesOpen;
 
-  var totalCount = 0;
-  if (PROP.fullAmenities) {
-    Object.keys(PROP.fullAmenities).forEach(function(cat) {
-      totalCount += PROP.fullAmenities[cat].length;
-    });
+  if (amenitiesOpen) {
+    // Build content on first open
+    if (!expand.innerHTML) {
+      var html = '';
+      if (PROP.fullAmenities) {
+        Object.keys(PROP.fullAmenities).forEach(function(cat) {
+          html += '<div class="gl-amenities-category">';
+          html += '<div class="gl-amenities-cat-name">' + escHtml(cat) + '</div>';
+          PROP.fullAmenities[cat].forEach(function(item) {
+            var hasPhoto = PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined;
+            html += '<div class="gl-amenities-cat-item' + (hasPhoto ? ' has-photo' : '') + '" onclick="amenityItemClick(\'' + escAttr(item) + '\')">' + escHtml(item) + (hasPhoto ? ' →' : '') + '</div>';
+          });
+          html += '</div>';
+        });
+      }
+      expand.innerHTML = html;
+    }
+    expand.classList.add('open');
+    btn.textContent = 'COLLAPSE AMENITIES ▲';
+  } else {
+    expand.classList.remove('open');
+    var totalCount = 0;
+    if (PROP.fullAmenities) {
+      Object.keys(PROP.fullAmenities).forEach(function(cat) { totalCount += PROP.fullAmenities[cat].length; });
+    }
+    btn.textContent = 'ALL ' + totalCount + ' AMENITIES';
   }
-  document.getElementById('amenitiesModalTitle').textContent = 'ALL ' + totalCount + ' AMENITIES';
-
-  var html = '';
-  if (PROP.fullAmenities) {
-    Object.keys(PROP.fullAmenities).forEach(function(cat) {
-      html += '<div class="gl-amenities-category">';
-      html += '<div class="gl-amenities-cat-name">' + escHtml(cat) + '</div>';
-      PROP.fullAmenities[cat].forEach(function(item) {
-        var hasPhoto = PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined;
-        html += '<div class="gl-amenities-cat-item' + (hasPhoto ? ' has-photo' : '') + '" onclick="amenityItemClick(\'' + escAttr(item) + '\')">' + escHtml(item) + (hasPhoto ? ' →' : '') + '</div>';
-      });
-      html += '</div>';
-    });
-  }
-  document.getElementById('amenitiesModalBody').innerHTML = html;
 }
 
 function amenityItemClick(item) {
   if (PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined) {
-    closeAllAmenities();
-    setTimeout(function() { openGallery(PROP.amenityPhotos[item]); }, 200);
+    openGallery(PROP.amenityPhotos[item]);
   }
-}
-
-function closeAllAmenities() {
-  document.getElementById('amenitiesModal').classList.remove('active');
-  document.body.style.overflow = '';
 }
 
 // ── Share ──
@@ -978,6 +999,39 @@ function getAirbnbHandle(slug) {
 // ── Utils ──
 function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function escAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+// ── Contact ──
+function scrollToContact() {
+  document.getElementById('contactSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function submitContactForm(e) {
+  e.preventDefault();
+  var form = document.getElementById('contactForm');
+  var data = {
+    name: form.name.value,
+    email: form.email.value,
+    phone: form.phone.value,
+    message: form.message.value,
+    property: PROP.name,
+    source: 'glance-page'
+  };
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(function(r) {
+    if (r.ok) {
+      form.style.display = 'none';
+      document.getElementById('contactSuccess').style.display = 'block';
+    } else {
+      alert('Something went wrong. Please try again.');
+    }
+  }).catch(function() {
+    alert('Something went wrong. Please try again.');
+  });
+  return false;
+}
 
 // ── Boot ──
 init();
