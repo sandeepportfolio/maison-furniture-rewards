@@ -5839,6 +5839,7 @@ function openExploreAttraction(lat, lng, name) {
 function viewPropertyOnMap(slug) {
   const idx = PROPERTIES.findIndex(p => p.slug === slug);
   if (idx === -1) return;
+  if (!exploreMapInstance) initExploreMap();
   expandMap();
   setTimeout(() => {
     selectPropertyOnMap(idx);
