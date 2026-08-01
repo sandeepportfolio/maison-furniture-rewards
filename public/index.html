@@ -7343,33 +7343,56 @@ async function fetchSiteSettings() {
 
 /* ── Draggable Marquee (reviews) ── */
 function initMarquee() {
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   document.querySelectorAll('.v2-mq-track').forEach(function(track) {
     var isReverse = track.classList.contains('rev2');
-    var speed = isReverse ? -0.5 : 0.6; // px per frame
-    var pos = isReverse ? -(track.scrollWidth / 2) : 0;
-    var halfW = track.scrollWidth / 2;
-    var dragging = false, startX = 0, startPos = 0;
+    var speed = isReverse ? -0.5 : 0.6; // px per frame; sign = direction, preserved across drags
+    var pos = 0;
+    var halfW = 0;
+    var dragging = false, startX = 0, startY = 0, startPos = 0;
+    var touchDecided = false; // horizontal-intent detection — vertical page scrolls must not drag
     var resumeTimer = null;
-    var paused = false;
-    var raf = null;
+    var paused = reduceMotion; // reduced motion: no auto-scroll, drag still works
 
+    // The track is two identical .v2-mq-set copies; the loop period is one
+    // copy's width. Measured LAZILY and re-measured after webfonts land and
+    // on resize — the old one-shot measurement at DOMContentLoaded ran before
+    // the serif font swapped in, so the cached width was wrong and the loop
+    // visibly jumped at the seam.
+    function measure() {
+      halfW = track.scrollWidth / 2;
+      wrap();
+    }
+
+    // Map pos into (-halfW, 0] for ANY value — a fast fling can travel several
+    // copy-widths, which the old single-step correction couldn't normalize.
     function wrap() {
-      if (!isReverse) {
-        if (pos <= -halfW) pos += halfW;
-        if (pos > 0) pos -= halfW;
-      } else {
-        if (pos >= 0) pos -= halfW;
-        if (pos < -halfW) pos += halfW;
-      }
+      if (!halfW) return;
+      pos = -((((-pos) % halfW) + halfW) % halfW);
     }
 
     function tick() {
-      if (!paused && !dragging) {
+      if (!paused && !dragging && halfW) {
         pos -= speed;
         wrap();
       }
       track.style.transform = 'translateX(' + pos + 'px)';
-      raf = requestAnimationFrame(tick);
+      requestAnimationFrame(tick);
+    }
+
+    function endDrag() {
+      if (!dragging && !touchDecided) return;
+      dragging = false;
+      touchDecided = false;
+      track.classList.remove('dragging');
+      clearTimeout(resumeTimer);
+      paused = true;
+      // Resume auto-scroll from wherever the user left the track, in the
+      // track's original direction (speed is untouched by dragging).
+      if (!reduceMotion) {
+        resumeTimer = setTimeout(function() { paused = false; }, 1600);
+      }
     }
 
     // Mouse drag
@@ -7385,39 +7408,53 @@ function initMarquee() {
       wrap();
     });
     window.addEventListener('mouseup', function() {
-      if (!dragging) return;
-      dragging = false;
-      track.classList.remove('dragging');
-      resumeTimer = setTimeout(function() { paused = false; }, 2000);
-      paused = true;
+      if (dragging) endDrag();
     });
 
-    // Touch drag
+    // Touch drag — only claims the gesture once it is clearly horizontal, so
+    // scrolling the page over a quote doesn't yank the marquee sideways.
     track.addEventListener('touchstart', function(e) {
-      dragging = true; startX = e.touches[0].clientX; startPos = pos;
-      track.classList.add('dragging');
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startPos = pos;
+      touchDecided = false;
       clearTimeout(resumeTimer);
     }, { passive: true });
     track.addEventListener('touchmove', function(e) {
+      var dx = e.touches[0].clientX - startX;
+      var dy = e.touches[0].clientY - startY;
+      if (!touchDecided) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return; // not enough intent yet
+        touchDecided = true;
+        dragging = Math.abs(dx) > Math.abs(dy);
+        if (dragging) track.classList.add('dragging');
+      }
       if (!dragging) return;
-      pos = startPos + (e.touches[0].clientX - startX);
+      pos = startPos + dx;
       wrap();
     }, { passive: true });
-    track.addEventListener('touchend', function() {
-      dragging = false;
-      track.classList.remove('dragging');
-      paused = true;
-      resumeTimer = setTimeout(function() { paused = false; }, 2000);
-    });
+    track.addEventListener('touchend', endDrag);
+    track.addEventListener('touchcancel', endDrag);
 
     // Pause on hover (desktop)
     track.addEventListener('mouseenter', function() {
       if (!dragging) { paused = true; clearTimeout(resumeTimer); }
     });
     track.addEventListener('mouseleave', function() {
-      if (!dragging) {
+      if (!dragging && !reduceMotion) {
         resumeTimer = setTimeout(function() { paused = false; }, 800);
       }
+    });
+
+    // Keep the loop period honest across font swap, resize, and rotation.
+    measure();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measure);
+    }
+    var resizeT = null;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(measure, 150);
     });
 
     tick();
