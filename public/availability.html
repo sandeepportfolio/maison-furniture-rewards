@@ -179,6 +179,30 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .avail-day-label{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--text-muted);margin-bottom:20px;display:flex;align-items:center;gap:10px}
 .avail-day-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .avail-none{font-size:14px;color:var(--text-dim);padding:12px 0;font-style:italic}
+
+/* ── Property-focused view ── */
+.avail-prop-focus{padding-top:8px}
+.avail-prop-back{display:inline-flex;align-items:center;gap:4px;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:8px 16px 8px 10px;cursor:pointer;transition:all .25s;margin-bottom:24px}
+.avail-prop-back:hover{color:var(--accent);border-color:rgba(201,152,69,.3)}
+.avail-prop-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.avail-prop-hero-card{display:flex;gap:20px;align-items:flex-start;background:var(--bg-card);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border)}
+.avail-prop-hero-card img{width:200px;height:160px;object-fit:cover;flex-shrink:0}
+.avail-prop-hero-info{padding:20px 20px 20px 0;flex:1}
+.avail-prop-hero-name{font-family:var(--serif);font-size:22px;color:var(--text);margin-bottom:4px}
+.avail-prop-hero-city{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.avail-prop-hero-details{font-size:13px;color:var(--text-muted);margin-bottom:6px}
+.avail-prop-hero-price{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px}
+.avail-prop-hero-status{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--text-muted)}
+.avail-prop-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.avail-prop-dot.avail{background:#4ADE80;box-shadow:0 0 6px rgba(74,222,128,.5)}
+.avail-prop-dot.unavail{background:#6B6257}
+.avail-prop-cta{margin-top:24px;padding:16px 20px;background:rgba(201,152,69,.06);border:1px solid rgba(201,152,69,.15);border-radius:var(--radius);font-size:14px;color:var(--text-muted);text-align:center}
+.range-card.prop-highlighted{border:1px solid rgba(201,152,69,.4);box-shadow:0 0 20px rgba(201,152,69,.1)}
+@media(max-width:600px){
+  .avail-prop-hero-card{flex-direction:column}
+  .avail-prop-hero-card img{width:100%;height:180px}
+  .avail-prop-hero-info{padding:16px}
+}
 .property-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
 .prop-card{
   display:block;border-radius:var(--radius-lg);overflow:hidden;
@@ -829,8 +853,69 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
   searchBtn.addEventListener('click',function(){if(!cal.checkIn||!cal.checkOut)return;fetchRange(cal.checkIn,cal.checkOut);});
 
+  // ── Property filter ──
+  var PROP_NAMES={'regent-villa':'Regent Villa','regent-skyline':'Regent Skyline','cozy-designer':'Cozy Designer','designer-game':'Designer Game','lake-view':'Lake View','executive':'Executive','stunning-lake':'Stunning Lake'};
+  var propertyFilter=null;
+
+  function renderPropertyFiltered(data){
+    if(!data||!data.properties){results.innerHTML='<div class="avail-none">Unable to load availability.</div>';return;}
+    currentView='default';
+    var prop=data.properties.find(function(p){return p.slug===propertyFilter;});
+    var h='<div class="avail-prop-focus"><button class="avail-prop-back" id="propBackBtn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> All Properties</button>';
+    h+='<div class="avail-prop-hero">';
+    if(prop){
+      var day=prop.today||prop.tomorrow||{};
+      var isAvail=(prop.today&&prop.today.available)||(prop.tomorrow&&prop.tomorrow.available);
+      var price=day.price?money(day.price)+' / night':'';
+      h+='<div class="avail-prop-hero-card">';
+      h+='<img src="'+prop.photo+'" alt="'+prop.name+'">';
+      h+='<div class="avail-prop-hero-info">';
+      h+='<div class="avail-prop-hero-name">'+prop.name+'</div>';
+      h+='<div class="avail-prop-hero-city">'+prop.city+'</div>';
+      h+='<div class="avail-prop-hero-details">'+prop.guests+' guests · '+prop.beds+' bed'+(prop.beds>1?'s':'')+' · '+prop.baths+' bath'+(prop.baths>1?'s':'')+'</div>';
+      if(price) h+='<div class="avail-prop-hero-price">From '+price+'</div>';
+      h+='<div class="avail-prop-hero-status">'+(isAvail?'<span class="avail-prop-dot avail"></span> Available now':'<span class="avail-prop-dot unavail"></span> Not available tonight')+'</div>';
+      h+='</div></div>';
+    } else {
+      h+='<div class="avail-prop-hero-name">'+(PROP_NAMES[propertyFilter]||propertyFilter)+'</div>';
+      h+='<div class="avail-prop-hero-status"><span class="avail-prop-dot unavail"></span> Status unknown</div>';
+    }
+    h+='</div>';
+    h+='<div class="avail-prop-cta">Select dates above to check availability for this property</div>';
+    h+='</div>';
+    results.innerHTML=h;
+    var backBtn=document.getElementById('propBackBtn');
+    if(backBtn) backBtn.addEventListener('click',function(){propertyFilter=null;history.replaceState(null,'','/availability');if(availData)renderDefault(availData);else fetchAvailability();});
+  }
+
+  // Override renderDefault to respect property filter
+  var _origRenderDefault=renderDefault;
+  renderDefault=function(data){
+    if(propertyFilter){renderPropertyFiltered(data);return;}
+    _origRenderDefault(data);
+  };
+
+  // Override renderRange to highlight filtered property
+  var _origRenderRange=renderRange;
+  renderRange=function(ci,co,nights,properties,apiData){
+    if(propertyFilter){
+      // Sort filtered property to top
+      properties.sort(function(a,b){return (a.slug===propertyFilter?-1:0)-(b.slug===propertyFilter?-1:0);});
+    }
+    _origRenderRange(ci,co,nights,properties,apiData);
+    if(propertyFilter){
+      // Highlight the matching card
+      var cards=results.querySelectorAll('.range-card');
+      cards.forEach(function(c){
+        var href=c.getAttribute('href')||'';
+        if(href.indexOf('/glance/'+propertyFilter)===0) c.classList.add('prop-highlighted');
+      });
+    }
+  };
+
   // ── URL params ──
-  var today=todayStr(),params=new URLSearchParams(window.location.search),pCI=params.get('checkin'),pCO=params.get('checkout');
+  var today=todayStr(),params=new URLSearchParams(window.location.search),pCI=params.get('checkin'),pCO=params.get('checkout'),pProp=params.get('property');
+  if(pProp) propertyFilter=pProp;
   if(pCI&&pCO&&pCI>=today){cal.checkIn=pCI;cal.checkOut=pCO;cal.selecting='checkIn';searchBtn.disabled=false;updateInputValues();searchHint.textContent='Min-night requirements vary by property and check-in date.';searchHint.classList.add('visible');fetchRange(pCI,pCO);fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;}).catch(function(){});}
   else{fetchAvailability();}
 
