@@ -555,8 +555,10 @@ function init() {
   // Pre-fill contact message with property name
   document.getElementById('contactMessage').value = 'Hi, I have a question about ' + PROP.name + '. ';
 
-  // Airbnb link
-  var airbnbUrl = 'https://www.airbnb.com/h/' + getAirbnbHandle(SLUG);
+  // Airbnb link — canonical rooms/{id} URL built from the listing's hostingId
+  // (the same id the photo CDN uses, so it can't point at the wrong listing).
+  // The old /h/<handle> short links were hand-maintained and had drifted.
+  var airbnbUrl = 'https://www.airbnb.com/rooms/' + PROP.hostingId;
   document.getElementById('airbnbBtn').href = airbnbUrl;
 
   // About
@@ -1038,19 +1040,6 @@ function toggleFavorite(btn) {
     svg.setAttribute('fill', 'none');
     svg.setAttribute('stroke', 'currentColor');
   }
-}
-
-function getAirbnbHandle(slug) {
-  var handles = {
-    'regent-villa': 'regentvilla',
-    'regent-skyline': 'regentskyline',
-    'cozy-designer': 'cozydesignersuite',
-    'designer-game': 'designergamesuite',
-    'lake-view': 'gorgeousluxurylakeviewsuite',
-    'executive': 'luxuryexecutiveliving',
-    'stunning-lake': 'stunninglakeviews'
-  };
-  return handles[slug] || slug;
 }
 
 // ── Utils ──
