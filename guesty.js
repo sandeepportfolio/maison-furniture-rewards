@@ -58,7 +58,7 @@ const LISTINGS = {
   'cozy-designer':  { id: '6a29dcff12cbdd0015a65a7d', name: 'Cozy Designer Suite',                basePrice: 164, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 1,   city: 'Irving',     state: 'Texas' },
   'lake-view':      { id: '6a29dcfa14fca300148799c2', name: 'Regent Waterfront',     basePrice: 159, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Irving',     state: 'Texas' },
   'designer-game':  { id: '6a29dc9862094a0012dfda6f', name: 'Designer Game Suite',                 basePrice: 159, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 1,   city: 'Irving',     state: 'Texas' },
-  'executive':      { id: '6a29dc944052f30019465228', name: 'Luxury Executive Living',             basePrice: 169, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Richardson', state: 'Texas' },
+  'executive':      { id: '6a29dc944052f30019465228', name: 'Regent Executive',             basePrice: 169, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Richardson', state: 'Texas' },
   'stunning-lake':  { id: '6a29dc8f5f85640014dfe380', name: 'Regent Lakefront',                 basePrice: 159, cleaningFee: 55,  minNights: 1, accommodates: 6,  bedrooms: 2, bathrooms: 2,   city: 'Irving',     state: 'Texas' },
   'regent-skyline': { id: '6a4edd9fab1bbe001491a4e4', name: 'Regent Skyline',                      basePrice: 155, cleaningFee: 50,  minNights: 1, accommodates: 5,  bedrooms: 1, bathrooms: 1,   city: 'Dallas', state: 'Texas' },
 };

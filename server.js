@@ -3736,7 +3736,7 @@ const PROPERTY_DATA = {
     ]
   },
   'executive': {
-    name: 'Luxury Executive Living',
+    name: 'Regent Executive',
     slug: 'executive',
     category: 'suite',
     city: 'Richardson',
