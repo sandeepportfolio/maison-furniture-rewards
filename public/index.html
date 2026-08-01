@@ -289,8 +289,8 @@ ul{list-style:none}
 .section-header h2.light{color:var(--text)}
 .section-header h2 em{font-style:italic;color:var(--accent)}
 
-/* ── Properties Grid ── */
-.properties-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+/* ── Properties Grid (Obsidian) ── */
+.properties-grid{display:grid;grid-template-columns:1fr;gap:24px;padding:0 16px;max-width:1360px;margin:0 auto;transition:opacity .35s var(--ease),transform .35s var(--ease)}
 .properties-grid.fading{opacity:0;transform:translateY(12px)}
 
 /* ── Filter Tabs ── */
@@ -299,24 +299,15 @@ ul{list-style:none}
 .prop-filter-btn.active{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(201,152,69,.25)}
 .prop-filter-btn:hover:not(.active){color:var(--accent)}
 
-/* ── Property Type Badge ── */
-.prop-type-badge{position:absolute;top:16px;left:16px;z-index:3;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:6px 14px;border-radius:100px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;gap:7px;pointer-events:none}
-.prop-type-badge.villa-badge{background:rgba(20,16,10,.95);color:#F5D06C;font-weight:700;border:1px solid rgba(201,152,69,.6);text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 8px rgba(0,0,0,.3)}
-.prop-type-badge.suite-badge{background:rgba(14,14,14,.95);color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.4);text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 8px rgba(0,0,0,.3)}
-.prop-type-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse 2s ease-in-out infinite}
+/* ── Obsidian Card Design ── */
+/* Glass vars */
+:root{--obs-glass:rgba(10,12,9,.5);--obs-glass-panel:rgba(12,14,11,.52);--obs-glass-line:rgba(255,255,255,.15);--obs-muted:#ABA694}
 
-/* ── Villa Horizontal Layout ── */
-.prop-card.villa-card{grid-column:1/-1;display:grid;grid-template-columns:55% 1fr}
-.prop-card.villa-card .prop-carousel{aspect-ratio:unset;height:100%;min-height:420px}
-.prop-card.villa-card .prop-info{display:flex;flex-direction:column;justify-content:center;padding:48px 44px}
-.prop-card.villa-card .prop-name{font-family:var(--serif);font-weight:400;line-height:1.15;white-space:nowrap}
-.prop-card.villa-card .prop-actions{margin-top:auto;padding-top:8px}
-
-/* ── Property Card (2026 Redesign) ── */
-.prop-card{background:var(--card-glass);border-radius:26px;overflow:hidden;border:1px solid rgba(242,237,225,.12);transition:box-shadow .5s var(--ease),transform .5s var(--ease),border-color .4s var(--ease);opacity:0;transform:translateY(40px) scale(.96);position:relative;box-shadow:var(--shadow-sm);cursor:pointer}
-.prop-card:hover{border-color:rgba(201,152,69,.4)}
+/* ── Property Card (Obsidian) ── */
+.prop-card{position:relative;border-radius:28px;overflow:hidden;aspect-ratio:4/5.1;box-shadow:0 34px 80px rgba(0,0,0,.55);transition:transform .5s var(--ease),box-shadow .5s var(--ease);opacity:0;transform:translateY(40px) scale(.96);cursor:pointer}
 .prop-card.visible{opacity:1;transform:translateY(0) scale(1)}
-.prop-card:hover{box-shadow:var(--shadow-xl);transform:translateY(-8px)}
+/* Villa no longer special — uniform grid */
+.prop-card.villa-card{aspect-ratio:4/5.1}
 
 /* Card stagger delays */
 .prop-card:nth-child(1){transition-delay:0s}
@@ -326,79 +317,108 @@ ul{list-style:none}
 .prop-card:nth-child(5){transition-delay:.32s}
 .prop-card:nth-child(6){transition-delay:.40s}
 .prop-card:nth-child(7){transition-delay:.48s}
-.prop-card:nth-child(8){transition-delay:.56s}
 
-/* Immersive Carousel */
-.prop-carousel{position:relative;aspect-ratio:4/3;overflow:hidden;cursor:pointer;background:var(--bg-dark)}
-.prop-carousel img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .6s var(--ease),transform 8s ease-out;transform:scale(1.0)}
-.prop-carousel img.active{opacity:1;transform:scale(1.04)}
-.prop-card:hover .prop-carousel img.active{transform:scale(1.08)}
+/* Immersive Carousel — fills the card */
+.prop-carousel{position:absolute;inset:0;overflow:hidden;background:var(--bg-dark)}
+.prop-carousel img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:0;transition:opacity .6s var(--ease),transform 1.4s cubic-bezier(.22,.8,.28,1);transform:scale(1.0)}
+.prop-carousel img.active{opacity:1;transform:scale(1.0)}
 
-/* Gradient overlay on carousel */
-.prop-carousel::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(to top,rgba(26,23,20,.55),transparent);pointer-events:none;z-index:1;transition:opacity .4s var(--ease)}
-.prop-card:hover .prop-carousel::after{opacity:.75}
+/* Cinematic gradient overlay */
+.prop-grade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,10,8,.34) 0%,rgba(8,10,8,.02) 24%,transparent 44%,rgba(8,10,8,.46) 72%,rgba(8,10,8,.78) 100%);box-shadow:inset 0 0 120px rgba(5,7,5,.45);pointer-events:none}
 
-/* Carousel navigation */
-.prop-carousel-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;opacity:0;transition:opacity .4s var(--ease);z-index:3}
+/* Top chip row */
+.prop-top-chips{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;z-index:4;pointer-events:none}
+.obs-chip{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:var(--obs-glass);border:1px solid var(--obs-glass-line);border-radius:999px;padding:8px 14px;font-family:var(--sans);font-size:9px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--text)}
+.obs-chip .obs-dot{width:5px;height:5px;border-radius:50%;background:var(--accent-hover)}
+.obs-chip.obs-rate{letter-spacing:.04em;font-size:11.5px;text-transform:none}
+.obs-chip.obs-rate b{color:var(--accent-hover);font-weight:600}
+.obs-chip.obs-new{letter-spacing:.04em;font-size:11.5px;text-transform:none}
+.obs-chip.obs-new b{color:var(--accent-hover);font-weight:600}
+
+/* Carousel navigation — frosted circles */
+.prop-carousel-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;opacity:0;transition:opacity .4s var(--ease);z-index:5}
 .prop-card:hover .prop-carousel-nav{opacity:1}
-.carousel-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease);backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,.12)}
-.carousel-btn:hover{background:#fff;transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,.18)}
-.carousel-btn svg{width:16px;height:16px;stroke:var(--text);stroke-width:2.5;fill:none}
-/* Mobile: always show carousel nav */
+.carousel-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.carousel-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.1)}
+.carousel-btn svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none}
 @media(hover:none),(max-width:768px){
   .prop-carousel-nav{opacity:1}
-  .carousel-btn{width:36px;height:36px;background:rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+  .carousel-btn{width:36px;height:36px}
 }
 
 /* Counter badge */
-.carousel-counter{position:absolute;bottom:16px;right:16px;background:rgba(26,23,20,.7);color:#fff;font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:100px;letter-spacing:.08em;backdrop-filter:blur(8px);z-index:2}
+.carousel-counter{position:absolute;bottom:90px;right:16px;background:rgba(26,23,20,.7);color:#fff;font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:100px;letter-spacing:.08em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:3}
 
-/* Progress dots */
-.carousel-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:2}
-.carousel-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .35s var(--ease);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+/* Progress dots — just above glass panel */
+.carousel-dots{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .35s var(--ease);box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .carousel-dot.active{background:#fff;transform:scale(1.4);box-shadow:0 0 8px rgba(255,255,255,.5)}
 
-/* Location overlay on image */
-.prop-carousel-overlay{position:absolute;bottom:16px;left:16px;z-index:2;display:flex;flex-direction:column;gap:4px}
-.prop-carousel-location{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.6),0 0 2px rgba(0,0,0,.3)}
+/* Hide old overlays — replaced by chips and glass */
+.prop-carousel-overlay{display:none}
+.prop-carousel::after{display:none}
 
-/* Info section */
-.prop-info{padding:24px 24px 22px}
-.prop-header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:4px}
-.prop-name{font-family:var(--serif);font-size:clamp(28px,3.5vw,36px);font-weight:400;color:var(--text);line-height:1.15;letter-spacing:-.02em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prop-location{font-family:var(--sans);font-size:12px;font-weight:400;letter-spacing:.01em;color:var(--text-muted);margin-bottom:10px}
+/* ── Frosted Glass Info Panel ── */
+.prop-info{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;border-radius:20px;padding:17px 16px 15px;backdrop-filter:blur(26px) saturate(1.25);-webkit-backdrop-filter:blur(26px) saturate(1.25);background:var(--obs-glass-panel);border:1px solid var(--obs-glass-line);overflow:hidden}
+/* Gold light-line across top */
+.prop-info::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(224,177,92,.65),transparent)}
 
-/* Spec Pills */
-.prop-specs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.prop-specs .spec-pill{font-family:var(--sans);font-size:11px;font-weight:500;padding:5px 10px;color:var(--text-muted);display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:rgba(201,152,69,.04);border-radius:999px;letter-spacing:.01em;transition:border-color .3s var(--ease),background .3s var(--ease)}
-.prop-specs .spec-pill:hover{border-color:rgba(201,152,69,.35);background:rgba(201,152,69,.08)}
-.prop-specs .spec-pill svg{width:13px;height:13px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.prop-specs .spec-pill.air-mattress{font-size:10px;padding:4px 9px;border-color:rgba(201,152,69,.25);background:rgba(201,152,69,.06);color:var(--accent)}
-.prop-specs .spec-pill.air-mattress svg{width:12px;height:12px}
+/* Location eyebrow */
+.prop-location{font-family:var(--sans);font-size:8.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-hover);font-weight:600;margin-bottom:6px}
 
-/* Rating */
-.prop-rating{display:flex;align-items:center;gap:6px;margin-bottom:16px}
-.prop-rating .star{color:var(--accent);font-size:15px}
-.prop-rating .rating-num{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--text)}
-.prop-rating .review-count{font-family:var(--sans);font-size:13px;color:var(--text-muted)}
+/* Property name */
+.prop-name{font-family:var(--serif);font-weight:400;font-size:29px;line-height:1.02;color:var(--text);letter-spacing:0;white-space:normal;overflow:visible;text-overflow:unset}
+.prop-header-row{margin-bottom:0}
 
-/* Amenity tags */
-.prop-amenities{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
-.amenity-tag{font-family:var(--sans);font-size:12px;letter-spacing:0;padding:5px 12px;border-radius:100px;border:1px solid var(--border);color:var(--text-muted);transition:all .3s var(--ease);background:transparent;font-weight:400;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.amenity-tag:hover{border-color:var(--accent-light);color:var(--accent)}
-.amenity-tag.premium{background:var(--accent-pale);border-color:transparent;color:var(--accent);font-weight:500}
-.amenity-tag.premium:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Meta line */
+.prop-meta{margin-top:7px;font-family:var(--sans);font-size:11.5px;color:var(--obs-muted);line-height:1.4}
+.prop-meta b{color:var(--text);font-weight:600}
 
-/* Building amenities strip */
-.building-amenities{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;margin-top:2px}
-.building-amenity{display:inline-flex;align-items:center;gap:5px;font-family:var(--sans);font-size:11px;letter-spacing:.03em;padding:4px 10px;border-radius:100px;border:1px solid rgba(201,152,69,.28);color:var(--text-muted);background:transparent;white-space:nowrap;transition:border-color .3s var(--ease)}
-.building-amenity:hover{border-color:var(--accent-light)}
-.building-amenity svg{flex-shrink:0;stroke-linecap:round;stroke-linejoin:round}
-.building-amenities-label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.building-amenities-label svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.building-amenities-list{display:flex;gap:16px;flex-wrap:wrap}
-.building-amenity-item{display:flex;align-items:center;gap:7px;font-family:var(--sans);font-size:12.5px;font-weight:450;color:var(--text);letter-spacing:.01em;white-space:nowrap}
-.building-amenity-item svg{width:15px;height:15px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.85}
+/* Bottom row (price + book) */
+.prop-bottom-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
+.prop-price-label{font-family:var(--sans);font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--obs-muted)}
+.prop-price{font-family:var(--sans);margin-top:3px;min-height:24px}
+.prop-price-amount{font-family:var(--serif);font-weight:400;font-size:26px;color:var(--text)}
+.prop-price-original{font-size:11.5px;font-weight:400;color:rgba(242,237,225,.45);text-decoration:line-through;margin-right:6px}
+.prop-price-period{font-size:10.5px;font-weight:400;color:var(--obs-muted)}
+.prop-price-loading{display:inline-block;width:110px;height:20px;background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:priceShimmer 1.5s infinite;border-radius:4px;vertical-align:middle}
+.prop-price-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--accent);background:rgba(201,152,69,.15);padding:2px 7px;border-radius:100px;margin-left:6px;font-weight:500;white-space:nowrap;vertical-align:middle}
+
+/* Book FAB */
+.prop-book-fab{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.prop-book-fab .fab-label{font-family:var(--sans);font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:600;color:var(--text)}
+.prop-book-fab .fab-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#E8C377,#B98A34);display:grid;place-items:center;box-shadow:0 10px 26px rgba(201,152,69,.42);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.prop-book-fab .fab-circle:hover{transform:scale(1.08);box-shadow:0 14px 32px rgba(201,152,69,.5)}
+.prop-book-fab .fab-circle svg{width:17px;height:17px;stroke:#16120A;stroke-width:2.2;fill:none}
+
+/* Secondary actions row inside glass */
+.prop-actions-row{display:flex;gap:12px;margin-top:10px;padding-top:8px}
+.prop-actions-row a,.prop-actions-row button{font-family:var(--sans);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--obs-muted);background:none;border:none;cursor:pointer;transition:color .3s var(--ease);padding:0;text-decoration:none}
+.prop-actions-row a:hover,.prop-actions-row button:hover{color:var(--text)}
+
+/* ── Hover (desktop only) ── */
+@media(hover:hover) and (pointer:fine){
+  .prop-card:hover{transform:translateY(-10px);box-shadow:0 50px 110px rgba(0,0,0,.65),0 0 0 1px rgba(201,152,69,.4),0 0 60px rgba(201,152,69,.12)}
+  .prop-card:hover .prop-carousel img.active{transform:scale(1.05)}
+}
+@media(prefers-reduced-motion:reduce){
+  .prop-card,.prop-carousel img{transition:none!important}
+  .prop-card:hover{transform:none}
+  .prop-card:hover .prop-carousel img.active{transform:none}
+}
+
+/* ── Hide old card elements no longer needed ── */
+.prop-specs,.prop-rating,.prop-amenities,.building-amenities,.prop-divider,.prop-actions,.prop-type-badge{display:none}
+
+/* ── Obsidian section background ── */
+#properties{background:radial-gradient(120% 46% at 50% 0%,#161B14 0%,#0D110E 66%);max-width:none;padding-left:0;padding-right:0}
+
+/* ── Obsidian Desktop: 3 columns at ≥1100px ── */
+@media(min-width:1100px){
+  .properties-grid{grid-template-columns:1fr 1fr 1fr;gap:26px;padding:0 32px}
+  .prop-card{aspect-ratio:4/5.35}
+  .prop-card.villa-card{aspect-ratio:4/5.35}
+}
 
 /* Detail building amenities */
 .detail-building-amenities{padding:20px 24px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(201,152,69,.07),rgba(201,152,69,.02));border:1px solid rgba(201,152,69,.18);position:relative;overflow:hidden;margin-top:20px}
@@ -416,13 +436,7 @@ ul{list-style:none}
   .detail-building-amenities .building-amenities-list{gap:12px 18px}
 }
 
-/* Price row */
-.prop-price{font-family:var(--sans);margin-bottom:16px;min-height:24px}
-.prop-price-amount{font-size:17px;font-weight:600;color:var(--text)}
-.prop-price-period{font-size:13px;font-weight:400;color:var(--text-muted)}
-.prop-price-original{font-size:13px;font-weight:400;color:var(--text-muted);text-decoration:line-through;margin-right:6px}
-.prop-price-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--accent);background:var(--accent-pale);padding:3px 8px;border-radius:100px;margin-left:8px;font-weight:500;white-space:nowrap}
-.prop-price-loading{display:inline-block;width:110px;height:18px;background:linear-gradient(90deg,var(--bg-card) 25%,rgba(255,255,255,.06) 50%,var(--bg-card) 75%);background-size:200% 100%;animation:priceShimmer 1.5s infinite;border-radius:4px;vertical-align:middle}
+/* Price row — Obsidian styles are above; these are for detail modal only */
 @keyframes priceShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .detail-price{margin-top:12px;display:flex;align-items:baseline;flex-wrap:wrap;gap:6px}
 .detail-price .prop-price-amount{font-size:20px}
@@ -1068,10 +1082,8 @@ ul{list-style:none}
   .bento-main{grid-column:1/3;grid-row:1}
   .bento-featured{display:none}
   .bento-map-tile{grid-column:1/3;grid-row:2}
-  .properties-grid{grid-template-columns:1fr 1fr}
-  .prop-card.villa-card{display:grid;grid-template-columns:1fr}
-  .prop-card.villa-card .prop-carousel{aspect-ratio:16/9;min-height:unset;height:auto}
-  .prop-card.villa-card .prop-info{padding:28px}
+  .properties-grid{grid-template-columns:1fr 1fr;gap:24px;padding:0 24px}
+  .prop-card.villa-card{aspect-ratio:4/5.1}
 
   .features-grid{grid-template-columns:repeat(2,1fr)}
   .story-inner{grid-template-columns:1fr;gap:40px;padding:80px 24px}
@@ -1091,8 +1103,9 @@ ul{list-style:none}
   .bento-main{grid-column:1;grid-row:1}
   .bento-map-tile{grid-column:1;grid-row:2}
   .bento-headline{font-size:28px}
-  .properties-grid{grid-template-columns:1fr;gap:20px}
-  .prop-card.villa-card .prop-carousel{aspect-ratio:4/3}
+  .properties-grid{grid-template-columns:1fr;gap:20px;padding:0 16px}
+  .prop-card{aspect-ratio:4/5.1}
+  .prop-card.villa-card{aspect-ratio:4/5.1}
   .prop-filters{padding:4px;gap:2px;border-radius:var(--radius);width:100%}
   .prop-filter-btn{padding:11px 14px;font-size:12px;letter-spacing:0;flex:1;text-align:center}
   .features-grid{grid-template-columns:1fr;padding:0 16px}
@@ -1409,12 +1422,7 @@ ul{list-style:none}
   .exp-card{padding:36px 28px}
   .exp-num{font-size:40px;margin-bottom:16px}
   .exp-desc{display:none}
-  .prop-info{padding:20px}
-  .prop-name{font-size:clamp(24px,4vw,30px)}
-  .prop-carousel{aspect-ratio:4/3}
-  .prop-specs .spec-pill{padding:4px 8px;font-size:10px;gap:4px}
-  .prop-specs .spec-pill svg{width:12px;height:12px}
-  .prop-specs .spec-pill.air-mattress{font-size:9px;padding:3px 7px}
+  .prop-name{font-size:26px}
   .detail-modal{padding:0}
   .detail-body{margin:0;border-radius:0;min-height:100vh}
   .detail-close{top:12px;right:12px;width:40px;height:40px}
@@ -3809,70 +3817,67 @@ const carouselState = {};
 function renderPropertyCard(p) {
   carouselState[p.slug] = 0;
   const photoHtml = p.photos.map((ph, i) =>
-    `<img src="${imgUrl(p.hostingId, ph)}" alt="${p.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<2?'eager':'lazy'}">`
+    `<img src="${imgUrl(p.hostingId, ph, 1200)}" alt="${p.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<2?'eager':'lazy'}">`
   ).join('');
   const dotsHtml = p.photos.slice(0, 7).map((_, i) =>
     `<div class="carousel-dot${i===0?' active':''}" data-i="${i}"></div>`
   ).join('');
-  const amenityHtml = p.amenities.slice(0, 4).map(a =>
-    `<span class="amenity-tag${a.premium?' premium':''}">${a.label}</span>`
-  ).join('');
-  const buildingAmenityHtml = p.slug !== 'regent-villa' ? `
-    <div class="building-amenities">
-      <span class="building-amenity"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 16c.6.5 1.2 1 2.5 1C7 17 7 15 9.5 15c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 20c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M9 6v9"/><path d="M15 4v11"/><path d="M9 8h6"/></svg> Pool</span>
-      <span class="building-amenity"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="8" width="4" height="8" rx="1"/><rect x="18" y="8" width="4" height="8" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg> 24/7 Fitness</span>
-      <span class="building-amenity"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/></svg> Workspaces</span>
-    </div>` : '';
-  const ratingHtml = p.rating !== null ?
-    `<span class="star">&#9733;</span><span class="rating-num">${fmtRating(p.rating)}</span><span class="review-count">(${p.reviews} review${p.reviews!==1?'s':''})</span>` :
-    `<span class="prop-new-badge">&#10024; NEW</span>${p.reviews > 0 ? `<span class="review-count" style="margin-left:8px">(${p.reviews} review)</span>` : ''}`;
+
+  /* Obsidian chips */
   const isVilla = p.category === 'villa';
   const villaClass = isVilla ? ' villa-card' : '';
-  const badgeClass = isVilla ? 'villa-badge' : 'suite-badge';
-  const badgeText = isVilla ? 'Villa' : 'Suite';
+  const typeLabel = isVilla ? 'Villa' : 'Suite';
+  const chipLeft = `<span class="obs-chip"><span class="obs-dot"></span>${typeLabel} &middot; ${p.city}</span>`;
+  const chipRight = p.rating !== null
+    ? `<span class="obs-chip obs-rate"><b>&#9733;</b> ${fmtRating(p.rating)} &middot; ${p.reviews}</span>`
+    : `<span class="obs-chip obs-new"><b>&#10024;</b> NEW${p.reviews > 0 ? ` &middot; ${p.reviews}` : ''}</span>`;
+
+  /* Meta line: "14 guests · 4 beds · 3.5 baths · Hot tub, 85″ theatre, game room" */
+  const topAmenities = p.amenities.slice(0, 3).map(a => a.label.toLowerCase()).join(', ');
+  const metaLine = `<b>${p.guests}</b> guest${p.guests>1?'s':''} &middot; <b>${p.beds}</b> bed${p.beds>1?'s':''} &middot; <b>${p.baths}</b> bath${p.baths>1?'s':''} &middot; ${topAmenities}`;
+
+  /* Price slot */
+  const priceHtml = (p.basePrice || p.lowestPrice)
+    ? renderDiscountedPrice(p.basePrice, 'obsidian', p.lowestPrice)
+    : '<span class="prop-price-loading"></span>';
+
   return `
   <div class="prop-card${villaClass}" data-slug="${p.slug}" id="prop-${p.slug}" onclick="handleCardClick(event,'${p.slug}')">
     <div class="prop-carousel" data-slug="${p.slug}">
       ${photoHtml}
-      <div class="prop-type-badge ${badgeClass}">${badgeText}</div>
-      <div class="prop-carousel-overlay">
-        <span class="prop-carousel-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</span>
-      </div>
       <div class="prop-carousel-nav">
-        <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',-1)" aria-label="Previous">
+        <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',-1)" aria-label="Previous photo">
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
-        <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',1)" aria-label="Next">
+        <button class="carousel-btn" onclick="event.stopPropagation();carouselMove('${p.slug}',1)" aria-label="Next photo">
           <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
         </button>
       </div>
       <div class="carousel-counter" data-slug="${p.slug}">1 / ${p.photos.length}</div>
       <div class="carousel-dots" data-slug="${p.slug}">${dotsHtml}</div>
     </div>
+    <div class="prop-grade"></div>
+    <div class="prop-top-chips">${chipLeft}${chipRight}</div>
     <div class="prop-info">
-      <div class="prop-location">${p.city.toUpperCase()}, ${p.state.toUpperCase()}</div>
+      <div class="prop-location">${p.city.toUpperCase()} &mdash; ${p.state.toUpperCase()}</div>
       <div class="prop-header-row">
         <div class="prop-name">${p.name}</div>
       </div>
-      <div class="prop-specs">
-        <span class="spec-pill"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>${p.guests} guest${p.guests>1?'s':''}</span>
-        <span class="spec-pill"><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>${p.beds} bed${p.beds>1?'s':''}</span>
-        <span class="spec-pill"><svg viewBox="0 0 24 24"><path d="M4 12h16a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1z"/><path d="M6 12V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v7"/><path d="M5 17v4"/><path d="M19 17v4"/></svg>${p.baths} bath${p.baths>1?'s':''}</span>${p.slug==='regent-skyline'||p.slug==='lake-view'||p.slug==='executive'?'<span class="spec-pill air-mattress"><svg viewBox="0 0 24 24"><path d="M2 18v-1a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v1"/><path d="M6 13V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9"/><path d="M2 18h20"/><path d="M4 21h16"/></svg>+ Queen Air Mattress</span>':''}
+      <div class="prop-meta">${metaLine}</div>
+      <div class="prop-bottom-row">
+        <div>
+          <div class="prop-price-label">From &middot; Direct rate</div>
+          <div class="prop-price" data-slug="${p.slug}">${priceHtml}</div>
+        </div>
+        <div class="prop-book-fab" onclick="event.stopPropagation();openBooking('${p.slug}')">
+          <span class="fab-label">Book</span>
+          <div class="fab-circle" aria-label="Book ${p.name}"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></div>
+        </div>
       </div>
-      <div class="prop-rating">${ratingHtml}</div>
-      <div class="prop-amenities">${amenityHtml}</div>
-      ${buildingAmenityHtml}
-      <div class="prop-price" data-slug="${p.slug}">${(p.basePrice || p.lowestPrice) ? renderDiscountedPrice(p.basePrice, 'card', p.lowestPrice) : '<span class="prop-price-loading"></span>'}</div>
-      <div class="prop-divider"></div>
-      <div class="prop-actions" onclick="event.stopPropagation()">
-        <div class="prop-actions-primary">
-          <button class="btn-book" onclick="openBooking('${p.slug}')">Book Now</button>
-          <button class="btn-check-avail" onclick="document.querySelector('.avail-fab')?.click()">Availability</button>
-        </div>
-        <div class="prop-actions-secondary">
-          <a href="/glance/${p.slug}" class="btn-details" style="text-align:center;text-decoration:none">Full Page</a>
-          <button class="btn-map-view" onclick="viewPropertyOnMap('${p.slug}')" title="View on Map"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
-        </div>
+      <div class="prop-actions-row" onclick="event.stopPropagation()">
+        <button onclick="document.querySelector('.avail-fab')?.click()">Availability</button>
+        <a href="/glance/${p.slug}">Full Page</a>
+        <button onclick="viewPropertyOnMap('${p.slug}')">Map</button>
       </div>
     </div>
   </div>`;
@@ -3926,6 +3931,9 @@ function renderDiscountedPrice(basePrice, cssPrefix, lowestPrice) {
   const original = Math.round(displayPrice);
   if (cssPrefix === 'map') {
     return `<span class="prop-price-original">$${original}</span>$${discounted} <span>/ night</span> <span class="prop-price-badge">Save 5%+</span>`;
+  }
+  if (cssPrefix === 'obsidian') {
+    return `<span class="prop-price-original">$${original}</span><span class="prop-price-amount">$${discounted}</span> <span class="prop-price-period">/ night</span>`;
   }
   return `<span class="prop-price-original">$${original}</span><span class="prop-price-amount">From $${discounted}</span><span class="prop-price-period"> / night</span><span class="prop-price-badge">Save 5%+</span>`;
 }
@@ -3986,7 +3994,9 @@ async function fetchAndApplyPrices() {
       const slug = el.dataset.slug;
       const prop = PROPERTIES.find(p => p.slug === slug);
       if (prop && (prop.basePrice != null || prop.lowestPrice != null)) {
-        el.innerHTML = renderDiscountedPrice(prop.basePrice, 'card', prop.lowestPrice);
+        // Use 'obsidian' for main-page cards (inside .prop-card), 'card' for detail modals
+        const fmt = el.closest('.prop-card') ? 'obsidian' : 'card';
+        el.innerHTML = renderDiscountedPrice(prop.basePrice, fmt, prop.lowestPrice);
       } else {
         el.innerHTML = '';
       }
