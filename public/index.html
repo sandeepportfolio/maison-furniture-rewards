@@ -391,6 +391,25 @@ ul{list-style:none}
 /* Gold light-line across top */
 .prop-info::before{content:"";position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(224,177,92,.65),transparent)}
 
+/* ── Info panel minimize/expand ──────────────────────────────────────────
+   A bottom-sheet-style grab handle centered at the panel's top. Collapsing
+   hides everything but the name so the photo takes the stage; the chevron
+   flips to point up. State is per card (see collapsedCards in JS). */
+.prop-info-toggle{display:flex;align-items:center;justify-content:center;width:46px;height:17px;margin:-9px auto 2px;border-radius:9px;color:var(--obs-muted);background:transparent;transition:color .3s var(--ease),background .3s var(--ease)}
+.prop-info-toggle:hover{color:var(--accent-hover);background:rgba(255,255,255,.06)}
+.prop-info-toggle svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;display:block;transition:transform .45s var(--ease)}
+.info-min .prop-info-toggle svg{transform:rotate(180deg)}
+/* Collapsible pieces: animate to zero height, fade, and drop their spacing.
+   max-height must comfortably exceed the tallest real content. */
+.prop-location,.prop-meta,.prop-amenity-chips,.prop-bottom-row{overflow:hidden;max-height:220px;transition:max-height .5s var(--ease),opacity .3s var(--ease),margin .5s var(--ease),padding .5s var(--ease)}
+.info-min :is(.prop-location,.prop-meta,.prop-amenity-chips,.prop-bottom-row){max-height:0;opacity:0;margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0;border-top-width:0;pointer-events:none}
+.info-min .prop-actions-row{opacity:0;transform:translateY(-4px);pointer-events:none}
+.prop-actions-row{transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.info-min .prop-info{padding-bottom:13px}
+@media(prefers-reduced-motion:reduce){
+  .prop-location,.prop-meta,.prop-amenity-chips,.prop-bottom-row,.prop-actions-row,.prop-info-toggle svg{transition:none}
+}
+
 /* Location eyebrow */
 .prop-location{font-family:var(--sans);font-size:8.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-hover);font-weight:600;margin-bottom:6px}
 
@@ -3972,8 +3991,9 @@ function renderPropertyCard(p) {
     ? renderDiscountedPrice(p.basePrice, 'obsidian', p.lowestPrice)
     : '<span class="prop-price-loading"></span>';
 
+  const infoMin = collapsedCards.has(p.slug);
   return `
-  <div class="prop-card${villaClass}" data-slug="${p.slug}" id="prop-${p.slug}" onclick="handleCardClick(event,'${p.slug}')">
+  <div class="prop-card${villaClass}${infoMin ? ' info-min' : ''}" data-slug="${p.slug}" id="prop-${p.slug}" onclick="handleCardClick(event,'${p.slug}')">
     <div class="prop-carousel" data-slug="${p.slug}">
       ${photoHtml}
       <div class="prop-carousel-nav">
@@ -3990,6 +4010,9 @@ function renderPropertyCard(p) {
     <div class="prop-grade"></div>
     <div class="prop-top-chips">${chipLeft}${chipRight}</div>
     <div class="prop-info">
+      <button class="prop-info-toggle" aria-expanded="${!infoMin}" aria-label="${infoMin ? 'Expand property details' : 'Minimize property details'}" title="${infoMin ? 'Show details' : 'Hide details'}" onclick="event.stopPropagation();togglePropInfo('${p.slug}',this)">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
       <div class="prop-location">${p.city.toUpperCase()} &mdash; ${p.state.toUpperCase()}</div>
       <div class="prop-header-row">
         <div class="prop-name">${p.name}</div>
@@ -4013,6 +4036,23 @@ function renderPropertyCard(p) {
       </div>
     </div>
   </div>`;
+}
+
+/* Per-card minimized state for the info panel. Keyed by slug so it survives
+   re-renders (filter changes rebuild the card DOM); session-scoped on purpose
+   — a fresh visit starts with full panels. */
+const collapsedCards = new Set();
+
+function togglePropInfo(slug, btn) {
+  const card = document.getElementById('prop-' + slug);
+  if (!card) return;
+  const min = card.classList.toggle('info-min');
+  if (min) collapsedCards.add(slug); else collapsedCards.delete(slug);
+  if (btn) {
+    btn.setAttribute('aria-expanded', String(!min));
+    btn.setAttribute('aria-label', min ? 'Expand property details' : 'Minimize property details');
+    btn.title = min ? 'Show details' : 'Hide details';
+  }
 }
 
 let currentCategoryFilter = 'all';
