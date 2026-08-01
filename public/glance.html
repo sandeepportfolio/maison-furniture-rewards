@@ -142,10 +142,6 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 .gl-review-score{font-family:var(--serif);font-size:64px;font-weight:700;color:#FFFFFF;text-shadow:0 2px 20px rgba(0,0,0,.8),0 1px 4px rgba(0,0,0,.6)}
 .gl-review-stars{color:var(--accent-hover,#E0B15C);font-size:14px;letter-spacing:4px;margin:4px 0;text-shadow:0 1px 8px rgba(0,0,0,.85)}
 .gl-review-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:rgba(255,255,255,.95);text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.7)}
-.gl-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,0.06)}
-.gl-score-item{text-align:center;padding:14px 8px}
-.gl-score-cat{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px}
-.gl-score-val{font-family:var(--sans);font-size:18px;font-weight:600;color:var(--text)}
 
 /* ── Host ── */
 .gl-host{display:flex;align-items:center;gap:14px;padding:20px 0}
@@ -334,7 +330,6 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
       <div class="gl-review-label">PERFECT SCORES, EVERY CATEGORY</div>
     </div>
   </div>
-  <div class="gl-scores" id="reviewScores"></div>
 </div>
 
 <!-- Host -->
@@ -879,16 +874,7 @@ function buildReviews() {
   document.getElementById('reviewScore').textContent = displayRating;
   var starsCount = Math.round(parseFloat(displayRating));
   document.getElementById('reviewStars').textContent = '★'.repeat(starsCount);
-
-  var cats = ['CLEANLINESS', 'ACCURACY', 'COMMUNICATION'];
-  var html = '';
-  cats.forEach(function(cat) {
-    html += '<div class="gl-score-item">';
-    html += '<div class="gl-score-cat">' + cat + '</div>';
-    html += '<div class="gl-score-val">' + displayRating + '</div>';
-    html += '</div>';
-  });
-  document.getElementById('reviewScores').innerHTML = html;
+  // (Per-category score breakdown removed — the hero shows rating + stars.)
 }
 
 // ── Prices ──

@@ -3681,7 +3681,7 @@ const PROPERTY_DATA = {
     ]
   },
   'lake-view': {
-    name: 'Gorgeous Luxury Lake View Suite',
+    name: 'Regent Waterfront',
     slug: 'lake-view',
     category: 'suite',
     city: 'Irving',
@@ -3797,7 +3797,7 @@ const PROPERTY_DATA = {
     ]
   },
   'stunning-lake': {
-    name: 'Stunning Lake Views',
+    name: 'Regent Lakefront',
     slug: 'stunning-lake',
     category: 'suite',
     city: 'Irving',
