@@ -3550,6 +3550,7 @@ const PROPERTIES = [
     guests: 3, beds: 1, baths: 1,
     rating: 4.92, reviews: 13,
     lat: 32.8758610678049, lng: -96.937335804104,
+    bedConfig: [{ label: 'Queen Bed', quantity: 1 }, { label: 'L-Shaped Couch', quantity: 1 }],
     amenities: [
       { label: 'Soaking Tub', premium: true },
       { label: '65" TV', premium: true },
@@ -3603,6 +3604,7 @@ const PROPERTIES = [
     guests: 3, beds: 1, baths: 1,
     rating: 5.0, reviews: 12,
     lat: 32.8751259, lng: -96.9369134,
+    bedConfig: [{ label: 'Queen Bed', quantity: 1 }, { label: 'Couch w/ Extra Sheets', quantity: 1 }],
     amenities: [
       { label: 'Sky Lounge', premium: true },
       { label: 'Mini Golf', premium: true },
@@ -3660,6 +3662,7 @@ const PROPERTIES = [
     guests: 3, beds: 1, baths: 1,
     rating: 4.95, reviews: 44,
     lat: 32.868187373138625, lng: -96.93422075361013,
+    bedConfig: [{ label: 'Queen Bed', quantity: 1 }],
     amenities: [
       { label: 'Lake View', premium: true },
       { label: '27" Monitor', premium: true },
@@ -3839,8 +3842,17 @@ function renderPropertyCard(p) {
     : `<span class="obs-chip obs-new"><b>&#10024;</b> NEW${p.reviews > 0 ? ` &middot; ${p.reviews}` : ''}</span>`;
 
   /* Specs line + amenity chips */
+  /* Specs line with bed config */
+  const bedInfo = p.bedConfig
+    ? p.bedConfig.map(b => b.label.toLowerCase()).join(', ')
+    : `${p.beds} bed${p.beds>1?'s':''}`;
   const specsLine = `<b>${p.guests}</b> guest${p.guests>1?'s':''} &middot; <b>${p.beds}</b> bed${p.beds>1?'s':''} &middot; <b>${p.baths}</b> bath${p.baths>1?'s':''}`;
-  const amenityChips = p.amenities.slice(0, 3).map(a =>
+
+  /* Amenity + bed config chips */
+  const bedChips = p.bedConfig
+    ? p.bedConfig.map(b => `<span class="prop-amenity-chip">${b.label}</span>`).join('')
+    : '';
+  const amenityChips = bedChips + p.amenities.slice(0, p.bedConfig ? 2 : 3).map(a =>
     `<span class="prop-amenity-chip">${a.label.charAt(0).toUpperCase() + a.label.slice(1)}</span>`
   ).join('');
 
