@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="{{NAME}} — Regent Luxury Rentals">
 <meta name="twitter:description" content="{{DESCRIPTION}}">
 <meta name="twitter:image" content="{{COVER_IMAGE}}">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23E8D5A8'/%3E%3Cstop offset='50%25' stop-color='%23C99845'/%3E%3Cstop offset='100%25' stop-color='%23A07830'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50%25' y='56%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-weight='400' font-size='46' fill='url(%23g)'%3ER%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -219,9 +219,9 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 </header>
 
 <!-- Hero Photo -->
-<div class="gl-hero" id="heroPhoto" onclick="openGallery(HERO_INDEX)">
+<div class="gl-hero" id="heroPhoto" onclick="openGallery(currentHeroIdx)">
   <img id="heroImg" src="" alt="">
-  <div class="gl-hero-chip" onclick="event.stopPropagation();openGallery(HERO_INDEX)">
+  <div class="gl-hero-chip" onclick="event.stopPropagation();openGallery(currentHeroIdx)">
     TAP TO EXPAND
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
   </div>
@@ -394,6 +394,9 @@ var SLUG = '{{SLUG}}';
 var HOSTING_ID = '{{HOSTING_ID}}';
 var GUESTY_URL = '{{GUESTY_BOOKING_URL}}';
 var HERO_INDEX = parseInt('{{HERO_INDEX}}') || 0;
+// Override hero with ?photo= param from homepage carousel
+var urlPhoto = new URLSearchParams(window.location.search).get('photo');
+if (urlPhoto !== null) HERO_INDEX = parseInt(urlPhoto) || 0;
 var CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/';
 
 function photoUrl(filename, w) { return CDN + filename + '?im_w=' + (w || 720); }
@@ -409,7 +412,7 @@ if (PROP.amenityPhotos) {
 }
 
 function getPhotoLabel(idx) {
-  // Use amenity mapping if available, but prefer descriptive name for cover
+  if (PROP.photoLabels && PROP.photoLabels[idx]) return PROP.photoLabels[idx];
   if (idx === 0) return PHOTO_LABELS[idx] || 'The Residence';
   if (PHOTO_LABELS[idx]) return PHOTO_LABELS[idx];
   return 'Photo ' + (idx + 1);
@@ -417,7 +420,17 @@ function getPhotoLabel(idx) {
 
 // ── Gallery State ──
 var galleryIdx = 0;
+var currentHeroIdx = HERO_INDEX;
 var totalPhotos = PROP.photos ? PROP.photos.length : 0;
+
+function setHeroPhoto(idx) {
+  currentHeroIdx = ((idx % totalPhotos) + totalPhotos) % totalPhotos;
+  if (PROP.photos && PROP.photos[currentHeroIdx]) {
+    document.getElementById('heroImg').src = photoUrl(PROP.photos[currentHeroIdx], 1200);
+  }
+  var lbl = (currentHeroIdx === HERO_INDEX) ? (HERO_CAPTIONS[SLUG] || getPhotoLabel(currentHeroIdx)) : getPhotoLabel(currentHeroIdx);
+  document.getElementById('captionText').textContent = 'FIG. ' + String(currentHeroIdx + 1).padStart(2, '0') + ' — ' + lbl.toUpperCase();
+}
 
 // ── Curated Hero Captions ──
 var HERO_CAPTIONS = {
@@ -450,9 +463,9 @@ function init() {
     document.getElementById('heroImg').alt = PROP.name;
   }
 
-  // Caption (curated hero label)
+  // Caption (curated hero label, with correct figure number for photo param)
   var heroCaption = HERO_CAPTIONS[SLUG] || getPhotoLabel(heroPhotoIdx);
-  document.getElementById('captionText').textContent = 'FIG. 01 — ' + heroCaption.toUpperCase();
+  document.getElementById('captionText').textContent = 'FIG. ' + String(heroPhotoIdx + 1).padStart(2, '0') + ' — ' + heroCaption.toUpperCase();
   document.getElementById('photoCount').textContent = totalPhotos + ' PHOTOS';
 
   // Location
@@ -919,6 +932,20 @@ function updateGallery() {
   vp.addEventListener('touchend', function(e) {
     var diff = e.changedTouches[0].clientX - startX;
     if (Math.abs(diff) > 50) galleryNav(diff < 0 ? 1 : -1);
+  });
+})();
+
+// Touch swipe for hero photo
+(function() {
+  var hero = document.getElementById('heroPhoto');
+  var startX = 0;
+  hero.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; });
+  hero.addEventListener('touchend', function(e) {
+    var diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 50) {
+      e.preventDefault();
+      setHeroPhoto(currentHeroIdx + (diff < 0 ? 1 : -1));
+    }
   });
 })();
 
