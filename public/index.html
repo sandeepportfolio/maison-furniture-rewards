@@ -1298,10 +1298,11 @@ ul{list-style:none}
 .amenity-marquee::before,.amenity-marquee::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2}
 .amenity-marquee::before{left:0;background:linear-gradient(90deg,var(--bg-dark),transparent)}
 .amenity-marquee::after{right:0;background:linear-gradient(90deg,transparent,var(--bg-dark))}
-.marquee-track{display:flex;gap:32px;animation:marqueeScroll 35s linear infinite;width:max-content}
-.marquee-item{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--text-inv-muted);white-space:nowrap;display:flex;align-items:center;gap:10px}
+.marquee-track{display:flex;width:max-content;cursor:grab;user-select:none;-webkit-user-select:none;will-change:transform}
+.marquee-track.dragging{cursor:grabbing}
+/* margin-right (not container gap) keeps the two copies pixel-identical so the half-width loop has no seam */
+.marquee-item{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--text-inv-muted);white-space:nowrap;display:flex;align-items:center;gap:10px;margin-right:32px}
 .marquee-item::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent-light);flex-shrink:0}
-@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* ── Enhanced Story ── */
 .story-metric{display:flex;align-items:center;gap:14px;padding:14px 18px;background:transparent;border-radius:var(--radius);border:1px solid rgba(255,255,255,.06);transition:border-color .3s var(--ease),transform .3s var(--ease),background .3s var(--ease)}
@@ -2516,7 +2517,7 @@ ul{list-style:none}
 
   <!-- Slim amenity marquee -->
   <div class="amenity-marquee rd-marquee">
-    <div class="marquee-track">
+    <div class="marquee-track" data-marquee="0.5">
       <span class="marquee-item">RESORT-STYLE POOL</span>
       <span class="marquee-item">24/7 GYM</span>
       <span class="marquee-item">CHEF-READY KITCHEN</span>
@@ -2705,7 +2706,7 @@ ul{list-style:none}
 <!-- ═══ CTA ═══ -->
 <section class="v2-reviews" aria-label="Guest reviews">
   <p class="v2-reviews-k"><span class="v2-sq"></span>4.9★ FROM 143+ GUEST REVIEWS</p>
-  <div class="v2-mq-track">
+  <div class="v2-mq-track" data-marquee="0.6">
     <div class="v2-mq-set">
       <span class="v2-quote"><em>"Spotless, stylish — and check-in took 30 seconds."</em><b>AMARI ★★★★★</b></span><span class="v2-mq-star">✦</span>
       <span class="v2-quote"><em>"The lake view at sunrise is unreal."</em><b>DANIELLE ★★★★★</b></span><span class="v2-mq-star">✦</span>
@@ -2717,7 +2718,7 @@ ul{list-style:none}
       <span class="v2-quote"><em>"Best-stocked kitchen we've ever had in a rental."</em><b>MARCUS ★★★★★</b></span><span class="v2-mq-star">✦</span>
     </div>
   </div>
-  <div class="v2-mq-track rev2">
+  <div class="v2-mq-track rev2" data-marquee="-0.5">
     <div class="v2-mq-set">
       <span class="v2-quote"><em>"Felt like a five-star hotel, with twice the space."</em><b>PRIYA ★★★★★</b></span><span class="v2-mq-star">✦</span>
       <span class="v2-quote"><em>"Our kids never wanted to leave the game suite."</em><b>THE NGUYENS ★★★★★</b></span><span class="v2-mq-star">✦</span>
@@ -3459,6 +3460,7 @@ ul{list-style:none}
 </div>
 
 <!-- Leaflet JS — deferred: executes before DOMContentLoaded, so map init still finds `L` -->
+<script defer src="/js/regent-marquee.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <!-- Guesty Pay Tokenization JS (loads PCI-safe iframe from Guesty; do not bundle/self-host) -->
@@ -7342,124 +7344,8 @@ async function fetchSiteSettings() {
 }
 
 /* ── Draggable Marquee (reviews) ── */
-function initMarquee() {
-  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  document.querySelectorAll('.v2-mq-track').forEach(function(track) {
-    var isReverse = track.classList.contains('rev2');
-    var speed = isReverse ? -0.5 : 0.6; // px per frame; sign = direction, preserved across drags
-    var pos = 0;
-    var halfW = 0;
-    var dragging = false, startX = 0, startY = 0, startPos = 0;
-    var touchDecided = false; // horizontal-intent detection — vertical page scrolls must not drag
-    var resumeTimer = null;
-    var paused = reduceMotion; // reduced motion: no auto-scroll, drag still works
-
-    // The track is two identical .v2-mq-set copies; the loop period is one
-    // copy's width. Measured LAZILY and re-measured after webfonts land and
-    // on resize — the old one-shot measurement at DOMContentLoaded ran before
-    // the serif font swapped in, so the cached width was wrong and the loop
-    // visibly jumped at the seam.
-    function measure() {
-      halfW = track.scrollWidth / 2;
-      wrap();
-    }
-
-    // Map pos into (-halfW, 0] for ANY value — a fast fling can travel several
-    // copy-widths, which the old single-step correction couldn't normalize.
-    function wrap() {
-      if (!halfW) return;
-      pos = -((((-pos) % halfW) + halfW) % halfW);
-    }
-
-    function tick() {
-      if (!paused && !dragging && halfW) {
-        pos -= speed;
-        wrap();
-      }
-      track.style.transform = 'translateX(' + pos + 'px)';
-      requestAnimationFrame(tick);
-    }
-
-    function endDrag() {
-      if (!dragging && !touchDecided) return;
-      dragging = false;
-      touchDecided = false;
-      track.classList.remove('dragging');
-      clearTimeout(resumeTimer);
-      paused = true;
-      // Resume auto-scroll from wherever the user left the track, in the
-      // track's original direction (speed is untouched by dragging).
-      if (!reduceMotion) {
-        resumeTimer = setTimeout(function() { paused = false; }, 1600);
-      }
-    }
-
-    // Mouse drag
-    track.addEventListener('mousedown', function(e) {
-      dragging = true; startX = e.clientX; startPos = pos;
-      track.classList.add('dragging');
-      clearTimeout(resumeTimer);
-      e.preventDefault();
-    });
-    window.addEventListener('mousemove', function(e) {
-      if (!dragging) return;
-      pos = startPos + (e.clientX - startX);
-      wrap();
-    });
-    window.addEventListener('mouseup', function() {
-      if (dragging) endDrag();
-    });
-
-    // Touch drag — only claims the gesture once it is clearly horizontal, so
-    // scrolling the page over a quote doesn't yank the marquee sideways.
-    track.addEventListener('touchstart', function(e) {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      startPos = pos;
-      touchDecided = false;
-      clearTimeout(resumeTimer);
-    }, { passive: true });
-    track.addEventListener('touchmove', function(e) {
-      var dx = e.touches[0].clientX - startX;
-      var dy = e.touches[0].clientY - startY;
-      if (!touchDecided) {
-        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return; // not enough intent yet
-        touchDecided = true;
-        dragging = Math.abs(dx) > Math.abs(dy);
-        if (dragging) track.classList.add('dragging');
-      }
-      if (!dragging) return;
-      pos = startPos + dx;
-      wrap();
-    }, { passive: true });
-    track.addEventListener('touchend', endDrag);
-    track.addEventListener('touchcancel', endDrag);
-
-    // Pause on hover (desktop)
-    track.addEventListener('mouseenter', function() {
-      if (!dragging) { paused = true; clearTimeout(resumeTimer); }
-    });
-    track.addEventListener('mouseleave', function() {
-      if (!dragging && !reduceMotion) {
-        resumeTimer = setTimeout(function() { paused = false; }, 800);
-      }
-    });
-
-    // Keep the loop period honest across font swap, resize, and rotation.
-    measure();
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(measure);
-    }
-    var resizeT = null;
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeT);
-      resizeT = setTimeout(measure, 150);
-    });
-
-    tick();
-  });
-}
+/* Marquees are driven by the shared engine in /js/regent-marquee.js —
+   tracks are tagged with data-marquee="<speed>" and self-attach. */
 
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
@@ -7480,7 +7366,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initRewardsHash();
   initMapHash();
   initDetailHash();
-  initMarquee();
 });
 </script>
 <script>

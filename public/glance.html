@@ -62,11 +62,11 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 
 /* ── Ticker ── */
 .gl-ticker-wrap{overflow:hidden;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 0}
-.gl-ticker{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 20s linear infinite;width:max-content}
-.gl-ticker:hover{animation-play-state:paused}
+/* Driven by /js/regent-marquee.js (drag/swipe, resume-from-position). */
+.gl-ticker{display:flex;gap:0;white-space:nowrap;width:max-content;cursor:grab;user-select:none;-webkit-user-select:none;will-change:transform}
+.gl-ticker.dragging{cursor:grabbing}
 .gl-ticker span{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:0.08em;color:var(--text-dim);text-transform:uppercase;padding:0 12px}
 .gl-ticker .plus{color:var(--accent);font-size:10px}
-@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* ── Photo Strip ── */
 .gl-strip{display:flex;gap:4px;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -252,7 +252,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 
 <!-- Ticker -->
 <div class="gl-ticker-wrap">
-  <div class="gl-ticker" id="glTicker"></div>
+  <div class="gl-ticker" id="glTicker" data-marquee="0.45"></div>
 </div>
 
 <!-- Photo Strip -->
@@ -397,6 +397,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 </div>
 
 
+<script defer src="/js/regent-marquee.js"></script>
 <script>
 var PROP = JSON.parse('{{PROPERTY_JSON}}');
 var SLUG = '{{SLUG}}';
@@ -517,11 +518,12 @@ function init() {
   if (PROP.isVilla) tickerItems.push('PET-FRIENDLY');
   tickerItems.push(PROP.guests + ' GUESTS');
   var tickerHtml = '';
-  // Duplicate for seamless loop
+  // Duplicate for a seamless loop. Each item carries a TRAILING separator so
+  // the two copies are pixel-identical — the old leading-separator scheme
+  // made copy 2 wider than copy 1, shifting the wrap seam.
   for (var t = 0; t < 2; t++) {
-    tickerItems.forEach(function(item, i) {
-      if (i > 0 || t > 0) tickerHtml += '<span class="plus">✦</span>';
-      tickerHtml += '<span>' + item + '</span>';
+    tickerItems.forEach(function(item) {
+      tickerHtml += '<span>' + item + '</span><span class="plus">✦</span>';
     });
   }
   document.getElementById('glTicker').innerHTML = tickerHtml;
