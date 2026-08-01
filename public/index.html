@@ -3466,6 +3466,7 @@ ul{list-style:none}
 
 <!-- Leaflet JS — deferred: executes before DOMContentLoaded, so map init still finds `L` -->
 <script defer src="/js/regent-marquee.js"></script>
+<script defer src="/js/regent-state.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <!-- Guesty Pay Tokenization JS (loads PCI-safe iframe from Guesty; do not bundle/self-host) -->
@@ -3962,12 +3963,15 @@ const fmtRating = r => Number.isInteger(r) ? r.toFixed(1) : String(r);
 const carouselState = {};
 
 function renderPropertyCard(p) {
-  carouselState[p.slug] = 0;
+  // Honor a pre-seeded slide index (session-state restore hydrates
+  // carouselState before render) instead of always resetting to 0.
+  const startIdx = Math.min(carouselState[p.slug] || 0, p.photos.length - 1);
+  carouselState[p.slug] = startIdx;
   const photoHtml = p.photos.map((ph, i) =>
-    `<img src="${imgUrl(p.hostingId, ph, 1200)}" alt="${p.name} photo ${i+1}" class="${i===0?'active':''}" loading="${i<2?'eager':'lazy'}">`
+    `<img src="${imgUrl(p.hostingId, ph, 1200)}" alt="${p.name} photo ${i+1}" class="${i===startIdx?'active':''}" loading="${Math.abs(i-startIdx)<2?'eager':'lazy'}">`
   ).join('');
   const dotsHtml = p.photos.slice(0, 7).map((_, i) =>
-    `<div class="carousel-dot${i===0?' active':''}" data-i="${i}"></div>`
+    `<div class="carousel-dot${i===startIdx?' active':''}" data-i="${i}"></div>`
   ).join('');
 
   /* Obsidian chips */
@@ -4012,7 +4016,7 @@ function renderPropertyCard(p) {
           <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
         </button>
       </div>
-      <div class="carousel-counter" data-slug="${p.slug}">1 / ${p.photos.length}</div>
+      <div class="carousel-counter" data-slug="${p.slug}">${startIdx + 1} / ${p.photos.length}</div>
       <div class="carousel-dots" data-slug="${p.slug}">${dotsHtml}</div>
     </div>
     <div class="prop-grade"></div>
