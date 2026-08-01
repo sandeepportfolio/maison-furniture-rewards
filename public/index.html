@@ -1452,17 +1452,35 @@ ul{list-style:none}
 .contact-info-badge{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--accent-light);text-transform:uppercase}
 .contact-info-title{font-family:var(--serif);font-size:clamp(36px,4vw,52px);font-weight:400;color:var(--text-inv);letter-spacing:-.02em;line-height:1.1}
 .contact-info-desc{font-family:var(--sans);font-size:16px;color:var(--text-inv-muted);line-height:1.7;max-width:440px}
-.contact-cards{display:flex;flex-direction:column;gap:16px}
-.contact-card{display:flex;align-items:flex-start;gap:16px;padding:20px;background:rgba(255,255,255,.03);border:1px solid var(--border-dark);border-radius:var(--radius-lg);transition:background .4s var(--ease),border-color .4s var(--ease),transform .3s var(--ease)}
-.contact-card:hover{background:rgba(255,255,255,.06);border-color:rgba(201,152,69,.3);transform:translateX(4px)}
-.contact-card-icon{width:44px;height:44px;border-radius:12px;background:rgba(201,152,69,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s var(--ease)}
-.contact-card:hover .contact-card-icon{background:rgba(201,152,69,.2)}
-.contact-card-icon svg{width:20px;height:20px;stroke:var(--accent-light);stroke-width:1.8;fill:none}
-.contact-card-text{display:flex;flex-direction:column;gap:4px}
-.contact-card-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text-inv-muted);text-transform:uppercase}
-.contact-card-value{font-family:var(--sans);font-size:15px;color:var(--text-inv);line-height:1.5}
-.contact-card-value a{color:var(--accent-light);transition:color .3s var(--ease)}
-.contact-card-value a:hover{color:var(--accent)}
+/* ── Contact ledger ─────────────────────────────────────────────────────
+   Editorial 2×2 grid ruled by hairlines instead of boxed cards: indexed
+   entries (№ 01–04), mono micro-labels, oversized serif values, and a gold
+   hairline that draws itself under the value on hover. */
+.contact-ledger{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(242,237,225,.1)}
+.contact-cell{position:relative;padding:22px 22px 24px 2px;border-bottom:1px solid rgba(242,237,225,.1);display:flex;flex-direction:column;gap:7px;text-decoration:none;color:inherit}
+.contact-cell:nth-child(odd){border-right:1px solid rgba(242,237,225,.1);padding-right:26px}
+.contact-cell:nth-child(even){padding-left:26px}
+.contact-cell-head{display:flex;align-items:baseline;gap:10px}
+.contact-cell-num{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--accent);opacity:.55;transition:opacity .4s var(--ease)}
+.contact-cell-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--text-inv-muted);text-transform:uppercase}
+.contact-cell-value{font-family:var(--serif);font-size:clamp(19px,1.8vw,24px);line-height:1.25;letter-spacing:-.01em;color:var(--text-inv);position:relative;display:inline-block;width:fit-content;max-width:100%;overflow-wrap:anywhere;transition:color .4s var(--ease)}
+.contact-cell-value.is-email{font-size:clamp(15px,1.4vw,18px)}
+/* Hairline that draws itself under the value */
+.contact-cell-value::after{content:'';position:absolute;left:0;right:0;bottom:-5px;height:1px;background:linear-gradient(90deg,var(--accent),rgba(201,152,69,0));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.contact-cell-sub{font-family:var(--sans);font-size:12px;color:var(--text-dim);letter-spacing:.01em}
+@media(hover:hover){
+  a.contact-cell:hover .contact-cell-value,.contact-cell:hover .contact-cell-value{color:var(--accent-hover)}
+  .contact-cell:hover .contact-cell-value::after{transform:scaleX(1)}
+  .contact-cell:hover .contact-cell-num{opacity:1}
+}
+/* Live pulse on response time */
+.contact-cell .live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6FCF97;box-shadow:0 0 0 3px rgba(111,207,151,.15);animation:pulse 2s ease-in-out infinite;margin-right:9px;vertical-align:3px}
+@media(max-width:560px){
+  .contact-ledger{grid-template-columns:1fr}
+  .contact-cell,.contact-cell:nth-child(odd),.contact-cell:nth-child(even){border-right:0;padding:18px 2px 19px}
+  .contact-cell-value{font-size:20px}
+  .contact-cell-value.is-email{font-size:15px}
+}
 .contact-trust{display:flex;gap:24px;padding-top:16px}
 .contact-trust-item{display:flex;align-items:center;gap:8px}
 .contact-trust-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center}
@@ -2711,45 +2729,26 @@ ul{list-style:none}
         <p class="contact-info-desc">Whether you have questions about our properties, need help planning a group trip, or want to discuss a corporate booking &mdash; we&rsquo;re here for you.</p>
       </div>
 
-      <div class="contact-cards">
-        <div class="contact-card reveal reveal-delay-1">
-          <div class="contact-card-icon">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-          </div>
-          <div class="contact-card-text">
-            <span class="contact-card-label">Call or Text</span>
-            <span class="contact-card-value"><a href="tel:+12813071280"><span data-site="phone">(281) 307-1280</span></a></span>
-          </div>
+      <div class="contact-ledger">
+        <a class="contact-cell reveal reveal-delay-1" href="tel:+12813071280">
+          <span class="contact-cell-head"><span class="contact-cell-num">&#8470; 01</span><span class="contact-cell-label">Call or Text</span></span>
+          <span class="contact-cell-value"><span data-site="phone">(281) 307-1280</span></span>
+          <span class="contact-cell-sub">Direct line &mdash; no phone trees</span>
+        </a>
+        <a class="contact-cell reveal reveal-delay-2" href="mailto:hello@bookwithregent.com">
+          <span class="contact-cell-head"><span class="contact-cell-num">&#8470; 02</span><span class="contact-cell-label">Email</span></span>
+          <span class="contact-cell-value is-email"><span data-site="email">hello@bookwithregent.com</span></span>
+          <span class="contact-cell-sub">Group &amp; corporate bookings welcome</span>
+        </a>
+        <div class="contact-cell reveal reveal-delay-3">
+          <span class="contact-cell-head"><span class="contact-cell-num">&#8470; 03</span><span class="contact-cell-label">Location</span></span>
+          <span class="contact-cell-value">Dallas&ndash;Fort Worth</span>
+          <span class="contact-cell-sub">Plano &middot; Irving &middot; Richardson &middot; Dallas</span>
         </div>
-
-        <div class="contact-card reveal reveal-delay-2">
-          <div class="contact-card-icon">
-            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div class="contact-card-text">
-            <span class="contact-card-label">Email</span>
-            <span class="contact-card-value"><a href="mailto:hello@bookwithregent.com"><span data-site="email">hello@bookwithregent.com</span></a></span>
-          </div>
-        </div>
-
-        <div class="contact-card reveal reveal-delay-3">
-          <div class="contact-card-icon">
-            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <div class="contact-card-text">
-            <span class="contact-card-label">Location</span>
-            <span class="contact-card-value">Dallas-Fort Worth, Texas</span>
-          </div>
-        </div>
-
-        <div class="contact-card reveal reveal-delay-4">
-          <div class="contact-card-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="contact-card-text">
-            <span class="contact-card-label">Response Time</span>
-            <span class="contact-card-value">Within 1 hour &mdash; typically faster</span>
-          </div>
+        <div class="contact-cell reveal reveal-delay-4">
+          <span class="contact-cell-head"><span class="contact-cell-num">&#8470; 04</span><span class="contact-cell-label">Response Time</span></span>
+          <span class="contact-cell-value"><span class="live-dot"></span>Under 1 hour</span>
+          <span class="contact-cell-sub">Typically much faster</span>
         </div>
       </div>
 
@@ -5921,9 +5920,44 @@ function updateUserLocMarker() {
   if (btn) btn.style.display = '';
 }
 
+/* How many px of the map's bottom edge the bottom sheet will cover once its
+   open/close transition settles. Measured from content (scrollHeight), not the
+   animating rect, so callers don't have to wait out the max-height transition. */
+function mapObscuredBottomPx() {
+  if (!exploreMapInstance) return 0;
+  const sheet = document.getElementById('mapBottomSheet');
+  if (!sheet) return 0;
+  const mapH = exploreMapInstance.getContainer().getBoundingClientRect().height;
+  if (!mapH) return 0;
+  // The sheet caps at 55dvh when a card is open (see .map-bottom-sheet CSS).
+  const intended = Math.min(sheet.scrollHeight, window.innerHeight * 0.55);
+  return Math.max(0, Math.min(intended, mapH * 0.7));
+}
+
+/* Fly so the target lands centered in the VISIBLE map area — the part not
+   covered by the bottom sheet. Centering on the raw container puts the pin at
+   the bottom edge (or under the sheet) on mobile, where the sheet can eat
+   half the screen. Shifting the map center DOWN by half the obscured height
+   raises the pin into the middle of what the guest can actually see. */
+function flyToVisibleCenter(latlng, zoom, opts) {
+  const map = exploreMapInstance;
+  if (!map) return;
+  // setView/flyTo are silent no-ops mid-zoom-animation (same trap documented
+  // in fitMapToProperties) — wait for the animation to land, then fly.
+  if (map._animatingZoom) {
+    map.once('zoomend', () => flyToVisibleCenter(latlng, zoom, opts));
+    return;
+  }
+  const z = zoom != null ? zoom : map.getZoom();
+  const obscured = mapObscuredBottomPx();
+  const p = map.project(L.latLng(latlng), z);
+  p.y += obscured / 2; // px y grows downward; pin renders at (H - obscured)/2
+  map.flyTo(map.unproject(p, z), z, opts || {});
+}
+
 function flyToMyLocation() {
   if (userLat == null || !exploreMapInstance) return;
-  exploreMapInstance.flyTo([userLat, userLng], 13, { duration: 0.8 });
+  flyToVisibleCenter([userLat, userLng], 13, { duration: 0.8 });
 }
 
 function updateAllDistances() {
@@ -5986,10 +6020,10 @@ function filterExplore(cat) {
 function openExploreAttraction(lat, lng, name) {
   // Expand the map first
   expandMap();
-  // After map expands, fly to the attraction
+  // After map expands, fly to the attraction (centered in the visible area)
   setTimeout(() => {
     if (exploreMapInstance) {
-      exploreMapInstance.flyTo([lat, lng], 16, { duration: 1.2 });
+      flyToVisibleCenter([lat, lng], 16, { duration: 1.2 });
     }
   }, 350);
 }
@@ -6380,8 +6414,8 @@ function selectPropertyOnMap(idx) {
     }
   });
 
-  // Smooth fly to marker at street level
-  exploreMapInstance.flyTo([prop.lat, prop.lng], 15, { duration: 1.5, easeLinearity: 0.25 });
+  // Fly happens AFTER the bottom sheet expands (end of this function) so the
+  // pin can be centered in the map area the sheet leaves visible.
 
   // Populate card
   const card = document.getElementById('mapPropertyCard');
@@ -6459,6 +6493,13 @@ function selectPropertyOnMap(idx) {
   if (sheet) {
     sheet.classList.remove('strip-only');
   }
+
+  // Now that the sheet's final layout is knowable (card section is
+  // display:block after the class flip), center the pin in the VISIBLE
+  // portion of the map — not the geometric center of the whole element.
+  requestAnimationFrame(() => {
+    flyToVisibleCenter([prop.lat, prop.lng], 15, { duration: 1.5, easeLinearity: 0.25 });
+  });
 
   updateMapPropStrip(idx);
   updateExploreMap();
