@@ -395,9 +395,9 @@ ul{list-style:none}
    A bottom-sheet-style grab handle centered at the panel's top. Collapsing
    hides everything but the name so the photo takes the stage; the chevron
    flips to point up. State is per card (see collapsedCards in JS). */
-.prop-info-toggle{display:flex;align-items:center;justify-content:center;width:46px;height:17px;margin:-9px auto 2px;border-radius:9px;color:var(--obs-muted);background:transparent;transition:color .3s var(--ease),background .3s var(--ease)}
-.prop-info-toggle:hover{color:var(--accent-hover);background:rgba(255,255,255,.06)}
-.prop-info-toggle svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;display:block;transition:transform .45s var(--ease)}
+.prop-info-toggle{display:flex;align-items:center;justify-content:center;width:56px;height:22px;margin:-8px auto 4px;border-radius:11px;color:var(--accent-hover);background:rgba(0,0,0,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(201,152,69,.28);box-shadow:0 0 10px rgba(201,152,69,.12),0 2px 8px rgba(0,0,0,.3);transition:color .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.prop-info-toggle:hover{color:#FBF4E4;background:rgba(201,152,69,.16);border-color:rgba(201,152,69,.5);box-shadow:0 0 14px rgba(201,152,69,.22),0 2px 8px rgba(0,0,0,.3)}
+.prop-info-toggle svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;display:block;transition:transform .45s var(--ease)}
 .info-min .prop-info-toggle svg{transform:rotate(180deg)}
 /* Collapsible pieces: animate to zero height, fade, and drop their spacing.
    max-height must comfortably exceed the tallest real content. */
