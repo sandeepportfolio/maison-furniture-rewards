@@ -336,14 +336,14 @@ ul{list-style:none}
 .obs-chip.obs-new b{color:var(--accent-hover);font-weight:600}
 
 /* Carousel navigation — frosted circles */
-.prop-carousel-nav{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;opacity:0;transition:opacity .4s var(--ease);z-index:5}
+.prop-carousel-nav{position:absolute;top:0;left:0;right:0;bottom:42%;display:flex;align-items:center;justify-content:space-between;padding:0 16px;opacity:0;transition:opacity .4s var(--ease);z-index:5}
 .prop-card:hover .prop-carousel-nav{opacity:1}
 .carousel-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease);box-shadow:0 4px 16px rgba(0,0,0,.2)}
 .carousel-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.1)}
 .carousel-btn svg{width:16px;height:16px;stroke:#fff;stroke-width:2.5;fill:none}
 @media(hover:none),(max-width:768px){
-  .prop-carousel-nav{opacity:1}
-  .carousel-btn{width:36px;height:36px}
+  .prop-carousel-nav{opacity:1;bottom:44%}
+  .carousel-btn{width:44px;height:44px}
 }
 
 /* Counter badge */
@@ -419,7 +419,10 @@ ul{list-style:none}
 /* ── Obsidian section background ── */
 #properties{background:radial-gradient(120% 46% at 50% 0%,#161B14 0%,#0D110E 66%);max-width:none;padding-left:0;padding-right:0}
 
-/* ── Obsidian Desktop: 3 columns at ≥1100px ── */
+/* ── Obsidian Desktop: 2 cols 1025-1099, 3 cols ≥1100 ── */
+@media(min-width:1025px) and (max-width:1099px){
+  .properties-grid{grid-template-columns:1fr 1fr;gap:24px;padding:0 32px}
+}
 @media(min-width:1100px){
   .properties-grid{grid-template-columns:1fr 1fr 1fr;gap:26px;padding:0 32px}
   .prop-card{aspect-ratio:4/5.35}
@@ -862,7 +865,7 @@ ul{list-style:none}
 .explore-map-wrap .map-click-hint svg{width:13px;height:13px;stroke:var(--accent-light);fill:none;stroke-width:2}
 @media(hover:hover){.explore-map-wrap:hover .map-click-hint{color:var(--accent-light);border-color:rgba(201,152,69,.3)}}
 /* Map wrapper — expanded state */
-.explore-map-wrap.map-expanded{position:fixed;top:0!important;right:0!important;bottom:0!important;left:0!important;width:auto!important;height:auto!important;z-index:1000;border-radius:0;border:none;cursor:default;overflow:hidden}
+.explore-map-wrap.map-expanded{position:fixed;top:0!important;right:0!important;bottom:0!important;left:0!important;width:auto!important;height:auto!important;z-index:1001;border-radius:0;border:none;cursor:default;overflow:hidden}
 .explore-map-wrap.map-expanded .map-click-hint{opacity:0}
 /* Map element */
 #exploreMap{flex:1;min-height:0;width:100%;z-index:1;background:#0A0D0A}
@@ -1112,14 +1115,16 @@ ul{list-style:none}
   .properties-grid{grid-template-columns:1fr;gap:20px;padding:0 16px}
   .prop-card{aspect-ratio:4/5.1}
   .prop-card.villa-card{aspect-ratio:4/5.1}
-  .prop-filters{padding:4px;gap:2px;border-radius:var(--radius);width:100%}
-  .prop-filter-btn{padding:11px 14px;font-size:12px;letter-spacing:0;flex:1;text-align:center}
+  .prop-filters{padding:4px;gap:2px;border-radius:var(--radius);width:calc(100% - 32px);margin-left:16px;margin-right:16px}
+  .prop-filter-btn{padding:11px 8px;font-size:11.5px;letter-spacing:0;flex:1;text-align:center}
   .features-grid{grid-template-columns:1fr;padding:0 16px}
   .section{padding:60px 16px}
   .section-dark .section-inner{padding:60px 0}
   .map-container{height:300px;border-radius:var(--radius-lg)}
   .lightbox-main{padding:60px 16px}
-  .lightbox-nav{width:36px;height:36px}
+  .lightbox-nav{width:44px;height:44px}
+  .carousel-counter{display:none}
+  .prop-actions-row a,.prop-actions-row button{padding:8px 14px;font-size:10px;min-height:36px}
   .lightbox-prev{left:8px}
   .lightbox-next{right:8px}
   .search-row{flex-wrap:wrap;gap:12px}
