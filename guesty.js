@@ -16,6 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // ── Booking Engine API integration (optional) ─────────────────────────
 let beapi;
@@ -135,9 +136,9 @@ function shouldSkipLiveFetch() {
 
 /** A token we could put on the wire without calling OAuth first. */
 function haveUsableToken() {
-  if (cachedToken && !burnedTokens.has(cachedToken)) return true;
+  if (cachedToken && !isBurned(cachedToken)) return true;
   const bootstrap = process.env.GUESTY_ACCESS_TOKEN;
-  return Boolean(bootstrap && !burnedTokens.has(bootstrap));
+  return Boolean(bootstrap && !isBurned(bootstrap));
 }
 
 /** Remaining cooldown in whole seconds (0 when not rate-limited). */
@@ -156,15 +157,32 @@ function rateLimitRetryAfter() {
 function enterRateLimit(retryAfterHeader, scope = 'api') {
   const advised = parseRetryAfter(retryAfterHeader);
   rateLimitScope = scope;
-  const backoff = Math.min(Math.max(advised, rateLimitBackoffMs), MAX_RATE_LIMIT_BACKOFF);
-  const jitter = Math.round(backoff * 0.1 * Math.random());
+  // When Guesty supplies Retry-After, honor it in FULL. The OAuth quota is
+  // 5 tokens/24h, so a real auth reset can be hours away — capping the wait at
+  // 30 min guaranteed the retry landed inside the penalty window and renewed
+  // it, which is how the account stayed pinned at 429. Our own guessed backoff
+  // (no header) still uses the capped exponential schedule.
+  const backoff = advised > 0
+    ? advised
+    : Math.min(rateLimitBackoffMs, MAX_RATE_LIMIT_BACKOFF);
+  const jitter = Math.round(Math.min(backoff * 0.1, 60_000) * Math.random());
   rateLimitedUntil = Date.now() + backoff + jitter;
   console.warn(`Guesty ${scope} rate-limited — backing off for ${Math.round((backoff + jitter) / 1000)}s (until ${new Date(rateLimitedUntil).toISOString()})${advised ? ' [Retry-After honored]' : ''}`);
   rateLimitBackoffMs = Math.min(rateLimitBackoffMs * 2, MAX_RATE_LIMIT_BACKOFF);
   persistToken(); // survive a cold start so we don't resume hammering
 }
 
-function clearRateLimit() {
+/**
+ * Close the circuit breaker after a success.
+ *
+ * `scope` is what the success is evidence for. A data-API 2xx proves nothing
+ * about the OAuth endpoint's 5-per-24h quota — clearing an *auth* cooldown on
+ * a data success meant the next token refresh fired immediately, got a fresh
+ * 429, and extended the penalty. Pass no scope only when the success genuinely
+ * clears everything (an OAuth 200, or an operator-injected token).
+ */
+function clearRateLimit(scope) {
+  if (scope && rateLimitScope && rateLimitScope !== scope) return;
   const wasLimited = rateLimitedUntil !== 0;
   rateLimitedUntil = 0;
   rateLimitScope = null;
@@ -172,14 +190,16 @@ function clearRateLimit() {
   if (wasLimited) persistToken();
 }
 
-/** Retry-After is either delta-seconds or an HTTP date. Returns ms. */
+/** Retry-After is either delta-seconds or an HTTP date. Returns ms.
+ *  Honored up to 24h — Guesty's auth quota window is a day, not an hour. */
+const MAX_RETRY_AFTER_MS = 24 * 60 * 60_000;
 function parseRetryAfter(value) {
   if (!value) return 0;
   const secs = Number(value);
-  if (Number.isFinite(secs) && secs > 0) return Math.min(secs, 3600) * 1000;
+  if (Number.isFinite(secs) && secs > 0) return Math.min(secs * 1000, MAX_RETRY_AFTER_MS);
   const when = Date.parse(value);
   if (Number.isNaN(when)) return 0;
-  return Math.max(0, Math.min(when - Date.now(), 3600_000));
+  return Math.max(0, Math.min(when - Date.now(), MAX_RETRY_AFTER_MS));
 }
 
 function parseTokenExpiry(value) {
@@ -207,7 +227,22 @@ function useToken(token, expiry) {
 // Tokens Guesty itself has rejected with a 401/403. This is the ONLY way a
 // token is retired: a local clock comparison is a guess, a 401 is an answer.
 // Nothing else may add to this set.
+//
+// Burns are persisted as SHA-256 hashes (never the token itself) so a restart
+// doesn't re-adopt a dead GUESTY_ACCESS_TOKEN env bootstrap and pay a 401 +
+// an OAuth attempt on every cold start — the exact trigger of the production
+// rate-limit spiral on hosts with frequent cold starts.
 const burnedTokens = new Set();
+const burnedHashes = new Set();
+const MAX_PERSISTED_BURNS = 20;
+
+function tokenHash(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function isBurned(token) {
+  return Boolean(token) && (burnedTokens.has(token) || burnedHashes.has(tokenHash(token)));
+}
 
 // How long we keep using a token whose stated expiry we don't trust (absent,
 // unparseable, or already passed) before re-checking whether something better
@@ -216,7 +251,10 @@ const burnedTokens = new Set();
 const ASSUMED_BOOTSTRAP_TTL = 60 * 60_000; // 1 hour
 
 function burnToken(token) {
-  if (token) burnedTokens.add(token);
+  if (!token) return;
+  burnedTokens.add(token);
+  burnedHashes.add(tokenHash(token));
+  persistToken(); // record the burn on disk so restarts don't retry a dead token
 }
 
 function loadBootstrapToken() {
@@ -224,7 +262,7 @@ function loadBootstrapToken() {
   // especially useful after a Render redeploy because Guesty's OAuth endpoint is
   // aggressively rate-limited; the access token itself still stays server-side.
   const token = process.env.GUESTY_ACCESS_TOKEN;
-  if (!token || burnedTokens.has(token)) return false;
+  if (!token || isBurned(token)) return false;
 
   // Accept every spelling that has been used for this variable across .env,
   // render.yaml and the Render dashboard. GUESTY_ACCESS_TOKEN_EXPIRY is the
@@ -259,6 +297,13 @@ function loadPersistedToken() {
   try {
     const raw = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf8'));
     persisted = raw;
+    // Restore burned-token hashes BEFORE evaluating any candidate token, so a
+    // dead env bootstrap isn't re-adopted after a restart.
+    if (Array.isArray(raw?.burnedHashes)) {
+      raw.burnedHashes.slice(-MAX_PERSISTED_BURNS).forEach(h => {
+        if (typeof h === 'string' && /^[0-9a-f]{64}$/.test(h)) burnedHashes.add(h);
+      });
+    }
     // Restore any in-flight rate-limit cooldown first, so a cold start during a
     // 429 window doesn't immediately fire another request at Guesty.
     if (raw?.rateLimitedUntil && raw.rateLimitedUntil > Date.now()) {
@@ -283,7 +328,7 @@ function loadPersistedToken() {
 
   // Still nothing: try the persisted token even though its stated expiry has
   // passed, for the same reason as the bootstrap token above.
-  if (persisted?.token && !burnedTokens.has(persisted.token)) {
+  if (persisted?.token && !isBurned(persisted.token)) {
     console.warn('Cached Guesty token is past its stated expiry — using it anyway pending a 401');
     useToken(persisted.token, Date.now() + ASSUMED_BOOTSTRAP_TTL);
   }
@@ -300,6 +345,8 @@ if (!cachedToken) {
 } else {
   console.log(`Startup: Guesty token loaded, valid until ${new Date(tokenExpiry).toISOString()}`);
 }
+// Schedule the once-a-day refresh off the request path (no-op without creds).
+setTimeout(() => scheduleProactiveRefresh(), 0);
 
 function persistToken() {
   try {
@@ -314,6 +361,9 @@ function persistToken() {
         rateLimitedUntil,
         rateLimitBackoffMs,
         rateLimitScope,
+        // Hashes (never tokens) of tokens Guesty has 401'd, so restarts don't
+        // re-adopt a dead bootstrap and burn an OAuth attempt finding out.
+        burnedHashes: [...burnedHashes].slice(-MAX_PERSISTED_BURNS),
       }),
       { mode: 0o600 }
     );
@@ -346,6 +396,7 @@ async function requestTokenWithBackoff(id, secret) {
         client_id: id,
         client_secret: secret,
       }),
+      signal: AbortSignal.timeout(20_000), // a hung OAuth call must not wedge callers
     });
 
     if (res.ok) {
@@ -368,10 +419,58 @@ async function requestTokenWithBackoff(id, secret) {
   throw e;
 }
 
+// ── Proactive daily refresh ───────────────────────────────────────────
+// Guesty's guidance: one token per day, refreshed 30-60 min before expiry —
+// not on the request path at the moment a guest is waiting. The timer is
+// unref'd so it never keeps the process alive, and it respects the breaker.
+const REFRESH_MARGIN_MS = 30 * 60_000;
+let refreshTimer = null;
+
+function scheduleProactiveRefresh() {
+  if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
+  if (!cachedToken || !tokenExpiry) return;
+  if (!(process.env.GUESTY_CLIENT_ID && process.env.GUESTY_CLIENT_SECRET)) return;
+  // Aim 45 min before expiry, minus 0-10 min of jitter so overlapping
+  // instances don't refresh in lockstep.
+  const jitter = Math.round(Math.random() * 10 * 60_000);
+  const delay = Math.max(tokenExpiry - REFRESH_MARGIN_MS - 15 * 60_000 - jitter - Date.now(), 60_000);
+  refreshTimer = setTimeout(() => {
+    refreshTimer = null;
+    proactiveRefresh().catch(() => {});
+  }, delay);
+  if (refreshTimer.unref) refreshTimer.unref();
+}
+
+async function proactiveRefresh() {
+  if (isRateLimited()) return; // request path retries later; never fight the breaker
+  const id = process.env.GUESTY_CLIENT_ID;
+  const secret = process.env.GUESTY_CLIENT_SECRET;
+  if (!id || !secret) return;
+  if (inflight) return; // a request-path refresh is already running
+  try {
+    const json = await requestTokenWithBackoff(id, secret);
+    cachedToken = json.access_token;
+    tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
+    persistToken();
+    scheduleProactiveRefresh();
+    console.log(`Proactive Guesty token refresh OK — valid until ${new Date(tokenExpiry).toISOString()}`);
+  } catch (err) {
+    // Leave the old token in place — getToken() falls back to it and only a
+    // 401 from Guesty retires it.
+    console.warn('Proactive Guesty token refresh failed:', err.status || '', err.message);
+  }
+}
+
 async function getToken() {
-  // Reuse the cached token until 60s before it expires. This is checked BEFORE
-  // the credential check so a deploy that only has GUESTY_ACCESS_TOKEN (no
-  // client id/secret) still works.
+  // Reuse the cached token until shortly before it expires (docs recommend a
+  // 30-60 min refresh margin; the proactive timer usually beats this path).
+  // Checked BEFORE the credential check so a deploy that only has
+  // GUESTY_ACCESS_TOKEN (no client id/secret) still works.
+  if (cachedToken && Date.now() < tokenExpiry - REFRESH_MARGIN_MS) {
+    return cachedToken;
+  }
+  // Inside the margin but not expired: keep serving the current token, and
+  // let the proactive timer (or the next expiry) do the refresh.
   if (cachedToken && Date.now() < tokenExpiry - 60_000) {
     return cachedToken;
   }
@@ -379,7 +478,7 @@ async function getToken() {
   // The in-memory token just aged out by our own clock. That is not grounds for
   // throwing it away — hold it as a last-resort candidate. Only a 401/403 from
   // Guesty burns a token.
-  const stale = cachedToken && !burnedTokens.has(cachedToken) ? cachedToken : null;
+  const stale = cachedToken && !isBurned(cachedToken) ? cachedToken : null;
   cachedToken = null;
   tokenExpiry = 0;
 
@@ -403,6 +502,7 @@ async function getToken() {
     cachedToken = json.access_token;
     tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
     persistToken();
+    scheduleProactiveRefresh();
     return cachedToken;
   })();
 
@@ -434,8 +534,9 @@ function tokenStatus() {
     bootstrapEnvSet: Boolean(bootstrap),
     bootstrapEnvLength: bootstrap ? bootstrap.length : 0,
     bootstrapEnvExpiryRaw: process.env.GUESTY_ACCESS_TOKEN_EXPIRY || null,
-    bootstrapBurned: Boolean(bootstrap && burnedTokens.has(bootstrap)),
+    bootstrapBurned: Boolean(bootstrap && isBurned(bootstrap)),
     burnedCount: burnedTokens.size,
+    burnedHashCount: burnedHashes.size, // includes burns restored from disk
     hasOAuthCredentials: Boolean(process.env.GUESTY_CLIENT_ID && process.env.GUESTY_CLIENT_SECRET),
     rateLimited: isRateLimited(),
     rateLimitScope,
@@ -475,6 +576,7 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
       ...(body ? { 'Content-Type': 'application/json' } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(25_000), // never let a stuck request hang a guest page
   });
 
   const text = await res.text();
@@ -485,11 +587,13 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
   // Clear cache and retry once on auth failure without logging token contents.
   if ((res.status === 401 || res.status === 403) && retryOnAuth) {
     // Burn it so the bootstrap/persisted loaders don't hand the same dead token
-    // straight back on the retry.
+    // straight back on the retry. Do NOT delete the token file — it also holds
+    // the rate-limit cooldown and the burn ledger; wiping it meant a cold start
+    // right after a 401 forgot the cooldown and resumed hammering Guesty.
     burnToken(token);
     cachedToken = null;
     tokenExpiry = 0;
-    try { fs.rmSync(TOKEN_FILE, { force: true }); } catch (_) {}
+    persistToken();
     return guestyFetch(pathname, { method, body, retryOnAuth: false });
   }
 
@@ -513,7 +617,7 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
     throw err;
   }
 
-  clearRateLimit(); // successful API call — reset backoff
+  clearRateLimit('api'); // data success clears only a data-API cooldown, never an auth one
   return json;
 }
 
@@ -652,9 +756,37 @@ async function getListings() {
 }
 
 /** Availability calendar for one listing between two dates (YYYY-MM-DD).
- *  Cached for 30 min per listing+date-range. De-duplicated so concurrent
- *  requests for the same calendar share a single API call. */
+ *
+ *  Requests inside the next ~6 months are served from ONE canonical
+ *  per-listing window (today → today+186d) and sliced locally. Cache keys
+ *  used to be the exact `from:to` pair, so every user-chosen date range —
+ *  and the ±3-day widening /api/availability/check applies — was a cache
+ *  miss fanning out 7 fresh API calls. With a canonical window the steady
+ *  state is 7 calls per TTL regardless of what dates guests search. */
+const CANONICAL_WINDOW_DAYS = 186;
+
+function canonicalCalendarWindow() {
+  const from = new Date().toISOString().slice(0, 10);
+  const end = new Date(Date.now() + CANONICAL_WINDOW_DAYS * 86_400_000);
+  return { from, to: end.toISOString().slice(0, 10) };
+}
+
 async function getCalendar(listingId, from, to) {
+  const win = canonicalCalendarWindow();
+  // Clamp the start to today — dates in the past are never bookable, and the
+  // ±3-day widening in the availability route can produce a `from` before
+  // today, which must not force a bypass of the canonical window.
+  const effFrom = from < win.from ? win.from : from;
+  if (effFrom <= to && to <= win.to) {
+    const days = await fetchCalendarRange(listingId, win.from, win.to);
+    return days.filter(d => d.date >= effFrom && d.date <= to);
+  }
+  // Out-of-window request (far-future admin queries) — fetch the exact range.
+  return fetchCalendarRange(listingId, from, to);
+}
+
+/** The raw ranged fetch behind getCalendar: cached, deduped, stale-tolerant. */
+async function fetchCalendarRange(listingId, from, to) {
   // Check cache first
   const cached = getCachedCalendar(listingId, from, to);
   if (cached) return cached;
@@ -724,12 +856,31 @@ async function getCalendar(listingId, from, to) {
  * @param {number} opts.guests
  * @param {string} [opts.coupons] - Comma-separated coupon codes (BEAPI only)
  */
+// BEAPI negative cache state — see the comment at the call site in createQuote.
+let beapiFailStreak = 0;
+let beapiSkipUntil = 0;
+const BEAPI_FAIL_THRESHOLD = 3;
+const BEAPI_SKIP_MS = 6 * 60 * 60_000; // 6 hours
+
+function noteBeapiFailure() {
+  beapiFailStreak++;
+  if (beapiFailStreak >= BEAPI_FAIL_THRESHOLD) {
+    beapiSkipUntil = Date.now() + BEAPI_SKIP_MS;
+    beapiFailStreak = 0;
+    console.warn(`BEAPI failed ${BEAPI_FAIL_THRESHOLD} quotes in a row — skipping BEAPI until ${new Date(beapiSkipUntil).toISOString()} (configure rate plans to re-enable)`);
+  }
+}
+
 async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
   const nights = countNights(checkIn, checkOut);
   if (nights < 1) throw Object.assign(new Error('Invalid date range'), { status: 400 });
 
   // ── Try BEAPI first (gives accurate cleaning fees, taxes, promotions) ──
-  if (beapi && beapi.isConfigured()) {
+  // Negative cache: while Booking Engine rate plans aren't configured, every
+  // BEAPI attempt fails 400/409 — a doomed request burned from the shared
+  // account budget on EVERY quote. After a few consecutive failures, skip
+  // BEAPI for a while instead of re-proving it per guest.
+  if (beapi && beapi.isConfigured() && Date.now() >= beapiSkipUntil) {
     try {
       const beapiQuote = await beapi.createQuote({
         listingId,
@@ -745,12 +896,15 @@ async function createQuote({ listingId, checkIn, checkOut, guests, coupons }) {
       // returning a zero-total quote that the route handler rejects as "No
       // price available".
       if (summary.total > 0) {
+        beapiFailStreak = 0;
         return { quote: beapiQuote, summary };
       }
+      noteBeapiFailure();
       console.warn(
         'BEAPI returned a quote with total=0 (no rate plans?), falling back to local calculation'
       );
     } catch (beapiErr) {
+      noteBeapiFailure();
       // Fall back to local calculation for every BEAPI failure, including 4xx.
       // Booking Engine rate plans are not configured yet, so the BEAPI returns
       // errors like "No price available for those dates" (409) and "All rate
@@ -1128,10 +1282,33 @@ async function getReservations(opts = {}) {
   };
 }
 
-// ── Lowest available price per listing (cached 2 hours) ──────────────────
+// ── Lowest available price per listing ───────────────────────────────────
 let lowestPricesCache = null;
 let lowestPricesCacheAt = 0;
 const LOWEST_PRICES_TTL = 10 * 60_000; // 10 minutes (was 120 min — reduced for faster sync)
+
+// Persist real prices to disk so a cold start (every Render deploy) serves
+// last-known LIVE prices instantly instead of a $-placeholder or a static
+// base price while the 7-listing calendar scan runs.
+const PRICES_FILE = path.join(__dirname, 'db', 'guesty-prices.json');
+
+function persistLowestPrices() {
+  try {
+    fs.mkdirSync(path.dirname(PRICES_FILE), { recursive: true });
+    fs.writeFileSync(PRICES_FILE, JSON.stringify({ at: lowestPricesCacheAt, prices: lowestPricesCache }), { mode: 0o600 });
+  } catch (_) { /* best-effort */ }
+}
+
+(function loadPersistedLowestPrices() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(PRICES_FILE, 'utf8'));
+    if (raw && raw.prices && typeof raw.at === 'number') {
+      lowestPricesCache = raw.prices;
+      lowestPricesCacheAt = raw.at;
+      console.log(`Startup: restored lowest-prices cache from disk (${Math.round((Date.now() - raw.at) / 60_000)}m old)`);
+    }
+  } catch (_) { /* no cache file — fine */ }
+})();
 
 /**
  * Fetch the lowest available nightly rate for each listing by scanning
@@ -1143,6 +1320,15 @@ const LOWEST_PRICES_TTL = 10 * 60_000; // 10 minutes (was 120 min — reduced fo
  */
 async function getLowestPrices() {
   if (lowestPricesCache && Date.now() - lowestPricesCacheAt < LOWEST_PRICES_TTL) {
+    return lowestPricesCache;
+  }
+
+  // Stale-while-revalidate: once ANY real prices exist, answer instantly with
+  // them and refresh in the background. Guests never wait on the serialized
+  // 7-calendar scan; only the very first request after a cache-less cold start
+  // does (and the disk-restored cache makes that rare).
+  if (lowestPricesCache && !shouldSkipLiveFetch()) {
+    refreshLowestPricesInBackground();
     return lowestPricesCache;
   }
 
@@ -1164,7 +1350,11 @@ async function getLowestPrices() {
   }
 
   // Use deduplication so concurrent calls share the same fetch cycle
-  return deduplicatedFetch('lowest-prices', async () => {
+  return deduplicatedFetch('lowest-prices', fetchLowestPricesCycle);
+}
+
+async function fetchLowestPricesCycle() {
+  {
     const today = new Date();
     const from = today.toISOString().slice(0, 10);
     const future = new Date(today);
@@ -1178,10 +1368,12 @@ async function getLowestPrices() {
     // Serialize calendar fetches with 2s delays to avoid rate-limit bursts.
     // Each getCalendar call is itself cached (30 min) and de-duplicated, so
     // if the calendar was recently fetched for a listing, no API call is made.
+    const win = canonicalCalendarWindow();
     for (let i = 0; i < entries.length; i++) {
       const [slug, meta] = entries[i];
-      // Add a 2s delay between API calls (skip the first one)
-      if (i > 0 && !getCachedCalendar(meta.id, from, to)) {
+      // Add a 2s delay between API calls (skip the first one). getCalendar
+      // serves from the canonical per-listing window, so check THAT cache key.
+      if (i > 0 && !getCachedCalendar(meta.id, win.from, win.to)) {
         await sleep(2_000);
       }
       try {
@@ -1208,13 +1400,21 @@ async function getLowestPrices() {
     if (successCount > 0) {
       lowestPricesCache = results;
       lowestPricesCacheAt = Date.now();
+      persistLowestPrices();
     } else if (lowestPricesCache) {
       console.warn('All lowest-price fetches failed — keeping stale cache');
       return lowestPricesCache;
     }
 
     return results;
-  });
+  }
+}
+
+/** Kick a lowest-prices refresh without making the caller wait on it. */
+function refreshLowestPricesInBackground() {
+  if (inflightRequests.has('lowest-prices')) return; // already refreshing
+  deduplicatedFetch('lowest-prices', fetchLowestPricesCycle)
+    .catch(err => console.warn('Background lowest-prices refresh failed:', err.message));
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -1362,6 +1562,7 @@ function injectToken(accessToken, expiresIn = 86400) {
   tokenExpiry = Date.now() + expiresIn * 1000;
   clearRateLimit();
   persistToken();
+  scheduleProactiveRefresh();
   console.log(`Token injected externally — valid until ${new Date(tokenExpiry).toISOString()}, rate-limit state cleared`);
 }
 

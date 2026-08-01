@@ -61,9 +61,21 @@ function isRateLimited() {
   return Date.now() < rateLimitedUntil;
 }
 
-function enterRateLimit() {
-  rateLimitedUntil = Date.now() + rateLimitBackoffMs;
-  console.warn(`BEAPI rate-limited — backing off for ${Math.round(rateLimitBackoffMs / 1000)}s (until ${new Date(rateLimitedUntil).toISOString()})`);
+function enterRateLimit(retryAfterHeader) {
+  // Honor the server's Retry-After (seconds or HTTP-date) when present —
+  // guessing shorter than the advised window just earns another 429.
+  let advisedMs = 0;
+  if (retryAfterHeader) {
+    const secs = Number(retryAfterHeader);
+    if (Number.isFinite(secs) && secs > 0) advisedMs = Math.min(secs * 1000, 24 * 60 * 60_000);
+    else {
+      const when = Date.parse(retryAfterHeader);
+      if (!Number.isNaN(when)) advisedMs = Math.max(0, Math.min(when - Date.now(), 24 * 60 * 60_000));
+    }
+  }
+  const backoff = advisedMs > 0 ? advisedMs : rateLimitBackoffMs;
+  rateLimitedUntil = Date.now() + backoff;
+  console.warn(`BEAPI rate-limited — backing off for ${Math.round(backoff / 1000)}s (until ${new Date(rateLimitedUntil).toISOString()})${advisedMs ? ' [Retry-After honored]' : ''}`);
   rateLimitBackoffMs = Math.min(rateLimitBackoffMs * 2, MAX_RATE_LIMIT_BACKOFF);
 }
 
@@ -103,7 +115,7 @@ async function requestTokenWithBackoff(clientId, clientSecret) {
     }
     lastStatus = res.status;
     if (res.status === 429) {
-      enterRateLimit();
+      enterRateLimit(res.headers.get('retry-after'));
       break;
     }
     if (![500, 502, 503, 504].includes(res.status)) break;
@@ -179,7 +191,7 @@ async function beapiFetch(pathname, { method = 'GET', body, query, retryOnAuth =
   }
 
   if (res.status === 429) {
-    enterRateLimit();
+    enterRateLimit(res.headers.get('retry-after'));
     const err = new Error('BEAPI rate-limited');
     err.status = 429;
     err.body = json;

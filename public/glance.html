@@ -80,6 +80,10 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 .gl-price-block{padding:28px 20px 20px}
 .gl-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
 .gl-price-big{font-family:var(--serif);font-size:48px;font-weight:700;color:var(--text)}
+/* Shimmering skeleton shown while the live rate loads — replaces the old "—" */
+.gl-price-skel{display:inline-block;width:120px;height:40px;border-radius:8px;vertical-align:baseline;background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:glPriceShimmer 1.4s infinite}
+.gl-sticky-amount .gl-price-skel{width:64px;height:20px;border-radius:5px}
+@keyframes glPriceShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .gl-price-original{font-family:var(--sans);font-size:16px;color:var(--text-faint);text-decoration:line-through}
 .gl-price-period{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-left:auto}
 .gl-price-save{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase;margin-bottom:20px}
@@ -129,10 +133,12 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 /* ── Reviews Section ── */
 .gl-review-hero{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:6px;margin-bottom:16px}
 .gl-review-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5)}
-.gl-review-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.gl-review-score{font-family:var(--serif);font-size:64px;font-weight:700;color:var(--text)}
-.gl-review-stars{color:var(--accent);font-size:14px;letter-spacing:4px;margin:4px 0}
-.gl-review-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase}
+/* Radial scrim guarantees contrast no matter how bright the hero photo is —
+   brightness(0.5) alone still washed out on light interiors (e.g. Cozy Designer). */
+.gl-review-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse 68% 78% at 50% 52%,rgba(6,8,6,.62),rgba(6,8,6,.28) 62%,rgba(6,8,6,0) 100%)}
+.gl-review-score{font-family:var(--serif);font-size:64px;font-weight:700;color:var(--text);text-shadow:0 2px 18px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
+.gl-review-stars{color:var(--accent);font-size:14px;letter-spacing:4px;margin:4px 0;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.gl-review-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:rgba(242,237,225,.85);text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.6)}
 .gl-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,0.06)}
 .gl-score-item{text-align:center;padding:14px 8px}
 .gl-score-cat{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px}
@@ -252,7 +258,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 <!-- Price Block -->
 <div class="gl-price-block">
   <div class="gl-price-row">
-    <span class="gl-price-big" id="priceBig">—</span>
+    <span class="gl-price-big" id="priceBig"><span class="gl-price-skel"></span></span>
     <span class="gl-price-original" id="priceOriginal"></span>
     <span class="gl-price-period">FROM / NIGHT</span>
   </div>
@@ -364,7 +370,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 <div class="gl-sticky">
   <div class="gl-sticky-inner">
     <div class="gl-sticky-price">
-      <span class="gl-sticky-amount" id="stickyPrice">—</span>
+      <span class="gl-sticky-amount" id="stickyPrice"><span class="gl-price-skel"></span></span>
       <span class="gl-sticky-period">FROM / NIGHT</span>
     </div>
     <a class="gl-sticky-btn" id="stickyBookBtn" href="">Book now →</a>
@@ -876,26 +882,32 @@ function buildReviews() {
 }
 
 // ── Prices ──
+// Kick the fetch off IMMEDIATELY (script parse time), not when the init flow
+// reaches loadPrices() — the response is usually ready before first paint.
+var pricesPromise = fetch('/api/guesty/lowest-prices')
+  .then(function(r) { return r.ok ? r.json() : null; })
+  .catch(function() { return null; });
+
 function loadPrices() {
-  fetch('/api/guesty/lowest-prices')
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .catch(function() { return null; })
-    .then(function(data) {
-      var priceObj = null;
-      if (data && data.prices && data.prices[SLUG]) {
-        priceObj = data.prices[SLUG];
-      }
-      var price = priceObj ? (typeof priceObj === 'object' ? priceObj.lowestPrice : priceObj) : null;
-      if (price && !isNaN(price)) {
-        var disc = Math.round(price * 0.95);
-        document.getElementById('priceBig').textContent = '$' + disc;
-        document.getElementById('priceOriginal').textContent = '$' + price;
-        document.getElementById('stickyPrice').textContent = '$' + disc;
-      } else {
-        document.getElementById('priceSave').style.display = 'none';
-        document.getElementById('priceOriginal').style.display = 'none';
-      }
-    });
+  pricesPromise.then(function(data) {
+    var priceObj = null;
+    if (data && data.prices && data.prices[SLUG]) {
+      priceObj = data.prices[SLUG];
+    }
+    var price = priceObj ? (typeof priceObj === 'object' ? priceObj.lowestPrice : priceObj) : null;
+    if (price && !isNaN(price)) {
+      var disc = Math.round(price * 0.95);
+      document.getElementById('priceBig').textContent = '$' + disc;
+      document.getElementById('priceOriginal').textContent = '$' + price;
+      document.getElementById('stickyPrice').textContent = '$' + disc;
+    } else {
+      // No live rate — clear the skeletons so nothing shimmers forever.
+      document.getElementById('priceBig').textContent = '—';
+      document.getElementById('stickyPrice').textContent = '—';
+      document.getElementById('priceSave').style.display = 'none';
+      document.getElementById('priceOriginal').style.display = 'none';
+    }
+  });
 }
 
 // ── Gallery ──

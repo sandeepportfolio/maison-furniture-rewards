@@ -3391,7 +3391,7 @@ const PROPERTY_DATA = {
     ],
     description: 'Luxury Plano vacation rental in a prime location, perfect for families, groups, and weekend getaways. Sleeps up to 14 guests with 4 beds plus couch space. Enjoy a private hot tub, 85-inch TV, foosball, indoor basketball, mini fridge, piano, mini golf in the master, and 6 TVs total. An entertainment-filled home base near shopping, dining, events, and Plano/Dallas attractions.',
     fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Hot water','Shower gel','Vanity mirrors','Bathrobes','Slippers'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],'Heating & Cooling':['Indoor fireplace','Ceiling fans'],Entertainment:['TV (6 total)','Piano','Sound system','Theatre room with 7.1 surround','Foosball','Indoor basketball','Books','Theme room','Mini golf','Streaming services'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Hot water kettle','Coffee maker','Wine glasses','Toaster','Baking sheet','Rice maker','BBQ utensils','Dining table','Coffee','Kitchen island with bar seating'],'Work & Tech':['Dedicated workspace','Smart thermostat'],Outdoor:['Private patio','Outdoor furniture','Outdoor dining area','Outdoor kitchen','BBQ grill','Private hot tub'],'Parking & Facilities':['Free parking','Street parking','2-car garage','Smart lock entry'],Family:['Children\'s books & toys','Children\'s dinnerware','Board games','Children\'s playroom'],'Home Highlights':['LED accent lighting','Reading nook']},
-    amenityPhotos: {'Bathtub':48,'Vanity mirrors':53,'Bathrobes':49,'Slippers':27,'Clothing storage':49,'Indoor fireplace':8,'Piano':2,'Foosball':71,'Mini golf':25,'Streaming services':0,'Coffee maker':13,'Wine glasses':17,'BBQ utensils':63,'Kitchen island with bar seating':4,'Dedicated workspace':60,'Smart thermostat':61,'Outdoor furniture':64,'BBQ grill':62,'Private hot tub':65,'Reading nook':20},
+    amenityPhotos: {'Bathtub':48,'Vanity mirrors':53,'Bathrobes':49,'Slippers':27,'Clothing storage':52,'Indoor fireplace':8,'Piano':2,'Foosball':71,'Mini golf':25,'Streaming services':0,'Coffee maker':13,'Wine glasses':17,'BBQ utensils':63,'Kitchen island with bar seating':4,'Dedicated workspace':60,'Smart thermostat':61,'Outdoor furniture':64,'BBQ grill':62,'Private hot tub':65,'Reading nook':20},
     photoLabels: ['Living Room','Living Room Alternate View','Piano Room','Entryway','Kitchen Island','Theater Room','Staircase','Living Room with Fireplace','Indoor Fireplace','Kitchen Appliances','Den','Kitchen Counter','Beverage Station','Coffee Maker','Kitchen Prep Area','Dining Area','Bedroom Nightstand','Wine Glasses','Master Bedroom','Bed Linens','Reading Nook','Bedroom Dresser','Master Bedroom Alternate','Guest Bedroom','Guest Bedroom','Mini Golf','Seating Area','Slippers','Game Nook','Throw Blanket','Bedroom Vanity','Kids Bedroom','Queen Bedroom','Guest Bedroom','Bedroom with TV','Queen Bed','Neutral Bedroom','Queen Bed with Teal Pillows','Queen Bed with Blue Accents','Bedroom Wall Art','Queen Bed','Red Curtain Bedroom','Bedroom Detail','Bathroom Vanity','Bathroom Sink','Bathroom Counter','Shower Tile','Bath Products','Bathtub','Bathrobes','Towel Basket','Bathroom Vanity','Walk-in Closet','Vanity Mirrors','Bathroom Mirror','Towel Rack','Shower','Closet Interior','Pedestal Sink','Bathroom Vanity','Dedicated Workspace','Smart Thermostat','BBQ Grill','BBQ Utensils','Outdoor Furniture','Private Hot Tub','Patio at Night','Backyard Evening','LED Game Room','Green Wall Entrance','Living Room Sofa','Foosball Table','Game Table','Bunk Bed Room','Patio Night View'],
     photos: [
       'c4264787-996e-49d3-b314-ffd1ec44a651.jpeg',
@@ -3578,7 +3578,7 @@ const PROPERTY_DATA = {
     ],
     description: 'Steps from Toyota Music Factory, Water Street dining, and the Lake Carolyn trails. 10-foot ceilings, a fully stocked kitchen with a big prep island, deep soaking tub, and a living room you\'ll actually want to hang out in. DART rail is a 5-minute walk for easy access to DFW Airport and Downtown Dallas. Resort-style pool, 24/7 gym, covered parking. We handle all the supplies -- just show up.',
     fullAmenities: {Bathroom:['Bathtub','Deep soaking tub','Hair dryer','Cleaning products','Conditioner','Body soap','Bidet','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['65" Smart TV','Exercise equipment','Pool table','Theme room','Board games'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Coffee maker','Wine glasses','Toaster','Baking sheet','Dining table','Coffee'],Outdoor:['Patio or balcony','Outdoor furniture','Outdoor dining area','Shared BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','Gated community'],'Location':['Lake access','Private entrance','Steps to DART rail','Toyota Music Factory nearby']},
-    amenityPhotos: {'Coffee maker':4,'Board games':10,'Full kitchen':13,'Dishwasher':18,'Toaster':18,'Microwave':16,'Bathtub':21,'Washer':23,'Dryer':23,'Clothing storage':25,'Pool':27,'Gym':28,'65" Smart TV':1,'Refrigerator':15,'Iron':25},
+    amenityPhotos: {'Coffee maker':4,'Board games':10,'Full kitchen':13,'Dishwasher':18,'Toaster':17,'Microwave':16,'Bathtub':21,'Washer':23,'Dryer':23,'Clothing storage':25,'Pool':27,'Gym':28,'65" Smart TV':1,'Refrigerator':15,'Iron':24},
     photoLabels: ['Living Room','65" Smart TV','Living Room Alternate View','Sofa Seating','Coffee Maker','Dining Area','Living Room Detail','Accent Decor','Bedroom','Bed Linens','Board Games','Bedroom Detail','Bedroom Closet','Full Kitchen','Kitchen Counter','Refrigerator','Microwave','Kitchen Detail','Dishwasher','Bathroom','Bathroom Vanity','Bathtub','Shower','Washer & Dryer','Laundry Area','Clothing Storage','Patio','Pool','Gym'],
     photos: [
       'fd9864bd-5a7f-4a14-997d-ca799df2850f.png',
@@ -3634,7 +3634,7 @@ const PROPERTY_DATA = {
     ],
     description: 'Designer one-bedroom in the heart of Las Colinas -- full marble finishes, soft candlelight, and the DART rail just steps from your door. Cozy up under layered comforters, brew from a fully stocked coffee bar, fire up the 65" TV, or break out the board games, mini golf, and a mini hoop. Cook in a chef-grade kitchen. Walk to Toyota Music Factory, Lake Carolyn, and Alamo Drafthouse. DFW Airport is 10 minutes by train.',
     fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Dove body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials (eco-friendly)','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['65" Smart TV','Second TV in bedroom','Exercise equipment','Pool table','Theme room','Mini golf','Mini basketball hoop','Board games'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Electric stove','Oven','Keurig coffee machine','Wine glasses','Toaster','Baking sheet','Dining table','Coffee'],Outdoor:['Private patio or balcony','Outdoor furniture','Outdoor dining area','BBQ grill','Sun loungers'],'Parking & Facilities':['Free covered parking','Pool','Elevator','Gym','Gated community','EV charging stations'],Building:['Sky Lounge with skyline views','24/7 fitness center & yoga studio','Resort-style pool','On-site putting green','Clubhouse & game room'],'Location':['3-min walk to DART station','Lake Carolyn access','Alamo Drafthouse nearby','Toyota Music Factory']},
-    amenityPhotos: {'Full-length mirror':19,'Board games':9,'Full kitchen':10,'Keurig coffee machine':13,'Microwave':14,'Refrigerator':12,'65" Smart TV':5,'Clothing storage':21,'Iron':21,'Bathtub':24,'Washer':28,'Dryer':28,'Gym':29,'Pool':30,'Mini basketball hoop':31,'Dishwasher':14},
+    amenityPhotos: {'Full-length mirror':19,'Board games':9,'Full kitchen':10,'Keurig coffee machine':13,'Microwave':14,'Refrigerator':12,'65" Smart TV':5,'Clothing storage':21,'Iron':21,'Bathtub':24,'Washer':28,'Dryer':28,'Gym':29,'Pool':30,'Mini basketball hoop':31,'Dishwasher':10},
     photoLabels: ['Living Room','Living Room Alternate View','Marble Finishes','Sofa Seating','Dining Area','65" Smart TV','Living Room Detail','Candlelight Decor','Bedroom','Board Games','Full Kitchen','Kitchen Counter','Refrigerator','Keurig Coffee Machine','Microwave','Kitchen Detail','Dining Table','Bedroom Decor','Bed Linens','Full-length Mirror','Bathroom','Clothing Storage','Bathroom Vanity','Shower','Bathtub','Bathroom Detail','Patio','Outdoor Seating','Washer & Dryer','Gym','Pool','Mini Basketball Hoop','Building Amenity'],
     photos: [
       '80e3dcf4-ac70-4765-a5c8-f9c08d908cb4.png',
@@ -3694,7 +3694,7 @@ const PROPERTY_DATA = {
     ],
     description: 'Wake up to tranquil lake views in an ultra-high luxury yet irresistibly cozy 600 sq ft suite in Las Colinas. Designer interiors, refined finishes, and plush comfort. 65" Smart TV, dedicated workspace with 27" monitor, 500 Mbps fiber Wi-Fi. Steps to DART Orange Line, dining, gondola rides, trails, and more. Resort amenities: 24/7 gym, pool, billiards, game room, and conference spaces with lake views.',
     fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Walk-in closet'],Entertainment:['65" Smart TV','Exercise equipment','Pool table','Theme room','UFC punching bag','Board games','Wine cooler'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" mounted monitor','500 Mbps fiber WiFi'],Outdoor:['Private balcony','Outdoor kitchen','BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center & conference rooms','Smart lock entry'],'Location':['Waterfront','Lake access','Private entrance','Steps to DART Orange Line']},
-    amenityPhotos: {'Keurig coffee station':8,'Board games':6,'Full kitchen':7,'Wine cooler':11,'Refrigerator':10,'Microwave':10,'Walk-in closet':13,'Iron':13,'Hair dryer':15,'Dedicated workspace':17,'27" mounted monitor':20,'65" Smart TV':18,'Washer':21,'Exercise equipment':22,'Gym':23,'Pool':24,'Sun loungers':24,'Pool table':25,'UFC punching bag':27,'Private balcony':1},
+    amenityPhotos: {'Keurig coffee station':8,'Board games':6,'Full kitchen':7,'Wine cooler':11,'Refrigerator':10,'Microwave':9,'Walk-in closet':13,'Iron':13,'Hair dryer':15,'Dedicated workspace':17,'27" mounted monitor':20,'65" Smart TV':18,'Washer':21,'Exercise equipment':22,'Gym':23,'Pool':24,'Sun loungers':24,'Pool table':25,'UFC punching bag':27,'Private balcony':1},
     photoLabels: ['Living Room','Private Balcony','Lake View','Living Room Sofa','Living Room Detail','Dining Area','Board Games','Full Kitchen','Keurig Coffee Station','Kitchen Counter','Refrigerator','Wine Cooler','Bedroom','Walk-in Closet','Bed Linens','Hair Dryer','Bathroom','Dedicated Workspace','65" Smart TV','Bedroom Detail','27" Mounted Monitor','Washer','Exercise Equipment','Gym','Pool','Pool Table','Game Room','UFC Punching Bag'],
     photos: [
       'd4cb708a-3694-4e6f-bd63-6757450a95e0.png',
@@ -3749,7 +3749,7 @@ const PROPERTY_DATA = {
     ],
     description: 'Soaring high ceilings with light pouring in. Fully stocked coffee station, private oversized patio, and a 3-minute walk to DART Station to go anywhere without needing your car. 75" Smart TV, dedicated desk with 27" monitor. Resort pool, 24/7 gym, sky lounge, arcade room -- all free. Sleeps 5. Everything you need, nothing you don\'t.',
     fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Clothing storage','Air mattress available','Walk-in closet'],Entertainment:['75" Smart TV','Exercise equipment','Ping pong table','Pool table','Arcade games','Theme room','Board games','Star projector'],'Heating & Cooling':['Electric fireplace'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Hot water kettle','Coffee maker','Wine glasses','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],Outdoor:['Patio or balcony','Fire pit','Outdoor furniture','Outdoor dining area','Shared BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool with tanning ledge','Elevator','EV charger','Gym with spin room'],Building:['Sky lounge with panoramic views','Arcade room & billiards lounge','Co-working spaces','Outdoor firepit & courtyard kitchen','Private pocket park'],'Location':['0.2mi to DART Galatyn Park','CityLine shopping next door','Near UT Dallas','Private entrance']},
-    amenityPhotos: {'Star projector':1,'Electric fireplace':2,'Board games':6,'Coffee maker':9,'Full kitchen':10,'Microwave':15,'Refrigerator':10,'Patio or balcony':26,'Full-length mirror':19,'Walk-in closet':20,'Hair dryer':21,'Gym with spin room':28,'Pool with tanning ledge':29,'Sun loungers':29,'Sky lounge with panoramic views':30,'Co-working spaces':31,'Arcade games':32,'Pool table':33,'75" Smart TV':3},
+    amenityPhotos: {'Star projector':1,'Electric fireplace':2,'Board games':6,'Coffee maker':9,'Full kitchen':10,'Microwave':15,'Refrigerator':12,'Patio or balcony':26,'Full-length mirror':19,'Walk-in closet':20,'Hair dryer':21,'Gym with spin room':28,'Pool with tanning ledge':29,'Sun loungers':29,'Sky lounge with panoramic views':30,'Co-working spaces':31,'Arcade games':32,'Pool table':33,'75" Smart TV':3},
     photoLabels: ['Living Room','Star Projector','Electric Fireplace','75" Smart TV','Living Room Alternate View','Sofa Seating','Board Games','Dining Area','Kitchen Overview','Coffee Maker','Full Kitchen','Kitchen Counter','Kitchen Appliances','Bedroom','Bed Linens','Microwave','Bedroom Detail','Nightstand','Bedroom Decor','Full-length Mirror','Walk-in Closet','Hair Dryer','Bathroom','Bathroom Vanity','Bathtub','Shower','Patio','Outdoor Seating','Gym with Spin Room','Pool with Tanning Ledge','Sky Lounge','Co-working Spaces','Arcade Games','Pool Table'],
     photos: [
       '93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg',
@@ -4232,6 +4232,7 @@ async function seedTripCodesFromGuesty({ reason = 'scheduled' } = {}) {
     let seeded = 0;
     try {
       for (let page = 0; page < 10; page++) {
+        if (page > 0) await sleepMs(500); // pace paged calls — the budget is account-wide
         const { reservations, count } = await guesty.getReservations({
           from, to, limit: 100, skip: page * 100,
         });
@@ -4572,6 +4573,10 @@ app.get('/api/trip/auth-check', (req, res) => {
 });
 
 // ── Trip data endpoint — returns all reservation + listing data ──
+// Per-listing cache for the two listing-detail Guesty calls this route makes.
+const tripListingCache = new Map();
+const TRIP_LISTING_CACHE_TTL = 60 * 60_000; // 1 hour
+
 app.get('/api/trip/data', requireTripAuth, async (req, res) => {
   try {
     const reservationId = req.tripReservationId;
@@ -4600,15 +4605,30 @@ app.get('/api/trip/data', requireTripAuth, async (req, res) => {
     let listing = null;
     let listingCustomFields = [];
     if (listingId) {
-      const encId = encodeURIComponent(listingId);
-      const [listingRes, cfRes] = await Promise.allSettled([
-        guesty.guestyFetch(`/listings/${encId}`),
-        guesty.guestyFetch(`/listings/${encId}/custom-fields`),
-      ]);
-      if (listingRes.status === 'fulfilled') listing = listingRes.value;
-      else console.error('Trip data - listing fetch error:', listingRes.reason?.message);
-      if (cfRes.status === 'fulfilled' && Array.isArray(cfRes.value)) listingCustomFields = cfRes.value;
-      else if (cfRes.status === 'rejected') console.error('Trip data - custom fields fetch error:', cfRes.reason?.message);
+      // Listing details + custom fields change rarely — cache per listing for
+      // an hour so each trip-portal page view doesn't cost 2 Guesty calls.
+      const cached = tripListingCache.get(listingId);
+      if (cached && Date.now() - cached.ts < TRIP_LISTING_CACHE_TTL) {
+        listing = cached.listing;
+        listingCustomFields = cached.customFields;
+      } else {
+        const encId = encodeURIComponent(listingId);
+        const [listingRes, cfRes] = await Promise.allSettled([
+          guesty.guestyFetch(`/listings/${encId}`),
+          guesty.guestyFetch(`/listings/${encId}/custom-fields`),
+        ]);
+        if (listingRes.status === 'fulfilled') listing = listingRes.value;
+        else console.error('Trip data - listing fetch error:', listingRes.reason?.message);
+        if (cfRes.status === 'fulfilled' && Array.isArray(cfRes.value)) listingCustomFields = cfRes.value;
+        else if (cfRes.status === 'rejected') console.error('Trip data - custom fields fetch error:', cfRes.reason?.message);
+        if (listing) {
+          tripListingCache.set(listingId, { ts: Date.now(), listing, customFields: listingCustomFields });
+        } else if (cached) {
+          // Live fetch failed — serve the stale entry rather than nothing.
+          listing = cached.listing;
+          listingCustomFields = cached.customFields;
+        }
+      }
     }
     // Prefer the dedicated endpoint (untruncated); fall back to the values embedded in the listing.
     const customFields = buildCustomFieldMap(listingCustomFields.length ? listingCustomFields : (listing?.customFields || []));

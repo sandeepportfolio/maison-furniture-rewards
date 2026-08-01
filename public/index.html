@@ -135,7 +135,8 @@ ul{list-style:none}
 @keyframes v2mq2{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 .v2-in{opacity:0;animation:v2in .8s var(--ease) both}
 .v2-shimmer{font-style:italic;background:linear-gradient(90deg,#C99845,#F2EDE1,#C99845);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:#C99845;-webkit-text-fill-color:transparent;animation:v2shimmer 5s linear infinite}
-.v2-sq{display:inline-block;width:8px;height:8px;background:var(--accent);flex-shrink:0}
+/* Tapered gold hairline (matches .section-label::before) — replaces the old ■ */
+.v2-sq{display:inline-block;width:clamp(22px,4vw,34px);height:1px;flex-shrink:0;background:linear-gradient(90deg,rgba(201,152,69,0),var(--accent));box-shadow:0 0 8px rgba(201,152,69,.3)}
 .v2-kicker{margin:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--accent)}
 .v2-kicker .v2-sl{opacity:.5;color:var(--text)}
 .v2-kicker .v2-dim{color:rgba(242,237,225,.6)}
@@ -282,8 +283,10 @@ ul{list-style:none}
 .section-dark{background:var(--bg-dark);max-width:none;margin:0}
 .section-dark .section-inner{max-width:1400px;margin:0 auto;padding:80px 0}
 .section-header{text-align:center;margin-bottom:64px}
-.section-label{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;font-weight:400;letter-spacing:.22em;color:var(--accent);margin-bottom:20px;text-transform:uppercase}
-.section-label::before{content:'';display:inline-block;width:8px;height:8px;background:var(--accent);flex-shrink:0}
+.section-label{display:inline-flex;align-items:center;gap:14px;font-family:var(--mono);font-size:12px;font-weight:400;letter-spacing:.22em;color:var(--accent);margin-bottom:20px;text-transform:uppercase}
+/* Tapered gold hairline in place of the old solid square — reads as a shaft of
+   light entering the label rather than a bullet point. */
+.section-label::before{content:'';display:inline-block;width:clamp(22px,4vw,34px);height:1px;flex-shrink:0;background:linear-gradient(90deg,rgba(201,152,69,0),var(--accent));box-shadow:0 0 8px rgba(201,152,69,.3)}
 .section-label.light{color:var(--accent)}
 .section-header h2{font-family:var(--serif);font-size:clamp(38px,5vw,68px);font-weight:400;color:var(--text);line-height:1.06;letter-spacing:-.01em}
 .section-header h2.light{color:var(--text)}
@@ -1186,14 +1189,50 @@ ul{list-style:none}
   .cal-bar-div{width:100%;height:1px}
 }
 
-/* ── Stats Counter Section ── */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:960px;margin:0 auto 72px;position:relative;padding:0 24px}
-.stat-item{text-align:center;padding:32px 20px;position:relative;z-index:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);backdrop-filter:blur(8px);transition:border-color .4s var(--ease),transform .4s var(--ease),background .4s var(--ease)}
-.stat-item:hover{border-color:rgba(201,152,69,.3);transform:translateY(-4px);background:rgba(255,255,255,.06)}
-.stat-number{font-family:var(--serif);font-size:clamp(44px,5.5vw,64px);font-weight:400;color:var(--text-inv);line-height:1;margin-bottom:10px;display:flex;align-items:baseline;justify-content:center;gap:2px}
+/* ── Stats Counter Section ────────────────────────────────────────────────
+   Glass plinths: a layered sheen over the dark ground, a gold bloom that only
+   wakes on hover, and gradient-filled serif numerals. Numbers are tabular so
+   the count-up animation doesn't reflow the card on every frame. */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;position:relative}
+.stat-item{
+  position:relative;z-index:1;text-align:left;padding:18px 14px 16px;
+  border-radius:16px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(158deg,rgba(242,237,225,.08),rgba(242,237,225,.024) 46%,rgba(242,237,225,.008));
+  border:1px solid rgba(242,237,225,.09);
+  backdrop-filter:blur(14px) saturate(1.15);-webkit-backdrop-filter:blur(14px) saturate(1.15);
+  box-shadow:inset 0 1px 0 rgba(242,237,225,.08),0 18px 40px -28px rgba(0,0,0,.9);
+  transition:border-color .5s var(--ease),transform .5s var(--ease),box-shadow .5s var(--ease)}
+/* Gold bloom, dormant until hover */
+.stat-item::before{content:'';position:absolute;inset:-45% -25% auto -25%;height:150%;z-index:-1;
+  background:radial-gradient(58% 58% at 24% 4%,rgba(201,152,69,.3),transparent 72%);
+  opacity:0;transition:opacity .55s var(--ease)}
+/* Accent hairline capping the top edge */
+.stat-item::after{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,152,69,.6),transparent);
+  opacity:.4;transition:opacity .5s var(--ease)}
+.stat-item:hover{transform:translateY(-3px);border-color:rgba(201,152,69,.34);
+  box-shadow:inset 0 1px 0 rgba(242,237,225,.11),0 26px 52px -28px rgba(0,0,0,.95)}
+.stat-item:hover::before,.stat-item:hover::after{opacity:1}
+.stat-number{font-family:var(--serif);font-size:clamp(26px,2.4vw,34px);font-weight:400;line-height:1;
+  margin-bottom:9px;display:flex;align-items:baseline;gap:1px;
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
+  background:linear-gradient(172deg,#FBF6EA 6%,var(--accent-hover) 64%,var(--accent) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .stat-number .stat-val{display:inline}
-.stat-number .stat-suffix{font-size:clamp(24px,2.5vw,32px);color:var(--accent-light)}
-.stat-label{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--text-inv-muted);text-transform:uppercase;overflow-wrap:break-word;word-break:break-word}
+.stat-number .stat-suffix{font-size:.54em;color:var(--accent);-webkit-text-fill-color:var(--accent)}
+.stat-label{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.18em;
+  color:var(--text-dim);text-transform:uppercase;overflow-wrap:break-word;word-break:break-word;line-height:1.35}
+/* Entrance is opt-in: without the JS-added class the cards render fully visible,
+   matching how every other reveal on this page degrades. */
+@keyframes statRise{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.stats-bar.stats-in .stat-item{animation:statRise .75s var(--ease) both}
+.stats-bar.stats-in .stat-item:nth-child(2){animation-delay:.09s}
+.stats-bar.stats-in .stat-item:nth-child(3){animation-delay:.18s}
+.stats-bar.stats-in .stat-item:nth-child(4){animation-delay:.27s}
+@media(prefers-reduced-motion:reduce){
+  .stats-bar.stats-in .stat-item{animation:none}
+  .stat-item,.stat-item::before,.stat-item::after{transition:none}
+}
 
 /* ── Experience Feature Grid ── */
 .experience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1200px;width:calc(100% - 48px);margin:0 auto;background:rgba(255,255,255,.06);border-radius:var(--radius-xl);overflow:hidden}
@@ -1461,7 +1500,6 @@ ul{list-style:none}
 .reveal,.reveal-scale,.reveal-left,.reveal-right,.reveal-diagonal,.prop-card,.xplr-card,.explore-event-card,.exp-card,.wbd-top-label,.wbd-headline-wrap,.wbd-card,.wbd-bottom,.wbd-divider-line,.wbd-card-stat-val{opacity:1;transform:none;filter:none}
 
 @media(max-width:1024px){
-  .stats-bar{grid-template-columns:repeat(2,1fr);gap:20px}
   .experience-grid{grid-template-columns:repeat(2,1fr)}
   .amenity-highlight-card{flex:none}
   .detail-content{padding:36px}
@@ -1471,10 +1509,6 @@ ul{list-style:none}
   .contact-trust{flex-wrap:wrap}
 }
 @media(max-width:768px){
-  .stats-bar{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:40px;padding:0 20px}
-  .stats-bar::-webkit-scrollbar{display:none;height:0}
-  .stat-item{flex:0 0 auto;min-width:140px;scroll-snap-align:start;padding:24px 20px}
-  .stat-number{font-size:32px}
   .experience-grid{grid-template-columns:repeat(2,1fr);width:calc(100% - 40px)}
   .exp-card{padding:36px 28px}
   .exp-num{font-size:40px;margin-bottom:16px}
@@ -1583,10 +1617,7 @@ ul{list-style:none}
   .event-foot{padding-top:10px}
 }
 @media(max-width:480px){
-  .stats-bar{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:48px;overflow:visible}
-  .stat-item{padding:20px 12px}
-  .stat-number{font-size:28px}
-  .stat-label{font-size:9px;letter-spacing:.06em}
+  .stat-label{font-size:8.5px;letter-spacing:.14em}
   .prop-name{font-size:clamp(20px,5vw,24px)}
   .prop-specs .spec-pill{font-size:9px;padding:3px 7px;gap:3px}
   .prop-specs .spec-pill svg{width:11px;height:11px}
@@ -1616,8 +1647,6 @@ ul{list-style:none}
   .exp-title{font-size:15px}
   .exp-desc{display:block}
   .section-dark .section-inner{padding:48px 0}
-  .stats-bar{padding:0 16px}
-  .stat-item{min-width:120px;padding:20px 16px}
   .marquee-item{font-size:10px}
   .xplr-hero{min-height:240px}
   .xplr-title{font-size:28px}
@@ -1665,10 +1694,8 @@ ul{list-style:none}
 .rd-headline{font-family:var(--serif);font-size:clamp(28px,3vw,42px);font-weight:400;color:var(--text-inv);line-height:1.18;letter-spacing:-.02em;margin-bottom:20px}
 .rd-headline em{font-style:italic;color:var(--accent-light)}
 .rd-lede{font-family:var(--sans);font-size:15px;color:var(--text-inv-muted);line-height:1.8;margin-bottom:28px}
-.rd-stats{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:12px!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important}
-.rd-stats .stat-item{padding:14px 0!important;min-width:0!important}
-.rd-stats .stat-number{font-size:clamp(22px,2vw,30px)!important}
-.rd-stats .stat-label{font-size:10px!important}
+.rd-stats{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:10px!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important}
+.rd-stats .stat-item{min-width:0!important}
 
 /* Accordion features */
 .rd-features-label{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-inv-muted);margin-bottom:16px}
@@ -2396,31 +2423,31 @@ ul{list-style:none}
 
     <!-- Right column: Accordion features -->
     <div class="rd-features reveal-right">
-      <div class="rd-features-label">What&rsquo;s included in every stay</div>
+      <div class="rd-features-label">Signature Amenities &mdash; Across the Collection</div>
       <div class="rd-accordion">
         <details class="rd-item" open>
-          <summary><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg><span>Resort-Style Pool &amp; Gym</span></summary>
-          <p>24/7 fitness centers, resort pools, sky lounges, and game rooms at every property&mdash;all included free.</p>
+          <summary><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg><span>Chef-Ready Kitchens</span></summary>
+          <p>Every home: full kitchen with dishwasher, premium cookware, dishes &amp; silverware, cooking basics, and a stocked coffee bar.</p>
         </details>
         <details class="rd-item">
-          <summary><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3"/></svg><span>Chef-Ready Kitchens</span></summary>
-          <p>Premium cookware, every spice and utensil, complimentary Keurig coffee bar with pods, and all supplies you need.</p>
+          <summary><svg viewBox="0 0 24 24"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 012 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg><span>Hotel-Grade Linens &amp; Bath</span></summary>
+          <p>Fresh bed linens, extra pillows &amp; blankets, room-darkening shades, plush towels, and premium bath products in every home.</p>
+        </details>
+        <details class="rd-item">
+          <summary><svg viewBox="0 0 24 24"><path d="M2 12h6l2-7 4 14 2-7h6"/></svg><span>Resort &amp; Entertainment Perks</span></summary>
+          <p>Resort pools, 24/7 gyms, and game lounges at our suite residences&mdash;plus a private hot tub, theatre room, and mini golf at Regent Villa.</p>
         </details>
         <details class="rd-item">
           <summary><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>Smart TVs Up to 85&Prime;</span></summary>
-          <p>Large-screen entertainment in every room. Sign into your streaming apps and enjoy.</p>
+          <p>Large-screen entertainment in every home. Sign into your streaming apps and enjoy.</p>
         </details>
         <details class="rd-item">
-          <summary><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg><span>Dedicated Workspace</span></summary>
-          <p>27&Prime; monitor, 1GB fiber WiFi, and ergonomic setup for productive remote work.</p>
+          <summary><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg><span>Work-Ready Spaces</span></summary>
+          <p>Dedicated workspaces with fast WiFi&mdash;select homes add a 27&Prime; monitor for productive remote work.</p>
         </details>
         <details class="rd-item">
-          <summary><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>Deep Cleaning Standards</span></summary>
-          <p>Exceeding luxury hotel protocols after every single stay. Premium bath products, plush towels, and fresh linens.</p>
-        </details>
-        <details class="rd-item">
-          <summary><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span>EV Charging &amp; Transit</span></summary>
-          <p>Electric vehicle charging on-site. Steps from DART rail&mdash;explore without a car. In-unit washer &amp; dryer with supplies.</p>
+          <summary><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>In-Unit Laundry &amp; Essentials</span></summary>
+          <p>Washer &amp; dryer with supplies, iron, hangers, hair dryer, and cleaning products&mdash;standard in every home.</p>
         </details>
         <details class="rd-item">
           <summary><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Premier Concierge</span></summary>
@@ -3441,7 +3468,7 @@ const PROPERTIES = [
     ],
     description: 'Luxury Plano vacation rental in a prime location, perfect for families, groups, and weekend getaways. Sleeps up to 14 guests with 4 beds plus couch space. Enjoy a private hot tub, 85-inch TV, foosball, indoor basketball, mini fridge, piano, mini golf in the master, and 6 TVs total. An entertainment-filled home base near shopping, dining, events, and Plano/Dallas attractions.',
     fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Hot water','Shower gel','Vanity mirrors','Bathrobes','Slippers'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],'Heating & Cooling':['Indoor fireplace','Ceiling fans'],Entertainment:['TV (6 total)','Piano','Sound system','Theatre room with 7.1 surround','Foosball','Indoor basketball','Books','Theme room','Mini golf','Streaming services'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Hot water kettle','Coffee maker','Wine glasses','Toaster','Baking sheet','Rice maker','BBQ utensils','Dining table','Coffee','Kitchen island with bar seating'],'Work & Tech':['Dedicated workspace','Smart thermostat'],Outdoor:['Private patio','Outdoor furniture','Outdoor dining area','Outdoor kitchen','BBQ grill','Private hot tub'],'Parking & Facilities':['Free parking','Street parking','2-car garage','Smart lock entry'],Family:['Children\'s books & toys','Children\'s dinnerware','Board games','Children\'s playroom'],'Home Highlights':['LED accent lighting','Reading nook']},
-    amenityPhotos: {'Bathtub':48,'Vanity mirrors':53,'Bathrobes':49,'Slippers':27,'Clothing storage':49,'Indoor fireplace':8,'Piano':2,'Foosball':71,'Mini golf':25,'Streaming services':0,'Coffee maker':13,'Wine glasses':17,'BBQ utensils':63,'Kitchen island with bar seating':4,'Dedicated workspace':60,'Smart thermostat':61,'Outdoor furniture':64,'BBQ grill':62,'Private hot tub':65,'Reading nook':20},
+    amenityPhotos: {'Bathtub':48,'Vanity mirrors':53,'Bathrobes':49,'Slippers':27,'Clothing storage':52,'Indoor fireplace':8,'Piano':2,'Foosball':71,'Mini golf':25,'Streaming services':0,'Coffee maker':13,'Wine glasses':17,'BBQ utensils':63,'Kitchen island with bar seating':4,'Dedicated workspace':60,'Smart thermostat':61,'Outdoor furniture':64,'BBQ grill':62,'Private hot tub':65,'Reading nook':20},
       photos: [
         'c4264787-996e-49d3-b314-ffd1ec44a651.jpeg',
         'c5ccfab6-d77f-4b90-a60c-829c31cb09e5.png',
@@ -3624,7 +3651,7 @@ const PROPERTIES = [
     ],
     description: 'Steps from Toyota Music Factory, Water Street dining, and the Lake Carolyn trails. 10-foot ceilings, a fully stocked kitchen with a big prep island, deep soaking tub, and a living room you\'ll actually want to hang out in. DART rail is a 5-minute walk for easy access to DFW Airport and Downtown Dallas. Resort-style pool, 24/7 gym, covered parking. We handle all the supplies -- just show up.',
     fullAmenities: {Bathroom:['Bathtub','Deep soaking tub','Hair dryer','Cleaning products','Conditioner','Body soap','Bidet','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['65" Smart TV','Exercise equipment','Pool table','Theme room','Board games'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Coffee maker','Wine glasses','Toaster','Baking sheet','Dining table','Coffee'],Outdoor:['Patio or balcony','Outdoor furniture','Outdoor dining area','Shared BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','Gated community'],'Location':['Lake access','Private entrance','Steps to DART rail','Toyota Music Factory nearby']},
-    amenityPhotos: {'Coffee maker':4,'Board games':10,'Full kitchen':13,'Dishwasher':18,'Toaster':18,'Microwave':16,'Bathtub':21,'Washer':23,'Dryer':23,'Clothing storage':25,'Pool':27,'Gym':28,'65" Smart TV':1,'Refrigerator':15,'Iron':25},
+    amenityPhotos: {'Coffee maker':4,'Board games':10,'Full kitchen':13,'Dishwasher':18,'Toaster':17,'Microwave':16,'Bathtub':21,'Washer':23,'Dryer':23,'Clothing storage':25,'Pool':27,'Gym':28,'65" Smart TV':1,'Refrigerator':15,'Iron':24},
       photos: [
         'fd9864bd-5a7f-4a14-997d-ca799df2850f.png',
         '46546182-9e9e-475d-bd14-3ca27823b1af.png',
@@ -3678,7 +3705,7 @@ const PROPERTIES = [
     ],
     description: 'Designer one-bedroom in the heart of Las Colinas -- full marble finishes, soft candlelight, and the DART rail just steps from your door. Cozy up under layered comforters, brew from a fully stocked coffee bar, fire up the 65" TV, or break out the board games, mini golf, and a mini hoop. Cook in a chef-grade kitchen. Walk to Toyota Music Factory, Lake Carolyn, and Alamo Drafthouse. DFW Airport is 10 minutes by train.',
     fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Dove body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials (eco-friendly)','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Clothing storage'],Entertainment:['65" Smart TV','Second TV in bedroom','Exercise equipment','Pool table','Theme room','Mini golf','Mini basketball hoop','Board games'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Electric stove','Oven','Keurig coffee machine','Wine glasses','Toaster','Baking sheet','Dining table','Coffee'],Outdoor:['Private patio or balcony','Outdoor furniture','Outdoor dining area','BBQ grill','Sun loungers'],'Parking & Facilities':['Free covered parking','Pool','Elevator','Gym','Gated community','EV charging stations'],Building:['Sky Lounge with skyline views','24/7 fitness center & yoga studio','Resort-style pool','On-site putting green','Clubhouse & game room'],'Location':['3-min walk to DART station','Lake Carolyn access','Alamo Drafthouse nearby','Toyota Music Factory']},
-    amenityPhotos: {'Full-length mirror':19,'Board games':9,'Full kitchen':10,'Keurig coffee machine':13,'Microwave':14,'Refrigerator':12,'65" Smart TV':5,'Clothing storage':21,'Iron':21,'Bathtub':24,'Washer':28,'Dryer':28,'Gym':29,'Pool':30,'Mini basketball hoop':31,'Dishwasher':14},
+    amenityPhotos: {'Full-length mirror':19,'Board games':9,'Full kitchen':10,'Keurig coffee machine':13,'Microwave':14,'Refrigerator':12,'65" Smart TV':5,'Clothing storage':21,'Iron':21,'Bathtub':24,'Washer':28,'Dryer':28,'Gym':29,'Pool':30,'Mini basketball hoop':31,'Dishwasher':10},
       photos: [
         '80e3dcf4-ac70-4765-a5c8-f9c08d908cb4.png',
         '29166219-5878-44bc-ab59-d13c1ce11a07.png',
@@ -3736,7 +3763,7 @@ const PROPERTIES = [
     ],
     description: 'Wake up to tranquil lake views in an ultra-high luxury yet irresistibly cozy 600 sq ft suite in Las Colinas. Designer interiors, refined finishes, and plush comfort. 65" Smart TV, dedicated workspace with 27" monitor, 500 Mbps fiber Wi-Fi. Steps to DART Orange Line, dining, gondola rides, trails, and more. Resort amenities: 24/7 gym, pool, billiards, game room, and conference spaces with lake views.',
     fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Walk-in closet'],Entertainment:['65" Smart TV','Exercise equipment','Pool table','Theme room','UFC punching bag','Board games','Wine cooler'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" mounted monitor','500 Mbps fiber WiFi'],Outdoor:['Private balcony','Outdoor kitchen','BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center & conference rooms','Smart lock entry'],'Location':['Waterfront','Lake access','Private entrance','Steps to DART Orange Line']},
-    amenityPhotos: {'Keurig coffee station':8,'Board games':6,'Full kitchen':7,'Wine cooler':11,'Refrigerator':10,'Microwave':10,'Walk-in closet':13,'Iron':13,'Hair dryer':15,'Dedicated workspace':17,'27" mounted monitor':20,'65" Smart TV':18,'Washer':21,'Exercise equipment':22,'Gym':23,'Pool':24,'Sun loungers':24,'Pool table':25,'UFC punching bag':27,'Private balcony':1},
+    amenityPhotos: {'Keurig coffee station':8,'Board games':6,'Full kitchen':7,'Wine cooler':11,'Refrigerator':10,'Microwave':9,'Walk-in closet':13,'Iron':13,'Hair dryer':15,'Dedicated workspace':17,'27" mounted monitor':20,'65" Smart TV':18,'Washer':21,'Exercise equipment':22,'Gym':23,'Pool':24,'Sun loungers':24,'Pool table':25,'UFC punching bag':27,'Private balcony':1},
       photos: [
         'd4cb708a-3694-4e6f-bd63-6757450a95e0.png',
         'b5fe1afc-e3e3-445d-8c9c-c0d12ceb727c.jpeg',
@@ -3789,7 +3816,7 @@ const PROPERTIES = [
     ],
     description: 'Soaring high ceilings with light pouring in. Fully stocked coffee station, private oversized patio, and a 3-minute walk to DART Station to go anywhere without needing your car. 75" Smart TV, dedicated desk with 27" monitor. Resort pool, 24/7 gym, sky lounge, arcade room -- all free. Sleeps 5. Everything you need, nothing you don\'t.',
     fullAmenities: {Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Clothing storage','Air mattress available','Walk-in closet'],Entertainment:['75" Smart TV','Exercise equipment','Ping pong table','Pool table','Arcade games','Theme room','Board games','Star projector'],'Heating & Cooling':['Electric fireplace'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Hot water kettle','Coffee maker','Wine glasses','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],Outdoor:['Patio or balcony','Fire pit','Outdoor furniture','Outdoor dining area','Shared BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool with tanning ledge','Elevator','EV charger','Gym with spin room'],Building:['Sky lounge with panoramic views','Arcade room & billiards lounge','Co-working spaces','Outdoor firepit & courtyard kitchen','Private pocket park'],'Location':['0.2mi to DART Galatyn Park','CityLine shopping next door','Near UT Dallas','Private entrance']},
-    amenityPhotos: {'Star projector':1,'Electric fireplace':2,'Board games':6,'Coffee maker':9,'Full kitchen':10,'Microwave':15,'Refrigerator':10,'Patio or balcony':26,'Full-length mirror':19,'Walk-in closet':20,'Hair dryer':21,'Gym with spin room':28,'Pool with tanning ledge':29,'Sun loungers':29,'Sky lounge with panoramic views':30,'Co-working spaces':31,'Arcade games':32,'Pool table':33,'75" Smart TV':3},
+    amenityPhotos: {'Star projector':1,'Electric fireplace':2,'Board games':6,'Coffee maker':9,'Full kitchen':10,'Microwave':15,'Refrigerator':12,'Patio or balcony':26,'Full-length mirror':19,'Walk-in closet':20,'Hair dryer':21,'Gym with spin room':28,'Pool with tanning ledge':29,'Sun loungers':29,'Sky lounge with panoramic views':30,'Co-working spaces':31,'Arcade games':32,'Pool table':33,'75" Smart TV':3},
       photos: [
         '93dafcdf-b571-4c4b-8eb5-4cbe3ce87677.jpeg',
         '89ccfecb-1862-4182-bd20-c4bbad80caef.png',
@@ -4036,13 +4063,18 @@ function renderDiscountedPrice(basePrice, cssPrefix, lowestPrice) {
 }
 
 /* ═══ Live pricing from Guesty API ═══ */
+// Start both requests at script-parse time so the network round-trip overlaps
+// with DOM construction instead of waiting for DOMContentLoaded.
+const pricesPrefetch = Promise.all([
+  fetch('/api/guesty/listings'),
+  fetch('/api/guesty/lowest-prices').catch(() => null),
+]);
+pricesPrefetch.catch(() => {}); // handled for real inside fetchAndApplyPrices
+
 async function fetchAndApplyPrices() {
   try {
     // Fetch listings and lowest calendar prices concurrently
-    const [listingsRes, lowestRes] = await Promise.all([
-      fetch('/api/guesty/listings'),
-      fetch('/api/guesty/lowest-prices').catch(() => null),
-    ]);
+    const [listingsRes, lowestRes] = await pricesPrefetch;
     if (!listingsRes.ok) throw new Error(`HTTP ${listingsRes.status}`);
     const data = await listingsRes.json();
     const listings = data.listings || [];
@@ -4930,9 +4962,11 @@ function refreshAllMaps() {
 
 /* ═══ Detail Map (shown in property detail modal) ═══ */
 let detailMapInstance = null;
+let detailMapResizeObs = null;
 
 function initDetailMap(prop) {
   // Destroy previous detail map if any
+  if (detailMapResizeObs) { detailMapResizeObs.disconnect(); detailMapResizeObs = null; }
   if (detailMapInstance) {
     detailMapInstance.remove();
     detailMapInstance = null;
@@ -4974,11 +5008,20 @@ function initDetailMap(prop) {
     title: prop.name
   }).addTo(detailMapInstance);
 
-  // Force map to recalculate size after modal animation
-  setTimeout(() => {
-    detailMapInstance.invalidateSize();
-    detailMapInstance.setView([prop.lat, prop.lng], 16);
-  }, 400);
+  // Re-center whenever the container's size actually settles. The map is
+  // created while the modal is still animating open, so a fixed 400ms guess
+  // could fire mid-animation (especially on mobile) — Leaflet then centers the
+  // pin against stale dimensions and it lands off the visible viewport.
+  const recenter = () => {
+    if (!detailMapInstance) return;
+    detailMapInstance.invalidateSize({ animate: false });
+    detailMapInstance.setView([prop.lat, prop.lng], 16, { animate: false });
+  };
+  setTimeout(recenter, 400); // fallback for browsers without ResizeObserver
+  if (typeof ResizeObserver !== 'undefined') {
+    detailMapResizeObs = new ResizeObserver(recenter);
+    detailMapResizeObs.observe(el);
+  }
 }
 
 /* ═══ Scroll Reveal ═══ */
@@ -5338,6 +5381,7 @@ function closeDetail(skipMapReturn) {
   const returnToMap = !skipMapReturn && state.fromMap === true;
 
   // Clean up detail map
+  if (detailMapResizeObs) { detailMapResizeObs.disconnect(); detailMapResizeObs = null; }
   if (detailMapInstance) {
     detailMapInstance.remove();
     detailMapInstance = null;
@@ -5557,6 +5601,7 @@ function initCounters() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
+      entry.target.classList.add('stats-in');
       counters.forEach(el => {
         const target = parseFloat(el.dataset.target);
         const decimals = parseInt(el.dataset.decimals) || 0;
@@ -5675,8 +5720,14 @@ function haversine(lat1, lon1, lat2, lon2) {
 function getGeoStorage() {
   try { return JSON.parse(localStorage.getItem(GEO_STORAGE_KEY)) || {}; } catch(e) { return {}; }
 }
-function setGeoStorage(obj) {
-  try { localStorage.setItem(GEO_STORAGE_KEY, JSON.stringify(obj)); } catch(e) {}
+// MERGE, don't replace — callers pass partial patches ({prompted}, {lat,lng}, …)
+// and overwriting the object used to wipe the `prompted` flag, which made
+// mobile re-prompt for location on every refresh.
+function setGeoStorage(patch) {
+  try {
+    const merged = Object.assign(getGeoStorage(), patch);
+    localStorage.setItem(GEO_STORAGE_KEY, JSON.stringify(merged));
+  } catch(e) {}
 }
 
 // ── Geolocation ──
@@ -5724,22 +5775,20 @@ function initGeolocation() {
   const cacheValid = !isNaN(cachedLat) && !isNaN(cachedLng) && !isNaN(cachedTs) && (Date.now() - cachedTs < THIRTY_DAYS);
 
   if (cacheValid) {
+    // Serve the cached location immediately. Only start a live watch when the
+    // browser reports the permission as already GRANTED — calling
+    // watchPosition while the state is 'prompt' (common on mobile, where
+    // "Allow Once" doesn't persist) re-opens the OS dialog on every refresh.
+    onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
     if (navigator.permissions && navigator.permissions.query) {
       navigator.permissions.query({ name: 'geolocation' }).then(result => {
         if (result.state === 'denied') {
-          clearGeoCache();
           setGeoStorage({ denied: true });
-        } else {
-          onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
+        } else if (result.state === 'granted') {
           startGeoWatch();
         }
-      }).catch(() => {
-        onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
-        startGeoWatch();
-      });
-    } else {
-      onGeoSuccess({ coords: { latitude: cachedLat, longitude: cachedLng } });
-      startGeoWatch();
+        // state === 'prompt': keep using the cache, never re-prompt here.
+      }).catch(() => {});
     }
     return;
   }
@@ -7053,6 +7102,7 @@ window.addEventListener('popstate', (e) => {
     // Close detail modal if it's still open (browser back from detail view)
     const detailModal = document.getElementById('detailModal');
     if (detailModal && detailModal.classList.contains('open')) {
+      if (detailMapResizeObs) { detailMapResizeObs.disconnect(); detailMapResizeObs = null; }
       if (detailMapInstance) { detailMapInstance.remove(); detailMapInstance = null; }
       detailModal.classList.remove('open');
       detailModal.style.opacity = '';
@@ -7073,6 +7123,7 @@ window.addEventListener('popstate', (e) => {
   // Handle detail modal back navigation (deep link)
   const detailModal = document.getElementById('detailModal');
   if (detailModal && detailModal.classList.contains('open') && !location.hash.startsWith('#property/')) {
+    if (detailMapResizeObs) { detailMapResizeObs.disconnect(); detailMapResizeObs = null; }
     if (detailMapInstance) { detailMapInstance.remove(); detailMapInstance = null; }
     detailModal.classList.remove('open');
     detailModal.style.opacity = '';
