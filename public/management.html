@@ -46,7 +46,7 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-nav{position:fixed;top:14px;left:0;right:0;z-index:70;padding:0 clamp(12px,3vw,24px);pointer-events:none}
 .rs-nav-inner{pointer-events:auto;max-width:1150px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;background:rgba(250,246,238,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(25,20,16,.08);border-radius:999px;padding:10px 12px 10px 16px;box-shadow:0 2px 12px rgba(25,20,16,.06);transition:box-shadow .3s,background .3s}
 .rs-nav-inner.scrolled{box-shadow:0 14px 34px rgba(25,20,16,.14);background:rgba(250,246,238,.94)}
-.rs-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.rs-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);min-height:38px}
 .rs-brand-mark{width:34px;height:34px;border-radius:10px;background:var(--green);display:inline-flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px rgba(31,74,56,.28)}
 .rs-brand-mark svg{width:20px;height:20px;display:block}
 .rs-brand-word{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
@@ -102,10 +102,16 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-btn-ghost{background:var(--card);color:var(--ink);border:1.5px solid rgba(25,20,16,.16)}
 .rs-hero-pills{margin:30px 0 0;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .rs-pill{display:flex;align-items:baseline;gap:7px;background:var(--card);border:1px solid rgba(25,20,16,.1);border-radius:999px;padding:10px 18px}
-.rs-pill b{font-weight:800;font-size:17px}
+/* The number: tabular digits so counters don't jitter, baseline-locked. The
+   counter <span data-count> inside <b> MUST inherit the number styling — the
+   old bare `.rs-pill span` label rule leaked into it and rendered the digits
+   at 13.5px next to full-size %/+/★ symbols. */
+.rs-pill b{font-weight:800;font-size:17px;display:inline-flex;align-items:baseline;font-variant-numeric:tabular-nums;line-height:1.1}
+.rs-pill b span{font-size:inherit;font-weight:inherit;color:inherit;white-space:nowrap}
+.rs-pill b .sym{font-size:.72em;font-weight:750}
 .rs-pill .up{color:var(--green)}
 .rs-pill .star{color:var(--gold)}
-.rs-pill span{font-size:13.5px;font-weight:600;color:rgba(25,20,16,.6);white-space:nowrap}
+.rs-pill > span{font-size:13.5px;font-weight:600;color:rgba(25,20,16,.6);white-space:nowrap}
 
 /* Hero stage */
 .rs-stage-wrap{max-width:1240px;margin:clamp(44px,6vw,72px) auto 0}
@@ -232,7 +238,7 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-perf .rs-lead{color:var(--dark-cream);max-width:560px}
 .rs-stat-grid{margin-top:clamp(40px,5vw,64px);display:grid;grid-template-columns:1fr;gap:clamp(26px,3.5vw,40px)}
 .rs-stat{border-top:1px solid rgba(250,246,238,.18);padding-top:22px}
-.rs-stat .num{font-size:clamp(52px,6vw,84px);font-weight:750;letter-spacing:-.03em;line-height:1;color:var(--bg)}
+.rs-stat .num{font-size:clamp(52px,6vw,84px);font-weight:750;letter-spacing:-.03em;line-height:1;color:var(--bg);font-variant-numeric:tabular-nums;display:flex;align-items:baseline}
 .rs-stat .num .acc{color:#D9C089}
 .rs-stat .num small{font-size:.42em;color:rgba(250,246,238,.55);font-weight:650}
 .rs-stat .lab{margin-top:10px;font-size:15px;font-weight:600;color:rgba(250,246,238,.62);line-height:1.45}
@@ -357,7 +363,7 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
 .rs-how-rail i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--gold));transition:width 1.4s var(--ease)}
 .rs-cal-mini{display:flex;align-items:center;gap:10px}
 .rs-cal-mini .cal{width:44px;border-radius:10px;overflow:hidden;border:1px solid rgba(25,20,16,.12);flex:none;background:var(--card)}
-.rs-cal-mini .cal .m{background:var(--green);color:var(--bg);font-size:8.5px;font-weight:800;text-align:center;letter-spacing:.08em;padding:3px 0}
+.rs-cal-mini .cal .m{background:var(--green);color:var(--bg);font-size:10px;font-weight:800;text-align:center;letter-spacing:.08em;padding:3px 0}
 .rs-cal-mini .cal .d{font-size:16px;font-weight:800;text-align:center;padding:4px 0}
 .rs-cal-mini .txt{font-size:12.5px;font-weight:700;line-height:1.4}
 .rs-cal-mini .txt span{color:var(--ink-55)}
@@ -443,9 +449,9 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
 /* Mobile: turn the scattered hero stat pills into a clean, balanced 2×2 KPI grid */
 @media(max-width:600px){
   .rs-hero-pills{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:10px;justify-content:stretch}
-  .rs-pill{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;border-radius:16px;padding:14px 15px;border-color:rgba(25,20,16,.08);box-shadow:0 1px 3px rgba(25,20,16,.05)}
+  .rs-pill{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;border-radius:16px;padding:14px 15px;min-height:74px;border-color:rgba(25,20,16,.08);box-shadow:0 1px 3px rgba(25,20,16,.05)}
   .rs-pill b{font-size:21px;line-height:1.05}
-  .rs-pill span{font-size:12.5px;white-space:normal;line-height:1.25}
+  .rs-pill > span{font-size:12.5px;white-space:normal;line-height:1.25}
 }
 @media(min-width:660px){.rs-why-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:700px){.rs-svc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rs-svc-last{grid-column:span 2}}
@@ -517,9 +523,9 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
       <a href="#calculator" class="rs-btn rs-btn-ghost" style="white-space:nowrap">Run the numbers</a>
     </div>
     <div class="rs-hero-pills rs-enter" style="animation-delay:280ms">
-      <div class="rs-pill"><b><span data-count="94">0</span>%</b><span>avg occupancy</span></div>
-      <div class="rs-pill"><b class="up">+<span data-count="38">0</span>%</b><span>vs market revenue</span></div>
-      <div class="rs-pill"><b><span data-count="4.9" data-dec="1">0</span><span class="star">★</span></b><span>guest rating</span></div>
+      <div class="rs-pill"><b><span data-count="94">0</span><span class="sym">%</span></b><span>avg occupancy</span></div>
+      <div class="rs-pill"><b class="up"><span class="sym">+</span><span data-count="38">0</span><span class="sym">%</span></b><span>vs market revenue</span></div>
+      <div class="rs-pill"><b><span data-count="4.9" data-dec="1">0</span><span class="star sym">★</span></b><span>guest rating</span></div>
       <div class="rs-pill"><b>24/7</b><span>real humans</span></div>
     </div>
   </div>
