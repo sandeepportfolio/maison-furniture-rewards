@@ -3314,8 +3314,16 @@ app.get('/api/events', async (req, res) => {
                 city: e._embedded?.venues?.[0]?.city?.name || '',
                 category: e.classifications?.[0]?.segment?.name || 'Event',
                 subcategory: e.classifications?.[0]?.genre?.name || '',
-                image: e.images?.find(i => i.ratio === '16_9' && i.width > 500)?.url
-                     || e.images?.[0]?.url || '',
+                // Best available art: largest 16:9 (matches the card crop),
+                // else the largest image of any ratio. TM virtually always
+                // supplies images, so cards get real photos, not placeholders.
+                image: (() => {
+                  const imgs = Array.isArray(e.images) ? e.images.filter(i => i && i.url) : [];
+                  if (!imgs.length) return '';
+                  const wide = imgs.filter(i => i.ratio === '16_9').sort((a, b) => (b.width || 0) - (a.width || 0));
+                  if (wide.length) return wide[0].url;
+                  return imgs.slice().sort((a, b) => (b.width || 0) - (a.width || 0))[0].url;
+                })(),
                 url: e.url || '',
                 lat: parseFloat(e._embedded?.venues?.[0]?.location?.latitude) || null,
                 lng: parseFloat(e._embedded?.venues?.[0]?.location?.longitude) || null,

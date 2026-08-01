@@ -185,7 +185,7 @@ ul{list-style:none}
 }
 
 /* ═══ V2 REVIEWS MARQUEE ═══ */
-.v2-reviews{margin-top:clamp(72px,9vw,132px);padding:clamp(44px,5vw,68px) 0;border-top:1px solid rgba(242,237,225,.1);border-bottom:1px solid rgba(242,237,225,.1);background:var(--bg-dark);overflow:hidden}
+.v2-reviews{margin-top:clamp(32px,4vw,56px);padding:clamp(44px,5vw,68px) 0;border-top:1px solid rgba(242,237,225,.1);border-bottom:1px solid rgba(242,237,225,.1);background:var(--bg-dark);overflow:hidden}
 .v2-reviews-k{margin:0 0 30px;display:flex;justify-content:center;gap:12px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--accent);padding:0 20px;text-align:center}
 .v2-mq-track{display:flex;width:max-content;cursor:grab;user-select:none;-webkit-user-select:none;will-change:transform}
 .v2-mq-track.dragging{cursor:grabbing}
@@ -828,7 +828,7 @@ ul{list-style:none}
 .xplr-stat-divider{width:1px;height:40px;background:rgba(255,255,255,.1)}
 
 /* Body */
-.xplr-body{max-width:1400px;margin:0 auto;padding:48px 48px 100px}
+.xplr-body{max-width:1400px;margin:0 auto;padding:48px 48px 44px}
 
 /* City Navigation */
 .xplr-cities{position:relative;margin-bottom:32px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -1039,7 +1039,10 @@ ul{list-style:none}
 .map-prop-strip-price span{font-size:9px;margin-left:1px}
 
 /* ══ Events — "Happening Nearby" ══ */
-.explore-events{margin-bottom:20px}
+.explore-events{margin-bottom:0}
+/* The events show-more is the last thing in the section — no trailing gap;
+   .xplr-body's bottom padding is the sole spacing before the reviews band. */
+#eventsShowMore{margin-bottom:0}
 .explore-events-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:14px}
 .explore-events-title{font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.015em;color:var(--text-inv);display:flex;align-items:center;gap:14px}
 .explore-events-title .pulse-dot{width:8px;height:8px;border-radius:50%;background:#6FCF97;box-shadow:0 0 0 4px rgba(111,207,151,.14);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
@@ -1062,10 +1065,24 @@ ul{list-style:none}
 .event-media{position:relative;width:38%;min-width:132px;max-width:190px;flex-shrink:0;overflow:hidden;background:#12160F}
 .event-photo{position:absolute;inset:0;display:block;background-size:cover;background-position:center;transition:transform .7s var(--ease)}
 @media(hover:hover){.explore-event-card:hover .event-photo{transform:scale(1.06)}}
-.event-photo.no-photo{background-image:radial-gradient(120% 90% at 15% 0%,rgba(201,152,69,.28),transparent 62%),linear-gradient(150deg,#1A1E16,#0E120C 70%)}
-.event-photo.no-photo::before{content:'';position:absolute;inset:0;opacity:.5;background-image:repeating-linear-gradient(135deg,rgba(242,237,225,.05) 0 1px,transparent 1px 9px)}
-.event-glyph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;color:rgba(224,177,92,.42);filter:drop-shadow(0 2px 10px rgba(0,0,0,.45));transition:color .5s var(--ease)}
-@media(hover:hover){.explore-event-card:hover .event-glyph{color:rgba(224,177,92,.62)}}
+/* Photo-less events render as a slim full-width row — date chip, name, venue,
+   ticket link — instead of a big card with a placeholder glyph. */
+.explore-event-card.event-row{grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;padding:11px 18px;border-radius:14px}
+@media(hover:hover){.explore-event-card.event-row:hover{transform:translateY(-2px)}}
+.event-row-date{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:46px;padding:6px 0 5px;border-radius:10px;background:rgba(201,152,69,.08);border:1px solid rgba(201,152,69,.18)}
+.event-row-date b{font-family:var(--serif);font-size:18px;line-height:1;color:var(--accent-light);font-weight:400}
+.event-row-date i{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;font-style:normal;color:var(--text-dim);margin-top:2px}
+.event-row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.event-row-name{font-family:var(--sans);font-size:14.5px;font-weight:600;color:var(--text-inv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.event-row-sub{font-family:var(--sans);font-size:12px;color:var(--text-inv-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.explore-event-card.event-row .event-cta{flex-shrink:0;margin-left:auto}
+@media(max-width:560px){
+  .explore-event-card.event-row{gap:11px;padding:10px 12px}
+  .event-row-date{width:40px}
+  .event-row-date b{font-size:16px}
+  .event-row-name{font-size:13px}
+  .event-row-sub{font-size:11px}
+}
 /* Scrim blends the media into the card body — no hard seam */
 .event-media-scrim{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(90deg,rgba(10,13,10,.34) 0%,rgba(10,13,10,.04) 30%,rgba(10,13,10,.14) 58%,rgba(13,17,14,.94) 100%)}
 /* Floating date chip */
@@ -1136,7 +1153,7 @@ ul{list-style:none}
   .xplr-grid .xplr-card:first-child .xplr-card-img{height:220px;min-height:unset}
   .explore-events-grid{grid-template-columns:repeat(2,1fr)}
   .xplr-hero{min-height:320px}
-  .xplr-body{padding:40px 32px 80px}
+  .xplr-body{padding:40px 32px 36px}
 }
 @media(max-width:768px){
   .nav{top:10px}
@@ -1566,7 +1583,7 @@ ul{list-style:none}
   .legal-updated{margin-bottom:36px}
   .xplr-hero{min-height:280px}
   .xplr-hero-content{padding:0 20px 36px}
-  .xplr-body{padding:32px 20px 40px}
+  .xplr-body{padding:32px 20px 24px}
   .xplr-grid{grid-template-columns:1fr}
   .xplr-grid .xplr-card:first-child{grid-template-columns:1fr;display:block}
   .xplr-grid .xplr-card:first-child .xplr-card-img{height:200px;min-height:unset}
@@ -1612,7 +1629,6 @@ ul{list-style:none}
   .xplr-cat{padding:8px 16px;font-size:11px;min-height:40px}
   .explore-event-card{flex-direction:row;border-radius:16px}
   .event-media{width:34%;min-width:112px;max-width:150px}
-  .event-glyph{width:40px;height:40px}
   .event-date-chip{top:10px;left:10px;width:46px;padding:7px 0 6px}
   .event-date-chip b{font-size:21px}
   .event-name{font-size:17px;margin-bottom:9px}
@@ -1679,7 +1695,6 @@ ul{list-style:none}
   .explore-events-title{font-size:26px;gap:11px}
   .explore-map-title{font-size:26px}
   .event-media{width:33%;min-width:104px;max-width:124px}
-  .event-glyph{width:34px;height:34px}
   .event-date-chip{width:42px;padding:6px 0 5px;border-radius:10px}
   .event-date-chip b{font-size:19px}
   .event-date-chip i{font-size:8px;letter-spacing:.12em}
@@ -6758,24 +6773,8 @@ function escHtml(s) {
   ));
 }
 
-/* Watermark glyphs for events whose feed gives us no photo. */
-const EVENT_GLYPHS = {
-  'music':      '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
-  'sports':     '<path d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M6 3h12v5a6 6 0 01-12 0z"/><path d="M9 21h6M12 14v7"/>',
-  'arts':       '<path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/>',
-  'film':       '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 10h20M2 14h20"/>',
-  'family':     '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20a6 6 0 0112 0M14 20a5 5 0 017-4.6"/>',
-  'default':    '<path d="M3 8a2 2 0 002-2h14a2 2 0 002 2v2a2 2 0 000 4v2a2 2 0 00-2 2H5a2 2 0 00-2-2v-2a2 2 0 000-4z"/><path d="M12 6v12" stroke-dasharray="2 3"/>'
-};
-function eventGlyphKey(category) {
-  const c = String(category || '').toLowerCase();
-  if (c.includes('music')) return 'music';
-  if (c.includes('sport')) return 'sports';
-  if (c.includes('film')) return 'film';
-  if (c.includes('family') || c.includes('child')) return 'family';
-  if (c.includes('art') || c.includes('theat')) return 'arts';
-  return 'default';
-}
+/* (Photo-less events render as compact rows — see renderEvents — so the old
+   watermark-glyph placeholders are gone.) */
 
 /* The feed's genre ("Soccer", "Cinema") is both shorter and more interesting
    than its top-level segment ("Sports", "Film"), so prefer it for the eyebrow. */
@@ -6826,12 +6825,23 @@ function renderEvents(events) {
       ? new Date('2000-01-01T' + ev.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
       : 'Time TBA';
 
-    const glyph = eventGlyphKey(ev.category);
-    const photo = ev.image
-      ? `<span class="event-photo" style="background-image:url('${encodeURI(ev.image).replace(/'/g, '%27')}')"></span>`
-      : `<span class="event-photo no-photo">
-           <svg class="event-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${EVENT_GLYPHS[glyph]}</svg>
-         </span>`;
+    // No photo → slim full-width row: date, name, venue + time, tickets link.
+    // (No big card, no placeholder glyph.)
+    if (!ev.image) {
+      return `
+      <a href="${escHtml(ev.url)}" target="_blank" rel="noopener" class="explore-event-card event-row" style="transition-delay:${i * 70}ms">
+        <span class="event-row-date"><b>${d.getDate()}</b><i>${months[d.getMonth()]}</i></span>
+        <span class="event-row-main">
+          <span class="event-row-name">${escHtml(ev.name)}</span>
+          <span class="event-row-sub">${escHtml(ev.venue || 'Venue TBA')} &middot; ${days[d.getDay()]}, ${time}${price ? ' &middot; ' + price : ''}</span>
+        </span>
+        <span class="event-cta">Tickets
+          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        </span>
+      </a>`;
+    }
+
+    const photo = `<span class="event-photo" style="background-image:url('${encodeURI(ev.image).replace(/'/g, '%27')}')"></span>`;
 
     return `
       <a href="${escHtml(ev.url)}" target="_blank" rel="noopener" class="explore-event-card" style="transition-delay:${i * 70}ms">
