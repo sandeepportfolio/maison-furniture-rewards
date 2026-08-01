@@ -3818,8 +3818,8 @@ const PROPERTY_DATA = {
     ],
     description: 'Wake up to stunning lake views in this modern designer suite in Las Colinas. Private balcony, 65" Smart TV in living room plus 50" TV in bedroom. Massive L-shaped couch for epic streaming sessions. 1GB Fiber Wi-Fi, dedicated workspace with 27" monitor. Steps to DART Orange Line. 24/7 access to 2-story gym, waterfront pool, game room, and business center with conference rooms.',
     fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Shampoo','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer (in-unit)','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Drying rack','Walk-in closet'],Entertainment:['65" Smart TV (living room)','50" Smart TV (bedroom)','Exercise equipment','Pool table','Board games','Mini basketball hoop'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" monitor','1GB Fiber Internet'],Outdoor:['Private balcony','Outdoor furniture','Outdoor dining area','Shared outdoor kitchen','BBQ grill'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center','Smart lock entry'],'Location':['Waterfront','Lake access','Steps to DART Orange Line','24-hour housekeeping available']},
-    amenityPhotos: {'Private balcony':0,'65" Smart TV (living room)':1,'Full-length mirror':2,'Board games':4,'Full kitchen':5,'Dishwasher':5,'Microwave':8,'Keurig coffee station':13,'Walk-in closet':15,'Iron':15,'Hair dryer':16,'Dedicated workspace':19,'27" monitor':19,'Exercise equipment':20,'Gym':21,'Pool':23,'Pool table':24,'BBQ grill':27},
-    photoLabels: ['Private Balcony','65" Smart TV','Full-length Mirror','Living Room','Board Games','Full Kitchen','Kitchen Counter','Dining Area','Microwave','Kitchen Detail','Kitchen Appliances','Bedroom','Bed Linens','Keurig Coffee Station','Bedroom Detail','Walk-in Closet','Hair Dryer','Bathroom','Bathtub','Dedicated Workspace','Exercise Equipment','Gym','Building Lobby','Pool','Pool Table','Game Room','Outdoor Dining','BBQ Grill'],
+    amenityPhotos: {'Private balcony':0,'65" Smart TV (living room)':1,'Full-length mirror':2,'Board games':4,'Full kitchen':5,'Dishwasher':5,'Microwave':8,'Keurig coffee station':13,'Walk-in closet':15,'Iron':15,'Hair dryer':16,'Dedicated workspace':19,'27" monitor':19,'Exercise equipment':20,'Gym':21,'Pool':23,'Pool table':24,'BBQ grill':27,'Washer':28,'Dryer (in-unit)':28},
+    photoLabels: ['Private Balcony','65" Smart TV','Full-length Mirror','Living Room','Board Games','Full Kitchen','Kitchen Counter','Dining Area','Microwave','Kitchen Detail','Kitchen Appliances','Bedroom','Bed Linens','Keurig Coffee Station','Bedroom Detail','Walk-in Closet','Hair Dryer','Bathroom','Bathtub','Dedicated Workspace','Exercise Equipment','Gym','Building Lobby','Pool','Pool Table','Game Room','Outdoor Dining','BBQ Grill','Washer & Dryer'],
     photos: [
       '9198323c-4b1b-49c9-a728-37d07c6c7658.jpeg',
       '888a837d-221c-422d-9286-aeaa2ba95d2a.jpeg',
@@ -3848,7 +3848,8 @@ const PROPERTY_DATA = {
       '801da323-6bfb-4ef5-8686-3f48ef54aeaa.png',
       '8f7ab31c-9823-41cb-981c-70296403d58a.png',
       '4886a581-3213-4c65-ac6d-9e21930131ad.png',
-      '9cd45fb9-89b9-4f2a-9295-d7dc4ee73625.png'
+      '9cd45fb9-89b9-4f2a-9295-d7dc4ee73625.png',
+      'ded91f49-7c81-4f69-b23f-3c1a2c8db944.jpeg'
     ]
   }
 };
