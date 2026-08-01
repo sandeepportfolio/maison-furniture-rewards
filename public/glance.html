@@ -526,9 +526,11 @@ function init() {
   }
   document.getElementById('glTicker').innerHTML = tickerHtml;
 
-  // Photo Strip
+  // Photo Strip — show EVERY photo (was capped at 20, which hid the tail of
+  // larger galleries like Cozy Designer's 29). Images are lazy-loaded, so the
+  // full strip costs nothing until scrolled.
   var stripHtml = '';
-  var stripCount = Math.min(totalPhotos, 20);
+  var stripCount = totalPhotos;
   for (var s = 0; s < stripCount; s++) {
     var lbl = getPhotoLabel(s);
     stripHtml += '<div class="gl-strip-item" onclick="openGallery(' + s + ')">';

@@ -425,10 +425,15 @@ ul{list-style:none}
 .prop-book-fab .fab-circle svg{width:17px;height:17px;stroke:#16120A;stroke-width:2.2;fill:none}
 
 /* Secondary actions row inside glass */
-.prop-actions-row{display:flex;gap:6px;margin-top:10px;padding-top:8px}
-.prop-actions-row a,.prop-actions-row button{font-family:var(--sans);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--obs-muted);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:999px;cursor:pointer;transition:all .3s var(--ease);padding:5px 12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.prop-actions-row a:hover,.prop-actions-row button:hover{color:var(--text);border-color:rgba(201,152,69,.35);background:rgba(201,152,69,.08)}
-.prop-actions-row svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+/* Quick actions — compact icon circles pinned to the info box's top-right,
+   so the panel stays short and the photo above it stays tall. */
+.prop-actions-row{position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:5}
+.prop-actions-row a,.prop-actions-row button{width:28px;height:28px;padding:0;color:var(--obs-muted);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:50%;cursor:pointer;transition:all .3s var(--ease);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.prop-actions-row a:hover,.prop-actions-row button:hover{color:var(--accent-hover);border-color:rgba(201,152,69,.4);background:rgba(201,152,69,.1);transform:translateY(-1px)}
+/* display:block kills the baseline gap that made icons sit low in the circle */
+.prop-actions-row svg{width:13px;height:13px;display:block;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* Keep the location line clear of the icon cluster */
+.prop-location{padding-right:104px}
 
 /* ── Hover (desktop only) ── */
 @media(hover:hover) and (pointer:fine){
@@ -1170,10 +1175,10 @@ ul{list-style:none}
   .prop-price-amount{font-size:22px}
   .prop-book-fab .fab-label{font-size:8px;letter-spacing:.2em}
   .prop-book-fab .fab-circle{width:40px;height:40px}
-  /* Icon-only action buttons on mobile */
-  .prop-actions-row{margin-top:6px;padding-top:6px;gap:8px;justify-content:flex-start}
-  .prop-actions-row a,.prop-actions-row button{font-size:0;letter-spacing:0;padding:0;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;min-height:unset}
-  .prop-actions-row svg{width:14px;height:14px}
+  /* Action circles: slightly larger touch targets on mobile */
+  .prop-actions-row{top:9px;right:10px;gap:5px}
+  .prop-actions-row a,.prop-actions-row button{width:30px;height:30px}
+  .prop-location{padding-right:100px}
   .lightbox-prev{left:8px}
   .lightbox-next{right:8px}
   .search-row{flex-wrap:wrap;gap:12px}
@@ -3988,9 +3993,9 @@ function renderPropertyCard(p) {
         </div>
       </div>
       <div class="prop-actions-row" onclick="event.stopPropagation()">
-        <a href="/availability?property=${p.slug}" title="Availability"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Availability</a>
-        <a href="/glance/${p.slug}" title="Full Page" onclick="event.preventDefault();window.location.href='/glance/${p.slug}?photo='+(carouselState['${p.slug}']||0)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>Full Page</a>
-        <button onclick="viewPropertyOnMap('${p.slug}')" title="Map"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</button>
+        <a href="/availability?property=${p.slug}" title="Check availability" aria-label="Check availability for ${p.name}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></a>
+        <a href="/glance/${p.slug}" title="Open full page" aria-label="Open full page for ${p.name}" onclick="event.preventDefault();window.location.href='/glance/${p.slug}?photo='+(carouselState['${p.slug}']||0)"><svg viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-7 7"/><path d="M10 20H4v-6"/><path d="M4 20l7-7"/></svg></a>
+        <button onclick="viewPropertyOnMap('${p.slug}')" title="View on map" aria-label="View ${p.name} on map"><svg viewBox="0 0 24 24"><path d="M12 21.5S5 16.2 5 10.5a7 7 0 0114 0c0 5.7-7 11-7 11z"/><circle cx="12" cy="10.5" r="2.6"/></svg></button>
       </div>
     </div>
   </div>`;
