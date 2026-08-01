@@ -370,9 +370,14 @@ ul{list-style:none}
 .prop-name{font-family:var(--serif);font-weight:400;font-size:29px;line-height:1.02;color:var(--text);letter-spacing:0;white-space:normal;overflow:visible;text-overflow:unset}
 .prop-header-row{margin-bottom:0}
 
-/* Meta line */
+/* Meta line (specs only) */
 .prop-meta{margin-top:7px;font-family:var(--sans);font-size:11.5px;color:var(--obs-muted);line-height:1.4}
 .prop-meta b{color:var(--text);font-weight:600}
+
+/* Amenity micro-chips */
+.prop-amenity-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.prop-amenity-chip{font-family:var(--sans);font-size:9.5px;letter-spacing:.04em;font-weight:500;padding:4px 10px;border-radius:999px;color:var(--obs-muted);border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);white-space:nowrap;transition:border-color .3s var(--ease),color .3s var(--ease)}
+.prop-amenity-chip:hover{border-color:rgba(201,152,69,.4);color:var(--text)}
 
 /* Bottom row (price + book) */
 .prop-bottom-row{display:flex;align-items:flex-end;justify-content:space-between;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}
@@ -3832,9 +3837,11 @@ function renderPropertyCard(p) {
     ? `<span class="obs-chip obs-rate"><b>&#9733;</b> ${fmtRating(p.rating)} &middot; ${p.reviews}</span>`
     : `<span class="obs-chip obs-new"><b>&#10024;</b> NEW${p.reviews > 0 ? ` &middot; ${p.reviews}` : ''}</span>`;
 
-  /* Meta line: "14 guests · 4 beds · 3.5 baths · Hot tub, 85″ theatre, game room" */
-  const topAmenities = p.amenities.slice(0, 3).map(a => a.label.toLowerCase()).join(', ');
-  const metaLine = `<b>${p.guests}</b> guest${p.guests>1?'s':''} &middot; <b>${p.beds}</b> bed${p.beds>1?'s':''} &middot; <b>${p.baths}</b> bath${p.baths>1?'s':''} &middot; ${topAmenities}`;
+  /* Specs line + amenity chips */
+  const specsLine = `<b>${p.guests}</b> guest${p.guests>1?'s':''} &middot; <b>${p.beds}</b> bed${p.beds>1?'s':''} &middot; <b>${p.baths}</b> bath${p.baths>1?'s':''}`;
+  const amenityChips = p.amenities.slice(0, 3).map(a =>
+    `<span class="prop-amenity-chip">${a.label.charAt(0).toUpperCase() + a.label.slice(1)}</span>`
+  ).join('');
 
   /* Price slot */
   const priceHtml = (p.basePrice || p.lowestPrice)
@@ -3863,7 +3870,8 @@ function renderPropertyCard(p) {
       <div class="prop-header-row">
         <div class="prop-name">${p.name}</div>
       </div>
-      <div class="prop-meta">${metaLine}</div>
+      <div class="prop-meta">${specsLine}</div>
+      <div class="prop-amenity-chips">${amenityChips}</div>
       <div class="prop-bottom-row">
         <div>
           <div class="prop-price-label">From &middot; Direct rate</div>
