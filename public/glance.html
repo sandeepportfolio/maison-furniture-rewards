@@ -133,12 +133,15 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 /* ── Reviews Section ── */
 .gl-review-hero{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:6px;margin-bottom:16px}
 .gl-review-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(0.5)}
-/* Radial scrim guarantees contrast no matter how bright the hero photo is —
-   brightness(0.5) alone still washed out on light interiors (e.g. Cozy Designer). */
-.gl-review-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse 68% 78% at 50% 52%,rgba(6,8,6,.62),rgba(6,8,6,.28) 62%,rgba(6,8,6,0) 100%)}
-.gl-review-score{font-family:var(--serif);font-size:64px;font-weight:700;color:var(--text);text-shadow:0 2px 18px rgba(0,0,0,.65),0 1px 4px rgba(0,0,0,.5)}
-.gl-review-stars{color:var(--accent);font-size:14px;letter-spacing:4px;margin:4px 0;text-shadow:0 1px 8px rgba(0,0,0,.7)}
-.gl-review-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:rgba(242,237,225,.85);text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.6)}
+/* Contrast is guaranteed by a full-width dark band behind the entire score
+   block (0.72 alpha at its core) layered over a heavier photo dim. A soft
+   radial scrim alone still washed out on light interiors (Cozy Designer,
+   Designer Game Room) — the band works on any photo. */
+.gl-review-hero img{filter:brightness(0.42)}
+.gl-review-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,rgba(4,6,4,.10) 0%,rgba(4,6,4,.55) 24%,rgba(4,6,4,.72) 42%,rgba(4,6,4,.72) 58%,rgba(4,6,4,.55) 76%,rgba(4,6,4,.10) 100%)}
+.gl-review-score{font-family:var(--serif);font-size:64px;font-weight:700;color:#FFFFFF;text-shadow:0 2px 20px rgba(0,0,0,.8),0 1px 4px rgba(0,0,0,.6)}
+.gl-review-stars{color:var(--accent-hover,#E0B15C);font-size:14px;letter-spacing:4px;margin:4px 0;text-shadow:0 1px 8px rgba(0,0,0,.85)}
+.gl-review-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:rgba(255,255,255,.95);text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.7)}
 .gl-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,0.06)}
 .gl-score-item{text-align:center;padding:14px 8px}
 .gl-score-cat{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px}

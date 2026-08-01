@@ -215,10 +215,18 @@ function parseTokenExpiry(value) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-function useToken(token, expiry) {
+// True when tokenExpiry is our own guess (assumed TTL) rather than a real
+// expiry Guesty or the operator stated. An assumed clock must never trigger
+// an OAuth call — a token in this state is used until Guesty 401s it. The old
+// behavior re-attempted OAuth every time the 1h assumed TTL lapsed, which
+// could quietly burn the 5-tokens-per-24h quota while the token still worked.
+let tokenExpiryAssumed = false;
+
+function useToken(token, expiry, assumed = false) {
   if (token && expiry && Date.now() < expiry - 60_000) {
     cachedToken = token;
     tokenExpiry = expiry;
+    tokenExpiryAssumed = assumed;
     return true;
   }
   return false;
@@ -289,7 +297,7 @@ function loadBootstrapToken() {
       ? 'GUESTY_ACCESS_TOKEN is past its stated expiry — using it anyway; only a 401 from Guesty retires a token'
       : 'GUESTY_ACCESS_TOKEN has no parseable expiry (set GUESTY_ACCESS_TOKEN_EXPIRY) — using it with a 1h assumed TTL'
   );
-  return useToken(token, Date.now() + ASSUMED_BOOTSTRAP_TTL);
+  return useToken(token, Date.now() + ASSUMED_BOOTSTRAP_TTL, true);
 }
 
 function loadPersistedToken() {
@@ -330,7 +338,7 @@ function loadPersistedToken() {
   // passed, for the same reason as the bootstrap token above.
   if (persisted?.token && !isBurned(persisted.token)) {
     console.warn('Cached Guesty token is past its stated expiry — using it anyway pending a 401');
-    useToken(persisted.token, Date.now() + ASSUMED_BOOTSTRAP_TTL);
+    useToken(persisted.token, Date.now() + ASSUMED_BOOTSTRAP_TTL, true);
   }
 }
 loadPersistedToken();
@@ -429,6 +437,9 @@ let refreshTimer = null;
 function scheduleProactiveRefresh() {
   if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
   if (!cachedToken || !tokenExpiry) return;
+  // An assumed expiry is a guess, not a deadline — refreshing against it
+  // would spend OAuth quota on a token that may be fine for many more hours.
+  if (tokenExpiryAssumed) return;
   if (!(process.env.GUESTY_CLIENT_ID && process.env.GUESTY_CLIENT_SECRET)) return;
   // Aim 45 min before expiry, minus 0-10 min of jitter so overlapping
   // instances don't refresh in lockstep.
@@ -451,6 +462,7 @@ async function proactiveRefresh() {
     const json = await requestTokenWithBackoff(id, secret);
     cachedToken = json.access_token;
     tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
+    tokenExpiryAssumed = false; // real expiry straight from Guesty
     persistToken();
     scheduleProactiveRefresh();
     console.log(`Proactive Guesty token refresh OK — valid until ${new Date(tokenExpiry).toISOString()}`);
@@ -462,6 +474,11 @@ async function proactiveRefresh() {
 }
 
 async function getToken() {
+  // A token on an ASSUMED expiry is used until Guesty 401s it — its clock is
+  // our own guess and must never justify an OAuth call (quota: 5/24h).
+  if (cachedToken && tokenExpiryAssumed) {
+    return cachedToken;
+  }
   // Reuse the cached token until shortly before it expires (docs recommend a
   // 30-60 min refresh margin; the proactive timer usually beats this path).
   // Checked BEFORE the credential check so a deploy that only has
@@ -501,6 +518,7 @@ async function getToken() {
     const json = await requestTokenWithBackoff(id, secret);
     cachedToken = json.access_token;
     tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
+    tokenExpiryAssumed = false; // real expiry straight from Guesty
     persistToken();
     scheduleProactiveRefresh();
     return cachedToken;
@@ -531,6 +549,7 @@ function tokenStatus() {
     hasToken: Boolean(cachedToken),
     tokenExpiry: tokenExpiry ? new Date(tokenExpiry).toISOString() : null,
     tokenPastStatedExpiry: Boolean(cachedToken) && Date.now() >= tokenExpiry - 60_000,
+    tokenExpiryAssumed,
     bootstrapEnvSet: Boolean(bootstrap),
     bootstrapEnvLength: bootstrap ? bootstrap.length : 0,
     bootstrapEnvExpiryRaw: process.env.GUESTY_ACCESS_TOKEN_EXPIRY || null,
@@ -548,7 +567,7 @@ function tokenStatus() {
 /** Re-adopt a token past its stated expiry for another re-validation window. */
 function keepStaleToken(token, why) {
   console.warn(`Guesty: reusing token past its stated expiry — ${why}`);
-  useToken(token, Date.now() + ASSUMED_BOOTSTRAP_TTL);
+  useToken(token, Date.now() + ASSUMED_BOOTSTRAP_TTL, true);
   return cachedToken;
 }
 
@@ -1560,6 +1579,7 @@ function injectToken(accessToken, expiresIn = 86400) {
   }
   cachedToken = accessToken;
   tokenExpiry = Date.now() + expiresIn * 1000;
+  tokenExpiryAssumed = false; // operator supplied the expiry
   clearRateLimit();
   persistToken();
   scheduleProactiveRefresh();
