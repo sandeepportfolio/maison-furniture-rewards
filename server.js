@@ -529,6 +529,14 @@ function isValidDate(s) {
 }
 function todayUTC() { return new Date().toISOString().slice(0, 10); }
 
+// "Today" for guests means today in DALLAS, not UTC. From 7 PM Central
+// onward the UTC date has already rolled to tomorrow, which silently made
+// "available tonight" mean tomorrow night and rejected same-day searches as
+// "in the past" — the root of the recurring wrong-availability reports.
+// en-CA formatting yields YYYY-MM-DD directly.
+const CT_DATE_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago' });
+function todayCT() { return CT_DATE_FMT.format(new Date()); }
+
 // Named sleepMs rather than `delay` — getTruviBackoff() already has a local
 // `delay` const that would shadow it.
 function sleepMs(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -605,7 +613,7 @@ app.get('/api/guesty/lowest-prices', async (req, res) => {
 //   photo, today: {available, minNights, price}, tomorrow: {…} }] }
 app.get('/api/availability/now', async (req, res) => {
   try {
-    const today = todayUTC();
+    const today = todayCT();
     const dayAfterTomorrow = new Date(today + 'T00:00:00Z');
     dayAfterTomorrow.setUTCDate(dayAfterTomorrow.getUTCDate() + 2);
     const to = dayAfterTomorrow.toISOString().slice(0, 10);
@@ -688,40 +696,52 @@ app.get('/api/availability/now', async (req, res) => {
     const degradation = availabilityDegradation(errors);
 
     // When ALL properties degraded, serve the last known good response from
-    // the DB so the page never shows "temporarily unavailable".
+    // the DB so the page never shows "temporarily unavailable" — but ONLY if
+    // it was computed for TODAY (Central Time). A cached payload from an
+    // earlier date labels a different night "today"; serving it as current
+    // showed properties as bookable tonight that were booked. Stale cache is
+    // sanitized to "unknown", never passed off as live truth.
     if (degradation && degradation.degradedCount >= properties.length) {
       try {
         const row = db.prepare('SELECT data, updated_at FROM availability_cache WHERE key = ?').get('now');
         if (row) {
           const cached = JSON.parse(row.data);
-          console.log(`Serving DB-cached availability (from ${row.updated_at}) — Guesty fully degraded`);
-          res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-          return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
+          if (cached.forDate === today) {
+            console.log(`Serving DB-cached availability (from ${row.updated_at}) — Guesty fully degraded`);
+            res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+            return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
+          }
+          console.log(`DB availability cache is for ${cached.forDate}, today is ${today} — refusing to serve stale dates as current`);
         }
       } catch (dbErr) {
         console.warn('Failed to read availability cache from DB:', dbErr.message);
       }
-      // Absolute last resort: build from PROPERTY_DATA so properties always show.
-      // No live availability, but guests see real photos/prices and can click through.
-      console.log('No DB cache — building static availability fallback from PROPERTY_DATA');
+      // Absolute last resort: build from PROPERTY_DATA so properties still
+      // show — but availability is UNKNOWN, never fabricated. Claiming
+      // "available tonight" without a verified calendar is worse than
+      // admitting we can't check right now.
+      console.log('No fresh cache — serving static property list with availability marked unknown');
       const CDN2 = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+      const unknownDay = { available: false, availabilityUnknown: true, minNights: 1, price: null, currency: 'USD' };
       const staticProps = Object.keys(PROPERTY_DATA).map(slug => {
         const p = PROPERTY_DATA[slug];
         return {
           slug, name: p.name, city: p.city, category: p.category,
           guests: p.guests, beds: p.beds, baths: p.baths,
           photo: `${CDN2}${p.hostingId}/original/${p.photos[0]}?im_w=480`,
-          today: { available: true, minNights: 1, price: null, currency: 'USD' },
-          tomorrow: { available: true, minNights: 1, price: null, currency: 'USD' },
+          today: { ...unknownDay },
+          tomorrow: { ...unknownDay },
+          availabilityUnknown: true,
         };
       });
       res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-      return res.json({ asOf: new Date().toISOString(), properties: staticProps, _staticFallback: true });
+      return res.json({ asOf: new Date().toISOString(), properties: staticProps, _staticFallback: true, availabilityUnknown: true });
     }
 
     // Persist successful (non-degraded) responses so they survive restarts.
+    // forDate records which Central-Time day this snapshot describes.
     if (!degradation) {
-      const payload = { asOf: new Date().toISOString(), properties };
+      const payload = { asOf: new Date().toISOString(), forDate: today, properties };
       try {
         db.prepare('INSERT OR REPLACE INTO availability_cache (key, data, updated_at) VALUES (?, ?, datetime(\'now\'))').run('now', JSON.stringify(payload));
       } catch (dbErr) {
@@ -734,29 +754,35 @@ app.get('/api/availability/now', async (req, res) => {
     res.json({ asOf: new Date().toISOString(), properties, ...(degradation || {}) });
   } catch (err) {
     console.error('Availability/now error:', err.message);
-    // Last resort: serve DB cache even on total crash
+    // Last resort: serve DB cache even on total crash — but only if it
+    // describes TODAY in Central Time (see the degraded path above).
     try {
       const row = db.prepare('SELECT data, updated_at FROM availability_cache WHERE key = ?').get('now');
       if (row) {
         const cached = JSON.parse(row.data);
-        res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-        return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
+        if (cached.forDate === todayCT()) {
+          res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+          return res.json({ ...cached, _cachedAt: row.updated_at, _cachedFallback: true });
+        }
       }
     } catch (_) { /* fallthrough */ }
-    // Absolute last resort — static PROPERTY_DATA
+    // Absolute last resort — static PROPERTY_DATA with availability UNKNOWN,
+    // never fabricated as available.
     const CDN3 = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+    const unknownDay3 = { available: false, availabilityUnknown: true, minNights: 1, price: null, currency: 'USD' };
     const emergencyProps = Object.keys(PROPERTY_DATA).map(slug => {
       const p = PROPERTY_DATA[slug];
       return {
         slug, name: p.name, city: p.city, category: p.category,
         guests: p.guests, beds: p.beds, baths: p.baths,
         photo: `${CDN3}${p.hostingId}/original/${p.photos[0]}?im_w=480`,
-        today: { available: true, minNights: 1, price: null, currency: 'USD' },
-        tomorrow: { available: true, minNights: 1, price: null, currency: 'USD' },
+        today: { ...unknownDay3 },
+        tomorrow: { ...unknownDay3 },
+        availabilityUnknown: true,
       };
     });
     res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-    res.json({ asOf: new Date().toISOString(), properties: emergencyProps, _staticFallback: true });
+    res.json({ asOf: new Date().toISOString(), properties: emergencyProps, _staticFallback: true, availabilityUnknown: true });
   }
 });
 
@@ -844,7 +870,7 @@ app.get('/api/availability/check', async (req, res) => {
     if (!checkIn || !dateFmt.test(checkIn)) {
       return res.status(400).json({ error: 'checkIn date required (YYYY-MM-DD)' });
     }
-    if (checkIn < todayUTC()) {
+    if (checkIn < todayCT()) {
       return res.status(400).json({ error: 'Check-in cannot be in the past' });
     }
     if (!checkOut) {
@@ -870,7 +896,7 @@ app.get('/api/availability/check', async (req, res) => {
 
     // One widened calendar fetch per listing covers both the exact window and
     // every ±3-day alternative, so the API-call count is unchanged.
-    const today = todayUTC();
+    const today = todayCT();
     const scanFrom = (() => {
       const earliest = addDaysUTC(checkIn, -ALT_SHIFT_DAYS);
       return earliest < today ? today : earliest;
@@ -969,7 +995,7 @@ app.get('/api/guesty/calendar', async (req, res) => {
     const listingId = guesty.resolveListingId(req.query.listing);
     if (!listingId) return res.status(400).json({ error: 'Unknown listing' });
 
-    const from = req.query.from || todayUTC();
+    const from = req.query.from || todayCT();
     let to = req.query.to;
     if (!to) {
       const d = new Date(from + 'T00:00:00Z');
@@ -1008,7 +1034,7 @@ app.post('/api/guesty/quote', async (req, res) => {
       return res.status(400).json({ error: 'Invalid dates' });
     }
     if (checkOut <= checkIn) return res.status(400).json({ error: 'Check-out must be after check-in' });
-    if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
+    if (checkIn < todayCT()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
 
     const { summary } = await guesty.createQuote({
       listingId,
@@ -1716,7 +1742,7 @@ app.post('/api/guesty/reservation-intent', async (req, res) => {
     if (!isValidDate(checkIn) || !isValidDate(checkOut) || checkOut <= checkIn) {
       return res.status(400).json({ error: 'Invalid dates' });
     }
-    if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
+    if (checkIn < todayCT()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
 
     const g = sanitizeGuestPayload(guest || {});
     if (!g.email.includes('@')) return res.status(400).json({ error: 'A valid email is required' });
@@ -1873,7 +1899,7 @@ app.post('/api/guesty/reservation', async (req, res) => {
     if (!isValidDate(checkIn) || !isValidDate(checkOut) || checkOut <= checkIn) {
       return res.status(400).json({ error: 'Invalid dates' });
     }
-    if (checkIn < todayUTC()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
+    if (checkIn < todayCT()) return res.status(400).json({ error: 'Check-in cannot be in the past' });
 
     const g = sanitizeGuestPayload(guest || {});
     if (!g.email.includes('@')) return res.status(400).json({ error: 'A valid email is required' });

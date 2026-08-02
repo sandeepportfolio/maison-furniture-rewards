@@ -787,9 +787,15 @@ async function getListings() {
  *  state is 7 calls per TTL regardless of what dates guests search. */
 const CANONICAL_WINDOW_DAYS = 186;
 
+// The window starts on today's date in CENTRAL TIME (the properties are in
+// DFW). Starting from the UTC date meant that after 7 PM Central the window
+// began on tomorrow — requests for "tonight" fell outside it and got clamped
+// to tomorrow, corrupting same-evening availability.
+const CT_DATE_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago' });
+
 function canonicalCalendarWindow() {
-  const from = new Date().toISOString().slice(0, 10);
-  const end = new Date(Date.now() + CANONICAL_WINDOW_DAYS * 86_400_000);
+  const from = CT_DATE_FMT.format(new Date());
+  const end = new Date(new Date(from + 'T00:00:00Z').getTime() + CANONICAL_WINDOW_DAYS * 86_400_000);
   return { from, to: end.toISOString().slice(0, 10) };
 }
 
