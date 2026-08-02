@@ -200,7 +200,54 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 .gl-contact-success{display:none;padding:20px;text-align:center;font-family:var(--sans);font-size:15px;color:var(--accent)}
 
 /* ── Responsive ── */
-@media(min-width:481px){
+/* ═══ DESKTOP — editorial estate-dossier layout ═══════════════════════
+   Mobile is untouched: everything below 1024px keeps the phone column.
+   On desktop the page becomes a two-column dossier — a wide editorial
+   column (cinematic hero, spec ticker, photo contact-sheet, numbered
+   sections) beside a sticky frosted booking card that carries the
+   property identity and price. Pure CSS regrade: same DOM, same JS. */
+@media(min-width:1024px){
+  body{max-width:1280px;display:grid;grid-template-columns:minmax(0,1fr) 400px;column-gap:60px;align-content:start;padding:44px 48px 110px}
+  body>*{grid-column:1;min-width:0}
+
+  /* Hero: wide cinematic crop, softly framed */
+  .gl-hero{aspect-ratio:16/9.4;border-radius:22px;box-shadow:0 40px 90px rgba(0,0,0,.5)}
+  .gl-hero-chip{font-size:11px}
+  .gl-caption{padding:14px 6px 4px}
+
+  /* Sidebar — identity block, then the booking card sticks below it */
+  .gl-meta{grid-column:2;grid-row:1;align-self:start;padding:8px 0 0}
+  .gl-title{font-size:clamp(34px,3vw,42px)}
+  .gl-price-block{grid-column:2;grid-row:2/span 99;align-self:start;position:sticky;top:30px;
+    margin-top:24px;padding:28px 26px 24px;border:1px solid rgba(201,152,69,.24);border-radius:18px;
+    background:rgba(20,26,21,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 30px 70px -30px rgba(0,0,0,.85)}
+
+  .gl-ticker-wrap{border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 0}
+
+  /* Photo strip → contact-sheet grid (scrolls vertically inside itself) */
+  .gl-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;overflow-x:visible;overflow-y:auto;max-height:478px;padding:12px 4px 12px 0;scrollbar-width:thin;scrollbar-color:rgba(201,152,69,.4) transparent}
+  .gl-strip::-webkit-scrollbar{display:block;width:6px}
+  .gl-strip::-webkit-scrollbar-thumb{background:rgba(201,152,69,.35);border-radius:3px}
+  .gl-strip::-webkit-scrollbar-track{background:transparent}
+  .gl-strip-item{width:auto;height:150px;border-radius:10px}
+
+  /* Sections: airier rhythm, two-column amenity ledger, wider media */
+  .gl-section{padding:46px 8px}
+  #amenityList,#amenitiesExpand{columns:2;column-gap:52px}
+  .gl-amenity-item{break-inside:avoid}
+  .gl-bed-grid{grid-template-columns:repeat(3,1fr)}
+  .gl-review-hero{aspect-ratio:16/7}
+  .gl-contact-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  textarea.gl-contact-input,.gl-contact-submit{grid-column:1/-1}
+
+  .gl-footer-text{grid-column:1/-1}
+
+  /* The sidebar card replaces the mobile bottom bar */
+  .gl-sticky{display:none}
+}
+
+@media(min-width:481px) and (max-width:1023.9px){
   .gl-sticky{padding-left:calc((100% - 480px)/2 + 20px);padding-right:calc((100% - 480px)/2 + 20px)}
 }
 </style>
