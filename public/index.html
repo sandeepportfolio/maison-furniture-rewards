@@ -482,6 +482,7 @@ ul{list-style:none}
   .prop-card.villa-card{aspect-ratio:4/5.35}
 }
 
+
 /* Detail building amenities */
 .detail-building-amenities{padding:20px 24px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(201,152,69,.07),rgba(201,152,69,.02));border:1px solid rgba(201,152,69,.18);position:relative;overflow:hidden;margin-top:20px}
 .detail-building-amenities::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent);border-radius:4px 0 0 4px}
@@ -2338,6 +2339,35 @@ ul{list-style:none}
   .avail-drawer-body{padding:16px 20px 28px}
   .avail-card-photo{width:80px;min-width:80px;height:80px}
 }
+
+/* ═══ LARGE DESKTOP (≥1440px) — designed-for-desktop, not stretched-mobile.
+   Wider canvases, a taller cinematic hero, three-across events, four-across
+   attractions on very wide screens, more generous editorial air. Additive
+   only: nothing below 1440px changes. ═══ */
+@media(min-width:1440px){
+  .properties-grid{max-width:1560px;gap:34px;padding:0 40px}
+  .section-dark .section-inner{max-width:1560px}
+  .section-header h2{font-size:clamp(38px,4.6vw,76px)}
+  .coll-header{margin-bottom:56px}
+
+  .rd-inner{max-width:1360px;gap:100px;padding:80px 48px 56px}
+  .rd-headline{font-size:clamp(32px,2.6vw,48px)}
+  .rd-lede{font-size:16px}
+
+  .xplr-body{max-width:1560px;padding:56px 56px 52px}
+  .explore-events-grid{grid-template-columns:repeat(3,1fr);gap:22px}
+  .explore-map-shell,#exploreMap{min-height:520px}
+
+  .contact-inner{max-width:1360px;gap:100px}
+  .contact-section{padding:130px 32px}
+
+  .v2-mq-set{gap:56px;padding-right:56px}
+  .v2-quote em{font-size:19px}
+}
+@media(min-width:1680px){
+  .xplr-grid{grid-template-columns:repeat(4,1fr)}
+}
+
 </style>
 </head>
 <body>
