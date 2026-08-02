@@ -6053,7 +6053,17 @@ function showMapCardDistance(prop) {
 
 function getMapBounds() {
   const coords = PROPERTIES.map(p => [p.lat, p.lng]);
-  if (userLat != null) coords.push([userLat, userLng]);
+  // Include the guest's own location ONLY when they're actually near DFW.
+  // Unconditionally fitting to it zoomed the homepage preview out to a
+  // multi-state view for any guest browsing from elsewhere — pins invisible,
+  // map centered on empty country between them and Dallas.
+  if (userLat != null) {
+    const DFW_CENTER = [32.9, -96.85];
+    const NEARBY_MILES = 120;
+    if (haversine(userLat, userLng, DFW_CENTER[0], DFW_CENTER[1]) <= NEARBY_MILES) {
+      coords.push([userLat, userLng]);
+    }
+  }
   return L.latLngBounds(coords);
 }
 
