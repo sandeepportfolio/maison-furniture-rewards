@@ -954,18 +954,46 @@ function loadPrices() {
 }
 
 // ── Gallery ──
+// Back button while the gallery is open must CLOSE the gallery, not leave
+// the page. Opening pushes one history entry; popstate closes; a UI close
+// consumes that entry via history.back() so the stack stays balanced.
+var galleryHistoryArmed = false;
+
 function openGallery(idx) {
   galleryIdx = idx;
   var modal = document.getElementById('galleryModal');
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
   updateGallery();
+  if (!galleryHistoryArmed) {
+    history.pushState({ glGallery: true }, '', location.href);
+    galleryHistoryArmed = true;
+  }
 }
 
-function closeGallery() {
+function closeGalleryInternal() {
   document.getElementById('galleryModal').classList.remove('active');
   document.body.style.overflow = '';
 }
+
+function closeGallery() {
+  var wasOpen = document.getElementById('galleryModal').classList.contains('active');
+  closeGalleryInternal();
+  if (wasOpen && galleryHistoryArmed) {
+    galleryHistoryArmed = false;
+    history.back(); // consume the entry the open pushed
+  }
+}
+
+window.addEventListener('popstate', function () {
+  if (document.getElementById('galleryModal').classList.contains('active')) {
+    // Disarm FIRST so closeGallery doesn't call history.back() again; going
+    // through window.closeGallery keeps any wrappers (session-state
+    // persistence records galleryOpen:false) in the loop.
+    galleryHistoryArmed = false;
+    window.closeGallery();
+  }
+});
 
 function galleryNav(dir) {
   galleryIdx = (galleryIdx + dir + totalPhotos) % totalPhotos;

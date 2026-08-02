@@ -4305,6 +4305,11 @@ function carouselMove(slug, dir) {
 let lbPhotos = [];
 let lbIndex = 0;
 
+// Back button while the lightbox is open must CLOSE the lightbox, not leave
+// the page. Opening pushes one history entry; popstate closes; a UI close
+// consumes that entry via history.back() so the stack stays balanced.
+let lbHistoryArmed = false;
+
 function openLightbox(slug, startIdx) {
   const prop = PROPERTIES.find(p => p.slug === slug);
   if (!prop) return;
@@ -4313,6 +4318,10 @@ function openLightbox(slug, startIdx) {
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (!lbHistoryArmed) {
+    history.pushState({ lightbox: true }, '', location.href);
+    lbHistoryArmed = true;
+  }
   // Build thumbs
   const thumbsEl = document.getElementById('lightboxThumbs');
   thumbsEl.innerHTML = lbPhotos.map((url, i) =>
@@ -4340,8 +4349,15 @@ function lbGoTo(idx) {
 }
 
 function closeLightbox() {
+  const wasOpen = document.getElementById('lightbox').classList.contains('open');
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  // UI-initiated close: consume the history entry the open pushed, so the
+  // next Back press does normal navigation instead of a no-op.
+  if (wasOpen && lbHistoryArmed) {
+    lbHistoryArmed = false;
+    history.back();
+  }
 }
 
 /* ═══ Calendar + Booking ═══ */
@@ -7214,6 +7230,15 @@ function resetRewardForm() {
 }
 window.addEventListener('popstate', (e) => {
   const state = e.state || {};
+  // Back with the lightbox open: close it and stop — the entry pushed by
+  // openLightbox has just been popped, so the stack is already balanced.
+  const lbEl = document.getElementById('lightbox');
+  if (lbEl && lbEl.classList.contains('open')) {
+    lbHistoryArmed = false;
+    lbEl.classList.remove('open');
+    document.body.style.overflow = '';
+    return;
+  }
   // Handle map modal back navigation
   if (mapIsExpanded && !state.map) {
     collapseMap(true); // skipHistory=true since popstate already changed history
