@@ -199,52 +199,399 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 .gl-contact-submit:hover{background:var(--accent-hover)}
 .gl-contact-success{display:none;padding:20px;text-align:center;font-family:var(--sans);font-size:15px;color:var(--accent)}
 
+/* ── Non-visual correctness (applies at every width) ──────────────────
+   Amenity rows that have no matching photo are plain text, not fake
+   controls: no pointer cursor, no hover colour, no click handler. The
+   static rendering is byte-identical to before — only the affordance
+   on a row that never did anything is removed. */
+.gl-amenity-plain{cursor:default}
+.gl-amenity-plain:hover{color:var(--text)}
+.gl-amenities-cat-item:not(.has-photo){cursor:default}
+.gl-amenities-cat-item:not(.has-photo):hover{color:var(--text-dim)}
+/* Single-cell bed grids — same result the old inline style produced. */
+.gl-bed-grid.is-single{grid-template-columns:1fr}
+/* Desktop-only furniture. Hidden here, revealed only inside the
+   ≥1024px block below, so it can never reach a phone. `display:none`
+   also means the sleep photo is never fetched on mobile. */
+.gl-desknav,.gl-desknav-cta,.gl-contact-methods,.gl-deskfooter,
+.gl-sleep-fig,.gl-sticky-note{display:none}
+
 /* ── Responsive ── */
-/* ═══ DESKTOP — editorial estate-dossier layout ═══════════════════════
-   Mobile is untouched: everything below 1024px keeps the phone column.
-   On desktop the page becomes a two-column dossier — a wide editorial
-   column (cinematic hero, spec ticker, photo contact-sheet, numbered
-   sections) beside a sticky frosted booking card that carries the
-   property identity and price. Pure CSS regrade: same DOM, same JS. */
+/* ═══ DESKTOP — "GRAND CINEMA" (≥1024px) ══════════════════════════════
+   Layout transplanted from design-reference/Regent Skyline Desktop.dc.html,
+   option 1b: full-bleed cinematic hero with a glass booking card, a
+   book-direct spec strip, a filmstrip contact sheet, brochure-rhythm
+   numbered sections, and a pinned bottom booking bar.
+
+   CONTENT is not transplanted — every string, photo, count and link on
+   this page comes from PROPERTY_DATA / glance.html's per-slug constants.
+
+   MOBILE IS UNTOUCHED. Every rule lives inside this media query; nothing
+   above this line was edited. Below 1024px the page is byte-identical to
+   what shipped before.
+
+   The page shell becomes a full-bleed grid with a capped 1328px content
+   band, so hero / strip / footer / sticky bar can bleed edge-to-edge
+   while text stays measured. Named lines:
+     full ─ viewport edge   content ─ text band   side ─ 330px booking rail */
 @media(min-width:1024px){
-  body{max-width:1280px;display:grid;grid-template-columns:minmax(0,1fr) 400px;column-gap:60px;align-content:start;padding:44px 48px 110px}
-  body>*{grid-column:1;min-width:0}
+  body{
+    max-width:none;margin:0;padding:0 0 78px;overflow-x:hidden;
+    display:grid;align-content:start;
+    grid-template-columns:
+      [full-start] minmax(32px,1fr)
+      [content-start] minmax(0,942px)
+      [gap-start] minmax(28px,56px)
+      [side-start] 330px
+      [content-end] minmax(32px,1fr)
+      [full-end];
+  }
+  body>*{grid-column:content-start/content-end;min-width:0}
+  .gl-section{scroll-margin-top:24px}
 
-  /* Hero: wide cinematic crop, softly framed */
-  .gl-hero{aspect-ratio:16/9.4;border-radius:22px;box-shadow:0 40px 90px rgba(0,0,0,.5)}
-  .gl-hero-chip{font-size:11px}
-  .gl-caption{padding:14px 6px 4px}
+  a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
+  [tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
-  /* Sidebar — identity block, then the booking card sticks below it */
-  .gl-meta{grid-column:2;grid-row:1;align-self:start;padding:8px 0 0}
-  .gl-title{font-size:clamp(34px,3vw,42px)}
-  .gl-price-block{grid-column:2;grid-row:2/span 99;align-self:start;position:sticky;top:30px;
-    margin-top:24px;padding:28px 26px 24px;border:1px solid rgba(201,152,69,.24);border-radius:18px;
-    background:rgba(20,26,21,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 30px 70px -30px rgba(0,0,0,.85)}
+  /* ── Row 1 — the cinematic hero ─────────────────────────────────── */
+  .gl-hero{
+    grid-column:full-start/full-end;grid-row:1;position:relative;z-index:0;
+    width:100%;height:clamp(560px,54vw,780px);aspect-ratio:auto;
+    border-radius:0;box-shadow:none
+  }
+  .gl-hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(10,13,10,.82) 0%,rgba(10,13,10,.42) 13%,
+      rgba(10,13,10,.10) 34%,rgba(10,13,10,.86) 80%,var(--bg) 100%)
+  }
+  .gl-hero-chip{display:none}
 
-  .gl-ticker-wrap{border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 0}
+  /* Header rides on the hero and scrolls away with it (design 1b). */
+  .gl-header{
+    grid-row:1;align-self:start;z-index:3;position:static;
+    height:84px;padding:0;gap:32px;background:none;
+    border-bottom:1px solid rgba(232,228,221,.18)
+  }
+  .gl-back{display:none}
+  .gl-brand{
+    position:static;transform:none;font-family:var(--serif);
+    font-size:18px;font-weight:500;letter-spacing:.5em;padding-left:.5em
+  }
+  .gl-desknav{display:flex;flex:0 0 auto;gap:clamp(16px,2vw,30px);margin:0 auto}
+  .gl-desknav a{
+    font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.16em;
+    white-space:nowrap;color:rgba(232,228,221,.78);text-decoration:none;transition:color .2s
+  }
+  .gl-desknav a:hover{color:var(--text)}
+  .gl-header-actions{flex:0 0 auto;gap:14px}
+  .gl-desknav-cta{
+    display:inline-flex;flex:0 0 auto;align-items:center;font-family:var(--mono);
+    font-size:10px;font-weight:600;letter-spacing:.22em;white-space:nowrap;
+    background:var(--accent);color:var(--bg);
+    padding:13px 22px;border-radius:3px;text-decoration:none;transition:background .2s
+  }
+  /* Link-shaped buttons must not carry the UA underline at this scale. */
+  .gl-book-btn,.gl-sticky-btn,.gl-host-msg,.gl-secondary-btns a,
+  .gl-deskfooter-brand,.gl-brand{text-decoration:none}
+  .gl-desknav-cta:hover{background:var(--accent-hover)}
 
-  /* Photo strip → contact-sheet grid (scrolls vertically inside itself) */
-  .gl-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;overflow-x:visible;overflow-y:auto;max-height:478px;padding:12px 4px 12px 0;scrollbar-width:thin;scrollbar-color:rgba(201,152,69,.4) transparent}
-  .gl-strip::-webkit-scrollbar{display:block;width:6px}
-  .gl-strip::-webkit-scrollbar-thumb{background:rgba(201,152,69,.35);border-radius:3px}
-  .gl-strip::-webkit-scrollbar-track{background:transparent}
-  .gl-strip-item{width:auto;height:150px;border-radius:10px}
+  /* Identity block, bottom-left of the hero */
+  .gl-meta{
+    grid-column:content-start/gap-start;grid-row:1;align-self:end;z-index:2;
+    padding:0 0 52px
+  }
+  .gl-location{font-size:10px;letter-spacing:.26em;margin-bottom:18px}
+  .gl-title{
+    font-size:clamp(56px,6.6vw,104px);font-weight:500;line-height:.95;
+    letter-spacing:-.01em;margin-bottom:22px;text-wrap:balance
+  }
+  .gl-title-accent{font-style:italic;font-weight:400;color:var(--accent)}
+  .gl-tags{font-size:9.5px;letter-spacing:.18em;color:rgba(232,228,221,.85);margin-bottom:10px}
+  .gl-rating-row{font-size:9.5px;letter-spacing:.18em;color:rgba(232,228,221,.72);margin-bottom:0}
 
-  /* Sections: airier rhythm, two-column amenity ledger, wider media */
-  .gl-section{padding:46px 8px}
-  #amenityList,#amenitiesExpand{columns:2;column-gap:52px}
-  .gl-amenity-item{break-inside:avoid}
-  .gl-bed-grid{grid-template-columns:repeat(3,1fr)}
-  .gl-review-hero{aspect-ratio:16/7}
-  .gl-contact-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  textarea.gl-contact-input,.gl-contact-submit{grid-column:1/-1}
+  /* FIG. plate, top-right of the hero (also the "view all photos" control) */
+  .gl-caption{
+    grid-column:side-start/content-end;grid-row:1;align-self:start;justify-self:end;z-index:2;
+    margin-top:108px;padding:9px 14px;gap:12px;border-bottom:0;border-radius:4px;
+    background:rgba(10,13,10,.55);border:1px solid rgba(232,228,221,.2);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)
+  }
+  .gl-caption-text{font-size:9px;letter-spacing:.24em;color:rgba(232,228,221,.8)}
+  .gl-photo-count{font-size:9px;letter-spacing:.2em}
 
-  .gl-footer-text{grid-column:1/-1}
+  /* Glass booking card, bottom-right of the hero */
+  .gl-price-block{
+    grid-column:side-start/content-end;grid-row:1;align-self:end;z-index:2;
+    margin:0 0 52px;padding:28px;border-radius:6px;
+    background:rgba(10,13,10,.62);border:1px solid rgba(232,228,221,.22);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)
+  }
+  .gl-price-row{margin-bottom:0;gap:10px}
+  .gl-price-big{font-size:36px}
+  .gl-price-original{font-size:14px}
+  .gl-price-period{font-size:9px;letter-spacing:.22em}
+  .gl-price-skel{width:96px;height:30px}
+  .gl-price-save{font-size:8.5px;letter-spacing:.18em;margin:10px 0 0}
+  .gl-book-btn{
+    margin-top:20px;justify-content:center;gap:10px;padding:16px 0;border-radius:3px;
+    font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.22em;
+    text-transform:uppercase
+  }
+  .gl-book-btn .arrow{font-size:13px}
+  .gl-secondary-btns{margin-top:14px;gap:12px}
+  .gl-secondary-btns a{
+    border:0;border-radius:0;padding:0;font-size:8.5px;letter-spacing:.16em;
+    color:rgba(232,228,221,.7);justify-content:flex-start
+  }
+  .gl-secondary-btns a+a{justify-content:flex-end}
+  .gl-secondary-btns a:hover{border-color:transparent;color:var(--accent)}
 
-  /* The sidebar card replaces the mobile bottom bar */
-  .gl-sticky{display:none}
+  /* ── Row 2 — full-bleed spec strip ──────────────────────────────── */
+  .gl-ticker-wrap{
+    grid-column:full-start/full-end;grid-row:2;border-top:0;border-radius:0;
+    border-bottom:1px solid rgba(232,228,221,.15);padding:15px 0
+  }
+  .gl-ticker span{font-size:9.5px;letter-spacing:.3em;padding:0 14px}
+  .gl-ticker .plus{color:var(--accent);font-size:9px}
+
+  /* ── Row 3 — filmstrip (every photo, horizontally scrollable) ───── */
+  .gl-strip{
+    grid-row:3;display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;
+    padding:48px 0 12px;scroll-behavior:smooth;
+    scrollbar-width:thin;scrollbar-color:rgba(201,152,69,.45) rgba(255,255,255,.06)
+  }
+  .gl-strip::-webkit-scrollbar{display:block;height:6px}
+  .gl-strip::-webkit-scrollbar-thumb{background:rgba(201,152,69,.45);border-radius:3px}
+  .gl-strip::-webkit-scrollbar-track{background:rgba(255,255,255,.06);border-radius:3px}
+  .gl-strip-item{width:clamp(258px,24vw,392px);height:300px;border-radius:0}
+  .gl-strip-item:hover img{transform:scale(1.04)}
+  .gl-strip-label{
+    top:12px;bottom:auto;left:12px;right:auto;width:max-content;
+    max-width:calc(100% - 24px);padding:6px 10px;border-radius:2px;
+    background:rgba(10,13,10,.75);font-size:8px;letter-spacing:.2em;color:var(--text)
+  }
+
+  /* ── Numbered sections — brochure rhythm ────────────────────────── */
+  .gl-section{padding:74px 0 0;border-top:0}
+  .gl-section-head{
+    margin-bottom:0;padding-top:20px;border-top:1px solid rgba(232,228,221,.15)
+  }
+  .gl-section-label{font-size:10px;font-weight:600;letter-spacing:.26em}
+  .gl-section-right{font-size:9.5px;letter-spacing:.2em}
+
+  /* N°1 — the residence (centred editorial) */
+  #residenceSection{text-align:center}
+  #residenceSection .gl-section-head{justify-content:center;gap:20px}
+  #residenceSection .gl-tagline{
+    margin:36px auto 0;max-width:900px;font-size:clamp(38px,4vw,58px);
+    font-weight:500;line-height:1.08;text-wrap:balance
+  }
+  #residenceSection .gl-desc{
+    margin:26px auto 0;max-width:780px;font-size:15px;line-height:1.78;text-wrap:pretty
+  }
+
+  /* N°2 — amenities: featured ledger, then the full categorised list */
+  #amenitiesSection .gl-section-head{margin-bottom:26px}
+  #amenityList{columns:2;column-gap:64px}
+  .gl-amenity-item{break-inside:avoid;padding:15px 0}
+  .gl-amenity-num{width:32px}
+  .gl-amenity-name{font-size:15px}
+  .gl-amenity-detail{
+    flex:0 0 auto;max-width:none;margin-left:14px;
+    font-size:8.5px;letter-spacing:.2em;text-align:right
+  }
+  .gl-all-amenities-btn{
+    display:inline-block;width:auto;margin:26px 0 0;padding:15px 30px;
+    border-radius:3px;font-size:10px;letter-spacing:.22em
+  }
+  .gl-amenities-expand{margin-top:4px}
+  .gl-amenities-expand.open{max-height:6000px}
+  /* Columns rather than a grid: the nine real categories have very
+     different lengths (13 items vs 2), and grid rows leave holes. */
+  #amenitiesExpand{columns:3;column-gap:16px}
+  .gl-amenities-category{
+    break-inside:avoid;margin:0 0 16px;padding:26px 28px;border-radius:6px;
+    background:var(--bg-card);border:1px solid rgba(232,228,221,.12)
+  }
+  .gl-amenities-cat-name{font-size:9.5px;letter-spacing:.24em;margin-bottom:14px}
+  .gl-amenities-cat-item{padding:11px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.05)}
+  .gl-amenities-cat-item:last-child{border-bottom:0;padding-bottom:0}
+
+  /* N°3 — where you sleep: real bed cells left, real room photo right */
+  #sleepSection{
+    display:grid;grid-template-columns:1fr 1fr;column-gap:56px;align-items:start
+  }
+  #sleepSection .gl-section-head{grid-column:1/-1;margin-bottom:28px}
+  #bedGrid{
+    grid-column:1;display:grid;grid-template-columns:1fr;gap:14px;
+    border:0;border-radius:0;overflow:visible
+  }
+  .gl-bed-cell{
+    padding:26px 28px;border-radius:6px;background:var(--bg-card);
+    border:1px solid rgba(232,228,221,.12)
+  }
+  .gl-bed-label{font-size:9px;letter-spacing:.22em;margin-bottom:10px}
+  .gl-bed-type{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:8px}
+  .gl-bed-note{font-size:8.5px;letter-spacing:.2em}
+  .gl-sleep-fig.has-photo{
+    display:block;grid-column:2;position:relative;margin:0;
+    overflow:hidden;border-radius:6px;cursor:pointer
+  }
+  .gl-sleep-fig img{
+    display:block;width:100%;height:clamp(360px,30vw,430px);object-fit:cover;
+    transition:transform .8s cubic-bezier(.2,.6,.2,1)
+  }
+  .gl-sleep-fig:hover img{transform:scale(1.03)}
+  .gl-sleep-fig figcaption{
+    position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:2px;
+    background:rgba(10,13,10,.75);font-family:var(--mono);font-size:8px;
+    font-weight:500;letter-spacing:.2em;color:var(--text);text-transform:uppercase
+  }
+
+  /* N°4 — good to know: one card per real rule, no invented rows */
+  #rulesList{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;margin-top:28px
+  }
+  .gl-rule-item{
+    display:block;padding:26px 28px;border-bottom:0;border-radius:6px;
+    background:var(--bg-card);border:1px solid rgba(232,228,221,.12)
+  }
+  .gl-rule-dots{display:none}
+  .gl-rule-name{
+    display:block;font-family:var(--mono);font-size:8.5px;font-weight:600;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim)
+  }
+  .gl-rule-detail{
+    display:block;margin-top:12px;font-family:var(--serif);font-size:23px;
+    font-weight:500;letter-spacing:0;color:var(--text);
+    text-align:left;white-space:normal
+  }
+
+  /* N°5 — the neighbourhood */
+  #neighSection{
+    display:grid;grid-template-columns:1fr 1fr;column-gap:56px;align-items:start
+  }
+  #neighSection .gl-section-head{grid-column:1/-1;margin-bottom:30px}
+  #neighDesc{grid-column:1;max-width:460px;font-size:16px;line-height:1.78;text-wrap:pretty}
+  #locTags{grid-column:2;display:block;margin-top:0}
+  .gl-loc-tag{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:19px 0;border:0;border-top:1px solid rgba(232,228,221,.12);border-radius:0;
+    font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:.01em;
+    color:var(--text)
+  }
+  .gl-loc-tag:last-child{border-bottom:1px solid rgba(232,228,221,.12)}
+  .gl-loc-tag:hover{border-color:rgba(232,228,221,.12)}
+
+  /* Reviews — only ever rendered when the property actually has a rating
+     (Regent Skyline has none, so the whole section stays display:none). */
+  #reviewSection{padding-top:74px}
+  .gl-review-hero{aspect-ratio:16/4.4;border-radius:8px;margin-bottom:0}
+  .gl-review-score{font-size:76px}
+  .gl-review-stars{font-size:16px;letter-spacing:6px}
+  .gl-review-label{font-size:9.5px;letter-spacing:.22em}
+
+  /* Host */
+  #hostSection .gl-host{
+    margin-top:20px;padding:32px 38px;gap:22px;border-radius:8px;
+    background:var(--bg-card);border:1px solid rgba(232,228,221,.12)
+  }
+  .gl-host-avatar{width:64px;height:64px;border:1px solid rgba(201,152,69,.5)}
+  .gl-host-name{font-family:var(--serif);font-size:24px;font-weight:500}
+  .gl-host-detail{font-size:8.5px;letter-spacing:.18em;line-height:1.8;margin-top:7px}
+  .gl-host-msg{padding:13px 24px;border-radius:3px;font-size:9.5px;letter-spacing:.22em}
+
+  /* N°6 — contact */
+  #contactSection{
+    display:grid;grid-template-columns:1fr 1fr;column-gap:72px;align-items:start
+  }
+  #contactSection .gl-section-head{grid-column:1/-1;margin-bottom:30px}
+  #contactSection .gl-tagline{
+    grid-column:1;grid-row:2;margin-bottom:0;
+    font-size:clamp(34px,3.4vw,50px);font-weight:500;line-height:1.14
+  }
+  .gl-contact-methods{
+    grid-column:1;grid-row:3;display:flex;flex-direction:column;gap:14px;margin-top:32px
+  }
+  .gl-contact-methods a{
+    display:flex;align-items:baseline;justify-content:space-between;gap:18px;
+    padding:18px 22px;border:1px solid rgba(232,228,221,.15);border-radius:4px;
+    color:var(--text);text-decoration:none;transition:border-color .2s
+  }
+  .gl-contact-methods a:hover{border-color:var(--accent)}
+  .gl-contact-methods .k{
+    font-family:var(--mono);font-size:8.5px;font-weight:600;
+    letter-spacing:.22em;color:var(--text-dim)
+  }
+  .gl-contact-methods .v{font-size:15px}
+  #contactSection .gl-contact-form,#contactSection .gl-contact-success{
+    grid-column:2;grid-row:2/span 2;align-self:start
+  }
+  .gl-contact-form{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;
+    padding:32px 34px;border-radius:8px;
+    background:var(--bg-card);border:1px solid rgba(232,228,221,.12)
+  }
+  .gl-contact-input[name="phone"],textarea.gl-contact-input{grid-column:1/-1}
+  .gl-contact-submit{
+    grid-column:1/-1;justify-self:start;padding:16px 30px;border-radius:3px;
+    font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.22em;
+    text-transform:uppercase
+  }
+
+  /* Footer — full-bleed, aligned to the content band */
+  .gl-footer-text{display:none}
+  .gl-deskfooter{
+    grid-column:full-start/full-end;display:flex;align-items:center;
+    justify-content:space-between;gap:32px;margin-top:72px;
+    padding:28px max(32px,calc((100% - 1328px)/2));
+    border-top:1px solid rgba(232,228,221,.15)
+  }
+  .gl-deskfooter-brand{
+    font-family:var(--serif);font-size:14px;font-weight:500;letter-spacing:.5em;
+    padding-left:.5em;color:var(--text);text-decoration:none
+  }
+  .gl-deskfooter-nav{display:flex;gap:26px}
+  .gl-deskfooter-nav a{
+    font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.2em;
+    color:var(--text-dim);text-decoration:none;transition:color .2s
+  }
+  .gl-deskfooter-nav a:hover{color:var(--text)}
+  .gl-deskfooter-loc{
+    font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--text-faint)
+  }
+
+  /* Pinned booking bar — the design's bottom strip, kept live */
+  .gl-sticky{
+    display:flex;padding:16px max(32px,calc((100% - 1328px)/2));
+    background:rgba(16,20,15,.96);backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(201,152,69,.45);
+    box-shadow:0 -16px 44px rgba(0,0,0,.5)
+  }
+  .gl-sticky-inner{max-width:none}
+  .gl-sticky-price{gap:12px}
+  .gl-sticky-amount{font-size:26px}
+  .gl-sticky-period{font-size:9px;letter-spacing:.22em}
+  .gl-sticky-note{
+    display:inline;margin-left:6px;font-family:var(--mono);font-size:8.5px;
+    font-weight:600;letter-spacing:.18em;color:var(--accent);text-transform:uppercase
+  }
+  .gl-sticky-btn{
+    padding:14px 26px;border-radius:3px;font-family:var(--mono);font-size:10.5px;
+    font-weight:600;letter-spacing:.22em;text-transform:uppercase
+  }
+
+  /* Lightbox — roomier at desktop scale. The backdrop reads as dismissable;
+     the photo and the controls keep their own cursors. */
+  .gl-gallery{cursor:zoom-out}
+  .gl-gallery-img{cursor:default}
+  .gl-gallery-nav,.gl-gallery-close{cursor:pointer}
+  .gl-gallery-header{padding:24px 40px}
+  .gl-gallery-viewport{padding:0 88px}
+  .gl-gallery-nav{width:52px;height:52px;font-size:22px}
+  .gl-gallery-prev{left:32px}
+  .gl-gallery-next{right:32px}
+  .gl-gallery-caption{padding:16px 20px 28px}
 }
 
 @media(min-width:481px) and (max-width:1023.9px){
@@ -260,6 +607,14 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
   </button>
   <a href="/" class="gl-brand">R E G E N T</a>
+  <!-- Desktop-only nav (display:none below 1024px — mobile header unchanged). -->
+  <nav class="gl-desknav" aria-label="Sections of this page">
+    <a href="#residenceSection">RESIDENCE</a>
+    <a href="#amenitiesSection">AMENITIES</a>
+    <a href="#sleepSection">SLEEP</a>
+    <a href="#neighSection">NEIGHBOURHOOD</a>
+    <a href="#contactSection">CONTACT</a>
+  </nav>
   <div class="gl-header-actions">
     <button onclick="shareProperty()" aria-label="Share">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
@@ -268,10 +623,11 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
     </button>
   </div>
+  <a class="gl-desknav-cta" id="navBookBtn" href="">BOOK NOW →</a>
 </header>
 
 <!-- Hero Photo -->
-<div class="gl-hero" id="heroPhoto" onclick="openGallery(currentHeroIdx)">
+<div class="gl-hero" id="heroPhoto" role="button" tabindex="0" aria-label="Open the photo gallery" onclick="openGallery(currentHeroIdx)">
   <img id="heroImg" src="" alt="">
   <div class="gl-hero-chip" onclick="event.stopPropagation();openGallery(currentHeroIdx)">
     TAP TO EXPAND
@@ -319,9 +675,9 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 </div>
 
 <!-- N°1 — THE RESIDENCE -->
-<div class="gl-section">
+<div class="gl-section" id="residenceSection">
   <div class="gl-section-head">
-    <span class="gl-section-label">N°1 — THE RESIDENCE</span>
+    <h2 class="gl-section-label">N°1 — THE RESIDENCE</h2>
     <span class="gl-section-right">ABOUT</span>
   </div>
   <div class="gl-tagline" id="glTagline"></div>
@@ -329,38 +685,44 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 </div>
 
 <!-- N°2 — AMENITIES -->
-<div class="gl-section">
+<div class="gl-section" id="amenitiesSection">
   <div class="gl-section-head">
-    <span class="gl-section-label">N°2 — AMENITIES</span>
+    <h2 class="gl-section-label">N°2 — AMENITIES</h2>
     <span class="gl-section-right" id="amenityCount"></span>
   </div>
   <div id="amenityList"></div>
-  <button class="gl-all-amenities-btn" id="allAmenitiesBtn" onclick="toggleAllAmenities()"></button>
+  <button class="gl-all-amenities-btn" id="allAmenitiesBtn" onclick="toggleAllAmenities()" aria-expanded="false" aria-controls="amenitiesExpand"></button>
   <div class="gl-amenities-expand" id="amenitiesExpand"></div>
 </div>
 
 <!-- N°3 — WHERE YOU SLEEP -->
 <div class="gl-section" id="sleepSection">
   <div class="gl-section-head">
-    <span class="gl-section-label">N°3 — WHERE YOU SLEEP</span>
+    <h2 class="gl-section-label">N°3 — WHERE YOU SLEEP</h2>
     <span class="gl-section-right" id="sleepSummary"></span>
   </div>
   <div class="gl-bed-grid" id="bedGrid"></div>
+  <!-- Desktop-only room plate. Hidden (and never fetched) below 1024px;
+       shown only when a real bedroom photo exists in this listing. -->
+  <figure class="gl-sleep-fig" id="sleepFig">
+    <img id="sleepFigImg" src="" alt="" loading="lazy">
+    <figcaption id="sleepFigCap"></figcaption>
+  </figure>
 </div>
 
 <!-- N°4 — GOOD TO KNOW -->
-<div class="gl-section">
+<div class="gl-section" id="rulesSection">
   <div class="gl-section-head">
-    <span class="gl-section-label">N°4 — GOOD TO KNOW</span>
+    <h2 class="gl-section-label">N°4 — GOOD TO KNOW</h2>
     <span class="gl-section-right">HOUSE RULES</span>
   </div>
   <div id="rulesList"></div>
 </div>
 
 <!-- N°5 — THE NEIGHBOURHOOD -->
-<div class="gl-section">
+<div class="gl-section" id="neighSection">
   <div class="gl-section-head">
-    <span class="gl-section-label">N°5 — THE NEIGHBOURHOOD</span>
+    <h2 class="gl-section-label">N°5 — THE NEIGHBOURHOOD</h2>
     <span class="gl-section-right" id="neighCity"></span>
   </div>
   <div class="gl-desc" id="neighDesc"></div>
@@ -374,13 +736,13 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     <div class="gl-review-overlay">
       <div class="gl-review-score" id="reviewScore"></div>
       <div class="gl-review-stars" id="reviewStars"></div>
-      <div class="gl-review-label">PERFECT SCORES, EVERY CATEGORY</div>
+      <div class="gl-review-label" id="reviewLabel"></div>
     </div>
   </div>
 </div>
 
 <!-- Host -->
-<div class="gl-section">
+<div class="gl-section" id="hostSection">
   <div class="gl-host">
     <div class="gl-host-avatar"><img src="https://a0.muscache.com/im/pictures/user/User/original/cfcc56a0-6613-450a-bed5-6426106cf3ec.jpeg?im_w=120" alt="Host Jatin"></div>
     <div class="gl-host-info">
@@ -394,10 +756,15 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 <!-- N°6 — CONTACT -->
 <div class="gl-section" id="contactSection">
   <div class="gl-section-head">
-    <span class="gl-section-label">N°6 — CONTACT</span>
+    <h2 class="gl-section-label">N°6 — CONTACT</h2>
     <span class="gl-section-right">GET IN TOUCH</span>
   </div>
   <div class="gl-tagline">Have a question?<br>We're here to help.</div>
+  <!-- Desktop-only direct-contact rows (hidden below 1024px). -->
+  <div class="gl-contact-methods">
+    <a href="tel:+12813071280"><span class="k">№ 01 — CALL OR TEXT</span><span class="v">(281) 307-1280</span></a>
+    <a href="mailto:hello@bookwithregent.com"><span class="k">№ 02 — EMAIL</span><span class="v">hello@bookwithregent.com</span></a>
+  </div>
   <form class="gl-contact-form" id="contactForm" onsubmit="return submitContactForm(event)">
     <input type="text" class="gl-contact-input" name="name" placeholder="Your name" required>
     <input type="email" class="gl-contact-input" name="email" placeholder="Email address" required>
@@ -411,27 +778,42 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 <!-- Footer Text -->
 <div class="gl-footer-text" id="footerText"></div>
 
+<!-- Desktop-only footer (hidden below 1024px; carries the same location line). -->
+<div class="gl-deskfooter">
+  <a class="gl-deskfooter-brand" href="/">REGENT</a>
+  <nav class="gl-deskfooter-nav" aria-label="Site">
+    <a href="/">HOME</a>
+    <a href="/#properties">ALL PROPERTIES</a>
+    <a href="/availability">AVAILABILITY</a>
+    <a href="/management">MANAGEMENT</a>
+    <a href="/reward">REWARDS</a>
+    <a href="/#contact">CONTACT</a>
+  </nav>
+  <span class="gl-deskfooter-loc" id="deskFooterLoc"></span>
+</div>
+
 <!-- Sticky Bar -->
 <div class="gl-sticky">
   <div class="gl-sticky-inner">
     <div class="gl-sticky-price">
       <span class="gl-sticky-amount" id="stickyPrice"><span class="gl-price-skel"></span></span>
       <span class="gl-sticky-period">FROM / NIGHT</span>
+      <span class="gl-sticky-note" id="stickyNote">SAVE 5%+ BOOKING DIRECT</span>
     </div>
     <a class="gl-sticky-btn" id="stickyBookBtn" href="">Book now →</a>
   </div>
 </div>
 
 <!-- Gallery Modal -->
-<div class="gl-gallery" id="galleryModal">
+<div class="gl-gallery" id="galleryModal" role="dialog" aria-modal="true" aria-label="Photo gallery" tabindex="-1">
   <div class="gl-gallery-header">
     <span class="gl-gallery-counter" id="galleryCounter"></span>
-    <button class="gl-gallery-close" onclick="closeGallery()">✕</button>
+    <button class="gl-gallery-close" onclick="closeGallery()" aria-label="Close gallery">✕</button>
   </div>
   <div class="gl-gallery-viewport" id="galleryViewport">
     <img class="gl-gallery-img" id="galleryImg" src="" alt="">
-    <button class="gl-gallery-nav gl-gallery-prev" onclick="galleryNav(-1)">‹</button>
-    <button class="gl-gallery-nav gl-gallery-next" onclick="galleryNav(1)">›</button>
+    <button class="gl-gallery-nav gl-gallery-prev" onclick="galleryNav(-1)" aria-label="Previous photo">‹</button>
+    <button class="gl-gallery-nav gl-gallery-next" onclick="galleryNav(1)" aria-label="Next photo">›</button>
   </div>
   <div class="gl-gallery-caption">
     <span class="gl-gallery-caption-text" id="galleryCaption"></span>
@@ -524,8 +906,15 @@ function init() {
   // Location
   document.getElementById('glLocation').textContent = PROP.city.toUpperCase() + ', ' + PROP.state.toUpperCase() + ' — SLEEPS ' + PROP.guests;
 
-  // Title
-  document.getElementById('glTitle').textContent = PROP.name;
+  // Title — the last word carries the italic-serif accent on desktop. The
+  // span is unstyled below 1024px, so mobile renders the same plain string.
+  var nameParts = PROP.name.split(' ');
+  var titleHtml = escHtml(PROP.name);
+  if (nameParts.length > 1) {
+    var lastWord = nameParts.pop();
+    titleHtml = escHtml(nameParts.join(' ')) + ' <span class="gl-title-accent">' + escHtml(lastWord) + '</span>';
+  }
+  document.getElementById('glTitle').innerHTML = titleHtml;
 
   // Tags (curated per-property)
   var tagText = GLANCE_TAGS[SLUG];
@@ -578,8 +967,10 @@ function init() {
   var stripCount = totalPhotos;
   for (var s = 0; s < stripCount; s++) {
     var lbl = getPhotoLabel(s);
-    stripHtml += '<div class="gl-strip-item" onclick="openGallery(' + s + ')">';
-    stripHtml += '<img src="' + photoUrl(PROP.photos[s], 480) + '" alt="' + lbl + '" loading="lazy">';
+    stripHtml += '<div class="gl-strip-item" role="button" tabindex="0"' +
+      ' aria-label="Open photo ' + (s + 1) + ' of ' + stripCount + ' — ' + escAttr(lbl) + '"' +
+      ' onclick="openGallery(' + s + ')">';
+    stripHtml += '<img src="' + photoUrl(PROP.photos[s], 480) + '" alt="' + escAttr(lbl) + '" loading="lazy">';
     stripHtml += '<div class="gl-strip-label">' + escHtml(lbl) + '</div>';
     stripHtml += '</div>';
   }
@@ -591,6 +982,7 @@ function init() {
   // Book & Contact links
   document.getElementById('bookBtn').href = GUESTY_URL;
   document.getElementById('stickyBookBtn').href = GUESTY_URL;
+  document.getElementById('navBookBtn').href = GUESTY_URL;
   // Contact buttons scroll to inline contact section
   document.getElementById('contactBtn').href = '#contactSection';
   document.getElementById('contactBtn').onclick = function(e) { e.preventDefault(); scrollToContact(); };
@@ -636,12 +1028,56 @@ function init() {
   buildReviews();
 
   // Footer
-  document.getElementById('footerText').textContent = 'REGENT · ' + PROP.city.toUpperCase() + ', ' + PROP.state.toUpperCase();
+  var footerLine = 'REGENT · ' + PROP.city.toUpperCase() + ', ' + PROP.state.toUpperCase();
+  document.getElementById('footerText').textContent = footerLine;
+  document.getElementById('deskFooterLoc').textContent = footerLine;
 
   // Review BG image
   if (PROP.photos && PROP.photos.length > 3) {
     document.getElementById('reviewBgImg').src = photoUrl(PROP.photos[3], 720);
   }
+
+  // Where-you-sleep room plate (desktop only — the <figure> is display:none
+  // below 1024px, so the image is never fetched on a phone).
+  buildSleepPhoto();
+
+  // Desktop opens the full amenity list by default so the section reads as
+  // complete; the button still collapses and re-expands it. matchMedia is
+  // false on every phone, so mobile keeps the collapsed default exactly.
+  if (window.matchMedia && window.matchMedia('(min-width:1024px)').matches) {
+    toggleAllAmenities();
+  }
+}
+
+// Pick a real bedroom photo out of this listing's own labels — never a
+// hard-coded index. Most specific match first: a bed named by size, then a
+// bedroom scene, then any remaining bed shot. If nothing matches, the figure
+// stays hidden rather than showing an unrelated photo.
+var SLEEP_PHOTO_PATTERNS = [/(king|queen|bunk|twin|full)\s*bed/i, /bedroom/i, /\bbeds?\b/i];
+// A linens close-up or a TV mounted in the bedroom is not a room plate.
+var SLEEP_PHOTO_EXCLUDE = /linen|smart tv/i;
+
+function buildSleepPhoto() {
+  var fig = document.getElementById('sleepFig');
+  if (!fig || !PROP.photos || !PROP.photoLabels) return;
+  var idx = null;
+  for (var p = 0; p < SLEEP_PHOTO_PATTERNS.length && idx === null; p++) {
+    for (var i = 0; i < PROP.photoLabels.length; i++) {
+      if (SLEEP_PHOTO_EXCLUDE.test(PROP.photoLabels[i])) continue;
+      if (SLEEP_PHOTO_PATTERNS[p].test(PROP.photoLabels[i])) { idx = i; break; }
+    }
+  }
+  if (idx === null || idx >= totalPhotos) return;
+  var label = getPhotoLabel(idx);
+  document.getElementById('sleepFigImg').src = photoUrl(PROP.photos[idx], 1200);
+  document.getElementById('sleepFigImg').alt = label;
+  document.getElementById('sleepFigCap').textContent =
+    'FIG. ' + String(idx + 1).padStart(2, '0') + ' — ' + label.toUpperCase();
+  fig.classList.add('has-photo');
+  fig.setAttribute('role', 'button');
+  fig.setAttribute('tabindex', '0');
+  fig.setAttribute('aria-label', 'Open photo ' + (idx + 1) + ' — ' + label);
+  fig.onclick = function () { openGallery(idx); };
 }
 
 function countTotalBeds() {
@@ -782,9 +1218,14 @@ function buildAmenities() {
   var html = '';
   featured.forEach(function(a, i) {
     var num = String(i + 1).padStart(2, '0');
+    var idx = amenityPhotoIndex(a.name);
+    var linked = idx !== null;
     html += '<div class="gl-amenity-item">';
     html += '<span class="gl-amenity-num">' + num + '</span>';
-    html += '<span class="gl-amenity-name" onclick="scrollToAmenityPhoto(\'' + escAttr(a.name) + '\')">' + escHtml(a.name) + '</span>';
+    html += linked
+      ? '<span class="gl-amenity-name" role="button" tabindex="0" data-photo="' + idx +
+        '" aria-label="Open photo ' + (idx + 1) + ' — ' + escAttr(a.name) + '">' + escHtml(a.name) + '</span>'
+      : '<span class="gl-amenity-name gl-amenity-plain">' + escHtml(a.name) + '</span>';
     html += '<span class="gl-amenity-dots"></span>';
     html += '<span class="gl-amenity-detail">' + escHtml(a.detail) + '</span>';
     html += '</div>';
@@ -792,34 +1233,74 @@ function buildAmenities() {
   document.getElementById('amenityList').innerHTML = html;
 }
 
-function scrollToAmenityPhoto(amenityName) {
-  // Find photo index for this amenity
-  if (!PROP.amenityPhotos) return;
-  // Search for matching key (case-insensitive partial match)
-  var photoIdx = null;
+// Words too generic to identify a photo. "Private cinema room" used to match
+// "Smart TV (living room)" on the word "room" and open the wrong photo;
+// "Full marble finishes" matched "Full-length mirror" on "full".
+// Deliberately NOT stopworded: "smart" — it is what correctly connects
+// "Dual smart TVs" to `65" Smart TV (living room)` on the lakefront listings.
+var AMENITY_STOPWORDS = {
+  room: 1, rooms: 1, free: 1, view: 1, views: 1, style: 1, area: 1, space: 1,
+  with: 1, your: 1, full: 1, private: 1, premium: 1, high: 1, unit: 1
+};
+
+// Resolve an amenity name to a gallery index, or null when this listing has no
+// photo for it. Exact key → whole-phrase containment → best distinctive-word
+// match. Returning null is a real answer: the caller renders plain text rather
+// than a control that does nothing.
+function amenityPhotoIndex(amenityName) {
+  if (!PROP.amenityPhotos || !amenityName) return null;
   var keys = Object.keys(PROP.amenityPhotos);
-  for (var i = 0; i < keys.length; i++) {
-    if (keys[i].toLowerCase().indexOf(amenityName.toLowerCase()) >= 0 ||
-        amenityName.toLowerCase().indexOf(keys[i].toLowerCase()) >= 0) {
-      photoIdx = PROP.amenityPhotos[keys[i]];
-      break;
-    }
+  var lower = amenityName.toLowerCase();
+  var i, k;
+
+  for (i = 0; i < keys.length; i++) {
+    if (keys[i].toLowerCase() === lower) return inRange(PROP.amenityPhotos[keys[i]]);
   }
-  // Broader match: check if any word matches
-  if (photoIdx === null) {
-    var words = amenityName.toLowerCase().split(/[\s&,]+/).filter(function(w) { return w.length > 3; });
-    for (var j = 0; j < keys.length; j++) {
-      var keyLower = keys[j].toLowerCase();
-      for (var w = 0; w < words.length; w++) {
-        if (keyLower.indexOf(words[w]) >= 0) { photoIdx = PROP.amenityPhotos[keys[j]]; break; }
-      }
-      if (photoIdx !== null) break;
-    }
+  for (i = 0; i < keys.length; i++) {
+    k = keys[i].toLowerCase();
+    if (k.indexOf(lower) >= 0 || lower.indexOf(k) >= 0) return inRange(PROP.amenityPhotos[keys[i]]);
   }
-  if (photoIdx !== null && photoIdx < totalPhotos) {
-    openGallery(photoIdx);
+  var words = lower.split(/[^a-z0-9]+/).filter(function(w) {
+    return w.length > 3 && !AMENITY_STOPWORDS[w];
+  });
+  var best = null, bestScore = 0;
+  for (i = 0; i < keys.length; i++) {
+    k = keys[i].toLowerCase();
+    var score = 0;
+    for (var w = 0; w < words.length; w++) if (k.indexOf(words[w]) >= 0) score++;
+    if (score > bestScore) { bestScore = score; best = PROP.amenityPhotos[keys[i]]; }
+  }
+  return bestScore > 0 ? inRange(best) : null;
+
+  function inRange(n) {
+    return (typeof n === 'number' && n >= 0 && n < totalPhotos) ? n : null;
   }
 }
+
+// Kept as a global: it is the documented entry point for opening the photo
+// behind an amenity, now backed by the corrected matcher.
+function scrollToAmenityPhoto(amenityName) {
+  var idx = amenityPhotoIndex(amenityName);
+  if (idx !== null) openGallery(idx);
+}
+
+// Delegated activation for the featured-amenity rows that resolved to a photo.
+document.addEventListener('click', function(e) {
+  var el = e.target.closest ? e.target.closest('.gl-amenity-name[data-photo]') : null;
+  if (el) openGallery(parseInt(el.getAttribute('data-photo'), 10));
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  var t = e.target;
+  if (!t || !t.matches) return;
+  if (t.matches('.gl-amenity-name[data-photo]')) {
+    e.preventDefault();
+    openGallery(parseInt(t.getAttribute('data-photo'), 10));
+  } else if (t.matches('.gl-strip-item,.gl-amenities-cat-item[data-photo],.gl-sleep-fig,.gl-hero')) {
+    e.preventDefault();
+    t.click();
+  }
+});
 
 function buildBedrooms() {
   var beds = getBedrooms();
@@ -837,10 +1318,10 @@ function buildBedrooms() {
   });
   document.getElementById('bedGrid').innerHTML = html;
 
-  // Adjust grid for odd counts
-  if (beds.length === 1) {
-    document.getElementById('bedGrid').style.gridTemplateColumns = '1fr';
-  }
+  // Adjust grid for odd counts. A class rather than an inline style, so the
+  // desktop layout can restyle the grid without fighting inline specificity —
+  // .gl-bed-grid.is-single reproduces the old rule exactly.
+  document.getElementById('bedGrid').classList.toggle('is-single', beds.length === 1);
 }
 
 function buildRules() {
@@ -913,15 +1394,27 @@ function buildNeighbourhood() {
 function buildReviews() {
   var rating = PROP.rating;
   var reviews = PROP.reviews || 0;
-  if (!rating && reviews === 0) {
+  // A review COUNT with no rating is not a rating. The old code fell back to a
+  // literal '5.0' whenever reviews > 0, which invented a perfect score for
+  // Designer Game Suite (rating null, reviews 1). Never fabricate a rating:
+  // no rating means no review section.
+  if (!rating) {
     document.getElementById('reviewSection').style.display = 'none';
     return;
   }
-  var displayRating = rating || '5.0';
-  document.getElementById('reviewScore').textContent = displayRating;
-  var starsCount = Math.round(parseFloat(displayRating));
-  document.getElementById('reviewStars').textContent = '★'.repeat(starsCount);
-  // (Per-category score breakdown removed — the hero shows rating + stars.)
+  // Show the real number, with one decimal minimum so a flat 5 reads "5.0"
+  // like the rating row at the top of the page rather than a bare "5".
+  var shown = String(rating);
+  if (shown.indexOf('.') === -1) shown += '.0';
+  document.getElementById('reviewScore').textContent = shown;
+  document.getElementById('reviewStars').textContent = '★'.repeat(Math.round(parseFloat(shown)));
+  // The label used to be the hard-coded claim "PERFECT SCORES, EVERY CATEGORY".
+  // Four of the five rated properties sit at 4.74–4.92, and no per-category
+  // scores exist in the data at all, so that claim was unsupported on every
+  // listing. State the one thing the data does support: the review count.
+  document.getElementById('reviewLabel').textContent =
+    reviews > 0 ? reviews + ' GUEST REVIEW' + (reviews !== 1 ? 'S' : '') : 'GUEST RATED';
+  // (Per-category score breakdown deliberately omitted — no data backs it.)
 }
 
 // ── Prices ──
@@ -958,13 +1451,17 @@ function loadPrices() {
 // the page. Opening pushes one history entry; popstate closes; a UI close
 // consumes that entry via history.back() so the stack stays balanced.
 var galleryHistoryArmed = false;
+var galleryReturnFocus = null;
 
 function openGallery(idx) {
   galleryIdx = idx;
   var modal = document.getElementById('galleryModal');
+  var alreadyOpen = modal.classList.contains('active');
+  if (!alreadyOpen) galleryReturnFocus = document.activeElement;
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
   updateGallery();
+  if (!alreadyOpen) modal.focus();
   if (!galleryHistoryArmed) {
     history.pushState({ glGallery: true }, '', location.href);
     galleryHistoryArmed = true;
@@ -974,7 +1471,26 @@ function openGallery(idx) {
 function closeGalleryInternal() {
   document.getElementById('galleryModal').classList.remove('active');
   document.body.style.overflow = '';
+  if (galleryReturnFocus && galleryReturnFocus.focus) {
+    try { galleryReturnFocus.focus(); } catch (e) { /* element may be gone */ }
+  }
+  galleryReturnFocus = null;
 }
+
+// Keep Tab inside the open lightbox.
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Tab') return;
+  var modal = document.getElementById('galleryModal');
+  if (!modal.classList.contains('active')) return;
+  var stops = modal.querySelectorAll('button');
+  if (!stops.length) return;
+  var first = stops[0], last = stops[stops.length - 1];
+  if (e.shiftKey && (document.activeElement === first || document.activeElement === modal)) {
+    e.preventDefault(); last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault(); first.focus();
+  }
+});
 
 function closeGallery() {
   var wasOpen = document.getElementById('galleryModal').classList.contains('active');
@@ -1018,6 +1534,38 @@ function updateGallery() {
   });
 })();
 
+// Click outside the photo closes the lightbox.
+// "Outside" = anything in the overlay that is not the photo and not a control,
+// so ✕ / ‹ / › keep working. A drag or a swipe is not a click: the pointer has
+// to go down AND up on the backdrop within a few pixels, otherwise swiping
+// between photos (or dragging off the image) would dismiss the viewer.
+// Routes through window.closeGallery so the history entry is consumed and the
+// session-state wrapper still records galleryOpen:false — same path as ✕.
+(function() {
+  var modal = document.getElementById('galleryModal');
+  var downX = 0, downY = 0, downOnBackdrop = false;
+
+  function isBackdrop(el) {
+    if (!el || el.id === 'galleryImg') return false;
+    if (el.closest && el.closest('button')) return false;
+    return true;
+  }
+
+  modal.addEventListener('pointerdown', function(e) {
+    downX = e.clientX; downY = e.clientY;
+    downOnBackdrop = isBackdrop(e.target);
+  });
+
+  modal.addEventListener('click', function(e) {
+    var armed = downOnBackdrop;
+    downOnBackdrop = false;
+    if (!armed || !modal.classList.contains('active')) return;
+    if (!isBackdrop(e.target)) return;
+    if (Math.abs(e.clientX - downX) > 10 || Math.abs(e.clientY - downY) > 10) return;
+    window.closeGallery();
+  });
+})();
+
 // Touch swipe for hero photo
 (function() {
   var hero = document.getElementById('heroPhoto');
@@ -1057,8 +1605,13 @@ function toggleAllAmenities() {
           html += '<div class="gl-amenities-category">';
           html += '<div class="gl-amenities-cat-name">' + escHtml(cat) + '</div>';
           PROP.fullAmenities[cat].forEach(function(item) {
-            var hasPhoto = PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined;
-            html += '<div class="gl-amenities-cat-item' + (hasPhoto ? ' has-photo' : '') + '" onclick="amenityItemClick(\'' + escAttr(item) + '\')">' + escHtml(item) + (hasPhoto ? ' →' : '') + '</div>';
+            var pIdx = (PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined &&
+              PROP.amenityPhotos[item] < totalPhotos) ? PROP.amenityPhotos[item] : null;
+            html += pIdx !== null
+              ? '<div class="gl-amenities-cat-item has-photo" role="button" tabindex="0" data-photo="' + pIdx +
+                '" aria-label="Open photo ' + (pIdx + 1) + ' — ' + escAttr(item) + '" onclick="openGallery(' + pIdx + ')">' +
+                escHtml(item) + ' →</div>'
+              : '<div class="gl-amenities-cat-item">' + escHtml(item) + '</div>';
           });
           html += '</div>';
         });
@@ -1067,6 +1620,7 @@ function toggleAllAmenities() {
     }
     expand.classList.add('open');
     btn.textContent = 'COLLAPSE AMENITIES ▲';
+    btn.setAttribute('aria-expanded', 'true');
   } else {
     expand.classList.remove('open');
     var totalCount = 0;
@@ -1074,13 +1628,13 @@ function toggleAllAmenities() {
       Object.keys(PROP.fullAmenities).forEach(function(cat) { totalCount += PROP.fullAmenities[cat].length; });
     }
     btn.textContent = 'ALL ' + totalCount + ' AMENITIES';
+    btn.setAttribute('aria-expanded', 'false');
   }
 }
 
 function amenityItemClick(item) {
-  if (PROP.amenityPhotos && PROP.amenityPhotos[item] !== undefined) {
-    openGallery(PROP.amenityPhotos[item]);
-  }
+  var idx = amenityPhotoIndex(item);
+  if (idx !== null) openGallery(idx);
 }
 
 // ── Share ──

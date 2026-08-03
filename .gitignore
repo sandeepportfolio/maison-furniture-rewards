@@ -8,3 +8,5 @@ uploads/
 .claude/
 .worktrees/
 guesty-token*.json
+design-reference/
+shots/
