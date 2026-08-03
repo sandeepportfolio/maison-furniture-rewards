@@ -216,7 +216,8 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
    the desktop-only imagery uses data-src + hydrateDesktopImages()
    for that. */
 .gl-desknav,.gl-desknav-cta,.gl-contact-methods,.gl-deskfooter,
-.gl-sleep-fig,.gl-sticky-note,.gl-collage{display:none}
+.gl-sleep-fig,.gl-sticky-note,.gl-collage,
+.gl-rule-time,.gl-rule-qual,.gl-neigh-plate,.gl-neigh-coords{display:none}
 
 /* ── Responsive ── */
 /* ═══ DESKTOP — "GRAND CINEMA" (≥1024px) ══════════════════════════════
@@ -395,38 +396,47 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
      Type stays on the content band; the images break out to the viewport
      edge. Six-tile span pattern (tall / wide / pair / half / half) gives an
      asymmetric rhythm instead of a uniform thumbnail grid. */
+  /* Proportions measured off a live Airbnb listing at 1440px: content band
+     1120, half-width hero 560x476, four 272-wide thumbs, 8px gutters, one
+     476px band total. Ours keeps the ratios and sits on the content band. */
   .gl-collage{
-    display:block;grid-column:full-start/full-end;
-    padding:74px clamp(32px,3.4vw,56px) 0
+    display:block;grid-column:content-start/content-end;padding:64px 0 0
   }
   .gl-collage-head{
     display:flex;align-items:baseline;justify-content:space-between;
-    padding-top:20px;margin-bottom:26px;border-top:1px solid rgba(232,228,221,.15)
+    padding-top:20px;margin-bottom:22px;border-top:1px solid rgba(232,228,221,.15)
   }
   .gl-collage-label{
     font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.26em;
     text-transform:uppercase;color:var(--accent)
   }
-  .gl-collage-all{
-    font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--text-dim);background:none;border:0;
-    padding:0;cursor:pointer;transition:color .2s
+  .gl-collage-meta{
+    font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--text-dim)
   }
-  .gl-collage-all:hover{color:var(--accent)}
+  .gl-collage-frame{position:relative;border-radius:14px;overflow:hidden}
   .gl-collage-grid{
-    display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(96px,9vw,138px);
-    gap:10px;grid-auto-flow:dense
+    display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;
+    gap:8px;height:clamp(340px,33vw,476px)
   }
+  .gl-collage-cell:first-child{grid-row:1/span 2}
+  /* Airbnb-style overlaid control, bottom-right of the band. */
+  .gl-collage-all{
+    position:absolute;right:16px;bottom:16px;z-index:2;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 18px;border-radius:6px;cursor:pointer;
+    background:rgba(10,13,10,.82);border:1px solid rgba(232,228,221,.3);
+    color:var(--text);font-family:var(--sans);font-size:12px;font-weight:600;
+    letter-spacing:.02em;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    transition:background .2s,border-color .2s
+  }
+  .gl-collage-all::before{content:"⊞";font-size:12px;line-height:1}
+  .gl-collage-all:hover{background:rgba(10,13,10,.95);border-color:var(--accent)}
   .gl-collage-cell{
     margin:0;position:relative;overflow:hidden;cursor:pointer;
-    background:var(--bg-card);grid-column:span 2;grid-row:span 2
+    background:var(--bg-card)
   }
-  .gl-collage-cell:nth-child(6n+1){grid-column:span 2;grid-row:span 3}
-  .gl-collage-cell:nth-child(6n+2){grid-column:span 4;grid-row:span 2}
-  .gl-collage-cell:nth-child(6n+3){grid-column:span 2;grid-row:span 1}
-  .gl-collage-cell:nth-child(6n+4){grid-column:span 2;grid-row:span 1}
-  .gl-collage-cell:nth-child(6n+5){grid-column:span 3;grid-row:span 2}
-  .gl-collage-cell:nth-child(6n+6){grid-column:span 3;grid-row:span 2}
   .gl-collage-cell img{
     width:100%;height:100%;object-fit:cover;display:block;
     transition:transform .9s cubic-bezier(.2,.6,.2,1),filter .5s ease;
@@ -527,36 +537,69 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
      own hairline, divided by vertical rules. Numbering comes from a CSS
      counter, so it follows the data — three columns here, four on the villa
      (which has the pets row) — with nothing hard-coded. */
+  /* ── N°4 — GOOD TO KNOW ─────────────────────────────────────────────
+     Check-in and check-out are a span, not two facts, so they read as one:
+     two large light-weight times joined by a champagne rule. Everything else
+     hangs to the right as compact label/value pairs. Register borrowed from
+     Aman and Four Seasons — small type, wide tracking, light weights, and
+     space doing the work rather than size (their section heads run 20-24px
+     at weight 200-400, their card titles 10-12px at .2-.3em tracking). */
   #rulesList{
-    counter-reset:glrule;display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:0;margin-top:34px
+    --gtk-gap:clamp(30px,4.6vw,84px);
+    display:grid;grid-template-columns:auto auto minmax(0,1fr);
+    grid-auto-rows:min-content;column-gap:var(--gtk-gap);row-gap:26px;
+    align-items:start;margin-top:36px;padding-top:34px;
+    border-top:1px solid rgba(232,228,221,.14)
   }
   .gl-rule-item{
-    display:block;position:relative;padding:22px 34px 4px;border-bottom:0;
-    border-radius:0;background:none;border:0;
-    border-top:1px solid rgba(232,228,221,.14);
-    transition:border-top-color .45s ease
-  }
-  .gl-rule-item+.gl-rule-item{border-left:1px solid rgba(232,228,221,.1)}
-  .gl-rule-item:first-child{padding-left:0}
-  .gl-rule-item:hover{border-top-color:rgba(201,152,69,.75)}
-  .gl-rule-item::before{
-    counter-increment:glrule;content:"№ " counter(glrule,decimal-leading-zero);
-    display:block;margin-bottom:18px;
-    font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.24em;
-    color:var(--accent)
+    display:block;position:relative;padding:0;border:0;border-radius:0;
+    background:none
   }
   .gl-rule-dots{display:none}
   .gl-rule-name{
-    display:block;font-family:var(--mono);font-size:8.5px;font-weight:600;
-    letter-spacing:.24em;text-transform:uppercase;color:var(--text-faint)
+    display:block;font-family:var(--mono);font-size:9px;font-weight:600;
+    letter-spacing:.28em;text-transform:uppercase;color:var(--text-faint)
   }
-  .gl-rule-detail{
-    display:block;margin-top:14px;font-family:var(--serif);
-    font-size:clamp(21px,1.9vw,27px);font-weight:500;line-height:1.18;
-    letter-spacing:0;color:var(--text);text-align:left;white-space:normal;
-    text-transform:none
+
+  /* The arrival span — first two cells, only when a clock time was parsed.
+     It spans both rows so the untimed rules to its right size themselves
+     rather than inheriting the tall time row's height. */
+  .gl-rule-item.has-time{grid-row:1/3}
+  .gl-rule-item.has-time:nth-child(1){grid-column:1}
+  .gl-rule-item.has-time:nth-child(2){grid-column:2}
+  .gl-rule-item.has-time .gl-rule-detail{display:none}
+  .gl-rule-time{
+    display:block;margin-top:16px;font-family:var(--serif);
+    font-size:clamp(32px,3.4vw,46px);font-weight:400;line-height:1;
+    letter-spacing:.005em;color:var(--text);white-space:nowrap
+  }
+  .gl-rule-qual{
+    display:block;margin-top:14px;font-family:var(--mono);font-size:8.5px;
+    font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--text-dim)
+  }
+  /* Champagne rule joining the two times. */
+  .gl-rule-item.has-time+.gl-rule-item.has-time::before{
+    content:"";position:absolute;
+    left:calc(-1 * var(--gtk-gap) + 10px);width:calc(var(--gtk-gap) - 20px);
+    top:clamp(38px,3.1vw,48px);height:1px;
+    background:linear-gradient(90deg,rgba(201,152,69,0),rgba(201,152,69,.85))
+  }
+  .gl-rule-item.has-time+.gl-rule-item.has-time::after{
+    content:"";position:absolute;left:-12px;top:clamp(34px,3.1vw,44px);
+    border:3px solid transparent;border-left-color:rgba(201,152,69,.85)
+  }
+
+  /* Everything without a time stacks in the third column. */
+  .gl-rule-item:not(.has-time){
+    grid-column:3;padding-left:clamp(24px,2.4vw,40px);
+    border-left:1px solid rgba(232,228,221,.1)
+  }
+  .gl-rule-item:not(.has-time) .gl-rule-detail{
+    display:block;margin-top:12px;font-family:var(--serif);
+    font-size:clamp(17px,1.5vw,21px);font-weight:400;line-height:1.25;
+    letter-spacing:.02em;color:var(--text);text-align:left;
+    white-space:normal;text-transform:none
   }
 
   /* ── N°5 — THE NEIGHBOURHOOD ────────────────────────────────────────
@@ -568,22 +611,44 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     position:relative;overflow:hidden;isolation:isolate;
     display:grid;grid-template-columns:1fr 1fr;column-gap:64px;align-items:start
   }
-  #neighSection{padding-bottom:26px}
+  /* The section becomes a location plate: a real outdoor/view photo from this
+     listing sits behind it, dimmed under a directional scrim, with the copy,
+     the landmark index and the property's true coordinates layered over it.
+     No photo match -> no .has-photo, and it degrades to a plain dark panel. */
+  #neighSection{
+    border-radius:14px;margin-top:74px;
+    padding:clamp(40px,3.8vw,60px) clamp(30px,3.2vw,52px) clamp(42px,4vw,62px);
+    grid-template-rows:auto auto auto;row-gap:0
+  }
+  .gl-neigh-plate{
+    display:block;position:absolute;inset:0;z-index:-2;margin:0;
+    background:var(--bg-card)
+  }
+  .gl-neigh-plate img{
+    width:100%;height:100%;object-fit:cover;display:block;opacity:0;
+    filter:saturate(.55) brightness(.5);transition:opacity 1s ease
+  }
+  .gl-neigh-plate.has-photo img{opacity:1}
   #neighSection::before{
-    content:attr(data-city);position:absolute;z-index:-1;
-    left:-.055em;bottom:-.46em;pointer-events:none;user-select:none;
-    white-space:nowrap;
-    font-family:var(--serif);font-weight:700;font-size:clamp(130px,16vw,250px);
-    line-height:.8;letter-spacing:-.02em;text-transform:uppercase;
-    color:rgba(232,228,221,.028)
+    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(102deg,rgba(10,13,10,.95) 0%,rgba(10,13,10,.86) 38%,
+      rgba(10,13,10,.66) 72%,rgba(10,13,10,.5) 100%)
   }
-  #neighSection .gl-section-head{grid-column:1/-1;margin-bottom:36px}
+  #neighSection .gl-section-head{
+    grid-column:1/-1;grid-row:1;margin-bottom:34px;
+    border-top:0;padding-top:0
+  }
   #neighDesc{
-    grid-column:1;max-width:440px;font-family:var(--serif);
-    font-size:clamp(19px,1.7vw,24px);line-height:1.52;color:var(--text);
-    text-wrap:pretty
+    grid-column:1;grid-row:2;max-width:430px;font-family:var(--serif);
+    font-size:clamp(18px,1.55vw,22px);font-weight:400;line-height:1.55;
+    letter-spacing:.01em;color:var(--text);text-wrap:pretty
   }
-  #locTags{grid-column:2;counter-reset:glloc;display:block;margin-top:0}
+  .gl-neigh-coords{
+    display:block;grid-column:1;grid-row:3;align-self:end;margin-top:32px;
+    font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.26em;
+    color:rgba(201,152,69,.85)
+  }
+  #locTags{grid-column:2;grid-row:2/span 2;counter-reset:glloc;display:block;margin-top:0}
   .gl-loc-tag{
     counter-increment:glloc;position:relative;
     display:flex;align-items:baseline;gap:20px;
@@ -807,9 +872,12 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 <div class="gl-collage" id="collageSection">
   <div class="gl-collage-head">
     <span class="gl-collage-label">✦ THE GALLERY</span>
+    <span class="gl-collage-meta" id="collageMeta"></span>
+  </div>
+  <div class="gl-collage-frame">
+    <div class="gl-collage-grid" id="collageGrid"></div>
     <button class="gl-collage-all" id="collageAllBtn" onclick="openGallery(0)"></button>
   </div>
-  <div class="gl-collage-grid" id="collageGrid"></div>
 </div>
 
 <!-- N°2 — AMENITIES -->
@@ -856,6 +924,11 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   </div>
   <div class="gl-desc" id="neighDesc"></div>
   <div class="gl-loc-tags" id="locTags"></div>
+  <!-- Desktop-only location plate: a real outdoor/view photo from this
+       listing behind the copy, plus the property's actual coordinates.
+       Hidden below 1024px, and data-src so a phone never downloads it. -->
+  <figure class="gl-neigh-plate" id="neighPlate"><img id="neighPlateImg" alt="" loading="lazy"></figure>
+  <span class="gl-neigh-coords" id="neighCoords"></span>
 </div>
 
 <!-- Reviews -->
@@ -1205,17 +1278,24 @@ if (DESKTOP_MQ) {
 // hard-coded or front-loaded selection, then lets a repeating 6-tile span
 // pattern give it an asymmetric rhythm. Every tile opens the real lightbox at
 // its true index.
-var COLLAGE_TILES = 12;
+// Five tiles in one compact band — the layout Airbnb uses on a listing (one
+// half-width hero beside a 2x2, ~476px tall on a 1440 viewport). The earlier
+// twelve-tile mosaic ran over 1500px and dominated the page.
+var COLLAGE_TILES = 5;
 
 function buildCollage() {
   var grid = document.getElementById('collageGrid');
   if (!grid || !PROP.photos || totalPhotos === 0) return;
-  var n = Math.min(COLLAGE_TILES, totalPhotos);
+  // Skip whatever the big hero above is already showing, so the band opens on
+  // something new, then sample evenly across the rest for variety.
+  var pool = [];
+  for (var p = 0; p < totalPhotos; p++) if (p !== currentHeroIdx) pool.push(p);
+  if (!pool.length) pool = [0];
+  var n = Math.min(COLLAGE_TILES, pool.length);
   var picks = [];
   for (var i = 0; i < n; i++) {
-    // Evenly spaced across the whole gallery, de-duplicated for short sets.
-    var idx = n === 1 ? 0 : Math.round(i * (totalPhotos - 1) / (n - 1));
-    if (picks.indexOf(idx) === -1) picks.push(idx);
+    var at = n === 1 ? 0 : Math.round(i * (pool.length - 1) / (n - 1));
+    if (picks.indexOf(pool[at]) === -1) picks.push(pool[at]);
   }
   var html = '';
   picks.forEach(function (idx) {
@@ -1230,7 +1310,8 @@ function buildCollage() {
       '</figure>';
   });
   grid.innerHTML = html;
-  document.getElementById('collageAllBtn').textContent = totalPhotos + ' PHOTOS — VIEW ALL →';
+  document.getElementById('collageAllBtn').textContent = 'Show all ' + totalPhotos + ' photos';
+  document.getElementById('collageMeta').textContent = picks.length + ' OF ' + totalPhotos;
   hydrateDesktopImages();
 }
 
@@ -1536,12 +1617,24 @@ function buildRules() {
   } else {
     rules.push({ name: 'Parking', detail: PARKING_DETAIL[SLUG] || 'FREE COVERED PARKING' });
   }
+  // Desktop sets check-in and check-out as a paired arrival span, so pull the
+  // clock time out of the detail string ("SMART LOCK · 3:00 PM" -> "3:00 PM"
+  // plus the qualifier "SMART LOCK"). Rules with no time in them — parking,
+  // pets — keep the plain label/value treatment. The extra spans are
+  // display:none below 1024px, so a phone renders the detail exactly as before.
+  var TIME_RE = /(\d{1,2}:\d{2}\s*[AP]\.?M\.?)/i;
   var html = '';
   rules.forEach(function(r) {
-    html += '<div class="gl-rule-item">';
+    var m = TIME_RE.exec(r.detail);
+    var qual = m ? r.detail.replace(m[0], '').replace(/[·•\-–—\s]+$/, '').replace(/^[·•\-–—\s]+/, '') : '';
+    html += '<div class="gl-rule-item' + (m ? ' has-time' : '') + '">';
     html += '<span class="gl-rule-name">' + escHtml(r.name) + '</span>';
     html += '<span class="gl-rule-dots"></span>';
     html += '<span class="gl-rule-detail">' + escHtml(r.detail) + '</span>';
+    if (m) {
+      html += '<span class="gl-rule-time">' + escHtml(m[1].toUpperCase()) + '</span>';
+      html += '<span class="gl-rule-qual">' + escHtml(qual) + '</span>';
+    }
     html += '</div>';
   });
   document.getElementById('rulesList').innerHTML = html;
@@ -1588,12 +1681,49 @@ function buildNeighbourhood() {
   // that renders it lives inside the ≥1024px block, so this attribute is inert
   // on mobile — it sets no text and changes no layout there.
   document.getElementById('neighSection').setAttribute('data-city', PROP.city);
+  buildNeighPlate();
 
   var html = '';
   n.tags.forEach(function(tag) {
     html += '<span class="gl-loc-tag">' + tag + '</span>';
   });
   document.getElementById('locTags').innerHTML = html;
+}
+
+// Backdrop for the neighbourhood plate: an outdoor / view / amenity-exterior
+// shot from this listing's own gallery, chosen by label, most specific first.
+// A bare /view/ match is deliberately absent — it caught "Living Room
+// Alternate View", an interior. No match simply leaves the plate empty and the
+// section falls back to a plain dark panel.
+var NEIGH_PHOTO_PATTERNS = [
+  /downtown|skyline/i,
+  /\b(city|lake|water|marina)\s*view/i,
+  /balcony|terrace|rooftop|sky lounge/i,
+  /\bpatio\b/i,
+  /waterfront|pool/i
+];
+
+function buildNeighPlate() {
+  var coordEl = document.getElementById('neighCoords');
+  if (coordEl && typeof PROP.lat === 'number' && typeof PROP.lng === 'number') {
+    coordEl.textContent =
+      Math.abs(PROP.lat).toFixed(4) + '° ' + (PROP.lat >= 0 ? 'N' : 'S') + '   ·   ' +
+      Math.abs(PROP.lng).toFixed(4) + '° ' + (PROP.lng >= 0 ? 'E' : 'W');
+  }
+  var plate = document.getElementById('neighPlate');
+  if (!plate || !PROP.photos || !PROP.photoLabels) return;
+  var idx = null;
+  for (var p = 0; p < NEIGH_PHOTO_PATTERNS.length && idx === null; p++) {
+    for (var i = 0; i < PROP.photoLabels.length; i++) {
+      if (NEIGH_PHOTO_PATTERNS[p].test(PROP.photoLabels[i])) { idx = i; break; }
+    }
+  }
+  if (idx === null || idx >= totalPhotos) return;
+  var img = document.getElementById('neighPlateImg');
+  img.setAttribute('data-src', photoUrl(PROP.photos[idx], 1200));
+  img.alt = getPhotoLabel(idx);
+  plate.classList.add('has-photo');
+  hydrateDesktopImages();
 }
 
 function buildReviews() {
