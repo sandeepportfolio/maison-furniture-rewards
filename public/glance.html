@@ -211,10 +211,12 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 /* Single-cell bed grids — same result the old inline style produced. */
 .gl-bed-grid.is-single{grid-template-columns:1fr}
 /* Desktop-only furniture. Hidden here, revealed only inside the
-   ≥1024px block below, so it can never reach a phone. `display:none`
-   also means the sleep photo is never fetched on mobile. */
+   ≥1024px block below, so it can never reach a phone. Note that
+   display:none does NOT prevent an <img src> from downloading —
+   the desktop-only imagery uses data-src + hydrateDesktopImages()
+   for that. */
 .gl-desknav,.gl-desknav-cta,.gl-contact-methods,.gl-deskfooter,
-.gl-sleep-fig,.gl-sticky-note{display:none}
+.gl-sleep-fig,.gl-sticky-note,.gl-collage{display:none}
 
 /* ── Responsive ── */
 /* ═══ DESKTOP — "GRAND CINEMA" (≥1024px) ══════════════════════════════
@@ -389,6 +391,70 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     margin:26px auto 0;max-width:780px;font-size:15px;line-height:1.78;text-wrap:pretty
   }
 
+  /* ── THE GALLERY — full-bleed editorial mosaic ──────────────────────
+     Type stays on the content band; the images break out to the viewport
+     edge. Six-tile span pattern (tall / wide / pair / half / half) gives an
+     asymmetric rhythm instead of a uniform thumbnail grid. */
+  .gl-collage{
+    display:block;grid-column:full-start/full-end;
+    padding:74px clamp(32px,3.4vw,56px) 0
+  }
+  .gl-collage-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding-top:20px;margin-bottom:26px;border-top:1px solid rgba(232,228,221,.15)
+  }
+  .gl-collage-label{
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--accent)
+  }
+  .gl-collage-all{
+    font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--text-dim);background:none;border:0;
+    padding:0;cursor:pointer;transition:color .2s
+  }
+  .gl-collage-all:hover{color:var(--accent)}
+  .gl-collage-grid{
+    display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:clamp(96px,9vw,138px);
+    gap:10px;grid-auto-flow:dense
+  }
+  .gl-collage-cell{
+    margin:0;position:relative;overflow:hidden;cursor:pointer;
+    background:var(--bg-card);grid-column:span 2;grid-row:span 2
+  }
+  .gl-collage-cell:nth-child(6n+1){grid-column:span 2;grid-row:span 3}
+  .gl-collage-cell:nth-child(6n+2){grid-column:span 4;grid-row:span 2}
+  .gl-collage-cell:nth-child(6n+3){grid-column:span 2;grid-row:span 1}
+  .gl-collage-cell:nth-child(6n+4){grid-column:span 2;grid-row:span 1}
+  .gl-collage-cell:nth-child(6n+5){grid-column:span 3;grid-row:span 2}
+  .gl-collage-cell:nth-child(6n+6){grid-column:span 3;grid-row:span 2}
+  .gl-collage-cell img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .9s cubic-bezier(.2,.6,.2,1),filter .5s ease;
+    filter:saturate(.92)
+  }
+  .gl-collage-cell:hover img,.gl-collage-cell:focus-visible img{
+    transform:scale(1.05);filter:saturate(1.05)
+  }
+  /* Caption rides in from the bottom on hover, over a soft scrim. */
+  .gl-collage-cell figcaption{
+    position:absolute;inset:auto 0 0 0;display:flex;align-items:baseline;gap:10px;
+    padding:34px 16px 14px;pointer-events:none;
+    background:linear-gradient(180deg,transparent,rgba(10,13,10,.86));
+    opacity:0;transform:translateY(8px);
+    transition:opacity .35s ease,transform .35s cubic-bezier(.2,.6,.2,1)
+  }
+  .gl-collage-cell:hover figcaption,.gl-collage-cell:focus-visible figcaption{
+    opacity:1;transform:none
+  }
+  .gl-collage-fig{
+    flex:none;font-family:var(--mono);font-size:8px;font-weight:600;
+    letter-spacing:.22em;color:var(--accent)
+  }
+  .gl-collage-cap{
+    font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+  }
+
   /* N°2 — amenities: featured ledger, then the full categorised list */
   #amenitiesSection .gl-section-head{margin-bottom:26px}
   #amenityList{columns:2;column-gap:64px}
@@ -447,38 +513,80 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     font-weight:500;letter-spacing:.2em;color:var(--text);text-transform:uppercase
   }
 
-  /* N°4 — good to know: one card per real rule, no invented rows */
+  /* ── N°4 — GOOD TO KNOW ─────────────────────────────────────────────
+     Boxes out, ledger in: each real rule becomes a numbered column under its
+     own hairline, divided by vertical rules. Numbering comes from a CSS
+     counter, so it follows the data — three columns here, four on the villa
+     (which has the pets row) — with nothing hard-coded. */
   #rulesList{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:16px;margin-top:28px
+    counter-reset:glrule;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:0;margin-top:34px
   }
   .gl-rule-item{
-    display:block;padding:26px 28px;border-bottom:0;border-radius:6px;
-    background:var(--bg-card);border:1px solid rgba(232,228,221,.12)
+    display:block;position:relative;padding:22px 34px 4px;border-bottom:0;
+    border-radius:0;background:none;border:0;
+    border-top:1px solid rgba(232,228,221,.14);
+    transition:border-top-color .45s ease
+  }
+  .gl-rule-item+.gl-rule-item{border-left:1px solid rgba(232,228,221,.1)}
+  .gl-rule-item:first-child{padding-left:0}
+  .gl-rule-item:hover{border-top-color:rgba(201,152,69,.75)}
+  .gl-rule-item::before{
+    counter-increment:glrule;content:"№ " counter(glrule,decimal-leading-zero);
+    display:block;margin-bottom:18px;
+    font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.24em;
+    color:var(--accent)
   }
   .gl-rule-dots{display:none}
   .gl-rule-name{
     display:block;font-family:var(--mono);font-size:8.5px;font-weight:600;
-    letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim)
+    letter-spacing:.24em;text-transform:uppercase;color:var(--text-faint)
   }
   .gl-rule-detail{
-    display:block;margin-top:12px;font-family:var(--serif);font-size:23px;
-    font-weight:500;letter-spacing:0;color:var(--text);
-    text-align:left;white-space:normal
+    display:block;margin-top:14px;font-family:var(--serif);
+    font-size:clamp(21px,1.9vw,27px);font-weight:500;line-height:1.18;
+    letter-spacing:0;color:var(--text);text-align:left;white-space:normal;
+    text-transform:none
   }
 
-  /* N°5 — the neighbourhood */
+  /* ── N°5 — THE NEIGHBOURHOOD ────────────────────────────────────────
+     An oversized, barely-there city wordmark sits behind the section (text
+     from data-city, so it names the property's real city), with the copy and
+     a numbered place index layered over it. The landmarks are labels, not
+     links — no hover affordance, because there is nowhere for them to go. */
   #neighSection{
-    display:grid;grid-template-columns:1fr 1fr;column-gap:56px;align-items:start
+    position:relative;overflow:hidden;isolation:isolate;
+    display:grid;grid-template-columns:1fr 1fr;column-gap:64px;align-items:start
   }
-  #neighSection .gl-section-head{grid-column:1/-1;margin-bottom:30px}
-  #neighDesc{grid-column:1;max-width:460px;font-size:16px;line-height:1.78;text-wrap:pretty}
-  #locTags{grid-column:2;display:block;margin-top:0}
+  #neighSection{padding-bottom:26px}
+  #neighSection::before{
+    content:attr(data-city);position:absolute;z-index:-1;
+    left:-.055em;bottom:-.46em;pointer-events:none;user-select:none;
+    white-space:nowrap;
+    font-family:var(--serif);font-weight:700;font-size:clamp(130px,16vw,250px);
+    line-height:.8;letter-spacing:-.02em;text-transform:uppercase;
+    color:rgba(232,228,221,.028)
+  }
+  #neighSection .gl-section-head{grid-column:1/-1;margin-bottom:36px}
+  #neighDesc{
+    grid-column:1;max-width:440px;font-family:var(--serif);
+    font-size:clamp(19px,1.7vw,24px);line-height:1.52;color:var(--text);
+    text-wrap:pretty
+  }
+  #locTags{grid-column:2;counter-reset:glloc;display:block;margin-top:0}
   .gl-loc-tag{
-    display:flex;align-items:baseline;justify-content:space-between;
-    padding:19px 0;border:0;border-top:1px solid rgba(232,228,221,.12);border-radius:0;
-    font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:.01em;
-    color:var(--text)
+    counter-increment:glloc;position:relative;
+    display:flex;align-items:baseline;gap:20px;
+    padding:20px 0;border:0;border-top:1px solid rgba(232,228,221,.12);
+    border-radius:0;font-family:var(--serif);
+    font-size:clamp(19px,1.6vw,23px);font-weight:500;letter-spacing:.01em;
+    line-height:1.2;color:var(--text);text-transform:none
+  }
+  .gl-loc-tag::before{
+    content:"№ " counter(glloc,decimal-leading-zero);flex:none;
+    font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.22em;
+    color:var(--accent);position:relative;top:-2px
   }
   .gl-loc-tag:last-child{border-bottom:1px solid rgba(232,228,221,.12)}
   .gl-loc-tag:hover{border-color:rgba(232,228,221,.12)}
@@ -684,6 +792,17 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   <div class="gl-desc" id="glDesc"></div>
 </div>
 
+<!-- THE GALLERY — desktop-only editorial mosaic (hidden below 1024px, so the
+     phone keeps its single filmstrip). Deliberately unnumbered: inserting an
+     N° here would renumber N°2–N°6 and change the mobile markup. -->
+<div class="gl-collage" id="collageSection">
+  <div class="gl-collage-head">
+    <span class="gl-collage-label">✦ THE GALLERY</span>
+    <button class="gl-collage-all" id="collageAllBtn" onclick="openGallery(0)"></button>
+  </div>
+  <div class="gl-collage-grid" id="collageGrid"></div>
+</div>
+
 <!-- N°2 — AMENITIES -->
 <div class="gl-section" id="amenitiesSection">
   <div class="gl-section-head">
@@ -702,8 +821,9 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     <span class="gl-section-right" id="sleepSummary"></span>
   </div>
   <div class="gl-bed-grid" id="bedGrid"></div>
-  <!-- Desktop-only room plate. Hidden (and never fetched) below 1024px;
-       shown only when a real bedroom photo exists in this listing. -->
+  <!-- Desktop-only room plate. Hidden below 1024px and, via data-src, not
+       downloaded there either. Shown only when this listing really has a
+       bedroom photo. -->
   <figure class="gl-sleep-fig" id="sleepFig">
     <img id="sleepFigImg" src="" alt="" loading="lazy">
     <figcaption id="sleepFigCap"></figcaption>
@@ -1041,12 +1161,72 @@ function init() {
   // below 1024px, so the image is never fetched on a phone).
   buildSleepPhoto();
 
+  // Editorial photo mosaic (desktop only — same display:none guard, so none of
+  // its images are fetched on a phone).
+  buildCollage();
+
   // Desktop opens the full amenity list by default so the section reads as
   // complete; the button still collapses and re-expands it. matchMedia is
   // false on every phone, so mobile keeps the collapsed default exactly.
   if (window.matchMedia && window.matchMedia('(min-width:1024px)').matches) {
     toggleAllAmenities();
   }
+}
+
+// `display:none` does NOT stop a browser downloading an <img> that has a src —
+// measured on this page at 375px, where all 12 collage tiles and the bedroom
+// plate were requested despite never being painted. So every desktop-only image
+// carries its URL in data-src and is only given a real src once the ≥1024px
+// breakpoint actually matches. A phone therefore fetches none of them; resizing
+// across the breakpoint hydrates them on the spot.
+var DESKTOP_MQ = window.matchMedia ? window.matchMedia('(min-width:1024px)') : null;
+
+function hydrateDesktopImages() {
+  if (DESKTOP_MQ && !DESKTOP_MQ.matches) return;
+  var pending = document.querySelectorAll('img[data-src]');
+  for (var i = 0; i < pending.length; i++) {
+    pending[i].src = pending[i].getAttribute('data-src');
+    pending[i].removeAttribute('data-src');
+  }
+}
+
+if (DESKTOP_MQ) {
+  if (DESKTOP_MQ.addEventListener) DESKTOP_MQ.addEventListener('change', hydrateDesktopImages);
+  else if (DESKTOP_MQ.addListener) DESKTOP_MQ.addListener(hydrateDesktopImages);
+}
+
+// Editorial mosaic. Samples evenly across THIS listing's own gallery so the
+// spread covers living / kitchen / bedroom / bath / building rather than a
+// hard-coded or front-loaded selection, then lets a repeating 6-tile span
+// pattern give it an asymmetric rhythm. Every tile opens the real lightbox at
+// its true index.
+var COLLAGE_TILES = 12;
+
+function buildCollage() {
+  var grid = document.getElementById('collageGrid');
+  if (!grid || !PROP.photos || totalPhotos === 0) return;
+  var n = Math.min(COLLAGE_TILES, totalPhotos);
+  var picks = [];
+  for (var i = 0; i < n; i++) {
+    // Evenly spaced across the whole gallery, de-duplicated for short sets.
+    var idx = n === 1 ? 0 : Math.round(i * (totalPhotos - 1) / (n - 1));
+    if (picks.indexOf(idx) === -1) picks.push(idx);
+  }
+  var html = '';
+  picks.forEach(function (idx) {
+    var label = getPhotoLabel(idx);
+    var fig = 'FIG. ' + String(idx + 1).padStart(2, '0');
+    html += '<figure class="gl-collage-cell" role="button" tabindex="0"' +
+      ' aria-label="Open photo ' + (idx + 1) + ' of ' + totalPhotos + ' — ' + escAttr(label) + '"' +
+      ' onclick="openGallery(' + idx + ')">' +
+      '<img data-src="' + photoUrl(PROP.photos[idx], 720) + '" alt="' + escAttr(label) + '" loading="lazy">' +
+      '<figcaption><span class="gl-collage-fig">' + fig + '</span>' +
+      '<span class="gl-collage-cap">' + escHtml(label) + '</span></figcaption>' +
+      '</figure>';
+  });
+  grid.innerHTML = html;
+  document.getElementById('collageAllBtn').textContent = totalPhotos + ' PHOTOS — VIEW ALL →';
+  hydrateDesktopImages();
 }
 
 // Pick a real bedroom photo out of this listing's own labels — never a
@@ -1069,11 +1249,14 @@ function buildSleepPhoto() {
   }
   if (idx === null || idx >= totalPhotos) return;
   var label = getPhotoLabel(idx);
-  document.getElementById('sleepFigImg').src = photoUrl(PROP.photos[idx], 1200);
+  // data-src, not src — see hydrateDesktopImages: a display:none <img> with a
+  // src is still downloaded, and this plate is desktop-only.
+  document.getElementById('sleepFigImg').setAttribute('data-src', photoUrl(PROP.photos[idx], 1200));
   document.getElementById('sleepFigImg').alt = label;
   document.getElementById('sleepFigCap').textContent =
     'FIG. ' + String(idx + 1).padStart(2, '0') + ' — ' + label.toUpperCase();
   fig.classList.add('has-photo');
+  hydrateDesktopImages();
   fig.setAttribute('role', 'button');
   fig.setAttribute('tabindex', '0');
   fig.setAttribute('aria-label', 'Open photo ' + (idx + 1) + ' — ' + label);
@@ -1296,7 +1479,7 @@ document.addEventListener('keydown', function(e) {
   if (t.matches('.gl-amenity-name[data-photo]')) {
     e.preventDefault();
     openGallery(parseInt(t.getAttribute('data-photo'), 10));
-  } else if (t.matches('.gl-strip-item,.gl-amenities-cat-item[data-photo],.gl-sleep-fig,.gl-hero')) {
+  } else if (t.matches('.gl-strip-item,.gl-amenities-cat-item[data-photo],.gl-sleep-fig,.gl-hero,.gl-collage-cell')) {
     e.preventDefault();
     t.click();
   }
@@ -1324,6 +1507,13 @@ function buildBedrooms() {
   document.getElementById('bedGrid').classList.toggle('is-single', beds.length === 1);
 }
 
+// Per-property parking, where the generic line is wrong. Regent Skyline is a
+// downtown loft in the Butler Brothers Building with valet, not covered
+// self-park — its own amenity data already lists "Free valet parking".
+var PARKING_DETAIL = {
+  'regent-skyline': 'COMPLIMENTARY 24/7 VALET'
+};
+
 function buildRules() {
   var rules = [
     { name: 'Self check-in', detail: 'SMART LOCK · 3:00 PM' },
@@ -1333,7 +1523,7 @@ function buildRules() {
     rules.push({ name: 'Pets welcome', detail: 'PET-FRIENDLY HOME' });
     rules.push({ name: 'Parking', detail: 'TWO-CAR GARAGE + DRIVE' });
   } else {
-    rules.push({ name: 'Parking', detail: 'FREE COVERED PARKING' });
+    rules.push({ name: 'Parking', detail: PARKING_DETAIL[SLUG] || 'FREE COVERED PARKING' });
   }
   var html = '';
   rules.forEach(function(r) {
@@ -1383,6 +1573,10 @@ function buildNeighbourhood() {
   var stAbbr = stateAbbrevs[PROP.state.toLowerCase()] || PROP.state.substring(0, 2).toUpperCase();
   document.getElementById('neighCity').textContent = PROP.city.toUpperCase() + ', ' + stAbbr;
   document.getElementById('neighDesc').textContent = n.desc;
+  // Feeds the oversized ghosted city wordmark behind the section. The ::before
+  // that renders it lives inside the ≥1024px block, so this attribute is inert
+  // on mobile — it sets no text and changes no layout there.
+  document.getElementById('neighSection').setAttribute('data-city', PROP.city);
 
   var html = '';
   n.tags.forEach(function(tag) {
