@@ -465,10 +465,19 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     flex:0 0 auto;max-width:none;margin-left:14px;
     font-size:8.5px;letter-spacing:.2em;text-align:right
   }
+  /* Collapsed by default at every width. Desktop shows its own wording via
+     ::before (data-more / data-less), so the button's textContent — which is
+     what a phone renders — is left exactly as it was. */
   .gl-all-amenities-btn{
     display:inline-block;width:auto;margin:26px 0 0;padding:15px 30px;
-    border-radius:3px;font-size:10px;letter-spacing:.22em
+    border-radius:3px;font-size:0;line-height:0
   }
+  .gl-all-amenities-btn::before{
+    content:attr(data-more);
+    font-family:var(--mono);font-size:10px;font-weight:600;line-height:normal;
+    letter-spacing:.22em;text-transform:uppercase
+  }
+  .gl-all-amenities-btn[aria-expanded="true"]::before{content:attr(data-less)}
   .gl-amenities-expand{margin-top:4px}
   .gl-amenities-expand.open{max-height:6000px}
   /* Columns rather than a grid: the nine real categories have very
@@ -1165,12 +1174,8 @@ function init() {
   // its images are fetched on a phone).
   buildCollage();
 
-  // Desktop opens the full amenity list by default so the section reads as
-  // complete; the button still collapses and re-expands it. matchMedia is
-  // false on every phone, so mobile keeps the collapsed default exactly.
-  if (window.matchMedia && window.matchMedia('(min-width:1024px)').matches) {
-    toggleAllAmenities();
-  }
+  // The full amenity list stays collapsed on every width — the button is the
+  // way in. (Desktop used to auto-expand it on load.)
 }
 
 // `display:none` does NOT stop a browser downloading an <img> that has a src —
@@ -1396,7 +1401,13 @@ function buildAmenities() {
     });
   }
   document.getElementById('amenityCount').textContent = totalCount + ' TOTAL';
-  document.getElementById('allAmenitiesBtn').textContent = 'ALL ' + totalCount + ' AMENITIES';
+  var allBtn = document.getElementById('allAmenitiesBtn');
+  allBtn.textContent = 'ALL ' + totalCount + ' AMENITIES';
+  // Desktop renders its own wording from these via ::before (see the ≥1024px
+  // block). Attributes only — the textContent above is what a phone shows, and
+  // it is unchanged.
+  allBtn.setAttribute('data-more', 'SHOW ALL ' + totalCount + ' AMENITIES');
+  allBtn.setAttribute('data-less', 'HIDE ALL AMENITIES ▲');
 
   var html = '';
   featured.forEach(function(a, i) {
