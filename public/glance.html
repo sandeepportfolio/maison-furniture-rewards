@@ -218,7 +218,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 .gl-desknav,.gl-desknav-cta,.gl-contact-methods,.gl-deskfooter,
 .gl-sleep-fig,.gl-sticky-note,.gl-collage,
 .gl-rule-time,.gl-rule-qual,.gl-rule-detail-alt,
-.gl-neigh-plate,.gl-neigh-coords,.gl-photogrid{display:none}
+.gl-neigh-plate,.gl-neigh-coords,.gl-photogrid,.gl-hero-nav{display:none}
 
 /* ── Responsive ── */
 /* ═══ DESKTOP — "GRAND CINEMA" (≥1024px) ══════════════════════════════
@@ -268,6 +268,28 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
       rgba(10,13,10,.10) 34%,rgba(10,13,10,.86) 80%,var(--bg) 100%)
   }
   .gl-hero-chip{display:none}
+  /* Hero carousel arrows. Vertically parked at 38% so they clear the glass
+     booking card, which is bottom-aligned and starts around 50% even at the
+     shortest (1024px) hero. Quietly present at rest, full strength on hover
+     or keyboard focus. The gradient scrim above the photo is untouched, so
+     the title keeps its contrast whichever frame is showing. */
+  .gl-hero-nav{
+    display:flex;position:absolute;top:38%;transform:translateY(-50%);z-index:3;
+    width:46px;height:46px;align-items:center;justify-content:center;
+    padding:0 0 3px;border-radius:50%;cursor:pointer;
+    background:rgba(10,13,10,.4);border:1px solid rgba(232,228,221,.26);
+    color:var(--text);font-family:var(--serif);font-size:22px;line-height:1;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    opacity:.5;transition:opacity .3s ease,background .2s ease,border-color .2s ease
+  }
+  .gl-hero:hover .gl-hero-nav{opacity:1}
+  .gl-hero-nav:hover{background:rgba(10,13,10,.75);border-color:var(--accent)}
+  .gl-hero-nav:focus-visible{opacity:1}
+  .gl-hero-nav-prev{left:clamp(18px,1.8vw,34px)}
+  .gl-hero-nav-next{right:clamp(18px,1.8vw,34px)}
+  /* Brief dip while the next frame decodes, cleared on the img load event. */
+  .gl-hero img{transition:opacity .4s ease}
+  .gl-hero.is-swapping img{opacity:.25}
 
   /* Header rides on the hero and scrolls away with it (design 1b). */
   .gl-header{
@@ -882,6 +904,13 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     TAP TO EXPAND
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
   </div>
+  <!-- Desktop-only hero carousel arrows (display:none below 1024px, where the
+       existing touch swipe already cycles the hero). stopPropagation keeps a
+       click off the hero's own open-the-gallery handler. -->
+  <button type="button" class="gl-hero-nav gl-hero-nav-prev" aria-label="Previous hero photo"
+          onclick="event.stopPropagation();heroStep(-1)">‹</button>
+  <button type="button" class="gl-hero-nav gl-hero-nav-next" aria-label="Next hero photo"
+          onclick="event.stopPropagation();heroStep(1)">›</button>
 </div>
 
 <!-- Caption -->
@@ -1144,6 +1173,16 @@ function setHeroPhoto(idx) {
   }
   var lbl = (currentHeroIdx === HERO_INDEX) ? (HERO_CAPTIONS[SLUG] || getPhotoLabel(currentHeroIdx)) : getPhotoLabel(currentHeroIdx);
   document.getElementById('captionText').textContent = 'FIG. ' + String(currentHeroIdx + 1).padStart(2, '0') + ' — ' + lbl.toUpperCase();
+}
+
+// Hero carousel step. Goes through the global setHeroPhoto so the
+// session-state wrapper still records the new index; the fade is a
+// desktop-only CSS rule keyed off .is-swapping, so mobile swipes look
+// exactly as they did.
+function heroStep(dir) {
+  var hero = document.getElementById('heroPhoto');
+  if (hero) hero.classList.add('is-swapping');
+  setHeroPhoto(currentHeroIdx + dir);
 }
 
 // ── Curated Hero Captions ──
@@ -2059,6 +2098,15 @@ function updateGallery() {
     if (Math.abs(e.clientX - downX) > 10 || Math.abs(e.clientY - downY) > 10) return;
     window.closeGallery();
   });
+})();
+
+// Clear the swap fade once the new hero frame has actually decoded.
+(function () {
+  var img = document.getElementById('heroImg');
+  var hero = document.getElementById('heroPhoto');
+  if (!img || !hero) return;
+  img.addEventListener('load', function () { hero.classList.remove('is-swapping'); });
+  img.addEventListener('error', function () { hero.classList.remove('is-swapping'); });
 })();
 
 // Touch swipe for hero photo
