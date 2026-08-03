@@ -218,7 +218,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 .gl-desknav,.gl-desknav-cta,.gl-contact-methods,.gl-deskfooter,
 .gl-sleep-fig,.gl-sticky-note,.gl-collage,
 .gl-rule-time,.gl-rule-qual,.gl-rule-detail-alt,
-.gl-neigh-plate,.gl-neigh-coords{display:none}
+.gl-neigh-plate,.gl-neigh-coords,.gl-photogrid{display:none}
 
 /* ── Responsive ── */
 /* ═══ DESKTOP — "GRAND CINEMA" (≥1024px) ══════════════════════════════
@@ -483,6 +483,9 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     display:inline-block;width:auto;margin:26px 0 0;padding:15px 30px;
     border-radius:3px;font-size:0;line-height:0
   }
+  /* Breathing room under the button so it never sits against N°3. */
+  #amenitiesSection{padding-bottom:22px}
+  .gl-amenities-expand:not(.open){margin-bottom:0}
   .gl-all-amenities-btn::before{
     content:attr(data-more);
     font-family:var(--mono);font-size:10px;font-weight:600;line-height:normal;
@@ -768,8 +771,67 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     font-weight:600;letter-spacing:.22em;text-transform:uppercase
   }
 
+  /* ── All-photos grid overlay ────────────────────────────────────────
+     Sits above the page, below the single-photo lightbox (z 200 vs 210),
+     so a photo opened from here layers over the grid and closing it
+     returns to the grid. */
+  .gl-photogrid.active{
+    display:flex;position:fixed;inset:0;z-index:190;flex-direction:column;
+    background:var(--bg)
+  }
+  .gl-photogrid-head{
+    flex:none;display:flex;align-items:center;gap:20px;
+    padding:20px clamp(28px,3vw,48px);
+    border-bottom:1px solid rgba(232,228,221,.12);
+    background:rgba(10,13,10,.96);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+  }
+  .gl-photogrid-close{
+    flex:none;width:38px;height:38px;border-radius:50%;cursor:pointer;
+    background:rgba(255,255,255,.06);border:1px solid rgba(232,228,221,.16);
+    color:var(--text);font-size:15px;line-height:1;
+    transition:background .2s,border-color .2s
+  }
+  .gl-photogrid-close:hover{background:rgba(255,255,255,.13);border-color:var(--accent)}
+  .gl-photogrid-title{
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--text-dim)
+  }
+  .gl-photogrid-body{flex:1;overflow-y:auto;overscroll-behavior:contain}
+  .gl-photogrid-grid{
+    max-width:1180px;margin:0 auto;padding:clamp(28px,3vw,48px) clamp(28px,3vw,48px) 90px;
+    columns:3;column-gap:14px
+  }
+  .gl-photogrid-cell{
+    break-inside:avoid;margin:0 0 14px;position:relative;overflow:hidden;
+    border-radius:8px;cursor:pointer;background:var(--bg-card)
+  }
+  .gl-photogrid-cell img{
+    width:100%;height:auto;display:block;
+    transition:transform .7s cubic-bezier(.2,.6,.2,1)
+  }
+  .gl-photogrid-cell:hover img,.gl-photogrid-cell:focus-visible img{transform:scale(1.04)}
+  .gl-photogrid-cell figcaption{
+    position:absolute;inset:auto 0 0 0;display:flex;align-items:baseline;gap:10px;
+    padding:30px 14px 12px;pointer-events:none;opacity:0;transform:translateY(6px);
+    background:linear-gradient(180deg,transparent,rgba(10,13,10,.88));
+    transition:opacity .3s ease,transform .3s ease
+  }
+  .gl-photogrid-cell:hover figcaption,.gl-photogrid-cell:focus-visible figcaption{
+    opacity:1;transform:none
+  }
+  .gl-photogrid-fig{
+    flex:none;font-family:var(--mono);font-size:8px;font-weight:600;
+    letter-spacing:.22em;color:var(--accent)
+  }
+  .gl-photogrid-cap{
+    font-family:var(--mono);font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+  }
+
   /* Lightbox — roomier at desktop scale. The backdrop reads as dismissable;
      the photo and the controls keep their own cursors. */
+  .gl-gallery.active{z-index:210}
   .gl-gallery{cursor:zoom-out}
   .gl-gallery-img{cursor:default}
   .gl-gallery-nav,.gl-gallery-close{cursor:pointer}
@@ -881,7 +943,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   </div>
   <div class="gl-collage-frame">
     <div class="gl-collage-grid" id="collageGrid"></div>
-    <button class="gl-collage-all" id="collageAllBtn" onclick="openGallery(0)"></button>
+    <button class="gl-collage-all" id="collageAllBtn" onclick="openPhotoGrid()"></button>
   </div>
 </div>
 
@@ -1027,6 +1089,16 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   </div>
 </div>
 
+<!-- All-photos grid (desktop only). Opened by "Show all N photos"; every tile
+     opens the single-photo lightbox above it at that photo's real index. -->
+<div class="gl-photogrid" id="photoGridModal" role="dialog" aria-modal="true" aria-label="All photos" tabindex="-1">
+  <div class="gl-photogrid-head">
+    <button class="gl-photogrid-close" onclick="closePhotoGrid()" aria-label="Close all photos">✕</button>
+    <span class="gl-photogrid-title" id="photoGridTitle"></span>
+  </div>
+  <div class="gl-photogrid-body"><div class="gl-photogrid-grid" id="photoGridGrid"></div></div>
+</div>
+
 
 <script defer src="/js/regent-marquee.js"></script>
 <script defer src="/js/regent-state.js"></script>
@@ -1137,8 +1209,7 @@ function init() {
   var rating = PROP.rating;
   var reviews = PROP.reviews || 0;
   if (rating && reviews > 0) {
-    var ratingStr = Number(rating).toFixed(1);
-    ratingHtml = '<span class="star">★</span> ' + ratingStr;
+    ratingHtml = '<span class="star">★</span> ' + formatRating(rating);
     ratingHtml += '<span class="sep">—</span>' + reviews + ' REVIEW' + (reviews !== 1 ? 'S' : '');
     ratingHtml += '<span class="sep">—</span>GUEST FAVOURITE';
   } else if (reviews > 0) {
@@ -1576,7 +1647,7 @@ document.addEventListener('keydown', function(e) {
   if (t.matches('.gl-amenity-name[data-photo]')) {
     e.preventDefault();
     openGallery(parseInt(t.getAttribute('data-photo'), 10));
-  } else if (t.matches('.gl-strip-item,.gl-amenities-cat-item[data-photo],.gl-sleep-fig,.gl-hero,.gl-collage-cell')) {
+  } else if (t.matches('.gl-strip-item,.gl-amenities-cat-item[data-photo],.gl-sleep-fig,.gl-hero,.gl-collage-cell,.gl-photogrid-cell')) {
     e.preventDefault();
     t.click();
   }
@@ -1735,6 +1806,15 @@ function buildNeighPlate() {
   hydrateDesktopImages();
 }
 
+// Show the rating exactly as Airbnb reports it. toFixed(1) used to be fine when
+// every rating was 4.89 or 4.92, but it turns 4.96 into "5.0" — claiming a
+// perfect score the listing does not have. One decimal minimum, so a flat 5
+// still reads "5.0" rather than a bare "5".
+function formatRating(r) {
+  var s = String(r);
+  return s.indexOf('.') === -1 ? s + '.0' : s;
+}
+
 function buildReviews() {
   var rating = PROP.rating;
   var reviews = PROP.reviews || 0;
@@ -1746,10 +1826,7 @@ function buildReviews() {
     document.getElementById('reviewSection').style.display = 'none';
     return;
   }
-  // Show the real number, with one decimal minimum so a flat 5 reads "5.0"
-  // like the rating row at the top of the page rather than a bare "5".
-  var shown = String(rating);
-  if (shown.indexOf('.') === -1) shown += '.0';
+  var shown = formatRating(rating);
   document.getElementById('reviewScore').textContent = shown;
   document.getElementById('reviewStars').textContent = '★'.repeat(Math.round(parseFloat(shown)));
   // The label used to be the hard-coded claim "PERFECT SCORES, EVERY CATEGORY".
@@ -1812,21 +1889,90 @@ function openGallery(idx) {
   }
 }
 
-function closeGalleryInternal() {
+function closeGalleryInternal(keepScrollLock) {
   document.getElementById('galleryModal').classList.remove('active');
-  document.body.style.overflow = '';
+  if (!keepScrollLock) document.body.style.overflow = '';
   if (galleryReturnFocus && galleryReturnFocus.focus) {
     try { galleryReturnFocus.focus(); } catch (e) { /* element may be gone */ }
   }
   galleryReturnFocus = null;
 }
 
-// Keep Tab inside the open lightbox.
+// ── All-photos grid ────────────────────────────────────────────────────
+// Desktop-only overlay listing every photo. The lightbox can open on top of
+// it, in which case closing the lightbox returns here rather than to the page.
+var photoGridBuilt = false;
+var photoGridReturnFocus = null;
+
+function photoGridOpen() {
+  return document.getElementById('photoGridModal').classList.contains('active');
+}
+
+function buildPhotoGrid() {
+  if (photoGridBuilt || !PROP.photos) return;
+  var html = '';
+  for (var i = 0; i < totalPhotos; i++) {
+    var label = getPhotoLabel(i);
+    html += '<figure class="gl-photogrid-cell" role="button" tabindex="0"' +
+      ' aria-label="Open photo ' + (i + 1) + ' of ' + totalPhotos + ' — ' + escAttr(label) + '"' +
+      ' onclick="openGallery(' + i + ')">' +
+      '<img data-src="' + photoUrl(PROP.photos[i], 720) + '" alt="' + escAttr(label) + '" loading="lazy">' +
+      '<figcaption><span class="gl-photogrid-fig">FIG. ' + String(i + 1).padStart(2, '0') + '</span>' +
+      '<span class="gl-photogrid-cap">' + escHtml(label) + '</span></figcaption>' +
+      '</figure>';
+  }
+  document.getElementById('photoGridGrid').innerHTML = html;
+  document.getElementById('photoGridTitle').textContent = totalPhotos + ' photos · ' + PROP.name;
+  photoGridBuilt = true;
+  hydrateDesktopImages();
+}
+
+function openPhotoGrid() {
+  var m = document.getElementById('photoGridModal');
+  if (m.classList.contains('active')) return;
+  photoGridReturnFocus = document.activeElement;
+  buildPhotoGrid();
+  m.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  m.scrollTop = 0;
+  m.focus();
+  if (!galleryHistoryArmed) {
+    history.pushState({ glGallery: true }, '', location.href);
+    galleryHistoryArmed = true;
+  }
+}
+
+function closePhotoGridInternal() {
+  document.getElementById('photoGridModal').classList.remove('active');
+  document.body.style.overflow = '';
+  if (photoGridReturnFocus && photoGridReturnFocus.focus) {
+    try { photoGridReturnFocus.focus(); } catch (e) { /* element may be gone */ }
+  }
+  photoGridReturnFocus = null;
+}
+
+function closePhotoGrid() {
+  var wasOpen = photoGridOpen();
+  // A lightbox layered on top goes with it.
+  if (document.getElementById('galleryModal').classList.contains('active')) {
+    closeGalleryInternal(true);
+  }
+  closePhotoGridInternal();
+  if (wasOpen && galleryHistoryArmed) {
+    galleryHistoryArmed = false;
+    history.back();
+  }
+}
+
+// Keep Tab inside whichever overlay is on top.
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Tab') return;
   var modal = document.getElementById('galleryModal');
-  if (!modal.classList.contains('active')) return;
-  var stops = modal.querySelectorAll('button');
+  if (!modal.classList.contains('active')) {
+    if (!photoGridOpen()) return;
+    modal = document.getElementById('photoGridModal');
+  }
+  var stops = modal.querySelectorAll('button,[tabindex="0"]');
   if (!stops.length) return;
   var first = stops[0], last = stops[stops.length - 1];
   if (e.shiftKey && (document.activeElement === first || document.activeElement === modal)) {
@@ -1838,21 +1984,26 @@ document.addEventListener('keydown', function(e) {
 
 function closeGallery() {
   var wasOpen = document.getElementById('galleryModal').classList.contains('active');
-  closeGalleryInternal();
-  if (wasOpen && galleryHistoryArmed) {
+  // When the grid is underneath, closing the lightbox returns to it: keep the
+  // scroll lock and keep the history entry, which the grid still needs.
+  var overGrid = photoGridOpen();
+  closeGalleryInternal(overGrid);
+  if (wasOpen && galleryHistoryArmed && !overGrid) {
     galleryHistoryArmed = false;
     history.back(); // consume the entry the open pushed
   }
 }
 
 window.addEventListener('popstate', function () {
-  if (document.getElementById('galleryModal').classList.contains('active')) {
-    // Disarm FIRST so closeGallery doesn't call history.back() again; going
-    // through window.closeGallery keeps any wrappers (session-state
-    // persistence records galleryOpen:false) in the loop.
-    galleryHistoryArmed = false;
-    window.closeGallery();
-  }
+  var lightbox = document.getElementById('galleryModal').classList.contains('active');
+  if (!lightbox && !photoGridOpen()) return;
+  // Back dismisses the whole overlay stack. Disarm FIRST so the close helpers
+  // don't call history.back() again; going through window.closeGallery keeps
+  // any wrappers (session-state persistence records galleryOpen:false) in the
+  // loop.
+  galleryHistoryArmed = false;
+  if (lightbox) window.closeGallery();
+  if (photoGridOpen()) closePhotoGridInternal();
 });
 
 function galleryNav(dir) {
@@ -1930,6 +2081,8 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeGallery();
     if (e.key === 'ArrowLeft') galleryNav(-1);
     if (e.key === 'ArrowRight') galleryNav(1);
+  } else if (photoGridOpen() && e.key === 'Escape') {
+    closePhotoGrid();
   }
 });
 

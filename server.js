@@ -3513,7 +3513,7 @@ const PROPERTY_DATA = {
     state: 'Texas',
     hostingId: '1725649500272518567',
     guests: 5, beds: 1, baths: 1,
-    rating: null, reviews: 0,
+    rating: null, reviews: 2,
     lat: 32.7772411, lng: -96.7956303,
     isVilla: false,
     amenities: [
@@ -3599,7 +3599,7 @@ const PROPERTY_DATA = {
     hostingId: '1656911479326581139',
     guests: 3, beds: 1, baths: 1,
     bedConfig: [{ label: 'Queen Bed', quantity: 1 }, { label: 'L-Shaped Couch', quantity: 1 }],
-    rating: 4.89, reviews: 9,
+    rating: 4.93, reviews: 14,
     lat: 32.8758610678049, lng: -96.937335804104,
     isVilla: false,
     amenities: [
@@ -3655,7 +3655,7 @@ const PROPERTY_DATA = {
     hostingId: '1691507762565991335',
     guests: 3, beds: 1, baths: 1,
     bedConfig: [{ label: 'Queen Bed', quantity: 1 }, { label: 'Couch w/ Extra Sheets', quantity: 1 }],
-    rating: null, reviews: 1,
+    rating: 5.0, reviews: 12,
     lat: 32.8751259, lng: -96.9369134,
     isVilla: false,
     amenities: [
@@ -3715,7 +3715,7 @@ const PROPERTY_DATA = {
     hostingId: '1579365691674889946',
     guests: 3, beds: 1, baths: 1,
     bedConfig: [{ label: 'Queen Bed', quantity: 1 }],
-    rating: 4.92, reviews: 25,
+    rating: 4.96, reviews: 47,
     lat: 32.868187373138625, lng: -96.93422075361013,
     isVilla: false,
     amenities: [
@@ -3726,10 +3726,10 @@ const PROPERTY_DATA = {
       { label: 'Punching Bag', premium: false },
       { label: 'Pool', premium: true }
     ],
-    description: 'Wake up to tranquil lake views in an ultra-high luxury yet irresistibly cozy 600 sq ft suite in Las Colinas. Designer interiors, refined finishes, and plush comfort. 65" Smart TV, dedicated workspace with 27" monitor, 500 Mbps fiber Wi-Fi. Steps to DART Orange Line, dining, gondola rides, trails, and more. Resort amenities: 24/7 gym, pool, billiards, game room, and conference spaces with lake views.',
-    fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Walk-in closet'],Entertainment:['65" Smart TV','Exercise equipment','Pool table','Theme room','UFC punching bag','Board games','Wine cooler'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" mounted monitor','500 Mbps fiber WiFi'],Outdoor:['Private balcony','Outdoor kitchen','BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center & conference rooms','Smart lock entry'],'Location':['Waterfront','Lake access','Private entrance','Steps to DART Orange Line']},
-    amenityPhotos: {'Keurig coffee station':8,'Board games':6,'Full kitchen':7,'Wine cooler':11,'Refrigerator':10,'Microwave':9,'Walk-in closet':13,'Iron':13,'Hair dryer':15,'Dedicated workspace':17,'27" mounted monitor':20,'65" Smart TV':18,'Washer':21,'Exercise equipment':22,'Gym':23,'Pool':24,'Sun loungers':24,'Pool table':25,'UFC punching bag':27,'Private balcony':1},
-    photoLabels: ['Living Room','Private Balcony','Living Room Media','Living Room Sofa','Living Room Detail','Living Room Seating','Board Games','Full Kitchen','Keurig Coffee Station','Kitchen Counter','Refrigerator','Wine Cooler','Bedroom','Walk-in Closet','Bed Linens','Hair Dryer','Bathroom','Dedicated Workspace','65" Smart TV','Office Detail','27" Mounted Monitor','Washer','Exercise Equipment','Gym','Pool','Pool Table','Game Room','UFC Punching Bag'],
+    description: 'Wake up to tranquil lake views in an ultra-high luxury yet irresistibly cozy 600 sq ft suite in Las Colinas. Designer interiors, refined finishes, and plush comfort. 70" Smart TV, dedicated workspace with 27" monitor, 500 Mbps fiber Wi-Fi. Steps to DART Orange Line, dining, gondola rides, trails, and more. Resort amenities: 24/7 gym, pool, billiards, game room, and conference spaces with lake views.',
+    fullAmenities: {'Scenic Views':['Lake view from private balcony'],Bathroom:['Bathtub','Hair dryer','Cleaning products','Conditioner','Body soap','Shower gel','Full-length mirror'],'Bedroom & Laundry':['Washer','Dryer','Essentials','Hangers','Bed linens','Extra pillows & blankets','Room-darkening shades','Iron','Walk-in closet'],Entertainment:['70" Smart TV','TV in bedroom','Exercise equipment','Pool table','Theme room','UFC punching bag','Board games','Wine cooler'],'Kitchen & Dining':['Full kitchen','Refrigerator','Microwave','Cooking basics','Dishes & silverware','Mini fridge','Freezer','Dishwasher','Stove','Oven','Keurig coffee station','Toaster','Baking sheet','BBQ utensils','Dining table','Coffee'],'Work & Tech':['Dedicated workspace','27" mounted monitor','500 Mbps fiber WiFi'],Outdoor:['Private balcony','Outdoor kitchen','BBQ grill','Sun loungers'],'Parking & Facilities':['Free parking','Pool','Elevator','Gym','2-Story gym (24/7)','Business center & conference rooms','Smart lock entry'],'Location':['Waterfront','Lake access','Private entrance','Steps to DART Orange Line']},
+    amenityPhotos: {'Keurig coffee station':8,'Board games':6,'Full kitchen':7,'Wine cooler':11,'Refrigerator':10,'Microwave':9,'Walk-in closet':13,'Iron':13,'Hair dryer':15,'Dedicated workspace':17,'27" mounted monitor':20,'70" Smart TV':18,'Washer':21,'Exercise equipment':22,'Gym':23,'Pool':24,'Sun loungers':24,'Pool table':25,'UFC punching bag':27,'Private balcony':1},
+    photoLabels: ['Living Room','Private Balcony','Living Room Media','Living Room Sofa','Living Room Detail','Living Room Seating','Board Games','Full Kitchen','Keurig Coffee Station','Kitchen Counter','Refrigerator','Wine Cooler','Bedroom','Walk-in Closet','Bed Linens','Hair Dryer','Bathroom','Dedicated Workspace','70" Smart TV','Office Detail','27" Mounted Monitor','Washer','Exercise Equipment','Gym','Pool','Pool Table','Game Room','UFC Punching Bag'],
     photos: [
       'd4cb708a-3694-4e6f-bd63-6757450a95e0.png',
       'b5fe1afc-e3e3-445d-8c9c-c0d12ceb727c.jpeg',
@@ -3770,7 +3770,7 @@ const PROPERTY_DATA = {
     hostingId: '1622247533469388804',
     guests: 5, beds: 1, baths: 1,
     bedConfig: [{ label: 'Queen Bed', quantity: 1 }, { label: 'Queen Air Mattress', quantity: 1 }, { label: 'L-Shaped Couch', quantity: 1 }],
-    rating: 4.86, reviews: 35,
+    rating: 4.86, reviews: 36,
     lat: 32.984401, lng: -96.710101,
     isVilla: false,
     amenities: [
