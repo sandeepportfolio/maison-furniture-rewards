@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Availability | Regent Stays</title>
 <meta name="description" content="Check real-time availability across all Regent luxury short-term rentals in Dallas-Fort Worth. Search by date range and book direct.">
+<link rel="canonical" href="https://www.bookwithregent.com/availability">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Regent">
+<meta property="og:title" content="Availability | Regent Stays">
+<meta property="og:description" content="Check real-time availability across all Regent luxury short-term rentals in Dallas-Fort Worth. Search by date range and book direct.">
+<meta property="og:url" content="https://www.bookwithregent.com/availability">
+<meta property="og:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Availability | Regent Stays">
+<meta name="twitter:description" content="Check real-time availability across all Regent luxury short-term rentals in Dallas-Fort Worth. Search by date range and book direct.">
+<meta name="twitter:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23C76B42'%3ER%3C/text%3E%3C/svg%3E">
 <meta name="theme-color" content="#0D110E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -919,8 +930,20 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   if(pCI&&pCO&&pCI>=today){cal.checkIn=pCI;cal.checkOut=pCO;cal.selecting='checkIn';searchBtn.disabled=false;updateInputValues();searchHint.textContent='Min-night requirements vary by property and check-in date.';searchHint.classList.add('visible');fetchRange(pCI,pCO);fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;}).catch(function(){});}
   else{fetchAvailability();}
 
-  // ── Auto-refresh ──
-  refreshTimer=setInterval(function(){fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;if(currentView==='default'){statusText.textContent='Updated '+formatTime(new Date().toISOString());renderDefault(d);}}).catch(function(){});},300000);
+  // ── Auto-refresh (visible tabs only) ──
+  // Polling continues only while the tab is in view. A hidden tab stops
+  // entirely; on return we refresh immediately if the interval elapsed while
+  // hidden, so the visible data is never staler than before this guard.
+  var AVAIL_REFRESH_MS=300000,availLastRefreshAt=Date.now();
+  function doAvailRefresh(){availLastRefreshAt=Date.now();fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;if(currentView==='default'){statusText.textContent='Updated '+formatTime(new Date().toISOString());renderDefault(d);}}).catch(function(){});}
+  function startAvailRefresh(){if(!refreshTimer)refreshTimer=setInterval(doAvailRefresh,AVAIL_REFRESH_MS);}
+  function stopAvailRefresh(){if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null;}}
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){stopAvailRefresh();return;}
+    if(Date.now()-availLastRefreshAt>=AVAIL_REFRESH_MS)doAvailRefresh();
+    startAvailRefresh();
+  });
+  startAvailRefresh();
 })();
 </script>
 </body>

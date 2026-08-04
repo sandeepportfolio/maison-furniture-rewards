@@ -362,6 +362,60 @@ app.get('/availability', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'availability.html'));
 });
 
+// ── SEO: robots.txt + sitemap.xml ──
+// The apex domain 301s to www, so every canonical/sitemap URL uses the www
+// host: pointing search engines at a redirect wastes the crawl and splits
+// ranking signals between two hostnames.
+const SITE_ORIGIN = 'https://www.bookwithregent.com';
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(
+    'User-agent: *\n' +
+    'Allow: /\n' +
+    // Nothing here is useful to a crawler and some of it is private.
+    'Disallow: /admin\n' +
+    'Disallow: /api/\n' +
+    'Disallow: /trip\n' +
+    'Disallow: /uploads/\n' +
+    '\n' +
+    'Sitemap: ' + SITE_ORIGIN + '/sitemap.xml\n'
+  );
+});
+
+// Generated rather than a static file so it can never drift from
+// PROPERTY_DATA when a listing is added, renamed or removed.
+app.get('/sitemap.xml', (req, res) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const staticPages = [
+    { loc: '/', priority: '1.0', changefreq: 'daily' },
+    { loc: '/availability', priority: '0.9', changefreq: 'daily' },
+    { loc: '/management', priority: '0.7', changefreq: 'monthly' },
+    { loc: '/reward', priority: '0.6', changefreq: 'monthly' }
+  ];
+  // Property URLs are listed at /property/<slug> because that is what the
+  // glance pages declare as their canonical. A sitemap should only ever
+  // contain canonical URLs.
+  const propertyPages = Object.keys(PROPERTY_DATA).map(slug => ({
+    loc: '/property/' + slug, priority: '0.8', changefreq: 'weekly'
+  }));
+
+  const urls = staticPages.concat(propertyPages).map(p =>
+    '  <url>\n' +
+    '    <loc>' + SITE_ORIGIN + p.loc + '</loc>\n' +
+    '    <lastmod>' + today + '</lastmod>\n' +
+    '    <changefreq>' + p.changefreq + '</changefreq>\n' +
+    '    <priority>' + p.priority + '</priority>\n' +
+    '  </url>'
+  ).join('\n');
+
+  res.type('application/xml').send(
+    '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    urls + '\n' +
+    '</urlset>\n'
+  );
+});
+
 // ── Admin Login / Logout ──
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body || {};
@@ -3932,7 +3986,9 @@ function renderPropertyPage(slug, res) {
   const coverPhoto = prop.photos[0];
   const coverImage = `${CDN}${prop.hostingId}/original/${coverPhoto}?im_w=1200`;
   const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
-  const ogUrl = `https://bookwithregent.com/property/${slug}`;
+  // www, not the apex: the apex 301s here, and a canonical that points at a
+  // redirect is a wasted signal.
+  const ogUrl = `${SITE_ORIGIN}/property/${slug}`;
 
   // Escape for safe embedding in JS single-quoted string literal
   const propertyJson = JSON.stringify(prop)
@@ -3969,6 +4025,64 @@ function renderPropertyPage(slug, res) {
   res.send(html);
 }
 
+// Builds the VacationRental JSON-LD block for a property page. Every value is
+// read from PROPERTY_DATA — nothing is invented. Fields the data cannot back
+// (a rating on a listing with none, a price when the live rate has not been
+// fetched) are omitted rather than guessed, because a schema that overstates
+// is worse than one that is merely incomplete.
+function buildPropertyJsonLd(prop, ogUrl, coverImage) {
+  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+  const images = prop.photos.slice(0, 8).map(
+    f => `${CDN}${prop.hostingId}/original/${f}?im_w=1200`
+  );
+
+  const amenities = [];
+  Object.keys(prop.fullAmenities || {}).forEach(cat => {
+    prop.fullAmenities[cat].forEach(name => {
+      amenities.push({ '@type': 'LocationFeatureSpecification', name: name, value: true });
+    });
+  });
+
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': 'VacationRental',
+    name: prop.name,
+    description: prop.description,
+    url: ogUrl,
+    image: images,
+    identifier: prop.slug,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: prop.city,
+      addressRegion: prop.state,
+      addressCountry: 'US'
+    },
+    geo: { '@type': 'GeoCoordinates', latitude: prop.lat, longitude: prop.lng },
+    numberOfRooms: prop.beds,
+    numberOfBathroomsTotal: prop.baths,
+    occupancy: { '@type': 'QuantitativeValue', maxValue: prop.guests, unitText: 'guests' },
+    petsAllowed: !!prop.isVilla,
+    brand: { '@type': 'Brand', name: 'Regent' },
+    amenityFeature: amenities
+  };
+
+  // Only claim a rating when the listing actually has one. Regent Skyline has
+  // reviews but no aggregate score yet, so it gets no aggregateRating.
+  if (prop.rating && prop.reviews > 0) {
+    ld.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: prop.rating,
+      reviewCount: prop.reviews,
+      bestRating: 5,
+      worstRating: 1
+    };
+  }
+
+  // JSON-LD sits in a <script>, so the one sequence that could break out of it
+  // has to be neutralised.
+  return JSON.stringify(ld, null, 2).replace(/<\//g, '<\\/');
+}
+
 // ── Glance View (new mobile-first property preview) ──
 function renderGlancePage(slug, res) {
   const prop = PROPERTY_DATA[slug];
@@ -3991,7 +4105,9 @@ function renderGlancePage(slug, res) {
   const coverPhoto = prop.photos[heroIdx] || prop.photos[0];
   const coverImage = `${CDN}${prop.hostingId}/original/${coverPhoto}?im_w=1200`;
   const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
-  const ogUrl = `https://bookwithregent.com/property/${slug}`;
+  // www, not the apex: the apex 301s here, and a canonical that points at a
+  // redirect is a wasted signal.
+  const ogUrl = `${SITE_ORIGIN}/property/${slug}`;
 
   const propertyJson = JSON.stringify(prop)
     .replace(/\\/g, '\\\\')
@@ -4016,7 +4132,8 @@ function renderGlancePage(slug, res) {
     .replace(/\{\{REVIEWS\}\}/g, String(prop.reviews))
     .replace(/\{\{IS_VILLA\}\}/g, String(prop.isVilla))
     .replace(/\{\{CATEGORY\}\}/g, prop.category)
-    .replace(/\{\{HERO_INDEX\}\}/g, String(heroIdx));
+    .replace(/\{\{HERO_INDEX\}\}/g, String(heroIdx))
+    .replace(/\{\{JSON_LD\}\}/g, buildPropertyJsonLd(prop, ogUrl, coverImage));
 
   res.send(html);
 }
@@ -5243,11 +5360,17 @@ app.listen(PORT, '0.0.0.0', () => {
 
   // Rebuild the trip_codes table from Guesty. The database sits on Render's
   // ephemeral disk and is wiped by every restart, so without this every magic
-  // link already in a guest's inbox would resolve to "Link Expired". Delayed
-  // 20s so it does not compete with the Guesty token prewarm on cold start.
+  // link already in a guest's inbox would resolve to "Link Expired".
+  //
+  // Timing matters: the Guesty prewarm (guesty.js) starts at T+10s, fetches
+  // listings, sleeps 10s, then runs a 7-listing price scan paced 2s apart —
+  // so it is still issuing calls until roughly T+34s. Seeding at T+20s put
+  // this loop's 10 paged reservation calls (500ms apart) right on top of it,
+  // which is the burstiest moment of the whole process lifetime. T+45s lands
+  // clear of the prewarm so the two never overlap.
   setTimeout(() => {
     seedTripCodesFromGuesty({ reason: 'startup' }).catch(() => {});
-  }, 20_000);
+  }, 45_000);
   setInterval(() => {
     seedTripCodesFromGuesty({ reason: 'refresh' }).catch(() => {});
   }, 6 * 3600 * 1000);

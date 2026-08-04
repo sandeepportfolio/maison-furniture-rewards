@@ -5,6 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Regent | Luxury Short-Term Rentals in Dallas-Fort Worth</title>
 <meta name="description" content="Regent Capital Ventures LLC — Curated luxury short-term rentals across Dallas-Fort Worth. Designer interiors, effortless check-in, unforgettable stays.">
+<link rel="canonical" href="https://www.bookwithregent.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Regent">
+<meta property="og:title" content="Regent | Luxury Short-Term Rentals in Dallas-Fort Worth">
+<meta property="og:description" content="Curated luxury short-term rentals across Dallas-Fort Worth. Designer interiors, effortless check-in, unforgettable stays.">
+<meta property="og:url" content="https://www.bookwithregent.com/">
+<meta property="og:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Regent | Luxury Short-Term Rentals in Dallas-Fort Worth">
+<meta name="twitter:description" content="Curated luxury short-term rentals across Dallas-Fort Worth. Designer interiors, effortless check-in, unforgettable stays.">
+<meta name="twitter:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "Regent",
+  "legalName": "Regent Capital Ventures LLC",
+  "description": "Curated luxury short-term rentals across Dallas-Fort Worth. Designer interiors, effortless check-in, unforgettable stays.",
+  "url": "https://www.bookwithregent.com/",
+  "image": "https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200",
+  "telephone": "+1-281-307-1280",
+  "email": "hello@bookwithregent.com",
+  "priceRange": "$$$",
+  "areaServed": {
+    "@type": "AdministrativeArea",
+    "name": "Dallas-Fort Worth, Texas"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "Texas",
+    "addressCountry": "US"
+  },
+  "brand": { "@type": "Brand", "name": "Regent" }
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23E8D5A8'/%3E%3Cstop offset='50%25' stop-color='%23C99845'/%3E%3Cstop offset='100%25' stop-color='%23A07830'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ctext x='50%25' y='56%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-weight='400' font-size='46' fill='url(%23g)'%3ER%3C/text%3E%3C/svg%3E">
 <meta name="theme-color" content="#0D110E">
 <meta name="regent-build" content="v2-2026-07-23">
@@ -8159,8 +8194,37 @@ if (bar) {
     }
   }, 1500);
 
-  // Auto-refresh every 5 minutes
-  refreshTimer = setInterval(function() { fetchAvailability(true); }, 5 * 60 * 1000);
+  // Auto-refresh every 5 minutes — but ONLY while the tab is visible. A
+  // backgrounded tab used to keep polling /api/availability/now forever,
+  // which is pure waste against the shared API budget. Hiding the tab stops
+  // the timer; showing it again refreshes immediately if the data went stale
+  // while hidden, so what the guest sees is never older than it was before.
+  var AVAIL_REFRESH_MS = 5 * 60 * 1000;
+  var availLastRefreshAt = Date.now();
+
+  function startAvailRefresh() {
+    if (refreshTimer) return;
+    refreshTimer = setInterval(function() {
+      availLastRefreshAt = Date.now();
+      fetchAvailability(true);
+    }, AVAIL_REFRESH_MS);
+  }
+  function stopAvailRefresh() {
+    if (!refreshTimer) return;
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) { stopAvailRefresh(); return; }
+    if (Date.now() - availLastRefreshAt >= AVAIL_REFRESH_MS) {
+      availLastRefreshAt = Date.now();
+      fetchAvailability(true);
+    }
+    startAvailRefresh();
+  });
+
+  startAvailRefresh();
 })();
 </script>
 </body>
