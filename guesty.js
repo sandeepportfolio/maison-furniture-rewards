@@ -571,7 +571,16 @@ function keepStaleToken(token, why) {
   return cachedToken;
 }
 
-async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true } = {}) {
+// How long a Retry-After we're willing to sleep through inline before failing
+// the request instead. Guesty's DATA limits are short-window (15/s, 120/min,
+// 5000/h), so a data 429 almost always advises a few seconds. The AUTH quota
+// (5 tokens/24h) advises ~1800s — sleeping through that would hang a guest
+// request for half an hour, so anything above this cap arms the breaker and
+// fails fast so the caller can serve cache instead.
+const MAX_INLINE_RETRY_MS = 5_000;
+const DEFAULT_429_RETRY_MS = 1_000;
+
+async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true, retryOn429 = true } = {}) {
   // Fail fast if we're in a rate-limit cooldown that actually applies to us —
   // an OAuth-only 429 must not block a call we can make with a token in hand.
   if (shouldSkipLiveFetch()) {
@@ -616,9 +625,30 @@ async function guestyFetch(pathname, { method = 'GET', body, retryOnAuth = true 
     return guestyFetch(pathname, { method, body, retryOnAuth: false });
   }
 
-  // Activate the circuit breaker on 429 to prevent cascading failures.
+  // 429 handling. A short Retry-After means we brushed the per-second or
+  // per-minute limit — waiting it out and retrying once recovers transparently
+  // instead of surfacing an error (or a stale-cache fallback) to the guest.
+  // Retrying is safe for every method here because a rate-limited request is
+  // rejected by the limiter BEFORE it reaches the handler, so nothing was
+  // created; this is not a timeout, where a retry could double-book.
+  //
+  // Exactly one retry, and only when the advised delay is short — a persistent
+  // limit can therefore never turn into a retry storm, which is precisely the
+  // failure mode that kept this account pinned in the past.
   if (res.status === 429) {
-    enterRateLimit(res.headers.get('retry-after'));
+    const retryAfterHeader = res.headers.get('retry-after');
+    const advisedMs = parseRetryAfter(retryAfterHeader);
+    const waitMs = advisedMs > 0 ? advisedMs : DEFAULT_429_RETRY_MS;
+
+    if (retryOn429 && waitMs <= MAX_INLINE_RETRY_MS) {
+      console.warn(`Guesty 429 on ${method} ${pathname} — waiting ${Math.round(waitMs)}ms and retrying once`);
+      await sleep(waitMs + 250); // small cushion so we land after the window
+      return guestyFetch(pathname, { method, body, retryOnAuth, retryOn429: false });
+    }
+
+    // Long cooldown, or the retry already failed: arm the breaker and fail
+    // fast so callers fall back to cached/stale data.
+    enterRateLimit(retryAfterHeader);
     const err = new Error('Guesty rate-limited');
     err.status = 429;
     err.retryAfter = rateLimitRetryAfter();
@@ -706,14 +736,22 @@ function setCachedCalendar(listingId, from, to, data) {
 
 // ── Payment provider cache (per-listing, 60 min TTL) ─────────────────
 const paymentProviderCache = new Map();
-const PAYMENT_PROVIDER_CACHE_TTL = 60 * 60_000; // 60 minutes
+// The payment-provider ID for a listing is effectively static configuration —
+// it only changes if the host reconfigures Guesty Pay.
+const PAYMENT_PROVIDER_CACHE_TTL = 4 * 60 * 60_000; // 4 hours
 
 // ── Public operations ──────────────────────────────────────────────────
 
 /** Live listings (cached 60 min) with normalized pricing/capacity. */
 let listingsCache = null;
 let listingsCacheAt = 0;
-const LISTINGS_CACHE_TTL = 10 * 60_000; // 10 minutes (was 60 min — reduced for faster sync)
+// Listing metadata (title, capacity, base price, cleaning fee, min nights,
+// address) changes on the order of weeks, not minutes. Nightly PRICING and
+// AVAILABILITY do not come from here — they come from the calendar cache
+// (20 min) and lowest-prices (10 min), both deliberately left short. Admins
+// who edit a listing in Guesty can force an immediate refresh via
+// /api/guesty/clear-cache.
+const LISTINGS_CACHE_TTL = 30 * 60_000; // 30 minutes
 
 async function getListings() {
   if (listingsCache && Date.now() - listingsCacheAt < LISTINGS_CACHE_TTL) {
