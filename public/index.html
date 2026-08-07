@@ -990,6 +990,46 @@ ul{list-style:none}
 .map-marker-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;background:var(--accent);border:2.5px solid rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(201,152,69,.5);transition:box-shadow .3s var(--ease),background .3s var(--ease),transform .3s cubic-bezier(.34,1.56,.64,1);animation:markerGlow 3s ease-in-out infinite}
 .map-marker.active .map-marker-core{background:var(--accent-hover);box-shadow:0 6px 24px rgba(201,152,69,.8);transform:translate(-50%,-50%) scale(1.1)}
 .map-marker-core svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none}
+
+/* ── Price pin (Booking.com-style) ────────────────────────────────────────
+   When a nightly rate is known the pin becomes a price pill instead of the
+   house dot. The pill sizes itself to the label, so `.map-marker` drops its
+   fixed 42px box for this variant. Falls back to the dot automatically when
+   price data is missing — we never invent a number. */
+/* Leaflet places an auto-sized divIcon by its top-left corner, so the anchor
+   wrapper does the centering (pill centred on the coordinate, tail resting on
+   it). Keeping that translate OFF .map-marker leaves its transform free for
+   the hover/active scale — the two would otherwise overwrite each other. */
+.map-pin-anchor{position:absolute;transform:translate(-50%,-100%);transform-origin:50% 100%}
+.map-marker.is-price{position:relative;width:auto;height:auto;transform-origin:50% 100%}
+.map-price-pin{position:relative;display:inline-flex;align-items:center;gap:3px;padding:6px 12px;border-radius:100px;
+  background:rgba(13,17,14,.92);border:1.5px solid rgba(201,152,69,.55);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font-family:var(--sans);font-size:13px;font-weight:700;line-height:1;color:var(--text);
+  white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.25);
+  transition:background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease),box-shadow .25s var(--ease)}
+.map-price-pin .cur{font-size:11px;font-weight:600;color:var(--accent-light)}
+/* Tail connecting the pill to its exact coordinate */
+.map-price-pin::after{content:'';position:absolute;left:50%;bottom:-5px;width:9px;height:9px;
+  transform:translateX(-50%) rotate(45deg);background:rgba(13,17,14,.92);
+  border-right:1.5px solid rgba(201,152,69,.55);border-bottom:1.5px solid rgba(201,152,69,.55)}
+@media(hover:hover){
+  .map-marker.is-price:hover .map-price-pin{background:var(--accent);border-color:var(--accent-hover);color:var(--accent-ink)}
+  .map-marker.is-price:hover .map-price-pin .cur{color:var(--accent-ink)}
+  .map-marker.is-price:hover .map-price-pin::after{background:var(--accent);border-color:var(--accent-hover)}
+}
+.map-marker.is-price.active .map-price-pin{background:var(--accent);border-color:var(--accent-hover);color:var(--accent-ink);
+  box-shadow:0 8px 26px rgba(201,152,69,.55)}
+.map-marker.is-price.active .map-price-pin .cur{color:var(--accent-ink)}
+.map-marker.is-price.active .map-price-pin::after{background:var(--accent);border-color:var(--accent-hover)}
+@media(max-width:560px){
+  .map-price-pin{padding:5px 10px;font-size:12px}
+  .map-price-pin .cur{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .map-marker.is-price{animation:none}
+  .map-price-pin{transition:none}
+}
 /* ── Cluster badge — brass "constellation" (replaces MarkerCluster.Default.css) ── */
 .map-cluster-icon{background:none;border:none}
 .map-cluster{position:relative;width:54px;height:54px;cursor:pointer;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
@@ -4258,6 +4298,12 @@ async function fetchAndApplyPrices() {
       refreshAllMaps();
     }
 
+    // Prices just landed — upgrade any already-rendered map pins from the dot
+    // marker to the price pill. In-place icon swap so the cluster group keeps
+    // its current zoom and selection. No-ops if the map hasn't been built yet;
+    // in that case the pins render with prices from the start.
+    refreshMarkerPrices();
+
     // Update all price elements in the DOM (with 5% direct booking discount)
     document.querySelectorAll('.prop-price[data-slug]').forEach(el => {
       const slug = el.dataset.slug;
@@ -6435,13 +6481,54 @@ function initExploreMap() {
   updateExploreMap();
 }
 
-function createPropertyMarkerIcon() {
+/* The nightly rate a pin should advertise — the same direct-booking number the
+   property cards show, so the map can never disagree with the card. Returns
+   null when we genuinely don't know the price yet; callers fall back to the
+   dot marker rather than displaying a placeholder. */
+function markerNightlyPrice(prop) {
+  const display = prop.lowestPrice != null ? prop.lowestPrice : prop.basePrice;
+  if (display == null || isNaN(display)) return null;
+  return Math.round(display * DIRECT_BOOKING_DISCOUNT);
+}
+
+function createPropertyMarkerIcon(prop) {
+  const price = prop ? markerNightlyPrice(prop) : null;
+  if (price != null) {
+    return `<div class="map-pin-anchor"><div class="map-marker is-price">
+      <div class="map-price-pin"><span class="cur">$</span>${price}</div>
+    </div></div>`;
+  }
+  // No price yet (cold cache / upstream degraded) — keep the classic dot.
   return `<div class="map-marker">
     <div class="map-marker-ring"></div>
     <div class="map-marker-core">
       <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     </div>
   </div>`;
+}
+
+/* Swap each marker's icon in place once prices arrive, so the map upgrades
+   from dots to price pills without tearing down the cluster group (which would
+   lose the current zoom/selection). Safe to call repeatedly. */
+function refreshMarkerPrices() {
+  if (!mapPropertyMarkers.length) return;
+  mapPropertyMarkers.forEach((marker, idx) => {
+    const prop = PROPERTIES[idx];
+    if (!prop || !marker) return;
+    const price = markerNightlyPrice(prop);
+    const isActive = mapActiveProperty === idx;
+    marker.setIcon(L.divIcon({
+      html: createPropertyMarkerIcon(prop),
+      className: '',
+      iconSize: price != null ? null : [42, 42],
+      iconAnchor: price != null ? [0, 0] : [21, 21],
+    }));
+    if (isActive) {
+      const el = marker.getElement();
+      const inner = el && el.querySelector('.map-marker');
+      if (inner) inner.classList.add('active');
+    }
+  });
 }
 
 function addPropertyMarkers() {
@@ -6484,11 +6571,14 @@ function addPropertyMarkers() {
   PROPERTIES.forEach((prop, idx) => {
     if (!prop.lat || !prop.lng) return; // skip invalid coords
 
+    const hasPrice = markerNightlyPrice(prop) != null;
     const icon = L.divIcon({
-      html: createPropertyMarkerIcon(),
+      html: createPropertyMarkerIcon(prop),
       className: '',
-      iconSize: [42, 42],
-      iconAnchor: [21, 21]
+      // Price pills size themselves to their label, so let CSS drive the box
+      // and let .map-pin-anchor do the centering.
+      iconSize: hasPrice ? null : [42, 42],
+      iconAnchor: hasPrice ? [0, 0] : [21, 21]
     });
 
     const marker = L.marker([prop.lat, prop.lng], {

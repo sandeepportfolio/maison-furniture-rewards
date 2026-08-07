@@ -661,6 +661,59 @@ app.get('/api/guesty/lowest-prices', async (req, res) => {
   }
 });
 
+// ── Map data — coordinates + current nightly price, one compact call ──
+//   GET /api/map-data
+//
+// Everything here comes from data the server ALREADY holds: coordinates from
+// PROPERTY_DATA (static) and prices from guesty.getLowestPrices(), which is
+// the same 10-minute, disk-persisted, de-duplicated cache that
+// /api/guesty/lowest-prices serves. Hitting this endpoint therefore adds ZERO
+// Guesty API calls — it shares the cache rather than fetching alongside it.
+// If prices are unavailable the map still gets coordinates and simply renders
+// pins without a price, which is the correct degradation for a rate-limited
+// upstream (never invent a price).
+app.get('/api/map-data', async (req, res) => {
+  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
+
+  let prices = {};
+  try {
+    prices = await guesty.getLowestPrices();
+  } catch (err) {
+    // Non-fatal: coordinates alone still render a usable map.
+    console.warn('Map data: prices unavailable —', err.status || '', err.message);
+  }
+
+  const properties = Object.entries(PROPERTY_DATA)
+    .filter(([, p]) => typeof p.lat === 'number' && typeof p.lng === 'number')
+    .map(([slug, p]) => {
+      const lp = prices[slug];
+      const nightly = lp && lp.lowestPrice != null ? lp.lowestPrice : null;
+      return {
+        slug,
+        name: p.name,
+        city: p.city,
+        state: p.state,
+        category: p.category,
+        lat: p.lat,
+        lng: p.lng,
+        guests: p.guests,
+        beds: p.beds,
+        baths: p.baths,
+        rating: p.rating,
+        reviews: p.reviews,
+        // `price` is the direct-booking rate guests actually pay (5% off the
+        // lowest calendar rate), matching what the property cards display.
+        price: nightly != null ? Math.round(nightly * 0.95) : null,
+        listPrice: nightly,
+        currency: (lp && lp.currency) || 'USD',
+        photo: p.photos && p.photos[0] ? `${CDN}${p.hostingId}/original/${p.photos[0]}?im_w=480` : null,
+      };
+    });
+
+  res.set('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
+  res.json({ properties, asOf: new Date().toISOString() });
+});
+
 // "Available Now" — today+tomorrow availability for all listings.
 //   GET /api/availability/now
 // Returns { asOf, properties: [{ slug, name, city, guests, beds, baths,
