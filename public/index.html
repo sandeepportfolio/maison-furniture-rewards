@@ -46,6 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="/js/theme-toggle.js"></script>
 <link rel="preconnect" href="https://a.basemaps.cartocdn.com" crossorigin>
 <link rel="preconnect" href="https://b.basemaps.cartocdn.com" crossorigin>
 <!-- Leaflet CSS — non-blocking; maps are below the fold and initialise lazily.
@@ -75,6 +76,20 @@
   --shadow-xl:0 40px 90px rgba(0,0,0,.5),0 8px 20px rgba(0,0,0,.35);
   --radius:12px;--radius-lg:18px;--radius-xl:26px;
   --ease:cubic-bezier(.2,.6,.2,1);--ease-out:cubic-bezier(.2,.6,.2,1);
+}
+[data-theme="light"] {
+  --bg:#FAF6EE;--bg-card:#FFFFFF;--bg-dark:#F0EBE0;--bg-dark-card:#FFFFFF;
+  --accent:#B8892E;--accent-hover:#A07825;--accent-light:#D6A63E;--accent-pale:rgba(184,137,46,.1);
+  --accent-ink:#FFFFFF;
+  --brass:#B8892E;--brass-light:#D6A63E;
+  --text:#1A1610;--text-muted:rgba(26,22,16,.6);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.55);
+  --text-dim:rgba(26,22,16,.4);
+  --border:rgba(26,22,16,.1);--border-dark:rgba(26,22,16,.08);
+  --card-glass:rgba(26,22,16,.03);--card-glass-strong:rgba(26,22,16,.06);
+  --shadow-sm:0 1px 3px rgba(26,22,16,.06),0 1px 2px rgba(26,22,16,.04);
+  --shadow-md:0 4px 16px rgba(26,22,16,.08),0 2px 4px rgba(26,22,16,.05);
+  --shadow-lg:0 12px 40px rgba(26,22,16,.1),0 4px 12px rgba(26,22,16,.06);
+  --shadow-xl:0 40px 90px rgba(26,22,16,.12),0 8px 20px rgba(26,22,16,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;max-width:100vw;overflow-x:hidden}
@@ -135,6 +150,11 @@ ul{list-style:none}
   .nav-logo-word{font-size:16px;letter-spacing:.32em}
   .nav-burger{width:38px;height:38px}
 }
+
+/* ── Theme Toggle Button ── */
+.theme-toggle-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--card-glass);color:var(--text-muted);cursor:pointer;transition:all .3s;font-family:inherit;flex-shrink:0}
+.theme-toggle-btn:hover{color:var(--accent);border-color:var(--accent)}
+.mobile-menu .theme-toggle-btn{width:44px;height:44px;margin:14px 0 0;align-self:flex-start}
 
 /* ── Mobile Menu ── */
 .mobile-menu{position:fixed;inset:0;z-index:1001;background:var(--bg-dark,#0A0D0A);padding:80px 24px 34px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -2443,6 +2463,63 @@ ul{list-style:none}
   .xplr-grid{grid-template-columns:repeat(4,1fr)}
 }
 
+/* ══════════════════════════════════════════════════════════
+   Light mode overrides
+   The page is dark-themed by default; these rules re-point the
+   handful of spots that use hardcoded (non-variable) colors so
+   nothing goes invisible or low-contrast when [data-theme="light"]
+   is set on <html>. Most of the page already reads from the
+   CSS custom properties above and re-themes automatically.
+   ══════════════════════════════════════════════════════════ */
+[data-theme="light"] body{background:var(--bg);color:var(--text)}
+[data-theme="light"] ::selection{background:var(--accent);color:#fff;-webkit-text-fill-color:#fff}
+[data-theme="light"] .grain{opacity:.012}
+
+/* Nav */
+[data-theme="light"] .nav-inner{background:rgba(250,246,238,.82);border-color:rgba(26,22,16,.08)}
+[data-theme="light"] .nav.scrolled .nav-inner{background:rgba(250,246,238,.95);box-shadow:0 16px 50px rgba(26,22,16,.1)}
+[data-theme="light"] .nav-links a{color:rgba(26,22,16,.7)}
+[data-theme="light"] .nav-links a:hover{color:var(--accent)}
+[data-theme="light"] .nav-logo-word{color:var(--text)}
+[data-theme="light"] .nav-cta{color:var(--accent)!important;border-color:rgba(184,137,46,.35)!important}
+[data-theme="light"] .nav-cta:hover{background:var(--accent)!important;color:#fff!important}
+[data-theme="light"] .nav-burger{border-color:rgba(26,22,16,.15);background:rgba(26,22,16,.04)}
+[data-theme="light"] .nav-burger span{background:var(--text)}
+[data-theme="light"] .mobile-menu{background:var(--bg)}
+[data-theme="light"] .mobile-menu a{color:var(--text)}
+[data-theme="light"] .mobile-menu-book{color:#fff!important;background:var(--accent)}
+[data-theme="light"] .mobile-menu .mobile-menu-phone{color:var(--accent)}
+
+/* Theme toggle button icon color already follows var(--text-muted); no override needed. */
+
+/* Hero */
+[data-theme="light"] .v2-hero-sub{color:rgba(26,22,16,.68)}
+[data-theme="light"] .v2-trust{color:rgba(26,22,16,.5)}
+[data-theme="light"] .v2-btn-ghost{background:rgba(26,22,16,.04);border-color:rgba(26,22,16,.18);color:var(--text)!important}
+[data-theme="light"] .v2-btn-ghost:hover{background:rgba(26,22,16,.08);border-color:rgba(26,22,16,.35)}
+[data-theme="light"] .v2-btn-gold{color:#fff!important}
+[data-theme="light"] .v2-btn-gold:hover{color:#fff!important}
+[data-theme="light"] .v2-orb{opacity:.3}
+[data-theme="light"] .v2-glow{opacity:0!important}
+/* Floating photo chips keep their dark glass so the hero photo stays legible —
+   pin their text to a light color instead of letting it flip with --text. */
+[data-theme="light"] .v2-hero-photo-tag{color:#F2EDE1}
+[data-theme="light"] .v2-float-n{color:#F2EDE1}
+
+/* Properties / Explore / Property-detail sections use hardcoded dark gradients
+   as decorative backgrounds — swap them to a light equivalent so text set with
+   var(--text-inv)/var(--text) on top of them stays legible. */
+[data-theme="light"] #properties{background:radial-gradient(120% 46% at 50% 0%,#F5EEDD 0%,#FAF6EE 66%)}
+[data-theme="light"] .xplr-hero-bg{background:linear-gradient(160deg,#F0EAD9 0%,#F7F2E6 45%,#FAF6EE 100%)}
+[data-theme="light"] .detail-body{background:linear-gradient(180deg,#FFFFFF,#FAF6EE 320px)}
+[data-theme="light"] .exp-card:hover{background:#F0EBE0}
+
+/* Cards / glass panels driven by var(--card-glass) re-theme automatically;
+   these are the few spots with a hardcoded near-black wash instead. */
+[data-theme="light"] .v2-btn-gold,
+[data-theme="light"] .mobile-menu-book{box-shadow:0 14px 40px rgba(184,137,46,.28)}
+
+/* Footer / contact already use var(--bg-dark), var(--text-inv*) — re-themes automatically. */
 </style>
 </head>
 <body>
@@ -2467,7 +2544,12 @@ ul{list-style:none}
       <a href="#story">Our Story</a>
       <a href="/management">Management</a>
       <a href="/reward">Rewards</a>
+      <a href="/regent-ai">Regent AI</a>
       <a href="#contact">Contact</a>
+      <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
+        <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon-moon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <a href="/availability" class="nav-cta">Book Now</a>
     </div>
     <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -2482,7 +2564,12 @@ ul{list-style:none}
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="/management" onclick="closeMobile()">Management</a>
   <a href="/reward" onclick="closeMobile()">Rewards</a>
+  <a href="/regent-ai" onclick="closeMobile()">Regent AI</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
+  <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
+    <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg class="theme-icon-moon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
   <a href="/availability" class="mobile-menu-book" onclick="closeMobile()">Book Now</a>
   <a href="tel:+12813071280" class="mobile-menu-phone" onclick="closeMobile()">(281) 307-1280</a>
 </div>
@@ -6384,6 +6471,26 @@ const MAP_FIT_PADDING = { paddingTopLeft: [48, 44], paddingBottomRight: [48, 64]
 const MAP_MIN_ZOOM = 9;
 const MAP_MAX_FIT_ZOOM = 13;
 
+/* The safe area of the map — the part not covered by the header chrome at the
+   top or the property strip / bottom sheet at the bottom. Every fit has to
+   respect it, otherwise pins land underneath the overlays and read as missing.
+   Returns Leaflet fitBounds padding options. */
+function mapFitPadding() {
+  const pad = {
+    paddingTopLeft: MAP_FIT_PADDING.paddingTopLeft.slice(),
+    paddingBottomRight: MAP_FIT_PADDING.paddingBottomRight.slice(),
+  };
+  if (mapIsExpanded && exploreMapInstance) {
+    const sheet = document.getElementById('mapBottomSheet');
+    const mapH = exploreMapInstance.getSize().y;
+    // Never eat so much of a short viewport that the fit collapses.
+    const room = Math.max(0, mapH * 0.5 - pad.paddingTopLeft[1]);
+    const sheetH = Math.min(sheet ? sheet.offsetHeight + 28 : 0, room);
+    pad.paddingBottomRight = [pad.paddingBottomRight[0], sheetH];
+  }
+  return pad;
+}
+
 function fitMapToProperties(opts) {
   if (!exploreMapInstance) return;
   exploreMapInstance.stop(); // cancels in-flight pan/fly (not zoom — see below)
@@ -6396,16 +6503,7 @@ function fitMapToProperties(opts) {
     exploreMapInstance.once('zoomend', () => fitMapToProperties(opts));
     return;
   }
-  const fit = Object.assign({ maxZoom: MAP_MAX_FIT_ZOOM, animate: false }, MAP_FIT_PADDING, opts || {});
-  // Expanded, the property strip covers the bottom of the map — keep pins above it.
-  if (mapIsExpanded) {
-    const sheet = document.getElementById('mapBottomSheet');
-    const mapH = exploreMapInstance.getSize().y;
-    // Never eat so much of a short viewport that the fit collapses.
-    const room = Math.max(0, mapH * 0.5 - fit.paddingTopLeft[1]);
-    const sheetH = Math.min(sheet ? sheet.offsetHeight + 28 : 0, room);
-    fit.paddingBottomRight = [fit.paddingBottomRight[0], sheetH];
-  }
+  const fit = Object.assign({ maxZoom: MAP_MAX_FIT_ZOOM, animate: false }, mapFitPadding(), opts || {});
   exploreMapInstance.fitBounds(getMapBounds(), fit);
 }
 
@@ -6512,7 +6610,11 @@ function createPropertyMarkerIcon(prop) {
    lose the current zoom/selection). Safe to call repeatedly. */
 function refreshMarkerPrices() {
   if (!mapPropertyMarkers.length) return;
-  mapPropertyMarkers.forEach((marker, idx) => {
+  mapPropertyMarkers.forEach(marker => {
+    // Key off propertyIndex, not the marker's own position: markers are only
+    // created for properties that have coordinates, so the two arrays fall out
+    // of step as soon as one property is missing a lat/lng.
+    const idx = marker && marker.propertyIndex;
     const prop = PROPERTIES[idx];
     if (!prop || !marker) return;
     const price = markerNightlyPrice(prop);
@@ -6545,12 +6647,25 @@ function addPropertyMarkers() {
   mapPropertyMarkers = [];
 
   // Cluster group — restyled as a brass "constellation" badge
+  /* Cluster geometry is sized for the PRICE PILL, not the old 42px dot. A pill
+     is ~65px wide, so two pins need roughly that much separation before they
+     can both be read and tapped.
+       · maxClusterRadius 55 — merge anything closer than about one pill width.
+       · disableClusteringAtZoom 18 — Waterfront/Lakefront are only 52m apart,
+         which is 3px at z13 and still just 52px at z17; they do not clear a
+         pill's width until z18. Un-clustering earlier stacked one pill on top
+         of the other and left the one underneath unclickable. Clicking the
+         cluster zooms to bounds, which lands at z18 where both separate. */
   mapClusterGroup = L.markerClusterGroup({
-    maxClusterRadius: 38,
+    maxClusterRadius: 55,
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
-    zoomToBoundsOnClick: true,
-    disableClusteringAtZoom: 13,
+    /* Handled manually below. The built-in zoom-to-bounds knows nothing about
+       the header or the property strip, so it parked the pins it had just
+       revealed underneath them — the guest clicked a cluster and appeared to
+       get an empty map. */
+    zoomToBoundsOnClick: false,
+    disableClusteringAtZoom: 18,
     animateAddingMarkers: false,
     iconCreateFunction: function(cluster) {
       const count = cluster.getChildCount();
@@ -6610,17 +6725,47 @@ function addPropertyMarkers() {
     mapClusterGroup.addLayer(marker);
   });
 
+  /* Cluster click — zoom into the cluster's own bounds, padded so the pins it
+     reveals land in the visible middle of the map rather than behind the
+     header or the property strip. When the group is so tight that even max
+     zoom cannot separate the pills (Waterfront and Lakefront sit 52m apart),
+     spiderfy instead so every stay is still individually tappable. */
+  mapClusterGroup.on('clusterclick', (ev) => {
+    const cluster = ev.layer;
+    const map = exploreMapInstance;
+    if (!cluster || !map) return;
+    if (!mapIsExpanded) openMapModal();
+
+    const run = () => {
+      const pad = mapFitPadding();
+      const bounds = cluster.getBounds();
+      const inset = L.point(pad.paddingTopLeft).add(L.point(pad.paddingBottomRight));
+      // getBoundsZoom tells us the zoom the padded fit would settle on; if that
+      // is already the deepest the tiles go, zooming achieves nothing.
+      const targetZoom = map.getBoundsZoom(bounds, false, inset);
+      if (targetZoom >= map.getMaxZoom()) {
+        map.once('moveend', () => cluster.spiderfy());
+        map.setView(bounds.getCenter(), map.getMaxZoom(), { animate: true });
+      } else {
+        map.fitBounds(bounds, Object.assign({ maxZoom: map.getMaxZoom() }, pad));
+      }
+    };
+    // Expanding the map resizes the container; fit against the final size.
+    mapIsExpanded ? run() : setTimeout(run, 380);
+  });
+
   exploreMapInstance.addLayer(mapClusterGroup);
 
   // Stagger the marker entrance. The animation itself lives on the inner
   // `.map-marker` div — animating the Leaflet icon element would override the
   // translate3d Leaflet uses to position it, stacking every pin at the origin.
   requestAnimationFrame(() => {
-    mapPropertyMarkers.forEach((marker, idx) => {
+    mapPropertyMarkers.forEach((marker, order) => {
       const markerEl = marker.getElement();
-      if (markerEl) {
-        markerEl.style.setProperty('--marker-delay', `${idx * 45}ms`);
-        markerEl.setAttribute('aria-label', `${PROPERTIES[idx].name} in ${PROPERTIES[idx].city}, ${PROPERTIES[idx].state}`);
+      const prop = PROPERTIES[marker.propertyIndex];
+      if (markerEl && prop) {
+        markerEl.style.setProperty('--marker-delay', `${order * 45}ms`);
+        markerEl.setAttribute('aria-label', `${prop.name} in ${prop.city}, ${prop.state}`);
       }
     });
   });

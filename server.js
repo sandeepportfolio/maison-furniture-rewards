@@ -390,7 +390,8 @@ app.get('/sitemap.xml', (req, res) => {
     { loc: '/', priority: '1.0', changefreq: 'daily' },
     { loc: '/availability', priority: '0.9', changefreq: 'daily' },
     { loc: '/management', priority: '0.7', changefreq: 'monthly' },
-    { loc: '/reward', priority: '0.6', changefreq: 'monthly' }
+    { loc: '/reward', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/regent-ai', priority: '0.6', changefreq: 'monthly' }
   ];
   // Property URLs are listed at /property/<slug> because that is what the
   // glance pages declare as their canonical. A sitemap should only ever
@@ -2413,6 +2414,11 @@ app.put('/api/admin/pm-inquiries/:id', requireAuth, (req, res) => {
 // Serve management page
 app.get('/management', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'management.html'));
+});
+
+// Serve Regent AI page
+app.get('/regent-ai', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'regent-ai.html'));
 });
 
 // ── ADMIN: Custom Invoice ──
