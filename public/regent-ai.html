@@ -239,33 +239,112 @@ ul{list-style:none}
 .faq-a p{padding:0 4px 22px;font-size:15px;line-height:1.65;color:var(--text-muted);max-width:70ch;text-wrap:pretty}
 
 /* ── Contact ── */
-.contact-panel{background:linear-gradient(180deg,rgba(var(--gold-rgb),.05),transparent 40%),var(--surface);border:1px solid var(--border);border-radius:clamp(28px,4vw,44px);padding:clamp(36px,5vw,64px) clamp(20px,4vw,52px);max-width:1160px;margin:clamp(36px,4.5vw,56px) auto 0;position:relative;overflow:hidden}
-.contact-grid{display:grid;grid-template-columns:1fr;gap:clamp(28px,4vw,52px)}
-@media(min-width:920px){.contact-grid{grid-template-columns:minmax(0,4fr) minmax(0,6fr);align-items:start}}
-.contact-points{margin-top:26px;display:flex;flex-direction:column;gap:14px}
-.contact-point{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500;color:var(--text-muted)}
-.contact-point .dot{width:34px;height:34px;border-radius:50%;background:rgba(var(--gold-rgb),.1);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;color:var(--gold);flex:none;font-size:14px}
-.form-card{background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:24px;padding:clamp(22px,3vw,32px);position:relative}
-.ri-form{display:flex;flex-direction:column;gap:16px}
-.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px}
-.ri-form label{display:block;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px}
-.ri-input,.ri-select,.ri-textarea{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--glass-border);background:var(--input-bg);font-family:var(--sans);font-weight:500;font-size:15px;color:var(--text);outline:none;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
-.ri-input::placeholder,.ri-textarea::placeholder{color:var(--text-dim)}
-.ri-input:focus,.ri-select:focus,.ri-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(var(--gold-rgb),.14)}
-.ri-textarea{resize:vertical;line-height:1.5;min-height:100px}
-.select-wrap{position:relative}
-.ri-select{appearance:none;-webkit-appearance:none;padding-right:38px;color:var(--text)}
-.ri-select option{background:var(--surface);color:var(--text)}
-.select-wrap .car{position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-dim);font-size:12px}
-.form-submit{margin-top:4px;width:100%}
-.form-submit:disabled{opacity:.65;transform:none;box-shadow:none;cursor:default}
-.form-note{text-align:center;font-size:12.5px;font-weight:500;color:var(--text-dim)}
-.form-msg{margin-top:2px;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;display:none;text-align:center}
-.form-msg.show{display:block}
-.form-msg.success{background:var(--success-bg);color:var(--success-text);border:1px solid var(--success-border)}
-.form-msg.error{background:var(--error-bg);color:var(--error-text);border:1px solid var(--error-border)}
-.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(26,20,8,.3);border-top-color:#1A1408;border-radius:50%;animation:riSpin .6s linear infinite}
+.contact-panel{
+  position:relative;overflow:hidden;max-width:1180px;margin:clamp(38px,4.8vw,62px) auto 0;
+  border:1px solid var(--border);border-radius:clamp(22px,2.6vw,30px);
+  padding:clamp(30px,4.4vw,62px) clamp(22px,4vw,58px) clamp(32px,4.4vw,58px);
+  background:
+    radial-gradient(120% 88% at 100% -10%,rgba(var(--gold-rgb),.075),transparent 58%),
+    linear-gradient(180deg,rgba(var(--text-rgb),.03),transparent 42%),
+    var(--surface);
+  box-shadow:var(--shadow-lg)}
+.contact-panel::before{content:'';position:absolute;top:0;left:14%;right:14%;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(var(--gold-rgb),.6),transparent)}
+.contact-grid{display:grid;grid-template-columns:1fr;gap:0}
+.contact-form-col{position:relative;margin-top:clamp(32px,5vw,44px);padding-top:clamp(32px,5vw,44px);border-top:1px solid var(--border)}
+@media(min-width:960px){
+  .contact-grid{--cgap:clamp(46px,5.4vw,78px);grid-template-columns:minmax(0,4.5fr) minmax(0,6.5fr);gap:var(--cgap);align-items:start}
+  .contact-form-col{margin-top:0;padding-top:0;border-top:0}
+  .contact-form-col::before{content:'';position:absolute;left:calc(var(--cgap) / -2);top:4px;bottom:4px;width:1px;
+    background:linear-gradient(180deg,transparent,var(--border) 12%,var(--border) 88%,transparent)}
+}
+
+/* Left column — editorial */
+.contact-h3{margin-top:16px;font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,36px);line-height:1.1;letter-spacing:-.015em;color:var(--text);text-wrap:balance}
+.contact-sub{margin-top:14px;font-size:15.5px;line-height:1.65;color:var(--text-muted);max-width:38ch;text-wrap:pretty}
+.contact-points{margin-top:clamp(26px,3vw,34px);border-top:1px solid var(--border)}
+.contact-point{display:flex;align-items:baseline;gap:15px;padding:14px 2px;border-bottom:1px solid var(--border);
+  font-size:14.5px;font-weight:500;line-height:1.5;color:var(--text-muted);
+  transition:color .35s var(--ease),padding-left .35s var(--ease)}
+.contact-point .idx{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.14em;color:var(--gold);opacity:.65;transition:opacity .35s var(--ease)}
+@media(hover:hover) and (pointer:fine){.contact-point:hover{color:var(--text);padding-left:7px}.contact-point:hover .idx{opacity:1}}
+.contact-meta{margin-top:24px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
+.live-dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--gold);animation:riPulse 2.6s var(--ease) infinite}
+@keyframes riPulse{0%{box-shadow:0 0 0 0 rgba(var(--gold-rgb),.5)}70%{box-shadow:0 0 0 8px rgba(var(--gold-rgb),0)}100%{box-shadow:0 0 0 0 rgba(var(--gold-rgb),0)}}
+
+/* Form */
+.ri-form{display:flex;flex-direction:column;gap:clamp(21px,2.3vw,27px)}
+.form-row{display:grid;grid-template-columns:1fr;gap:clamp(21px,2.3vw,27px)}
+@media(min-width:540px){.form-row{grid-template-columns:1fr 1fr}}
+.fld{position:relative}
+.fld-label{display:flex;align-items:baseline;gap:9px;margin-bottom:11px;
+  font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text-dim);transition:color .3s var(--ease)}
+.fld-label .n{color:var(--gold);opacity:.55;font-size:10px;letter-spacing:.1em;transition:opacity .3s var(--ease)}
+.fld-label .opt{margin-left:auto;font-size:10px;letter-spacing:.12em;opacity:.72}
+.fld:focus-within .fld-label{color:var(--text)}
+.fld:focus-within .fld-label .n{opacity:1}
+.ri-input,.ri-textarea{
+  display:block;width:100%;padding:0 2px 13px;border:0;border-bottom:1px solid var(--glass-border);border-radius:0;
+  background-color:transparent;
+  background-image:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));
+  background-repeat:no-repeat;background-origin:border-box;background-position:0 100%;background-size:0 1.5px;
+  font-family:var(--sans);font-weight:450;font-size:16px;line-height:1.55;color:var(--text);outline:none;
+  transition:background-size .5s var(--ease),border-color .3s var(--ease)}
+.ri-input::placeholder,.ri-textarea::placeholder{color:var(--text-dim);font-weight:400;transition:opacity .3s var(--ease)}
+.ri-input:focus::placeholder,.ri-textarea:focus::placeholder{opacity:.4}
+.ri-input:focus,.ri-textarea:focus{background-size:100% 1.5px}
+@media(hover:hover) and (pointer:fine){.ri-input:hover,.ri-textarea:hover{border-color:rgba(var(--text-rgb),.24)}}
+.ri-input:-webkit-autofill{-webkit-text-fill-color:var(--text);transition:background-color 9999s}
+.ri-textarea{resize:none;min-height:86px;padding-bottom:14px;overflow:hidden}
+
+/* Segmented range picker */
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.03em;color:var(--text-muted);
+  padding:9px 16px;border-radius:999px;border:1px solid var(--glass-border);background:transparent;
+  transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease),transform .16s var(--ease),box-shadow .25s var(--ease)}
+.chip:active{transform:scale(.95)}
+@media(hover:hover) and (pointer:fine){.chip:hover{color:var(--text);border-color:rgba(var(--gold-rgb),.42)}}
+.chip[aria-pressed="true"]{color:var(--gold);border-color:rgba(var(--gold-rgb),.55);background:rgba(var(--gold-rgb),.1);box-shadow:0 6px 18px rgba(var(--gold-rgb),.14)}
+
+/* Submit + footer */
+.form-submit{position:relative;overflow:hidden;width:100%;margin-top:6px;padding:18px 26px;border-radius:14px;font-size:15.5px;letter-spacing:.005em;
+  background:linear-gradient(180deg,var(--gold-bright),var(--gold) 62%,var(--gold-deep));
+  border-color:rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(var(--gold-rgb),.26),inset 0 1px 0 rgba(255,255,255,.28)}
+@media(hover:hover) and (pointer:fine){.form-submit:hover{background:linear-gradient(180deg,var(--gold-bright),var(--gold-bright) 58%,var(--gold));box-shadow:0 22px 54px rgba(var(--gold-rgb),.36),inset 0 1px 0 rgba(255,255,255,.34)}}
+/* Light theme gold is dark, so keep the ramp at or above the flat button colour */
+[data-theme="light"] .form-submit{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border-color:rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(var(--gold-rgb),.24),inset 0 1px 0 rgba(255,255,255,.18)}
+[data-theme="light"] .form-submit::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent)}
+.form-submit .arw{display:inline-block;transition:transform .3s var(--ease)}
+.form-submit::after{content:'';position:absolute;top:0;left:-60%;width:42%;height:100%;opacity:0;pointer-events:none;
+  transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent)}
+@media(hover:hover) and (pointer:fine){
+  .form-submit:hover .arw{transform:translateX(5px)}
+  .form-submit:hover::after{opacity:1;animation:riSheen .85s var(--ease)}
+}
+@keyframes riSheen{from{left:-60%}to{left:112%}}
+.form-submit:disabled{opacity:.6;transform:none;box-shadow:none;cursor:default}
+.form-submit:disabled::after{display:none}
+.form-foot{margin-top:14px;text-align:center}
+.form-foot .lk{display:inline-block;vertical-align:-1px;margin-right:7px;color:var(--gold);opacity:.55;width:11px;height:11px}
+.form-note{display:inline;font-size:12px;font-weight:500;line-height:1.6;color:var(--text-dim);letter-spacing:.005em}
+.form-msg{margin-top:2px;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;display:none;text-align:center;border:1px solid transparent}
+.form-msg.show{display:block;animation:riMsgIn .45s var(--ease) both}
+@keyframes riMsgIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.form-msg.success{background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)}
+.form-msg.error{background:var(--error-bg);color:var(--error-text);border-color:var(--error-border)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(26,20,8,.3);border-top-color:#1A1408;border-radius:50%;animation:riSpin .6s linear infinite;vertical-align:-3px}
 @keyframes riSpin{to{transform:rotate(360deg)}}
+
+/* Staggered entrance for the form fields */
+.contact-panel .stag{opacity:0;transform:translateY(16px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+.contact-panel.on .stag{opacity:1;transform:none}
+.contact-panel.on .stag:nth-of-type(1){transition-delay:.10s}
+.contact-panel.on .stag:nth-of-type(2){transition-delay:.17s}
+.contact-panel.on .stag:nth-of-type(3){transition-delay:.24s}
+.contact-panel.on .stag:nth-of-type(4){transition-delay:.31s}
+.contact-panel.on .stag:nth-of-type(5){transition-delay:.38s}
+.contact-panel.on .stag:nth-of-type(6){transition-delay:.45s}
 
 /* ── Footer ── */
 .ri-footer{position:relative;padding:clamp(70px,9vw,110px) clamp(20px,5vw,64px) 40px;z-index:1;border-top:1px solid var(--border)}
@@ -283,6 +362,7 @@ ul{list-style:none}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .reveal{opacity:1;transform:none}
+  .contact-panel .stag{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -523,55 +603,54 @@ ul{list-style:none}
       <div class="contact-grid">
         <div>
           <div class="ri-eyebrow"><span class="ln" aria-hidden="true"></span>Why hosts switch</div>
-          <h3 style="margin-top:14px;font-family:var(--serif);font-weight:400;font-size:clamp(24px,2.6vw,30px);color:var(--text);letter-spacing:-.01em">Fewer inboxes. Faster replies. Zero surprises.</h3>
+          <h3 class="contact-h3">Fewer inboxes.<br>Faster replies.<br>Zero surprises.</h3>
+          <p class="contact-sub">A 20-minute walkthrough of your own portfolio — real listings, real messages, real drafts.</p>
           <div class="contact-points">
-            <div class="contact-point"><span class="dot" aria-hidden="true">✓</span>Live in an afternoon, no migration headaches</div>
-            <div class="contact-point"><span class="dot" aria-hidden="true">✓</span>Native Guesty integration</div>
-            <div class="contact-point"><span class="dot" aria-hidden="true">✓</span>Human approval always available</div>
-            <div class="contact-point"><span class="dot" aria-hidden="true">✓</span>Pricing from $3 per property, per month</div>
+            <div class="contact-point"><span class="idx" aria-hidden="true">01</span>Live in an afternoon, no migration headaches</div>
+            <div class="contact-point"><span class="idx" aria-hidden="true">02</span>Native Guesty integration</div>
+            <div class="contact-point"><span class="idx" aria-hidden="true">03</span>Human approval always available</div>
+            <div class="contact-point"><span class="idx" aria-hidden="true">04</span>Pricing from $3 per property, per month</div>
           </div>
+          <div class="contact-meta"><span class="live-dot" aria-hidden="true"></span>Replies within 24 hours</div>
         </div>
 
-        <div class="form-card">
+        <div class="contact-form-col">
           <form class="ri-form" id="riForm" novalidate>
             <input type="hidden" name="subject" value="Regent AI Demo Request">
-            <div class="form-row">
-              <div>
-                <label for="riName">Full name</label>
+            <div class="form-row stag">
+              <div class="fld">
+                <label class="fld-label" for="riName"><span class="n" aria-hidden="true">01</span>Full name</label>
                 <input class="ri-input" type="text" id="riName" name="name" placeholder="Jane Carter" required autocomplete="name">
               </div>
-              <div>
-                <label for="riEmail">Email</label>
+              <div class="fld">
+                <label class="fld-label" for="riEmail"><span class="n" aria-hidden="true">02</span>Email</label>
                 <input class="ri-input" type="email" id="riEmail" name="email" placeholder="jane@example.com" required autocomplete="email">
               </div>
             </div>
-            <div class="form-row">
-              <div>
-                <label for="riPhone">Phone <span style="text-transform:none;font-weight:500;color:var(--text-dim)">(optional)</span></label>
-                <input class="ri-input" type="tel" id="riPhone" name="phone" placeholder="(555) 123-4567" autocomplete="tel">
-              </div>
-              <div>
-                <label for="riProperties">Number of properties</label>
-                <div class="select-wrap">
-                  <select class="ri-select" id="riProperties" name="properties">
-                    <option value="">Select range</option>
-                    <option value="1-5">1–5</option>
-                    <option value="6-20">6–20</option>
-                    <option value="21-50">21–50</option>
-                    <option value="51-100">51–100</option>
-                    <option value="100+">100+</option>
-                  </select>
-                  <span class="car" aria-hidden="true">▾</span>
-                </div>
+            <div class="fld stag">
+              <label class="fld-label" for="riPhone"><span class="n" aria-hidden="true">03</span>Phone<span class="opt">Optional</span></label>
+              <input class="ri-input" type="tel" id="riPhone" name="phone" placeholder="(555) 123-4567" autocomplete="tel">
+            </div>
+            <div class="stag">
+              <input type="hidden" id="riProperties" name="properties" value="">
+              <span class="fld-label" id="riPropsLabel"><span class="n" aria-hidden="true">04</span>Number of properties</span>
+              <div class="chip-row" role="group" aria-labelledby="riPropsLabel" id="riPropsChips">
+                <button type="button" class="chip" data-val="1-5" aria-pressed="false">1–5</button>
+                <button type="button" class="chip" data-val="6-20" aria-pressed="false">6–20</button>
+                <button type="button" class="chip" data-val="21-50" aria-pressed="false">21–50</button>
+                <button type="button" class="chip" data-val="51-100" aria-pressed="false">51–100</button>
+                <button type="button" class="chip" data-val="100+" aria-pressed="false">100+</button>
               </div>
             </div>
-            <div>
-              <label for="riMessage">Message <span style="text-transform:none;font-weight:500;color:var(--text-dim)">(optional)</span></label>
-              <textarea class="ri-textarea" id="riMessage" name="message" rows="4" placeholder="Tell us about your portfolio or what you'd like to see in the demo."></textarea>
+            <div class="fld stag">
+              <label class="fld-label" for="riMessage"><span class="n" aria-hidden="true">05</span>Message<span class="opt">Optional</span></label>
+              <textarea class="ri-textarea" id="riMessage" name="message" rows="3" placeholder="Tell us about your portfolio or what you'd like to see in the demo."></textarea>
             </div>
-            <button type="submit" class="btn btn-gold form-submit" id="riSubmitBtn"><span id="riSubmitLabel">Book a demo</span><span aria-hidden="true">→</span></button>
-            <p class="form-note">We'll never share your information. Unsubscribe anytime.</p>
-            <div class="form-msg" id="riFormMsg"></div>
+            <div class="stag">
+              <button type="submit" class="btn btn-gold form-submit" id="riSubmitBtn"><span id="riSubmitLabel">Book a demo</span><span class="arw" aria-hidden="true">→</span></button>
+              <div class="form-foot"><svg class="lk" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><p class="form-note">We'll never share your information. Unsubscribe anytime.</p></div>
+              <div class="form-msg" id="riFormMsg"></div>
+            </div>
           </form>
         </div>
       </div>
@@ -684,6 +763,34 @@ ul{list-style:none}
   var msgEl = document.getElementById('riFormMsg');
   var submitBtn = document.getElementById('riSubmitBtn');
   var submitLabel = document.getElementById('riSubmitLabel');
+
+  /* Message field grows with its content instead of showing a resize grip */
+  var msgField = document.getElementById('riMessage');
+  if (msgField) {
+    var growField = function(){
+      msgField.style.height = 'auto';
+      msgField.style.height = Math.max(86, msgField.scrollHeight) + 'px';
+    };
+    msgField.addEventListener('input', growField);
+    if (form) form.addEventListener('reset', function(){ setTimeout(function(){ msgField.style.height = ''; }, 0); });
+  }
+
+  /* Properties range — segmented chips writing to the hidden input */
+  var propsInput = document.getElementById('riProperties');
+  var propsChips = document.getElementById('riPropsChips');
+  if (propsChips && propsInput) {
+    var chips = propsChips.querySelectorAll('.chip');
+    function setProps(val){
+      propsInput.value = val;
+      chips.forEach(function(c){ c.setAttribute('aria-pressed', c.dataset.val === val ? 'true' : 'false'); });
+    }
+    chips.forEach(function(c){
+      c.addEventListener('click', function(){
+        setProps(c.getAttribute('aria-pressed') === 'true' ? '' : c.dataset.val);
+      });
+    });
+    if (form) form.addEventListener('reset', function(){ setTimeout(function(){ setProps(''); }, 0); });
+  }
 
   if (form) {
     form.addEventListener('submit', function(e){
