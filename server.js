@@ -305,7 +305,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ── Admin Authentication ──
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASS = process.env.ADMIN_PASS || 'regent2024';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'saibaba9';
 const SESSION_DURATION_HOURS = 24;
 
 function generateToken() {
