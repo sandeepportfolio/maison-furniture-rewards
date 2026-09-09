@@ -456,45 +456,6 @@ textarea{resize:vertical}
   .login-brand h1{font-size:1.4rem}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
-
-/* -- Maintenance section -- */
-.maint-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.3rem;margin-bottom:.75rem;cursor:pointer;transition:border-color .2s}
-.maint-card:hover{border-color:var(--copper)}
-.maint-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem}
-.maint-card-title{font-weight:500;font-size:.95rem}
-.maint-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:600;padding:.2rem .55rem;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
-.maint-badge.new{background:rgba(59,130,246,.15);color:#60a5fa}
-.maint-badge.in_progress{background:rgba(251,191,36,.15);color:#fbbf24}
-.maint-badge.scheduled{background:rgba(139,92,246,.15);color:#a78bfa}
-.maint-badge.completed{background:rgba(52,211,153,.15);color:#34d399}
-.maint-badge.closed{background:rgba(160,160,160,.15);color:#a0a0a0}
-.maint-urgency{font-size:.7rem;font-weight:600;padding:.15rem .45rem;border-radius:20px;text-transform:uppercase}
-.maint-urgency.low{background:rgba(52,211,153,.12);color:#34d399}
-.maint-urgency.medium{background:rgba(251,191,36,.12);color:#fbbf24}
-.maint-urgency.high{background:rgba(249,115,22,.12);color:#f97316}
-.maint-urgency.emergency{background:rgba(248,113,113,.15);color:#f87171}
-.maint-card-meta{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;color:var(--text-2)}
-.maint-card-meta span{display:flex;align-items:center;gap:.3rem}
-.maint-detail-header{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem}
-.maint-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}
-.maint-detail-field label{font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.05em;font-weight:500}
-.maint-detail-field p{font-size:.92rem;margin-top:.15rem}
-.maint-photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.75rem;margin-top:.75rem}
-.maint-photo{border-radius:var(--radius);overflow:hidden;aspect-ratio:1;cursor:pointer;border:1px solid var(--border)}
-.maint-photo img{width:100%;height:100%;object-fit:cover;transition:transform .2s}
-.maint-photo:hover img{transform:scale(1.05)}
-.maint-thread{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;max-height:400px;overflow-y:auto;margin-bottom:1rem}
-.maint-msg{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
-.maint-msg:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
-.maint-msg-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
-.maint-msg-sender{font-size:.82rem;font-weight:600}
-.maint-msg-sender.admin{color:var(--copper)}
-.maint-msg-sender.guest{color:#60a5fa}
-.maint-msg-time{font-size:.72rem;color:var(--text-2)}
-.maint-msg-body{font-size:.88rem;color:var(--text);line-height:1.5}
-.maint-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.maint-lightbox img{max-width:90vw;max-height:90vh;border-radius:8px}
-@media(max-width:600px){.maint-detail-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -583,11 +544,6 @@ textarea{resize:vertical}
       <a href="#" class="nav-link" data-section="invoices">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Custom Invoice
-      </a>
-      <a href="#" class="nav-link" data-section="maintenance">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        Maintenance
-        <span class="nav-badge" id="navMaintBadge" style="display:none">0</span>
       </a>
       <a href="#" class="nav-link" data-section="settings">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -913,37 +869,6 @@ textarea{resize:vertical}
           <textarea id="guestMsgReply" rows="2" placeholder="Type your reply..." style="flex:1;padding:.7rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.9rem;resize:vertical"></textarea>
           <button class="btn" onclick="sendGuestReply()">Send</button>
         </div>
-      </div>
-    </div>
-
-    <!-- MAINTENANCE -->
-    <div class="section" id="sec-maintenance">
-      <div id="maintList">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.75rem">
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="maintFilters">
-            <select id="maintStatusFilter" style="padding:.45rem .8rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.82rem;font-family:var(--font)">
-              <option value="">All Statuses</option>
-              <option value="new">New</option>
-              <option value="in_progress">In Progress</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="completed">Completed</option>
-              <option value="closed">Closed</option>
-            </select>
-            <select id="maintUrgencyFilter" style="padding:.45rem .8rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.82rem;font-family:var(--font)">
-              <option value="">All Urgencies</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="emergency">Emergency</option>
-            </select>
-          </div>
-          <span style="font-size:.82rem;color:var(--text-2)" id="maintCount"></span>
-        </div>
-        <div id="maintCards"></div>
-      </div>
-      <div id="maintDetail" style="display:none">
-        <button class="btn btn-secondary" onclick="backToMaintList()" style="margin-bottom:1rem">&larr; All Requests</button>
-        <div id="maintDetailContent"></div>
       </div>
     </div>
 
@@ -1432,7 +1357,6 @@ const sectionMeta = {
   invoices: { title: 'Custom Invoice', subtitle: 'Create reservations with custom pricing and send payment links' },
   'pm-inquiries': { title: 'PM Inquiries', subtitle: 'Property management inquiry submissions' },
   'guest-messages': { title: 'Guest Messages', subtitle: 'Messages from guests via the Trip Portal' },
-  maintenance: { title: 'Maintenance', subtitle: 'Manage guest maintenance requests and work orders' },
   settings: { title: 'Settings', subtitle: 'System configuration and preferences' }
 };
 
@@ -1474,7 +1398,6 @@ function loadSectionData(section) {
     case 'invoices': loadInvoices(); break;
     case 'pm-inquiries': loadPmInquiries(); break;
     case 'guest-messages': loadGuestMessages(); break;
-    case 'maintenance': loadMaintenance(); break;
     case 'settings': loadSettings(); break;
   }
 }
@@ -2737,230 +2660,6 @@ function renderInvoiceList() {
 /* ═══════════════════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════════════════ */
-
-/* ====================================================================
-   MAINTENANCE
-   ==================================================================== */
-let maintRequests = [];
-let currentMaintId = null;
-
-async function loadMaintenance() {
-  try {
-    const resp = await fetch('/api/maintenance/requests', { credentials: 'same-origin' });
-    const data = await resp.json();
-    maintRequests = data.requests || [];
-    renderMaintList();
-    // Update badge
-    const newCount = maintRequests.filter(r => r.status === 'new').length;
-    const badge = $('navMaintBadge');
-    if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; }
-    else { badge.style.display = 'none'; }
-  } catch (err) {
-    $('maintCards').innerHTML = '<p style="color:var(--text-2);text-align:center;padding:2rem">Failed to load maintenance requests</p>';
-  }
-}
-
-function renderMaintList() {
-  const statusFilter = $('maintStatusFilter').value;
-  const urgencyFilter = $('maintUrgencyFilter').value;
-  let filtered = maintRequests;
-  if (statusFilter) filtered = filtered.filter(r => r.status === statusFilter);
-  if (urgencyFilter) filtered = filtered.filter(r => r.urgency === urgencyFilter);
-  $('maintCount').textContent = filtered.length + ' request' + (filtered.length !== 1 ? 's' : '');
-
-  const categoryLabels = { plumbing:'Plumbing', electrical:'Electrical', hvac:'HVAC', appliance:'Appliance',
-    lock_key:'Lock/Key', pest:'Pest Control', cleaning:'Cleaning', damage:'Damage',
-    wifi_tech:'WiFi/Tech', outdoor:'Outdoor', other:'Other' };
-  const statusLabels = { new:'New', in_progress:'In Progress', scheduled:'Scheduled', completed:'Completed', closed:'Closed' };
-
-  if (filtered.length === 0) {
-    $('maintCards').innerHTML = '<p style="color:var(--text-2);text-align:center;padding:2rem">No maintenance requests found</p>';
-    return;
-  }
-
-  $('maintCards').innerHTML = filtered.map(r => {
-    const date = new Date(r.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-    const catLabel = categoryLabels[r.category] || r.category;
-    const statusLabel = statusLabels[r.status] || r.status;
-    return '<div class="maint-card" onclick="openMaintDetail(' + r.id + ')">' +
-      '<div class="maint-card-top">' +
-        '<span class="maint-card-title">#' + r.id + ' — ' + escH(r.property_name) + '</span>' +
-        '<div style="display:flex;gap:.4rem;align-items:center">' +
-          '<span class="maint-urgency ' + r.urgency + '">' + r.urgency + '</span>' +
-          '<span class="maint-badge ' + r.status + '">' + statusLabel + '</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="maint-card-meta">' +
-        '<span>' + escH(r.guest_name) + '</span>' +
-        '<span>' + catLabel + '</span>' +
-        '<span>' + date + '</span>' +
-        (r.photo_count > 0 ? '<span>' + r.photo_count + ' photo' + (r.photo_count > 1 ? 's' : '') + '</span>' : '') +
-        (r.message_count > 0 ? '<span>' + r.message_count + ' message' + (r.message_count > 1 ? 's' : '') + '</span>' : '') +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-// Attach filter listeners
-document.addEventListener('DOMContentLoaded', () => {
-  const sf = document.getElementById('maintStatusFilter');
-  const uf = document.getElementById('maintUrgencyFilter');
-  if (sf) sf.addEventListener('change', renderMaintList);
-  if (uf) uf.addEventListener('change', renderMaintList);
-});
-
-async function openMaintDetail(id) {
-  currentMaintId = id;
-  $('maintList').style.display = 'none';
-  $('maintDetail').style.display = 'block';
-  try {
-    const resp = await fetch('/api/maintenance/requests/' + id, { credentials: 'same-origin' });
-    const data = await resp.json();
-    renderMaintDetail(data);
-  } catch (err) {
-    $('maintDetailContent').innerHTML = '<p style="color:var(--error)">Failed to load request details</p>';
-  }
-}
-
-function backToMaintList() {
-  $('maintDetail').style.display = 'none';
-  $('maintList').style.display = 'block';
-  currentMaintId = null;
-  loadMaintenance();
-}
-
-function renderMaintDetail(data) {
-  const r = data.request;
-  const photos = data.photos || [];
-  const messages = data.messages || [];
-  const categoryLabels = { plumbing:'Plumbing', electrical:'Electrical', hvac:'HVAC', appliance:'Appliance',
-    lock_key:'Lock/Key', pest:'Pest Control', cleaning:'Cleaning', damage:'Damage',
-    wifi_tech:'WiFi/Tech', outdoor:'Outdoor', other:'Other' };
-  const statusLabels = { new:'New', in_progress:'In Progress', scheduled:'Scheduled', completed:'Completed', closed:'Closed' };
-  const created = new Date(r.created_at).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
-  const updated = new Date(r.updated_at).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
-
-  let html = '<div class="maint-detail-header">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">' +
-      '<h3 style="font-size:1.15rem;font-weight:600">Request #' + r.id + '</h3>' +
-      '<div style="display:flex;gap:.5rem;align-items:center">' +
-        '<span class="maint-urgency ' + r.urgency + '">' + r.urgency + '</span>' +
-        '<select id="maintStatusSelect" onchange="updateMaintStatus()" style="padding:.35rem .7rem;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.82rem;font-family:var(--font)">' +
-          ['new','in_progress','scheduled','completed','closed'].map(s =>
-            '<option value="' + s + '"' + (s === r.status ? ' selected' : '') + '>' + (statusLabels[s] || s) + '</option>'
-          ).join('') +
-        '</select>' +
-      '</div>' +
-    '</div>' +
-    '<div class="maint-detail-grid">' +
-      '<div class="maint-detail-field"><label>Guest</label><p>' + escH(r.guest_name) + '</p></div>' +
-      '<div class="maint-detail-field"><label>Property</label><p>' + escH(r.property_name) + '</p></div>' +
-      '<div class="maint-detail-field"><label>Email</label><p>' + (r.guest_email ? escH(r.guest_email) : '<span style="color:var(--text-2)">Not provided</span>') + '</p></div>' +
-      '<div class="maint-detail-field"><label>Phone</label><p>' + (r.guest_phone ? escH(r.guest_phone) : '<span style="color:var(--text-2)">Not provided</span>') + '</p></div>' +
-      '<div class="maint-detail-field"><label>Category</label><p>' + (categoryLabels[r.category] || r.category) + '</p></div>' +
-      '<div class="maint-detail-field"><label>Submitted</label><p>' + created + '</p></div>' +
-    '</div>' +
-    '<div style="margin-top:1rem"><label style="font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.05em;font-weight:500">Description</label>' +
-      '<p style="margin-top:.3rem;font-size:.92rem;line-height:1.6;white-space:pre-wrap">' + escH(r.description) + '</p>' +
-    '</div>' +
-  '</div>';
-
-  // Photos
-  if (photos.length > 0) {
-    html += '<div style="margin-bottom:1rem"><h4 style="font-size:.92rem;font-weight:500;margin-bottom:.5rem">Photos (' + photos.length + ')</h4>' +
-      '<div class="maint-photos-grid">' +
-        photos.map(p => '<div class="maint-photo" onclick="openMaintLightbox(\'/api/maintenance/photos/' + p.filename + '\')">' +
-          '<img src="/api/maintenance/photos/' + p.filename + '" alt="' + escH(p.original_name || 'Photo') + '" loading="lazy">' +
-        '</div>').join('') +
-      '</div></div>';
-  }
-
-  // Messages
-  html += '<h4 style="font-size:.92rem;font-weight:500;margin-bottom:.5rem">Messages</h4>';
-  if (messages.length > 0) {
-    html += '<div class="maint-thread">' +
-      messages.map(m => {
-        const time = new Date(m.created_at).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
-        return '<div class="maint-msg">' +
-          '<div class="maint-msg-header">' +
-            '<span class="maint-msg-sender ' + m.sender + '">' + (m.sender === 'admin' ? 'Admin' : 'Guest') + '</span>' +
-            '<span class="maint-msg-time">' + time + '</span>' +
-          '</div>' +
-          '<div class="maint-msg-body">' + escH(m.message) + '</div>' +
-        '</div>';
-      }).join('') +
-    '</div>';
-  } else {
-    html += '<p style="color:var(--text-2);font-size:.88rem;margin-bottom:1rem">No messages yet</p>';
-  }
-
-  // Reply form
-  html += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem">' +
-    '<h4 style="font-size:.88rem;font-weight:500;margin-bottom:.75rem">Send Reply</h4>' +
-    '<textarea id="maintReplyMsg" rows="3" placeholder="Type your message..." style="width:100%;padding:.7rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:.88rem;resize:vertical;margin-bottom:.75rem"></textarea>' +
-    '<div style="display:flex;justify-content:space-between;align-items:center">' +
-      '<label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--text-2);cursor:pointer">' +
-        '<input type="file" id="maintReplyPhoto" accept="image/*" style="display:none">' +
-        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
-        'Attach photo' +
-      '</label>' +
-      '<button class="btn" onclick="sendMaintReply()">Send</button>' +
-    '</div>' +
-  '</div>';
-
-  $('maintDetailContent').innerHTML = html;
-}
-
-async function updateMaintStatus() {
-  const status = document.getElementById('maintStatusSelect').value;
-  try {
-    await fetch('/api/maintenance/requests/' + currentMaintId, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({ status })
-    });
-  } catch (err) {
-    alert('Failed to update status');
-  }
-}
-
-async function sendMaintReply() {
-  const msg = document.getElementById('maintReplyMsg').value.trim();
-  if (!msg) return alert('Please enter a message');
-  const photoInput = document.getElementById('maintReplyPhoto');
-  const fd = new FormData();
-  fd.append('message', msg);
-  if (photoInput.files[0]) fd.append('photo', photoInput.files[0]);
-  try {
-    const resp = await fetch('/api/maintenance/requests/' + currentMaintId + '/message', {
-      method: 'POST',
-      credentials: 'same-origin',
-      body: fd
-    });
-    if (resp.ok) {
-      openMaintDetail(currentMaintId);
-    } else {
-      alert('Failed to send reply');
-    }
-  } catch (err) {
-    alert('Network error');
-  }
-}
-
-function openMaintLightbox(src) {
-  const lb = document.createElement('div');
-  lb.className = 'maint-lightbox';
-  lb.onclick = () => lb.remove();
-  lb.innerHTML = '<img src="' + src + '">';
-  document.body.appendChild(lb);
-}
-
-function escH(s) {
-  if (!s) return '';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 checkAuth();
 </script>
 </body>
