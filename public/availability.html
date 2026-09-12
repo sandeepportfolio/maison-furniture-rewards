@@ -873,15 +873,17 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     return new Promise(function(res,rej){var t=false,tm=setTimeout(function(){t=true;rej(new Error('timeout'));},ms);fetch(url,options).then(function(r){if(!t){clearTimeout(tm);res(r);}}).catch(function(e){if(!t){clearTimeout(tm);rej(e);}});});
   }
 
-  // ── Client-side response caching ──
+  // ── Client-side response caching with stale-while-revalidate ──
   var CACHE_KEY_PREFIX='avail_',CACHE_EXPIRY_NOW=600000,CACHE_EXPIRY_RANGE=1800000;
   function getCacheKey(type,params){return CACHE_KEY_PREFIX+type+(params?'_'+JSON.stringify(params):'');}
   function getCachedData(type,params){try{var key=getCacheKey(type,params),stored=localStorage.getItem(key);if(!stored)return null;var parsed=JSON.parse(stored),age=Date.now()-parsed.ts;return age<(type==='now'?CACHE_EXPIRY_NOW:CACHE_EXPIRY_RANGE)?parsed.data:null;}catch(e){return null;}}
+  function getCachedDataStale(type,params){try{var key=getCacheKey(type,params),stored=localStorage.getItem(key);if(!stored)return null;var parsed=JSON.parse(stored);return parsed.data;}catch(e){return null;}}
   function setCachedData(type,params,data){try{var key=getCacheKey(type,params);localStorage.setItem(key,JSON.stringify({ts:Date.now(),data:data}));}catch(e){}}
 
   function fetchAvailability() {
     var cached=getCachedData('now');if(cached){availData=cached;if(currentView==='default')renderDefault(cached);return;}
-    if (currentView==='default') results.innerHTML=skeleton(4);
+    var stale=getCachedDataStale('now');
+    if (currentView==='default') results.innerHTML=stale?'':''+skeleton(4);
     fetch('/api/availability/now',{cache:'no-store'})
       .then(function(r){return r.json();})
       .then(function(data){
@@ -890,12 +892,13 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
         statusText.textContent='Updated '+formatTime(new Date().toISOString());
         if(currentView==='default') renderDefault(data);
       })
-      .catch(function(){if(currentView==='default')results.innerHTML='<div class="avail-none">Unable to load availability. Please refresh.</div>';});
+      .catch(function(){if(stale&&currentView==='default')renderDefault(stale);else if(currentView==='default')results.innerHTML='<div class="avail-none">Unable to load availability. Please refresh.</div>';});
   }
 
   function fetchRange(ci, co) {
     var nights=nightsBetween(ci,co); if(nights<1)return;
     var cached=getCachedData('range',{ci:ci,co:co});if(cached){var n=cached.nights||nights;if(cached.degraded){var props=(cached.properties||[]).map(function(p){return Object.assign({},p,{available:true});});renderRange(ci,co,n,props,cached);}else{renderRange(ci,co,n,cached.properties||[],cached);}return;}
+    var stale=getCachedDataStale('range',{ci:ci,co:co});
     results.innerHTML=skeleton(4);searchBtn.disabled=true;searchBtn.classList.add('is-searching');
     searchBtn.innerHTML='<svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Searching…';
     fetchWithTimeout('/api/availability/check?checkIn='+encodeURIComponent(ci)+'&checkOut='+encodeURIComponent(co),{cache:'no-store'},15000)
@@ -911,7 +914,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
         }
         history.replaceState(null,'','/availability?checkin='+ci+'&checkout='+co);statusText.textContent='Results for '+formatDateLabel(ci)+' — '+formatDateLabel(co);
       })
-      .catch(function(){renderRange(ci,co,nights,[],null);})
+      .catch(function(){if(stale){var n=stale.nights||nights;if(stale.degraded){var props=(stale.properties||[]).map(function(p){return Object.assign({},p,{available:true});});renderRange(ci,co,n,props,stale);}else{renderRange(ci,co,n,stale.properties||[],stale);}}else{renderRange(ci,co,nights,[],null);}})
       .finally(function(){searchBtn.disabled=!(cal.checkIn&&cal.checkOut);searchBtn.classList.remove('is-searching');searchBtn.innerHTML='<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search';});
   }
 
