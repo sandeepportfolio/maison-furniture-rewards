@@ -545,6 +545,15 @@ app.get('/api/admin/auth-check', (req, res) => {
 // Health check endpoint (also used for keep-alive pings)
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
 
+// Which commit is actually live — Render sets RENDER_GIT_COMMIT on every
+// deploy automatically (no config needed). scripts/deploy.sh polls this to
+// confirm a deploy landed instead of guessing from cache headers.
+app.get('/api/version', (req, res) => res.status(200).json({
+  commit: process.env.RENDER_GIT_COMMIT || null,
+  branch: process.env.RENDER_GIT_BRANCH || null,
+  deployedAt: process.env.RENDER_DEPLOY_START_TIME || null,
+}));
+
 // Route /reward to reward.html
 app.get('/reward', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'reward.html'));
