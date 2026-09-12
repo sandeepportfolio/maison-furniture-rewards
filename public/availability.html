@@ -128,11 +128,12 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .calendar-popup{
   position:absolute;top:calc(100% + 10px);left:50%;
   transform:translateX(-50%) translateY(-8px) scale(.98);
-  background:rgba(20,26,21,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:var(--bg-card);
   border:1px solid var(--border);border-radius:var(--radius-lg);
   box-shadow:0 24px 64px rgba(0,0,0,.5);
   z-index:500;opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .2s,visibility .2s,transform .2s;overflow:hidden;
+  will-change:transform,opacity;backface-visibility:hidden;
 }
 .calendar-popup.open{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
 .calendar-mobile-header{display:none}
@@ -164,6 +165,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   position:relative;z-index:1;width:36px;height:36px;
   display:flex;align-items:center;justify-content:center;
   border-radius:50%;transition:background .15s,color .15s;
+  transform:translateZ(0);
 }
 .calendar-day:not(.disabled):not(.empty):hover .calendar-day-num{background:rgba(242,237,225,.06)}
 .calendar-day.today .calendar-day-num::after{
@@ -173,9 +175,14 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .calendar-day.range-start .calendar-day-num,
 .calendar-day.range-end .calendar-day-num{background:var(--accent);color:var(--accent-ink);font-weight:700}
 .calendar-day.in-range{background:var(--accent-pale)}
-.calendar-day.range-start{background:linear-gradient(90deg,transparent 50%,var(--accent-pale) 50%)}
-.calendar-day.range-end{background:linear-gradient(90deg,var(--accent-pale) 50%,transparent 50%)}
-.calendar-day.range-start.range-end{background:transparent}
+.calendar-day.range-start::before,
+.calendar-day.range-end::before{
+  content:'';position:absolute;top:0;bottom:0;width:50%;
+  background:var(--accent-pale);z-index:0;
+}
+.calendar-day.range-start::before{right:0}
+.calendar-day.range-end::before{left:0}
+.calendar-day.range-start.range-end::before{display:none}
 .calendar-day.hover-range{background:rgba(201,152,69,.06)}
 .calendar-day.hover-end .calendar-day-num{background:rgba(201,152,69,.15)}
 .calendar-footer{
@@ -394,7 +401,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 [data-theme="light"] .mobile-menu a{color:var(--text)}
 [data-theme="light"] .search-row{background:rgba(26,22,16,.03)}
 [data-theme="light"] .date-input:hover{background:rgba(26,22,16,.03)}
-[data-theme="light"] .calendar-popup{background:rgba(255,255,255,.98);box-shadow:0 24px 64px rgba(26,22,16,.15)}
+[data-theme="light"] .calendar-popup{background:var(--bg-card);box-shadow:0 24px 64px rgba(26,22,16,.15)}
 [data-theme="light"] .calendar-nav-btn:hover:not(:disabled){background:rgba(26,22,16,.06)}
 [data-theme="light"] .calendar-day:not(.disabled):not(.empty):hover .calendar-day-num{background:rgba(26,22,16,.06)}
 [data-theme="light"] .avail-prop-back{background:rgba(26,22,16,.04);border-color:rgba(26,22,16,.08)}
@@ -569,6 +576,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   function formatTime(iso) { var d=new Date(iso),h=d.getHours(),m=d.getMinutes(),ap=h>=12?'PM':'AM'; h=h%12||12; return h+':'+(m<10?'0':'')+m+' '+ap; }
   function skeleton(n) { var h=''; for(var i=0;i<(n||3);i++) h+='<div class="avail-skeleton"><div class="avail-skel-photo"></div><div class="avail-skel-lines"><div class="avail-skel-line"></div><div class="avail-skel-line"></div><div class="avail-skel-line"></div></div></div>'; return h; }
   function isMobile() { return window.innerWidth<=600; }
+  // Real mouse hover only — on touch devices `mouseenter` fires synthetically at tap time,
+  // right before the click handler runs, causing the hover-preview classes (with their CSS
+  // transition) to flash on then immediately get replaced by renderCalendar()'s rebuild —
+  // a mid-transition repaint race that shows as a torn/split-color day circle on tap.
+  var supportsHoverPreview = !!(window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches);
 
   // ── Calendar state ──
   var cal = { checkIn:null, checkOut:null, selecting:'checkIn', viewDate:null, hoveredDate:null, isOpen:false };
@@ -646,9 +658,9 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     var days=calMonths.querySelectorAll('.calendar-day:not(.disabled):not(.empty)');
     for(var i=0;i<days.length;i++){(function(el){
       el.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();handleDayClick(el.dataset.date);});
-      el.addEventListener('mouseenter',function(){handleDayHover(el.dataset.date);});
+      if(supportsHoverPreview)el.addEventListener('mouseenter',function(){handleDayHover(el.dataset.date);});
     })(days[i]);}
-    calMonths.addEventListener('mouseleave',function(){cal.hoveredDate=null;updateDayClasses();updateCalFooter();});
+    if(supportsHoverPreview)calMonths.addEventListener('mouseleave',function(){cal.hoveredDate=null;updateDayClasses();updateCalFooter();});
     var navBtns=calMonths.querySelectorAll('.calendar-nav-btn');
     for(var j=0;j<navBtns.length;j++){(function(btn){
       btn.addEventListener('click',function(e){
@@ -833,7 +845,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
         h += '<div class="avail-none">All properties are booked for today and tomorrow. Try searching custom dates above.</div>';
       }
     }
-    h += '<div class="refresh-ind"><svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span>Auto-refreshes every 5 min</span></div>';
+    h += '<div class="refresh-ind"><svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span>Auto-refreshes every 30 min</span></div>';
     results.innerHTML = h;
   }
 
@@ -845,7 +857,9 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     var ciLabel = formatDateLabel(checkIn), coLabel = formatDateLabel(checkOut);
     var h = '<div class="results-header"><div><div class="results-title">'+ciLabel+' — '+coLabel+'</div><div class="results-subtitle">'+nights+' night'+(nights>1?'s':'')+'</div></div><button class="results-back" id="resultsBack" title="Back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button></div>';
     if (isDegraded) {
-      h += '<div class="avail-degraded-banner"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>'+(apiData.notice || 'Live availability is temporarily refreshing. Tap any property to check exact availability.')+'</p></div>';
+      var rangeBannerMsg=apiData.notice?apiData.notice:'Live availability is temporarily refreshing. Tap any property to check exact availability.';
+      if(apiData.reason==='rate_limited')rangeBannerMsg='We\'re experiencing high demand. Data shown may be slightly outdated. Tap any property to check live availability.';
+      h += '<div class="avail-degraded-banner"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>'+rangeBannerMsg+'</p></div>';
     }
     var withAlts = properties.filter(function(p) { return !p.available && p.alternativeDates && p.alternativeDates.length; });
     if (avail.length === 0 && withAlts.length === 0) {
