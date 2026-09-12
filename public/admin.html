@@ -473,6 +473,11 @@ textarea{resize:vertical}
 .maint-urgency.medium{background:rgba(251,191,36,.12);color:#fbbf24}
 .maint-urgency.high{background:rgba(249,115,22,.12);color:#f97316}
 .maint-urgency.emergency{background:rgba(248,113,113,.15);color:#f87171}
+.maint-badge.reviewing{background:rgba(251,191,36,.15);color:#fbbf24}
+.maint-badge.interviewing{background:rgba(139,92,246,.15);color:#a78bfa}
+.maint-badge.offered{background:rgba(52,211,153,.15);color:#34d399}
+.maint-badge.rejected{background:rgba(248,113,113,.15);color:#f87171}
+.maint-badge.hired{background:rgba(34,197,94,.18);color:#22c55e}
 .maint-card-meta{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;color:var(--text-2)}
 .maint-card-meta span{display:flex;align-items:center;gap:.3rem}
 .maint-detail-header{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem}
@@ -588,6 +593,11 @@ textarea{resize:vertical}
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         Maintenance
         <span class="nav-badge" id="navMaintBadge" style="display:none">0</span>
+      </a>
+      <a href="#" class="nav-link" data-section="careers">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-4V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v3a2 2 0 0 0 1.4 1.91l7 2.1a2 2 0 0 0 1.2 0l7-2.1A2 2 0 0 0 20 12V9a2 2 0 0 0-2-2z"/><path d="M2 13v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6"/><path d="M10 5h4v2h-4z"/></svg>
+        Careers
+        <span class="nav-badge" id="navCareersBadge" style="display:none">0</span>
       </a>
       <a href="#" class="nav-link" data-section="settings">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -944,6 +954,31 @@ textarea{resize:vertical}
       <div id="maintDetail" style="display:none">
         <button class="btn btn-secondary" onclick="backToMaintList()" style="margin-bottom:1rem">&larr; All Requests</button>
         <div id="maintDetailContent"></div>
+      </div>
+    </div>
+
+    <!-- CAREERS -->
+    <div class="section" id="sec-careers">
+      <div id="careersList">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.75rem">
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="careersFilters">
+            <select id="careersStatusFilter" style="padding:.45rem .8rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.82rem;font-family:var(--font)">
+              <option value="">All Statuses</option>
+              <option value="new">New</option>
+              <option value="reviewing">Reviewing</option>
+              <option value="interviewing">Interviewing</option>
+              <option value="offered">Offered</option>
+              <option value="rejected">Rejected</option>
+              <option value="hired">Hired</option>
+            </select>
+          </div>
+          <span style="font-size:.82rem;color:var(--text-2)" id="careersCount"></span>
+        </div>
+        <div id="careersCards"></div>
+      </div>
+      <div id="careersDetail" style="display:none">
+        <button class="btn btn-secondary" onclick="backToCareersList()" style="margin-bottom:1rem">&larr; All Applications</button>
+        <div id="careersDetailContent"></div>
       </div>
     </div>
 
@@ -1433,6 +1468,7 @@ const sectionMeta = {
   'pm-inquiries': { title: 'PM Inquiries', subtitle: 'Property management inquiry submissions' },
   'guest-messages': { title: 'Guest Messages', subtitle: 'Messages from guests via the Trip Portal' },
   maintenance: { title: 'Maintenance', subtitle: 'Manage guest maintenance requests and work orders' },
+  careers: { title: 'Careers', subtitle: 'Review job applications and resumes' },
   settings: { title: 'Settings', subtitle: 'System configuration and preferences' }
 };
 
@@ -1475,6 +1511,7 @@ function loadSectionData(section) {
     case 'pm-inquiries': loadPmInquiries(); break;
     case 'guest-messages': loadGuestMessages(); break;
     case 'maintenance': loadMaintenance(); break;
+    case 'careers': loadCareers(); break;
     case 'settings': loadSettings(); break;
   }
 }
@@ -2959,6 +2996,154 @@ function openMaintLightbox(src) {
 function escH(s) {
   if (!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Careers ──
+let careerApplications = [];
+let currentCareerId = null;
+
+async function loadCareers() {
+  try {
+    const resp = await fetch('/api/admin/careers', { credentials: 'same-origin' });
+    const data = await resp.json();
+    careerApplications = data.applications || [];
+    renderCareersList();
+    const newCount = careerApplications.filter(a => a.status === 'new').length;
+    const badge = $('navCareersBadge');
+    if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; }
+    else { badge.style.display = 'none'; }
+  } catch (err) {
+    $('careersCards').innerHTML = '<p style="color:var(--text-2);text-align:center;padding:2rem">Failed to load applications</p>';
+  }
+}
+
+function renderCareersList() {
+  const statusFilter = $('careersStatusFilter').value;
+  let filtered = careerApplications;
+  if (statusFilter) filtered = filtered.filter(a => a.status === statusFilter);
+  $('careersCount').textContent = filtered.length + ' application' + (filtered.length !== 1 ? 's' : '');
+
+  const statusLabels = { new:'New', reviewing:'Reviewing', interviewing:'Interviewing', offered:'Offered', rejected:'Rejected', hired:'Hired' };
+
+  if (filtered.length === 0) {
+    $('careersCards').innerHTML = '<p style="color:var(--text-2);text-align:center;padding:2rem">No applications found</p>';
+    return;
+  }
+
+  $('careersCards').innerHTML = filtered.map(a => {
+    const date = new Date(a.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const statusLabel = statusLabels[a.status] || a.status;
+    return '<div class="maint-card" onclick="openCareerDetail(' + a.id + ')">' +
+      '<div class="maint-card-top">' +
+        '<span class="maint-card-title">#' + a.id + ' — ' + escH(a.full_name) + '</span>' +
+        '<span class="maint-badge ' + a.status + '">' + statusLabel + '</span>' +
+      '</div>' +
+      '<div class="maint-card-meta">' +
+        '<span>' + escH(a.email) + '</span>' +
+        '<span>' + date + '</span>' +
+        (a.resume_filename ? '<span>Resume attached</span>' : '<span style="color:var(--text-2)">No resume</span>') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sf = document.getElementById('careersStatusFilter');
+  if (sf) sf.addEventListener('change', renderCareersList);
+});
+
+async function openCareerDetail(id) {
+  currentCareerId = id;
+  $('careersList').style.display = 'none';
+  $('careersDetail').style.display = 'block';
+  try {
+    const resp = await fetch('/api/admin/careers/' + id, { credentials: 'same-origin' });
+    const data = await resp.json();
+    renderCareerDetail(data.application);
+  } catch (err) {
+    $('careersDetailContent').innerHTML = '<p style="color:var(--error)">Failed to load application</p>';
+  }
+}
+
+function backToCareersList() {
+  $('careersDetail').style.display = 'none';
+  $('careersList').style.display = 'block';
+  currentCareerId = null;
+  loadCareers();
+}
+
+function renderCareerDetail(a) {
+  const statusLabels = { new:'New', reviewing:'Reviewing', interviewing:'Interviewing', offered:'Offered', rejected:'Rejected', hired:'Hired' };
+  const created = new Date(a.created_at).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+
+  let html = '<div class="maint-detail-header">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">' +
+      '<h3 style="font-size:1.15rem;font-weight:600">Application #' + a.id + '</h3>' +
+      '<select id="careerStatusSelect" onchange="updateCareerStatus()" style="padding:.35rem .7rem;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.82rem;font-family:var(--font)">' +
+        ['new','reviewing','interviewing','offered','rejected','hired'].map(s =>
+          '<option value="' + s + '"' + (s === a.status ? ' selected' : '') + '>' + (statusLabels[s] || s) + '</option>'
+        ).join('') +
+      '</select>' +
+    '</div>' +
+    '<div class="maint-detail-grid">' +
+      '<div class="maint-detail-field"><label>Name</label><p>' + escH(a.full_name) + '</p></div>' +
+      '<div class="maint-detail-field"><label>Position</label><p>' + escH(a.position) + '</p></div>' +
+      '<div class="maint-detail-field"><label>Email</label><p><a href="mailto:' + escH(a.email) + '">' + escH(a.email) + '</a></p></div>' +
+      '<div class="maint-detail-field"><label>Phone</label><p>' + (a.phone ? escH(a.phone) : '<span style="color:var(--text-2)">Not provided</span>') + '</p></div>' +
+      '<div class="maint-detail-field"><label>Portfolio</label><p>' + (a.portfolio_url ? '<a href="' + escH(a.portfolio_url) + '" target="_blank" rel="noopener">' + escH(a.portfolio_url) + '</a>' : '<span style="color:var(--text-2)">Not provided</span>') + '</p></div>' +
+      '<div class="maint-detail-field"><label>Submitted</label><p>' + created + '</p></div>' +
+    '</div>' +
+    '<div style="margin-top:1rem"><label style="font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.05em;font-weight:500">Introduction</label>' +
+      '<p style="margin-top:.3rem;font-size:.92rem;line-height:1.6;white-space:pre-wrap">' + escH(a.intro) + '</p>' +
+    '</div>' +
+  '</div>';
+
+  if (a.resume_filename) {
+    html += '<div style="margin-bottom:1rem"><a class="btn" href="/api/admin/careers/resume/' + encodeURIComponent(a.resume_filename) + '" target="_blank" rel="noopener">' +
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem;vertical-align:-3px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+      'View Resume (' + escH(a.resume_original_name || 'download') + ')</a></div>';
+  } else {
+    html += '<p style="color:var(--text-2);font-size:.88rem;margin-bottom:1rem">No resume was uploaded with this application.</p>';
+  }
+
+  html += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem">' +
+    '<h4 style="font-size:.88rem;font-weight:500;margin-bottom:.75rem">Internal Notes</h4>' +
+    '<textarea id="careerNotes" rows="3" placeholder="Notes visible only to the team..." style="width:100%;padding:.7rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:.88rem;resize:vertical;margin-bottom:.75rem">' + escH(a.notes || '') + '</textarea>' +
+    '<div style="display:flex;justify-content:flex-end">' +
+      '<button class="btn" onclick="saveCareerNotes()">Save Notes</button>' +
+    '</div>' +
+  '</div>';
+
+  $('careersDetailContent').innerHTML = html;
+}
+
+async function updateCareerStatus() {
+  const status = document.getElementById('careerStatusSelect').value;
+  try {
+    await fetch('/api/admin/careers/' + currentCareerId, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ status })
+    });
+  } catch (err) {
+    alert('Failed to update status');
+  }
+}
+
+async function saveCareerNotes() {
+  const notes = document.getElementById('careerNotes').value;
+  try {
+    const resp = await fetch('/api/admin/careers/' + currentCareerId, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ notes })
+    });
+    if (!resp.ok) alert('Failed to save notes');
+  } catch (err) {
+    alert('Network error');
+  }
 }
 
 checkAuth();
