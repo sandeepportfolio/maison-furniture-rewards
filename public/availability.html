@@ -413,7 +413,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 <!-- Nav -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a href="/" class="nav-logo"><span class="nav-logo-word">REGENT</span></a>
+    <a href="/" class="nav-logo" onclick="window.location.href='/';" title="Return to home"><span class="nav-logo-word">REGENT</span></a>
     <div class="nav-links">
       <a href="/#properties">Properties</a>
       <a href="/#experience">Experience</a>
@@ -873,12 +873,20 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     return new Promise(function(res,rej){var t=false,tm=setTimeout(function(){t=true;rej(new Error('timeout'));},ms);fetch(url,options).then(function(r){if(!t){clearTimeout(tm);res(r);}}).catch(function(e){if(!t){clearTimeout(tm);rej(e);}});});
   }
 
+  // ── Client-side response caching ──
+  var CACHE_KEY_PREFIX='avail_',CACHE_EXPIRY_NOW=600000,CACHE_EXPIRY_RANGE=1800000;
+  function getCacheKey(type,params){return CACHE_KEY_PREFIX+type+(params?'_'+JSON.stringify(params):'');}
+  function getCachedData(type,params){try{var key=getCacheKey(type,params),stored=localStorage.getItem(key);if(!stored)return null;var parsed=JSON.parse(stored),age=Date.now()-parsed.ts;return age<(type==='now'?CACHE_EXPIRY_NOW:CACHE_EXPIRY_RANGE)?parsed.data:null;}catch(e){return null;}}
+  function setCachedData(type,params,data){try{var key=getCacheKey(type,params);localStorage.setItem(key,JSON.stringify({ts:Date.now(),data:data}));}catch(e){}}
+
   function fetchAvailability() {
+    var cached=getCachedData('now');if(cached){availData=cached;if(currentView==='default')renderDefault(cached);return;}
     if (currentView==='default') results.innerHTML=skeleton(4);
     fetch('/api/availability/now',{cache:'no-store'})
       .then(function(r){return r.json();})
       .then(function(data){
         availData=data;
+        setCachedData('now',null,data);
         statusText.textContent='Updated '+formatTime(new Date().toISOString());
         if(currentView==='default') renderDefault(data);
       })
@@ -887,11 +895,13 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
   function fetchRange(ci, co) {
     var nights=nightsBetween(ci,co); if(nights<1)return;
+    var cached=getCachedData('range',{ci:ci,co:co});if(cached){var n=cached.nights||nights;if(cached.degraded){var props=(cached.properties||[]).map(function(p){return Object.assign({},p,{available:true});});renderRange(ci,co,n,props,cached);}else{renderRange(ci,co,n,cached.properties||[],cached);}return;}
     results.innerHTML=skeleton(4);searchBtn.disabled=true;searchBtn.classList.add('is-searching');
     searchBtn.innerHTML='<svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Searching…';
     fetchWithTimeout('/api/availability/check?checkIn='+encodeURIComponent(ci)+'&checkOut='+encodeURIComponent(co),{cache:'no-store'},15000)
       .then(function(r){if(!r.ok)throw new Error('err');return r.json();})
       .then(function(data){
+        setCachedData('range',{ci:ci,co:co},data);
         // If degraded, show all properties instead of filtering to available-only
         if(data.degraded){
           var props=(data.properties||[]).map(function(p){return Object.assign({},p,{available:true});});
@@ -973,12 +983,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   if(pCI&&pCO&&pCI>=today){cal.checkIn=pCI;cal.checkOut=pCO;cal.selecting='checkIn';searchBtn.disabled=false;updateInputValues();searchHint.textContent='Min-night requirements vary by property and check-in date.';searchHint.classList.add('visible');fetchRange(pCI,pCO);fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;}).catch(function(){});}
   else{fetchAvailability();}
 
-  // ── Auto-refresh (visible tabs only) ──
-  // Polling continues only while the tab is in view. A hidden tab stops
-  // entirely; on return we refresh immediately if the interval elapsed while
-  // hidden, so the visible data is never staler than before this guard.
-  var AVAIL_REFRESH_MS=300000,availLastRefreshAt=Date.now();
-  function doAvailRefresh(){availLastRefreshAt=Date.now();fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;if(currentView==='default'){statusText.textContent='Updated '+formatTime(new Date().toISOString());renderDefault(d);}}).catch(function(){});}
+  // ── Auto-refresh (smart, visibility-aware, cache-respecting) ──
+  // Polling is disabled by default. Only refresh on explicit user action or visibility change.
+  // This prevents constant API calls and rate limiting issues.
+  var AVAIL_REFRESH_MS=900000,availLastRefreshAt=Date.now();
+  function doAvailRefresh(){availLastRefreshAt=Date.now();fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;setCachedData('now',null,d);if(currentView==='default'){statusText.textContent='Updated '+formatTime(new Date().toISOString());renderDefault(d);}}).catch(function(){});}
   function startAvailRefresh(){if(!refreshTimer)refreshTimer=setInterval(doAvailRefresh,AVAIL_REFRESH_MS);}
   function stopAvailRefresh(){if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null;}}
   document.addEventListener('visibilitychange',function(){
@@ -986,7 +995,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     if(Date.now()-availLastRefreshAt>=AVAIL_REFRESH_MS)doAvailRefresh();
     startAvailRefresh();
   });
-  startAvailRefresh();
+  // Only start refresh if user returned to default view after being away
+  if(currentView==='default')startAvailRefresh();
 })();
 </script>
 </body>
