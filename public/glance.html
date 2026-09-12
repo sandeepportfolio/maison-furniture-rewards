@@ -1524,6 +1524,14 @@ function getBedrooms() {
     'stunning-lake': [
       { label: 'BEDROOM', type: '1 queen bed', note: 'LAKE VIEW · 50" TV' },
       { label: 'LIVING ROOM', type: 'Queen air mattress + L-shaped couch', note: 'SLEEPS 1–2 ON COUCH' }
+    ],
+    'regent-crown': [
+      { label: 'BEDROOM 1', type: '1 queen bed', note: 'EN-SUITE BATH · TV' },
+      { label: 'BEDROOM 2', type: '1 king bed', note: 'EN-SUITE BATH · TV' },
+      { label: 'BEDROOM 3', type: '1 king bed', note: 'EN-SUITE BATH · TV' },
+      { label: 'BEDROOM 4', type: '1 king bed', note: 'EN-SUITE BATH · TV' },
+      { label: 'LIVING ROOM', type: 'Sleeper sofa', note: 'NEXT TO GAME TABLE' },
+      { label: 'GAME ROOM', type: 'Queen air mattress', note: 'SLEEPS UP TO 11 TOTAL' }
     ]
   };
   return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
@@ -1593,6 +1601,15 @@ var FEATURED_AMENITIES = {
     { name: 'Waterfront pool', detail: 'RESORT-STYLE' },
     { name: '2-Story gym', detail: '24/7' },
     { name: '27" Monitor workspace', detail: 'DEDICATED' }
+  ],
+  'regent-crown': [
+    { name: '6-Person hot tub', detail: 'FENCED BACKYARD' },
+    { name: '10-in-1 game table', detail: 'GAME ROOM' },
+    { name: '1 Gbps Google Fiber', detail: 'WHOLE HOME' },
+    { name: 'Private gated entrance', detail: 'TWO-CAR DRIVEWAY' },
+    { name: 'TV in every bedroom', detail: 'ALL 4 EN-SUITE' },
+    { name: 'BBQ grill & patio', detail: 'OUTDOOR' },
+    { name: 'Dedicated workspace', detail: 'LIVING ROOM' }
   ]
 };
 

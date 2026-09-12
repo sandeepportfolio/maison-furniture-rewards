@@ -4199,8 +4199,8 @@ const PROPERTY_DATA = {
     city: 'Austin',
     state: 'Texas',
     hostingId: '1226412680139915514',
-    guests: 11, beds: 5, baths: 4,
-    bedConfig: [{ label: 'King Bed', quantity: 3 }, { label: 'Queen Bed', quantity: 1 }, { label: 'Sleeper Sofa', quantity: 1 }],
+    guests: 11, beds: 4, baths: 4,
+    bedConfig: [{ label: 'King Bed', quantity: 3 }, { label: 'Queen Bed', quantity: 1 }, { label: 'Sleeper Sofa', quantity: 1 }, { label: 'Queen Air Mattress', quantity: 1 }],
     rating: 4.96, reviews: 51,
     lat: 30.2782284, lng: -97.7206557,
     isVilla: true,
@@ -4374,7 +4374,7 @@ function renderPropertyPage(slug, res) {
     .replace(/\{\{BEDS_SUFFIX\}\}/g, prop.beds > 1 ? 's' : '')
     .replace(/\{\{BATHS\}\}/g, String(prop.baths))
     .replace(/\{\{BATHS_SUFFIX\}\}/g, prop.baths > 1 ? 's' : '')
-    .replace(/\{\{AIR_MATTRESS_PILL\}\}/g, (slug === 'regent-skyline' || slug === 'lake-view' || slug === 'executive')
+    .replace(/\{\{AIR_MATTRESS_PILL\}\}/g, (slug === 'regent-skyline' || slug === 'lake-view' || slug === 'executive' || slug === 'regent-crown')
       ? '<div class="stat-pill air-mattress"><svg viewBox="0 0 24 24"><path d="M2 18v-1a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v1"/><path d="M6 13V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9"/><path d="M2 18h20"/><path d="M4 21h16"/></svg><span class="stat-text">+ Queen Air Mattress</span></div>'
       : '')
     .replace(/\{\{HOSTING_ID\}\}/g, prop.hostingId)
