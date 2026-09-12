@@ -801,9 +801,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     var isDegraded = data.degraded === true;
     var h = '';
 
-    // Show degraded banner if API is rate-limited
+    // Show degraded banner if API is rate-limited, but soften message if showing cached data
     if (isDegraded) {
-      h += '<div class="avail-degraded-banner"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>'+(data.notice || 'Live availability is temporarily refreshing. Prices shown are starting rates. Tap any property to check exact availability.')+'</p></div>';
+      var bannerMsg=data.notice?data.notice:'Live availability is temporarily refreshing. Prices shown are starting rates. Tap any property to check exact availability.';
+      if(data.reason==='rate_limited')bannerMsg='We\'re experiencing high demand. Data shown may be slightly outdated. Tap any property to check live availability.';
+      h += '<div class="avail-degraded-banner"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>'+bannerMsg+'</p></div>';
     }
 
     if (isDegraded) {
@@ -989,7 +991,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   // ── Auto-refresh (smart, visibility-aware, cache-respecting) ──
   // Polling is disabled by default. Only refresh on explicit user action or visibility change.
   // This prevents constant API calls and rate limiting issues.
-  var AVAIL_REFRESH_MS=900000,availLastRefreshAt=Date.now();
+  var AVAIL_REFRESH_MS=1800000,availLastRefreshAt=Date.now();
   function doAvailRefresh(){availLastRefreshAt=Date.now();fetch('/api/availability/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){availData=d;setCachedData('now',null,d);if(currentView==='default'){statusText.textContent='Updated '+formatTime(new Date().toISOString());renderDefault(d);}}).catch(function(){});}
   function startAvailRefresh(){if(!refreshTimer)refreshTimer=setInterval(doAvailRefresh,AVAIL_REFRESH_MS);}
   function stopAvailRefresh(){if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null;}}
