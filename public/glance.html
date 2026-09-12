@@ -1143,7 +1143,14 @@ var urlPhoto = new URLSearchParams(window.location.search).get('photo');
 if (urlPhoto !== null) HERO_INDEX = parseInt(urlPhoto) || 0;
 var CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/';
 
-function photoUrl(filename, w) { return CDN + filename + '?im_w=' + (w || 720); }
+function photoUrl(filename, w) {
+  if (typeof filename === 'string' && /^https?:\/\//.test(filename)) {
+    return filename.includes('/image/upload/')
+      ? filename.replace('/image/upload/', '/image/upload/w_' + (w || 720) + ',q_auto,f_auto/')
+      : filename;
+  }
+  return CDN + filename + '?im_w=' + (w || 720);
+}
 
 // ── Photo Labels ──
 var PHOTO_LABELS = {};

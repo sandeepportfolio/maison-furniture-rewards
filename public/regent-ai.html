@@ -314,6 +314,11 @@ ul{list-style:none}
 @media(hover:hover) and (pointer:fine){.form-submit:hover{background:linear-gradient(180deg,var(--gold-bright),var(--gold-bright) 58%,var(--gold));box-shadow:0 22px 54px rgba(var(--gold-rgb),.36),inset 0 1px 0 rgba(255,255,255,.34)}}
 /* Light theme gold is dark, so keep the ramp at or above the flat button colour */
 [data-theme="light"] .form-submit{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border-color:rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(var(--gold-rgb),.24),inset 0 1px 0 rgba(255,255,255,.18)}
+/* Light mode darkens --gold for contrast against a cream page, but these
+   buttons kept the dark-on-gold text color meant for the brighter dark-mode
+   gold — white reads far better against the darker light-mode gold. */
+[data-theme="light"] .btn-gold,[data-theme="light"] .nav-cta,[data-theme="light"] .mobile-menu .mm-cta,
+[data-theme="light"] .price-badge,[data-theme="light"] .form-submit{color:#FFFFFF!important}
 [data-theme="light"] .form-submit::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent)}
 .form-submit .arw{display:inline-block;transition:transform .3s var(--ease)}
 .form-submit::after{content:'';position:absolute;top:0;left:-60%;width:42%;height:100%;opacity:0;pointer-events:none;

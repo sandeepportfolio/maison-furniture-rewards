@@ -2520,6 +2520,22 @@ ul{list-style:none}
 [data-theme="light"] .mobile-menu-book{box-shadow:0 14px 40px rgba(184,137,46,.28)}
 
 /* Footer / contact already use var(--bg-dark), var(--text-inv*) — re-themes automatically. */
+
+/* Fixed-dark glass surfaces (property card panel, map overlay, legal modal,
+   event chips) never flip — but their text uses tokens that DO flip, going
+   invisible on a light background. Pin those surfaces' text tokens back to
+   their dark-mode values so text stays legible against the surface it's
+   actually drawn on. */
+[data-theme="light"] .prop-info,[data-theme="light"] .obs-chip,
+[data-theme="light"] .map-zoom-btn,[data-theme="light"] .map-price-pin,[data-theme="light"] .map-bottom-sheet,
+[data-theme="light"] .map-prop-strip-item,[data-theme="light"] .event-date-chip,[data-theme="light"] .legal-modal{
+  --text:#F2EDE1;--text-muted:rgba(242,237,225,.65);--text-inv:#F2EDE1;--text-inv-muted:rgba(242,237,225,.6)}
+[data-theme="light"] .coll-filter-btn{color:rgba(26,22,16,.45)}
+[data-theme="light"] .coll-filter-btn:hover{color:rgba(26,22,16,.75)}
+[data-theme="light"] .coll-filter-wrap{border-bottom-color:rgba(26,22,16,.1)}
+[data-theme="light"] .coll-header .coll-sub,[data-theme="light"] .coll-count-label{color:rgba(26,22,16,.5)}
+[data-theme="light"] .v2-kicker .v2-dim{color:rgba(26,22,16,.6)}
+[data-theme="light"] .cf-group input::placeholder,[data-theme="light"] .cf-group textarea::placeholder{color:rgba(26,22,16,.35)}
 </style>
 </head>
 <body>
@@ -2545,6 +2561,7 @@ ul{list-style:none}
       <a href="/management">Management</a>
       <a href="/reward">Rewards</a>
       <a href="/regent-ai">Regent AI</a>
+      <a href="/careers">Careers</a>
       <a href="#contact">Contact</a>
       <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
         <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -2565,6 +2582,7 @@ ul{list-style:none}
   <a href="/management" onclick="closeMobile()">Management</a>
   <a href="/reward" onclick="closeMobile()">Rewards</a>
   <a href="/regent-ai" onclick="closeMobile()">Regent AI</a>
+  <a href="/careers" onclick="closeMobile()">Careers</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
     <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -3030,6 +3048,7 @@ ul{list-style:none}
             <option value="Regent Waterfront">Regent Waterfront</option>
             <option value="Regent Executive">Regent Executive</option>
             <option value="Regent Lakefront">Regent Lakefront</option>
+            <option value="Regent Crown">Regent Crown</option>
           </select>
         </div>
         <div class="cf-group">
@@ -3197,6 +3216,7 @@ ul{list-style:none}
       <a href="#story">Our Story</a>
       <a href="#rewards" onclick="event.preventDefault();showRewards()">Rewards</a>
       <a href="#contact">Contact</a>
+      <a href="/careers">Careers</a>
       <a href="/availability">Book Now</a>
     </div>
     <div class="footer-divider"></div>
@@ -3263,6 +3283,7 @@ ul{list-style:none}
           <option value="lake-view">Regent Waterfront</option>
           <option value="executive">Regent Executive</option>
           <option value="stunning-lake">Regent Lakefront</option>
+          <option value="regent-crown">Regent Crown</option>
         </select>
       </div>
       <div class="form-group"><label>MESSAGE</label><textarea id="cMessage" placeholder="Tell us about your trip or ask any questions..."></textarea></div>
@@ -3671,7 +3692,14 @@ ul{list-style:none}
    ═══ PROPERTY DATA — All photos synced from Airbnb (75 Regent Villa, 59 Regent Skyline, 29 Cozy Designer, 33 Designer Game, 28 Lake View, 34 Executive, 28 Stunning Lake) ═══
    ═══════════════════════════════════════════════════════════════ */
 const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
-const imgUrl = (hid, uuid, w) => `${CDN}${hid}/original/${uuid}?im_w=${w||720}`;
+const imgUrl = (hid, uuid, w) => {
+  if (typeof uuid === 'string' && /^https?:\/\//.test(uuid)) {
+    return uuid.includes('/image/upload/')
+      ? uuid.replace('/image/upload/', `/image/upload/w_${w||720},q_auto,f_auto/`)
+      : uuid;
+  }
+  return `${CDN}${hid}/original/${uuid}?im_w=${w||720}`;
+};
 const imgUrlHD = (hid, uuid) => imgUrl(hid, uuid, 1200);
 const imgUrlFull = (hid, uuid) => imgUrl(hid, uuid, 1440);
 
@@ -3685,6 +3713,7 @@ const GUESTY_IDS = {
   'lake-view':      '6a29dcfa14fca300148799c2',
   'executive':      '6a29dc944052f30019465228',
   'stunning-lake':  '6a29dc8f5f85640014dfe380',
+  'regent-crown':   '6aa1b54d75e76f0072ea85f9',
 };
 
 const PROPERTIES = [
@@ -4147,6 +4176,97 @@ const PROPERTIES = [
         '9cd45fb9-89b9-4f2a-9295-d7dc4ee73625.png',
       'ded91f49-7c81-4f69-b23f-3c1a2c8db944.jpeg'
       ]
+  },
+  {
+    name: 'Regent Crown',
+    slug: 'regent-crown',
+    category: 'villa',
+    city: 'Austin',
+    state: 'Texas',
+    hostingId: '1226412680139915514',
+    guests: 11, beds: 5, baths: 4,
+    bedConfig: [{ label: 'King Bed', quantity: 3 }, { label: 'Queen Bed', quantity: 1 }, { label: 'Sleeper Sofa', quantity: 1 }, { label: 'Air Mattress (Game Room)', quantity: 1 }],
+    rating: 4.96, reviews: 51,
+    lat: 30.2782284, lng: -97.7206557,
+    amenities: [
+      { label: 'Hot Tub', premium: true },
+      { label: '10-in-1 Game Table', premium: true },
+      { label: '1 Gbps Google Fiber', premium: true },
+      { label: 'Gated Entrance', premium: true },
+      { label: 'TV in Every Bedroom', premium: false },
+      { label: 'BBQ Grill', premium: false }
+    ],
+    description: 'Welcome to your Central East Austin retreat! This spacious 4-bedroom, 4-bathroom home comfortably sleeps up to 11 guests, blending modern luxury with cozy comfort. Just 2 miles from Downtown Austin, 2.3 miles from Rainey Street, and 1.5 miles from East 6th Street\'s nightlife, it\'s the ideal home base for family trips, group getaways, or extended stays. Enjoy a 6-person hot tub in the fenced backyard, a 10-in-1 game table, TVs in every ensuite bedroom, a fully equipped kitchen with seating for 8, a private balcony, dedicated workspace, and 1 Gbps Google Fiber Wi-Fi throughout.',
+    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel'],'Bedroom & Laundry':['Bed linens','Clothing storage','Crib','Dryer','Essentials','Hangers','Iron','Pack ’n Play/travel crib','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating'],Entertainment:['Board games','Ping pong table','Pool table','TV'],'Kitchen & Dining':['Baking sheet','Blender','Coffee','Coffee maker','Cookware','Dining table','Dishes and silverware','Dishwasher','Kettle','Kitchen','Microwave','Oven','Refrigerator','Stove','Toaster','Wine glasses'],'Work & Tech':['Laptop friendly workspace','Wireless Internet'],Outdoor:['BBQ grill','Barbeque utensils','Garden or backyard','Hot tub','Outdoor seating (furniture)','Patio or balcony'],'Parking & Facilities':['Free parking on street','Garage','Private entrance'],Safety:['Carbon monoxide detector','Cleaning products','Fire extinguisher','First aid kit','Smoke detector'],'Home Highlights':['Long term stays allowed']},
+    photos: [
+      'https://assets.guesty.com/image/upload/v1789014495/production/6a244b0b5428397ca54b4ebf/zomvnsuafnmiwauykxb5.jpg',
+      'https://assets.guesty.com/image/upload/v1789012862/production/6a244b0b5428397ca54b4ebf/jhafejunu3hriiskgrsy.jpg',
+      'https://assets.guesty.com/image/upload/v1789015191/production/6a244b0b5428397ca54b4ebf/xy59dcujpqpn5ncvnodg.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/45ed9385-43c0-49-xGFQA',
+      'https://assets.guesty.com/image/upload/v1789019466/production/6a244b0b5428397ca54b4ebf/rsgfubxunrvb9alinho8.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/a33801f8-0a62-4b-SIFod',
+      'https://assets.guesty.com/image/upload/v1789016270/production/6a244b0b5428397ca54b4ebf/uxl6jvbmvba59p4mzey0.jpg',
+      'https://assets.guesty.com/image/upload/v1788993075/production/6a244b0b5428397ca54b4ebf/p3hvqfxrhkuckmlehyhn.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/e9ba120a-c5c4-4f-mrsyV',
+      'https://assets.guesty.com/image/upload/v1789017894/production/6a244b0b5428397ca54b4ebf/tcvmaywi2vgjeiwuyxbe.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/8842eea4-509a-42-YDjC5',
+      'https://assets.guesty.com/image/upload/v1789005238/production/6a244b0b5428397ca54b4ebf/dmgmay62xuvjtq7dtpan.jpg',
+      'https://assets.guesty.com/image/upload/v1789018468/production/6a244b0b5428397ca54b4ebf/zk1caowqkczp5k90xyzu.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/524ec362-134e-44-gyQ_9',
+      'https://assets.guesty.com/image/upload/v1789236663/production/6a244b0b5428397ca54b4ebf/ijxmoetyjqdwcrvmuhzt.jpg',
+      'https://assets.guesty.com/image/upload/v1789018631/production/6a244b0b5428397ca54b4ebf/ptfej6egvfpjsp6i3jwx.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d3df49f9-4a36-48-Tv7Db',
+      'https://assets.guesty.com/image/upload/v1789014094/production/6a244b0b5428397ca54b4ebf/lrwgypnoiswffvsid853.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/cf03286a-d555-4a-v9QN2',
+      'https://assets.guesty.com/image/upload/v1789000700/production/6a244b0b5428397ca54b4ebf/q48ftmn0qkyyjipnvqpx.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/6e03e9a4-489c-41-tzWfA',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/4dcded55-acd5-4d-sVzRH',
+      'https://assets.guesty.com/image/upload/v1789236291/production/6a244b0b5428397ca54b4ebf/rwsfjzuvonklwcoxmuaz.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/f8b8a90f-b03a-4d-fyMF7',
+      'https://assets.guesty.com/image/upload/v1789014900/production/6a244b0b5428397ca54b4ebf/zukzcsmujgy2qask4rq7.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/18f87f57-1b5d-44-49xw8',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/3de33bf7-e10d-40-4sZj2',
+      'https://assets.guesty.com/image/upload/v1789017102/production/6a244b0b5428397ca54b4ebf/il8e5jjkbdkpcc3fvesf.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/c3267c3a-0ac7-40-5OZGr',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/cc789a46-1827-4a-5Yu6O',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/615700ca-152c-43-Y3Q_m',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d2501d51-7ada-45-Qq-Z2',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/4ede43fe-6141-41-OpYMJ',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/878b7e43-d62b-4f-c-FQ6',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/e760062b-99f9-46-3MTUy',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/14528500-5c7c-4c-KjI8h',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/abc6b14b-96a1-47-0n9ni',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/91a9d96a-5581-40-NNPlO',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/1d61f048-26a3-48-AQM_0',
+      'https://assets.guesty.com/image/upload/v1789016378/production/6a244b0b5428397ca54b4ebf/puhra6mbbu5hve21bcxg.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/fc0bc63b-0b6d-4f-w5A-_',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/25ef930a-f23b-47-dxJv6',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/bd73ff5c-4c1c-4c-i5y2Z',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/9fab2182-d044-42-ZDS4k',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/55c15803-be73-4d-gsl5R',
+      'https://assets.guesty.com/image/upload/v1789013702/production/6a244b0b5428397ca54b4ebf/aywq5bbrlpvfbalgoq5a.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/52d4f7f7-f112-49-j_Xnh',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/b512979c-dca9-48-wGcOC',
+      'https://assets.guesty.com/image/upload/v1788993153/production/6a244b0b5428397ca54b4ebf/iqqhuthaxqigj150jgpl.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/ec591cfa-9a4d-47-El8fr',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/1be58e38-e4e3-4c-E9dMT',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/df10c306-8ec4-4c-5QqXC',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/8ce6ef70-b4de-4b-NUNkE',
+      'https://assets.guesty.com/image/upload/v1789018558/production/6a244b0b5428397ca54b4ebf/majwnvgbovnhtqjo9nyg.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d88de9d1-7947-4c-XOrEX',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/a769a60c-560d-4e-SQjMl',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/ece96352-bfab-4a-EzFvP',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/7f24673c-f462-49-nzgzY',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/6a38ce59-bcd9-4d-GEBPo',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/c81d46e7-c98e-4e-taOU6',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/709ed397-3deb-48-XX57s',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/0eee6f8c-2476-45-2E4Ng',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/f3e4608e-5fcc-41-HiM7b',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/3009cd64-1025-40-mDasq',
+      'https://assets.guesty.com/image/upload/v1789019028/production/6a244b0b5428397ca54b4ebf/axinjex3cl06gjlwxw0f.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d2953759-7e3e-41-eAR2-',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/ef3dc798-00f1-4f-COaQJ'
+    ]
   }
 ];
 

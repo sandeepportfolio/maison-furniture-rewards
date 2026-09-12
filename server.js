@@ -29,7 +29,9 @@ const truvi = require('./guesty-truvi-provider');
 const app = express();
 const PORT = process.env.PORT || 3456;
 // Ensure directories
-['db', 'uploads', 'uploads/maintenance'].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
+// 'private/' is NOT under the /uploads static mount below — resumes contain PII
+// and must only ever be reachable through an authenticated admin route.
+['db', 'uploads', 'uploads/maintenance', 'private', 'private/resumes'].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
 
 // Database
 const DB_PATH = process.env.TRUVI_DB_PATH || './db/reviews.db';
@@ -315,6 +317,25 @@ db.exec(`
   )
 `);
 
+// -- Career application table --
+db.exec(`
+  CREATE TABLE IF NOT EXISTS career_applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    position TEXT DEFAULT 'Property Operations & Automation Manager',
+    portfolio_url TEXT,
+    intro TEXT NOT NULL,
+    resume_filename TEXT,
+    resume_original_name TEXT,
+    status TEXT DEFAULT 'new',
+    notes TEXT DEFAULT '',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
 // Multer
 const storage = multer.diskStorage({
   destination: './uploads/',
@@ -348,6 +369,27 @@ const maintenanceUpload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ok = ['.jpg','.jpeg','.png','.gif','.webp'].includes(
+      path.extname(file.originalname).toLowerCase()
+    );
+    cb(null, ok);
+  }
+});
+
+// Resumes go to ./private/resumes/ (NOT ./uploads/) — that tree is never
+// mounted as a static route, so a file only ever leaves the server through
+// the authenticated GET /api/admin/careers/resume/:filename route below.
+const resumeStorage = multer.diskStorage({
+  destination: './private/resumes/',
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `resume-${Date.now()}-${crypto.randomBytes(4).toString('hex')}${ext}`);
+  }
+});
+const resumeUpload = multer({
+  storage: resumeStorage,
+  limits: { fileSize: 8 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ok = ['.pdf','.doc','.docx'].includes(
       path.extname(file.originalname).toLowerCase()
     );
     cb(null, ok);
@@ -448,7 +490,8 @@ app.get('/sitemap.xml', (req, res) => {
     { loc: '/availability', priority: '0.9', changefreq: 'daily' },
     { loc: '/management', priority: '0.7', changefreq: 'monthly' },
     { loc: '/reward', priority: '0.6', changefreq: 'monthly' },
-    { loc: '/regent-ai', priority: '0.6', changefreq: 'monthly' }
+    { loc: '/regent-ai', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/careers', priority: '0.5', changefreq: 'monthly' }
   ];
   // Property URLs are listed at /property/<slug> because that is what the
   // glance pages declare as their canonical. A sitemap should only ever
@@ -731,7 +774,6 @@ app.get('/api/guesty/lowest-prices', async (req, res) => {
 // pins without a price, which is the correct degradation for a rate-limited
 // upstream (never invent a price).
 app.get('/api/map-data', async (req, res) => {
-  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
 
   let prices = {};
   try {
@@ -764,7 +806,7 @@ app.get('/api/map-data', async (req, res) => {
         price: nightly != null ? Math.round(nightly * 0.95) : null,
         listPrice: nightly,
         currency: (lp && lp.currency) || 'USD',
-        photo: p.photos && p.photos[0] ? `${CDN}${p.hostingId}/original/${p.photos[0]}?im_w=480` : null,
+        photo: p.photos && p.photos[0] ? photoUrl(p, p.photos[0], 480) : null,
       };
     });
 
@@ -783,7 +825,6 @@ app.get('/api/availability/now', async (req, res) => {
     dayAfterTomorrow.setUTCDate(dayAfterTomorrow.getUTCDate() + 2);
     const to = dayAfterTomorrow.toISOString().slice(0, 10);
 
-    const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
     const slugs = Object.keys(PROPERTY_DATA);
     const errors = [];
 
@@ -800,7 +841,7 @@ app.get('/api/availability/now', async (req, res) => {
           guests: prop.guests,
           beds: prop.beds,
           baths: prop.baths,
-          photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+          photo: photoUrl(prop, prop.photos[0], 480),
         };
 
         let days;
@@ -886,14 +927,13 @@ app.get('/api/availability/now', async (req, res) => {
       // "available tonight" without a verified calendar is worse than
       // admitting we can't check right now.
       console.log('No fresh cache — serving static property list with availability marked unknown');
-      const CDN2 = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
       const unknownDay = { available: false, availabilityUnknown: true, minNights: 1, price: null, currency: 'USD' };
       const staticProps = Object.keys(PROPERTY_DATA).map(slug => {
         const p = PROPERTY_DATA[slug];
         return {
           slug, name: p.name, city: p.city, category: p.category,
           guests: p.guests, beds: p.beds, baths: p.baths,
-          photo: `${CDN2}${p.hostingId}/original/${p.photos[0]}?im_w=480`,
+          photo: photoUrl(p, p.photos[0], 480),
           today: { ...unknownDay },
           tomorrow: { ...unknownDay },
           availabilityUnknown: true,
@@ -933,14 +973,13 @@ app.get('/api/availability/now', async (req, res) => {
     } catch (_) { /* fallthrough */ }
     // Absolute last resort — static PROPERTY_DATA with availability UNKNOWN,
     // never fabricated as available.
-    const CDN3 = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
     const unknownDay3 = { available: false, availabilityUnknown: true, minNights: 1, price: null, currency: 'USD' };
     const emergencyProps = Object.keys(PROPERTY_DATA).map(slug => {
       const p = PROPERTY_DATA[slug];
       return {
         slug, name: p.name, city: p.city, category: p.category,
         guests: p.guests, beds: p.beds, baths: p.baths,
-        photo: `${CDN3}${p.hostingId}/original/${p.photos[0]}?im_w=480`,
+        photo: photoUrl(p, p.photos[0], 480),
         today: { ...unknownDay3 },
         tomorrow: { ...unknownDay3 },
         availabilityUnknown: true,
@@ -1055,7 +1094,6 @@ app.get('/api/availability/check', async (req, res) => {
       return res.status(400).json({ error: 'Maximum 90 nights' });
     }
 
-    const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
     const slugs = Object.keys(PROPERTY_DATA);
     const errors = [];
 
@@ -1080,7 +1118,7 @@ app.get('/api/availability/check', async (req, res) => {
           guests: prop.guests,
           beds: prop.beds,
           baths: prop.baths,
-          photo: `${CDN}${prop.hostingId}/original/${prop.photos[0]}?im_w=480`,
+          photo: photoUrl(prop, prop.photos[0], 480),
         };
 
         let days;
@@ -2283,6 +2321,98 @@ function sendContactEmail({ name, email, phone, property, subject, message }) {
   });
 }
 
+/**
+ * Send a career-application notification email via Web3Forms. This is the
+ * durable copy of every application: uploads/ and db/ both live on Render's
+ * ephemeral disk and are wiped on redeploy, so the email is what survives
+ * even if the DB row or resume file does not. Fire-and-forget — resolves,
+ * never rejects.
+ */
+function sendCareerApplicationEmail({ fullName, email, phone, portfolioUrl, intro, position, hasResume }) {
+  return new Promise((resolve) => {
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      console.warn('WEB3FORMS_ACCESS_KEY not set – skipping career application email');
+      return resolve({ skipped: true });
+    }
+
+    const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const timestamp = new Date().toLocaleString('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: 'America/New_York'
+    });
+
+    const htmlBody = `
+      <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;color:#333;">
+        <div style="background:#1a1a2e;padding:20px 24px;border-radius:8px 8px 0 0;">
+          <h2 style="margin:0;color:#ffffff;font-size:20px;">New Career Application — ${esc(position)}</h2>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;width:120px;vertical-align:top;">Name:</td><td style="padding:8px 0;">${esc(fullName)}</td></tr>
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Email:</td><td style="padding:8px 0;">${esc(email)}</td></tr>
+            ${phone ? `<tr><td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Phone:</td><td style="padding:8px 0;">${esc(phone)}</td></tr>` : ''}
+            ${portfolioUrl ? `<tr><td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Portfolio:</td><td style="padding:8px 0;">${esc(portfolioUrl)}</td></tr>` : ''}
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Resume:</td><td style="padding:8px 0;">${hasResume ? 'Attached in the admin panel — review under Careers.' : 'No resume file was uploaded.'}</td></tr>
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Introduction:</td><td style="padding:8px 0;white-space:pre-wrap;">${esc(intro)}</td></tr>
+            <tr><td style="padding:8px 0;font-weight:bold;color:#555;vertical-align:top;">Submitted:</td><td style="padding:8px 0;">${timestamp}</td></tr>
+          </table>
+        </div>
+        <div style="text-align:center;padding:16px 0;color:#999;font-size:12px;">
+          Regent Capital Ventures LLC
+        </div>
+      </div>
+    `.trim();
+
+    const payload = JSON.stringify({
+      access_key: accessKey,
+      subject: `New Career Application: ${fullName} — ${position}`,
+      from_name: fullName || 'Career Applicant',
+      email: email,
+      cc: 'jatinshekara@gmail.com, sparx.sandeep@gmail.com',
+      message: htmlBody
+    });
+
+    const https = require('https');
+    const options = {
+      hostname: 'api.web3forms.com',
+      path: '/submit',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (resp) => {
+      let body = '';
+      resp.on('data', (chunk) => { body += chunk; });
+      resp.on('end', () => {
+        try {
+          const result = JSON.parse(body);
+          if (result.success) {
+            console.log('Career application email sent successfully');
+          } else {
+            console.error('Web3Forms API error (career application):', body);
+          }
+        } catch (e) {
+          console.error('Web3Forms response parse error (career application):', body);
+        }
+        resolve({ sent: true });
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error('Web3Forms request error (career application):', err.message);
+      resolve({ error: err.message });
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
+
 // Public: submit a contact / message form.
 app.post('/api/messages', (req, res) => {
   try {
@@ -2476,6 +2606,11 @@ app.get('/management', (req, res) => {
 // Serve Regent AI page
 app.get('/regent-ai', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'regent-ai.html'));
+});
+
+// Serve Careers page
+app.get('/careers', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'careers.html'));
 });
 
 // ── ADMIN: Custom Invoice ──
@@ -4047,6 +4182,98 @@ const PROPERTY_DATA = {
       '9cd45fb9-89b9-4f2a-9295-d7dc4ee73625.png',
       'ded91f49-7c81-4f69-b23f-3c1a2c8db944.jpeg'
     ]
+  },
+  'regent-crown': {
+    name: 'Regent Crown',
+    slug: 'regent-crown',
+    category: 'villa',
+    city: 'Austin',
+    state: 'Texas',
+    hostingId: '1226412680139915514',
+    guests: 11, beds: 5, baths: 4,
+    bedConfig: [{ label: 'King Bed', quantity: 3 }, { label: 'Queen Bed', quantity: 1 }, { label: 'Sleeper Sofa', quantity: 1 }, { label: 'Air Mattress (Game Room)', quantity: 1 }],
+    rating: 4.96, reviews: 51,
+    lat: 30.2782284, lng: -97.7206557,
+    isVilla: true,
+    amenities: [
+      { label: 'Hot Tub', premium: true },
+      { label: '10-in-1 Game Table', premium: true },
+      { label: '1 Gbps Google Fiber', premium: true },
+      { label: 'Gated Entrance', premium: true },
+      { label: 'TV in Every Bedroom', premium: false },
+      { label: 'BBQ Grill', premium: false }
+    ],
+    description: 'Welcome to your Central East Austin retreat! This spacious 4-bedroom, 4-bathroom home comfortably sleeps up to 11 guests, blending modern luxury with cozy comfort. Just 2 miles from Downtown Austin, 2.3 miles from Rainey Street, and 1.5 miles from East 6th Street\'s nightlife, it\'s the ideal home base for family trips, group getaways, or extended stays. Enjoy a 6-person hot tub in the fenced backyard, a 10-in-1 game table, TVs in every ensuite bedroom, a fully equipped kitchen with seating for 8, a private balcony, dedicated workspace, and 1 Gbps Google Fiber Wi-Fi throughout.',
+    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel'],'Bedroom & Laundry':['Bed linens','Clothing storage','Crib','Dryer','Essentials','Hangers','Iron','Pack ’n Play/travel crib','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating'],Entertainment:['Board games','Ping pong table','Pool table','TV'],'Kitchen & Dining':['Baking sheet','Blender','Coffee','Coffee maker','Cookware','Dining table','Dishes and silverware','Dishwasher','Kettle','Kitchen','Microwave','Oven','Refrigerator','Stove','Toaster','Wine glasses'],'Work & Tech':['Laptop friendly workspace','Wireless Internet'],Outdoor:['BBQ grill','Barbeque utensils','Garden or backyard','Hot tub','Outdoor seating (furniture)','Patio or balcony'],'Parking & Facilities':['Free parking on street','Garage','Private entrance'],Safety:['Carbon monoxide detector','Cleaning products','Fire extinguisher','First aid kit','Smoke detector'],'Home Highlights':['Long term stays allowed']},
+    photos: [
+      'https://assets.guesty.com/image/upload/v1789014495/production/6a244b0b5428397ca54b4ebf/zomvnsuafnmiwauykxb5.jpg',
+      'https://assets.guesty.com/image/upload/v1789012862/production/6a244b0b5428397ca54b4ebf/jhafejunu3hriiskgrsy.jpg',
+      'https://assets.guesty.com/image/upload/v1789015191/production/6a244b0b5428397ca54b4ebf/xy59dcujpqpn5ncvnodg.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/45ed9385-43c0-49-xGFQA',
+      'https://assets.guesty.com/image/upload/v1789019466/production/6a244b0b5428397ca54b4ebf/rsgfubxunrvb9alinho8.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/a33801f8-0a62-4b-SIFod',
+      'https://assets.guesty.com/image/upload/v1789016270/production/6a244b0b5428397ca54b4ebf/uxl6jvbmvba59p4mzey0.jpg',
+      'https://assets.guesty.com/image/upload/v1788993075/production/6a244b0b5428397ca54b4ebf/p3hvqfxrhkuckmlehyhn.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/e9ba120a-c5c4-4f-mrsyV',
+      'https://assets.guesty.com/image/upload/v1789017894/production/6a244b0b5428397ca54b4ebf/tcvmaywi2vgjeiwuyxbe.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/8842eea4-509a-42-YDjC5',
+      'https://assets.guesty.com/image/upload/v1789005238/production/6a244b0b5428397ca54b4ebf/dmgmay62xuvjtq7dtpan.jpg',
+      'https://assets.guesty.com/image/upload/v1789018468/production/6a244b0b5428397ca54b4ebf/zk1caowqkczp5k90xyzu.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/524ec362-134e-44-gyQ_9',
+      'https://assets.guesty.com/image/upload/v1789236663/production/6a244b0b5428397ca54b4ebf/ijxmoetyjqdwcrvmuhzt.jpg',
+      'https://assets.guesty.com/image/upload/v1789018631/production/6a244b0b5428397ca54b4ebf/ptfej6egvfpjsp6i3jwx.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d3df49f9-4a36-48-Tv7Db',
+      'https://assets.guesty.com/image/upload/v1789014094/production/6a244b0b5428397ca54b4ebf/lrwgypnoiswffvsid853.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/cf03286a-d555-4a-v9QN2',
+      'https://assets.guesty.com/image/upload/v1789000700/production/6a244b0b5428397ca54b4ebf/q48ftmn0qkyyjipnvqpx.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/6e03e9a4-489c-41-tzWfA',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/4dcded55-acd5-4d-sVzRH',
+      'https://assets.guesty.com/image/upload/v1789236291/production/6a244b0b5428397ca54b4ebf/rwsfjzuvonklwcoxmuaz.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/f8b8a90f-b03a-4d-fyMF7',
+      'https://assets.guesty.com/image/upload/v1789014900/production/6a244b0b5428397ca54b4ebf/zukzcsmujgy2qask4rq7.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/18f87f57-1b5d-44-49xw8',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/3de33bf7-e10d-40-4sZj2',
+      'https://assets.guesty.com/image/upload/v1789017102/production/6a244b0b5428397ca54b4ebf/il8e5jjkbdkpcc3fvesf.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/c3267c3a-0ac7-40-5OZGr',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/cc789a46-1827-4a-5Yu6O',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/615700ca-152c-43-Y3Q_m',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d2501d51-7ada-45-Qq-Z2',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/4ede43fe-6141-41-OpYMJ',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/878b7e43-d62b-4f-c-FQ6',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/e760062b-99f9-46-3MTUy',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/14528500-5c7c-4c-KjI8h',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/abc6b14b-96a1-47-0n9ni',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/91a9d96a-5581-40-NNPlO',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/1d61f048-26a3-48-AQM_0',
+      'https://assets.guesty.com/image/upload/v1789016378/production/6a244b0b5428397ca54b4ebf/puhra6mbbu5hve21bcxg.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/fc0bc63b-0b6d-4f-w5A-_',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/25ef930a-f23b-47-dxJv6',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/bd73ff5c-4c1c-4c-i5y2Z',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/9fab2182-d044-42-ZDS4k',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/55c15803-be73-4d-gsl5R',
+      'https://assets.guesty.com/image/upload/v1789013702/production/6a244b0b5428397ca54b4ebf/aywq5bbrlpvfbalgoq5a.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/52d4f7f7-f112-49-j_Xnh',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/b512979c-dca9-48-wGcOC',
+      'https://assets.guesty.com/image/upload/v1788993153/production/6a244b0b5428397ca54b4ebf/iqqhuthaxqigj150jgpl.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/ec591cfa-9a4d-47-El8fr',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/1be58e38-e4e3-4c-E9dMT',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/df10c306-8ec4-4c-5QqXC',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/8ce6ef70-b4de-4b-NUNkE',
+      'https://assets.guesty.com/image/upload/v1789018558/production/6a244b0b5428397ca54b4ebf/majwnvgbovnhtqjo9nyg.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d88de9d1-7947-4c-XOrEX',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/a769a60c-560d-4e-SQjMl',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/ece96352-bfab-4a-EzFvP',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/7f24673c-f462-49-nzgzY',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/6a38ce59-bcd9-4d-GEBPo',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/c81d46e7-c98e-4e-taOU6',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/709ed397-3deb-48-XX57s',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/0eee6f8c-2476-45-2E4Ng',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/f3e4608e-5fcc-41-HiM7b',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/3009cd64-1025-40-mDasq',
+      'https://assets.guesty.com/image/upload/v1789019028/production/6a244b0b5428397ca54b4ebf/axinjex3cl06gjlwxw0f.jpg',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/d2953759-7e3e-41-eAR2-',
+      'https://assets.guesty.com/image/upload/listing_images_s3/production/property-photos/37a28e84556bd0c3cd4270d50fee33d633d5948255c28a92/6aa1b54d75e76f0072ea85f9/ef3dc798-00f1-4f-COaQJ'
+    ]
   }
 };
 
@@ -4058,7 +4285,22 @@ const GUESTY_MAP = {
   'lake-view': '6a29dcfa14fca300148799c2',
   'executive': '6a29dc944052f30019465228',
   'stunning-lake': '6a29dc8f5f85640014dfe380',
+  'regent-crown': '6aa1b54d75e76f0072ea85f9',
 };
+
+// Builds a displayable photo URL for a property photo entry. Legacy
+// properties store bare Airbnb photo UUIDs (synced by hand) and need the
+// muscache hosting CDN prefix; newer properties pulled straight from Guesty
+// store full Cloudinary asset URLs already, which just need a width
+// transform inserted for responsive sizing.
+function photoUrl(prop, filename, width) {
+  if (typeof filename === 'string' && /^https?:\/\//.test(filename)) {
+    return filename.includes('/image/upload/')
+      ? filename.replace('/image/upload/', `/image/upload/w_${width},q_auto,f_auto/`)
+      : filename;
+  }
+  return `https://a0.muscache.com/im/pictures/hosting/Hosting-${prop.hostingId}/original/${filename}?im_w=${width}`;
+}
 
 // ── Standalone Property Pages ──
 
@@ -4098,9 +4340,8 @@ function renderPropertyPage(slug, res) {
   }
   let html = fs.readFileSync(templatePath, 'utf8');
 
-  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
   const coverPhoto = prop.photos[0];
-  const coverImage = `${CDN}${prop.hostingId}/original/${coverPhoto}?im_w=1200`;
+  const coverImage = photoUrl(prop, coverPhoto, 1200);
   const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
   // www, not the apex: the apex 301s here, and a canonical that points at a
   // redirect is a wasted signal.
@@ -4147,9 +4388,8 @@ function renderPropertyPage(slug, res) {
 // fetched) are omitted rather than guessed, because a schema that overstates
 // is worse than one that is merely incomplete.
 function buildPropertyJsonLd(prop, ogUrl, coverImage) {
-  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
   const images = prop.photos.slice(0, 8).map(
-    f => `${CDN}${prop.hostingId}/original/${f}?im_w=1200`
+    f => photoUrl(prop, f, 1200)
   );
 
   const amenities = [];
@@ -4212,14 +4452,13 @@ function renderGlancePage(slug, res) {
   }
   let html = fs.readFileSync(templatePath, 'utf8');
 
-  const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
   // Per-property hero photo overrides (Airbnb cover photo index)
   const HERO_PHOTO_INDEX = {
     'regent-villa': 66 // outdoor patio wide-angle (hot tub, BBQ, Netflix TV)
   };
   const heroIdx = HERO_PHOTO_INDEX[slug] || 0;
   const coverPhoto = prop.photos[heroIdx] || prop.photos[0];
-  const coverImage = `${CDN}${prop.hostingId}/original/${coverPhoto}?im_w=1200`;
+  const coverImage = photoUrl(prop, coverPhoto, 1200);
   const guestyUrl = `https://regent.guestybookings.com/en/properties/${GUESTY_MAP[slug] || ''}`;
   // www, not the apex: the apex 301s here, and a canonical that points at a
   // redirect is a wasted signal.
@@ -5582,6 +5821,99 @@ app.post('/api/maintenance/requests/:id/message', maintenanceUpload.single('phot
 app.get('/api/maintenance/photos/:filename', (req, res) => {
   const filePath = path.join(__dirname, 'uploads', 'maintenance', req.params.filename);
   if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Photo not found' });
+  res.sendFile(filePath);
+});
+
+// ── Career Applications ──
+
+const CAREER_POSITION = 'Property Operations & Automation Manager';
+const CAREER_STATUSES = ['new', 'reviewing', 'interviewing', 'offered', 'rejected', 'hired'];
+
+// Public: submit a career application with a resume
+app.post('/api/careers/apply', resumeUpload.single('resume'), (req, res) => {
+  try {
+    const { full_name, email, phone, portfolio_url, intro } = req.body;
+    if (!full_name || !email || !intro) {
+      return res.status(400).json({ error: 'Missing required fields: full_name, email, intro' });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'A resume file (PDF, DOC, or DOCX) is required' });
+    }
+
+    const result = db.prepare(
+      'INSERT INTO career_applications (full_name, email, phone, position, portfolio_url, intro, resume_filename, resume_original_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ).run(full_name, email, phone || '', CAREER_POSITION, portfolio_url || '', intro, req.file.filename, req.file.originalname);
+
+    // Fire-and-forget: the durable copy, since uploads/db are on ephemeral disk.
+    sendCareerApplicationEmail({
+      fullName: full_name, email, phone, portfolioUrl: portfolio_url, intro,
+      position: CAREER_POSITION, hasResume: true
+    });
+
+    res.json({ success: true, id: result.lastInsertRowid, message: 'Application submitted successfully' });
+  } catch (err) {
+    console.error('Career application submit error:', err);
+    if (err && err.message && err.message.includes('File too large')) {
+      return res.status(400).json({ error: 'Resume file is too large (8MB max).' });
+    }
+    res.status(500).json({ error: 'Failed to submit application' });
+  }
+});
+
+// Admin: list all career applications
+app.get('/api/admin/careers', requireAuth, (req, res) => {
+  try {
+    const applications = db.prepare(
+      'SELECT id, full_name, email, phone, position, portfolio_url, resume_filename, resume_original_name, status, created_at, updated_at FROM career_applications ORDER BY created_at DESC'
+    ).all();
+    res.json({ applications });
+  } catch (err) {
+    console.error('Career applications list error:', err);
+    res.status(500).json({ error: 'Failed to load applications' });
+  }
+});
+
+// Admin: get a single application (includes the full intro text)
+app.get('/api/admin/careers/:id', requireAuth, (req, res) => {
+  try {
+    const application = db.prepare('SELECT * FROM career_applications WHERE id = ?').get(req.params.id);
+    if (!application) return res.status(404).json({ error: 'Application not found' });
+    res.json({ application });
+  } catch (err) {
+    console.error('Career application detail error:', err);
+    res.status(500).json({ error: 'Failed to load application' });
+  }
+});
+
+// Admin: update application status / notes
+app.patch('/api/admin/careers/:id', requireAuth, (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    if (status !== undefined && !CAREER_STATUSES.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Must be one of: ' + CAREER_STATUSES.join(', ') });
+    }
+    const existing = db.prepare('SELECT id FROM career_applications WHERE id = ?').get(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Application not found' });
+
+    if (status !== undefined) {
+      db.prepare('UPDATE career_applications SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, req.params.id);
+    }
+    if (notes !== undefined) {
+      db.prepare('UPDATE career_applications SET notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(notes, req.params.id);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Career application update error:', err);
+    res.status(500).json({ error: 'Failed to update application' });
+  }
+});
+
+// Admin-only: serve a resume file. Resumes live under ./private/resumes/ —
+// NOT ./uploads/ — specifically so they are never reachable without auth.
+app.get('/api/admin/careers/resume/:filename', requireAuth, (req, res) => {
+  const filename = path.basename(req.params.filename); // defeat path traversal
+  const filePath = path.join(__dirname, 'private', 'resumes', filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Resume not found' });
   res.sendFile(filePath);
 });
 

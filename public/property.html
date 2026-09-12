@@ -1915,6 +1915,11 @@ const SLUG = '{{SLUG}}';
 
 // ── Image URL Helpers ──
 function imgUrl(uuid, width) {
+  if (typeof uuid === 'string' && /^https?:\/\//.test(uuid)) {
+    return uuid.includes('/image/upload/')
+      ? uuid.replace('/image/upload/', '/image/upload/w_' + (width || 720) + ',q_auto,f_auto/')
+      : uuid;
+  }
   return 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/' + uuid + '?im_w=' + (width || 720);
 }
 function imgUrlFull(uuid) {

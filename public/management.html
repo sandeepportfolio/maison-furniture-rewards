@@ -62,6 +62,11 @@
 [data-theme="dark"] .rs-msg.guest{background:rgba(244,237,224,.06)}
 [data-theme="dark"] .rs-mini-bars i,[data-theme="dark"] .rs-bars i{background:rgba(244,237,224,.16)}
 [data-theme="dark"] .rs-calc-out{background:linear-gradient(180deg,#14100A 0%,#0F0C08 100%)}
+/* .rs-perf-panel is a fixed dark card in both themes (background:var(--dark)),
+   but its heading/stat numbers use color:var(--bg) — meant for the light
+   theme's near-white --bg. In dark mode --bg is near-black, so the text goes
+   dark-on-dark. Pin it to the panel's own light ink color in dark mode. */
+[data-theme="dark"] .rs-perf .rs-h2,[data-theme="dark"] .rs-stat .num{color:var(--ink)}
 
 /* ═══ Theme toggle button ═══ */
 .theme-toggle-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid rgba(var(--ink-rgb),.12);background:rgba(var(--ink-rgb),.04);color:rgba(var(--ink-rgb),.5);cursor:pointer;transition:all .3s;flex:none}

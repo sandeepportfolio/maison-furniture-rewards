@@ -717,7 +717,7 @@ function formatPhone(p){var d=phoneDigits(p);if(d.length===11&&d[0]==='1')d=d.sl
 function telHref(p){var d=phoneDigits(p);if(!d)return'';return'+'+(d.length===10?'1'+d:d)}
 function isIOS(){return/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
 function getMapsUrl(a,lat,lng){if(isIOS())return'https://maps.apple.com/?q='+encodeURIComponent(a)+'&ll='+lat+','+lng;return'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a)}
-function getPhotoUrl(f,hid){return'https://a0.muscache.com/im/pictures/hosting/Hosting-'+hid+'/original/'+f+'?im_w=720'}
+function getPhotoUrl(f,hid){if(typeof f==='string'&&/^https?:\/\//.test(f)){return f.includes('/image/upload/')?f.replace('/image/upload/','/image/upload/w_720,q_auto,f_auto/'):f}return'https://a0.muscache.com/im/pictures/hosting/Hosting-'+hid+'/original/'+f+'?im_w=720'}
 
 // ── Copy ──
 function spawnParticles(el){
