@@ -79,11 +79,12 @@
 }
 [data-theme="light"] {
   --bg:#FAF6EE;--bg-card:#FFFFFF;--bg-dark:#F0EBE0;--bg-dark-card:#FFFFFF;
-  --accent:#B8892E;--accent-hover:#A07825;--accent-light:#D6A63E;--accent-pale:rgba(184,137,46,.1);
+  /* accent-light/brass-light are used as accent TEXT — on a light ground they must be darker than --accent, not lighter */
+  --accent:#B8892E;--accent-hover:#A07825;--accent-light:#A07825;--accent-pale:rgba(184,137,46,.1);
   --accent-ink:#FFFFFF;
-  --brass:#B8892E;--brass-light:#D6A63E;
-  --text:#1A1610;--text-muted:rgba(26,22,16,.6);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.55);
-  --text-dim:rgba(26,22,16,.4);
+  --brass:#B8892E;--brass-light:#A07825;
+  --text:#1A1610;--text-muted:rgba(26,22,16,.6);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.62);
+  --text-dim:rgba(26,22,16,.55);
   --border:rgba(26,22,16,.1);--border-dark:rgba(26,22,16,.08);
   --card-glass:rgba(26,22,16,.03);--card-glass-strong:rgba(26,22,16,.06);
   --shadow-sm:0 1px 3px rgba(26,22,16,.06),0 1px 2px rgba(26,22,16,.04);
@@ -2494,7 +2495,7 @@ ul{list-style:none}
 
 /* Hero */
 [data-theme="light"] .v2-hero-sub{color:rgba(26,22,16,.68)}
-[data-theme="light"] .v2-trust{color:rgba(26,22,16,.5)}
+[data-theme="light"] .v2-trust{color:rgba(26,22,16,.62)}
 [data-theme="light"] .v2-btn-ghost{background:rgba(26,22,16,.04);border-color:rgba(26,22,16,.18);color:var(--text)!important}
 [data-theme="light"] .v2-btn-ghost:hover{background:rgba(26,22,16,.08);border-color:rgba(26,22,16,.35)}
 [data-theme="light"] .v2-btn-gold{color:#fff!important}
@@ -2530,12 +2531,62 @@ ul{list-style:none}
 [data-theme="light"] .map-zoom-btn,[data-theme="light"] .map-price-pin,[data-theme="light"] .map-bottom-sheet,
 [data-theme="light"] .map-prop-strip-item,[data-theme="light"] .event-date-chip,[data-theme="light"] .legal-modal{
   --text:#F2EDE1;--text-muted:rgba(242,237,225,.65);--text-inv:#F2EDE1;--text-inv-muted:rgba(242,237,225,.6)}
-[data-theme="light"] .coll-filter-btn{color:rgba(26,22,16,.45)}
-[data-theme="light"] .coll-filter-btn:hover{color:rgba(26,22,16,.75)}
+[data-theme="light"] .coll-filter-btn{color:rgba(26,22,16,.6)}
+[data-theme="light"] .coll-filter-btn:hover{color:rgba(26,22,16,.9)}
 [data-theme="light"] .coll-filter-wrap{border-bottom-color:rgba(26,22,16,.1)}
 [data-theme="light"] .coll-header .coll-sub,[data-theme="light"] .coll-count-label{color:rgba(26,22,16,.5)}
 [data-theme="light"] .v2-kicker .v2-dim{color:rgba(26,22,16,.6)}
 [data-theme="light"] .cf-group input::placeholder,[data-theme="light"] .cf-group textarea::placeholder{color:rgba(26,22,16,.35)}
+
+/* The same fixed-dark surfaces also draw gold via the accent and brass-light tokens,
+   which flip to the darker light-mode golds and vanish on dark glass — pin those too. */
+[data-theme="light"] .prop-card,
+[data-theme="light"] .v2-float-fav,
+[data-theme="light"] .v2-float-stats,
+[data-theme="light"] .xplr-card-badge,
+[data-theme="light"] .xplr-card-rating-badge{--accent:#C99845;--accent-hover:#E0B15C;--accent-light:#E0B15C;--accent-pale:rgba(201,152,69,.15);--brass:#C99845;--brass-light:#E0B15C}
+[data-theme="light"] .map-bottom-sheet,
+[data-theme="light"] .legal-modal{--accent:#C99845;--accent-light:#E0B15C;--brass-light:#E0B15C;--border-dark:rgba(242,237,225,.1)}
+[data-theme="light"] .map-price-pin .cur{color:#E0B15C}
+[data-theme="light"] .map-expand-btn svg{stroke:#F2EDE1}
+
+/* Collection header: re-assert the active tab (the light .coll-filter-btn rule above
+   has equal specificity to .coll-filter-btn.active and would otherwise win). */
+[data-theme="light"] .coll-filter-btn.active{color:var(--accent)}
+[data-theme="light"] .coll-header .coll-kicker{color:var(--accent)}
+
+/* Explore / events */
+[data-theme="light"] .event-when.soon{color:#15803D;border-color:rgba(21,128,61,.3);background:rgba(21,128,61,.08)}
+[data-theme="light"] .event-price.is-free{color:#15803D}
+@media(hover:hover){
+  [data-theme="light"] .explore-event-card:hover .event-name{color:var(--text)}
+  [data-theme="light"] .xplr-city-tab:hover .xplr-city-count{background:rgba(26,22,16,.1)}
+}
+[data-theme="light"] .xplr-cat{border-color:rgba(26,22,16,.12)}
+[data-theme="light"] .xplr-cat:hover{border-color:rgba(26,22,16,.25)}
+[data-theme="light"] .xplr-cat.active{border-color:rgba(184,137,46,.4)}
+[data-theme="light"] .xplr-cities{border-bottom-color:rgba(26,22,16,.08)}
+[data-theme="light"] .xplr-city-count{background:rgba(26,22,16,.06)}
+[data-theme="light"] .xplr-stat-divider{background:rgba(26,22,16,.12)}
+
+/* Hairlines / decorative strokes drawn with light-on-dark literals */
+[data-theme="light"] .v2-reviews{border-color:rgba(26,22,16,.08)}
+[data-theme="light"] .v2-mq-star{color:var(--accent)}
+[data-theme="light"] .v2-wm .out{-webkit-text-stroke-color:rgba(26,22,16,.22)}
+[data-theme="light"] .experience-grid{background:rgba(26,22,16,.08)}
+[data-theme="light"] .story-metric{border-color:rgba(26,22,16,.08)}
+[data-theme="light"] .story-metric:hover{border-color:rgba(184,137,46,.35)}
+[data-theme="light"] .rd-item,[data-theme="light"] .rd-item:first-child{border-color:rgba(26,22,16,.1)}
+[data-theme="light"] .contact-ledger,[data-theme="light"] .contact-cell{border-color:rgba(26,22,16,.1)}
+
+/* Contact form fields and status messages */
+[data-theme="light"] .cf-group input,[data-theme="light"] .cf-group select,[data-theme="light"] .cf-group textarea{background:rgba(255,255,255,.7)}
+[data-theme="light"] .cf-msg.success{background:rgba(46,125,50,.1);color:#2E7D32;border-color:rgba(46,125,50,.25)}
+[data-theme="light"] .cf-msg.error{background:rgba(198,40,40,.08);color:#C62828;border-color:rgba(198,40,40,.2)}
+[data-theme="light"] .avail-modal-error{color:#C62828}
+[data-theme="light"] .avail-modal-error svg{stroke:#C62828}
+[data-theme="light"] .avail-modal-close{background:rgba(26,22,16,.05)}
+[data-theme="light"] .avail-modal-close:hover{background:rgba(26,22,16,.1)}
 </style>
 </head>
 <body>

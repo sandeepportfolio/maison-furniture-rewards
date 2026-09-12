@@ -39,7 +39,7 @@
   --accent:#B8892E;--accent-hover:#A07825;--accent-light:#D6A63E;--accent-pale:rgba(184,137,46,.1);
   --accent-ink:#FFFFFF;
   --text:#1A1610;--text-muted:rgba(26,22,16,.6);--text-inv:#1A1610;
-  --text-dim:rgba(26,22,16,.4);
+  --text-dim:rgba(26,22,16,.55);
   --border:rgba(26,22,16,.1);--border-dark:rgba(26,22,16,.08);
   --card-glass:rgba(26,22,16,.03);--card-glass-strong:rgba(26,22,16,.06);
   --shadow-sm:0 1px 3px rgba(26,22,16,.06);
@@ -401,6 +401,11 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 [data-theme="light"] .results-back{background:rgba(26,22,16,.05)}
 [data-theme="light"] .results-back:hover{background:rgba(26,22,16,.1)}
 [data-theme="light"] .avail-skel-photo,[data-theme="light"] .avail-skel-line{background:rgba(26,22,16,.06)}
+/* Photo badges: a frosted cream pill reads over any photo; the tinted glass only worked on dark */
+[data-theme="light"] .prop-card-badge-float.today{background:rgba(250,246,238,.88);color:#15803D;border-color:rgba(21,128,61,.3)}
+[data-theme="light"] .prop-card-badge-float.tomorrow,[data-theme="light"] .prop-card-badge-float.checking{background:rgba(250,246,238,.88);color:var(--accent-hover);border-color:rgba(184,137,46,.35)}
+[data-theme="light"] .page-back:hover{background:rgba(26,22,16,.05)}
+[data-theme="light"] .calendar-mobile-close{background:rgba(26,22,16,.06)}
 </style>
 </head>
 <body>
