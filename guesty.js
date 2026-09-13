@@ -1519,84 +1519,22 @@ async function beapiUpdateQuoteCoupons(quoteId, coupons) {
   return beapi.updateQuoteCoupons(quoteId, coupons);
 }
 
-// ── Background pre-warm with conservative retry ─────────────────────────
-// Populate listings + prices cache on startup (non-blocking, staggered).
-// ONLY attempts API calls if a valid (non-expired) token is already available
-// (from env vars or persisted file). If no valid token exists, skips pre-warm
-// entirely and serves static data — this avoids hammering Guesty's rate-limited
-// OAuth endpoint on every cold start / redeploy.
+// ── No background pre-warm ───────────────────────────────────────────────
+// This used to proactively fetch listings/prices ~10s after every boot, with
+// its own retry chain (5m/15m/30m, up to 3 attempts) on failure. That chain
+// runs from a server timer, not a user request — so on a day with several
+// deploys, every restart got its own free swing at Guesty's OAuth endpoint,
+// and a bad bootstrap token turned each one into a 401 → burn → OAuth retry.
+// Worse, the *retry* chain kept swinging on its own schedule for up to 50
+// minutes with zero visitors, which is how a short first cooldown escalated
+// into Guesty's full ~24h auth penalty with nobody on the site.
 //
-// If the API is rate-limited despite having a valid token, retries with long
-// exponential backoff (5m, 15m, 30m cap) up to 3 times. The delays are
-// intentionally long to let Guesty's rate limit window fully expire.
-let startupRetryCount = 0;
-const STARTUP_MAX_RETRIES = 3;
-
-async function doStartupPrewarm(isRetry = false) {
-  // Only attempt pre-warm if we have a valid cached token.
-  // If the token is expired or missing, don't hit OAuth — serve static data
-  // until a user request naturally triggers a token refresh.
-  // "Usable" means a token exists that isn't burned — deliberately NOT a local
-  // clock comparison against tokenExpiry. A bootstrap token whose stated expiry
-  // has passed is still worth one request; only a 401 from Guesty retires it.
-  // The old clock gate meant a redeploy carrying a good token still served
-  // static data until the first user request happened to wander in.
-  if (!haveUsableToken()) {
-    console.log('Startup: no usable token available — serving static data (token refresh will happen on first user request)');
-    return;
-  }
-
-  try {
-    const listings = await getListings();
-    const isStatic = listings[0]?._static;
-    console.log(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup'}: cached ${listings.length} listings (${isStatic ? 'static fallback' : 'live API'})`);
-
-    // If we got static data, the API is still rate-limited — schedule retry
-    if (isStatic) {
-      scheduleStartupRetry();
-      return;
-    }
-
-    // Live data — fetch lowest prices too (stagger to avoid burst)
-    await sleep(10_000);
-    const prices = await getLowestPrices();
-    const count = Object.values(prices).filter(p => p.lowestPrice !== null).length;
-    console.log(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup'}: cached lowest prices for ${count} listings`);
-  } catch (err) {
-    console.warn(`${isRetry ? `Startup retry ${startupRetryCount}` : 'Startup pre-warm'} failed:`, err.message);
-    scheduleStartupRetry();
-  }
-}
-
-function scheduleStartupRetry() {
-  startupRetryCount++;
-  if (startupRetryCount > STARTUP_MAX_RETRIES) {
-    console.warn(`Startup retry: giving up after ${STARTUP_MAX_RETRIES} attempts — serving static data until a user request triggers recovery`);
-    return;
-  }
-  // Long delays: 5 min, 15 min, 30 min — gives Guesty's rate limit time to fully reset
-  const backoff = Math.min(5 * 60_000 * Math.pow(3, startupRetryCount - 1), 30 * 60_000);
-
-  // Never retry before Guesty's own cooldown has elapsed. This used to call
-  // clearRateLimit() and retry regardless, which threw away an advised
-  // Retry-After (Guesty's OAuth endpoint sends 1800s) to retry up to 25 min
-  // early — earning a fresh 429 and a renewed 1800s penalty every cycle. The
-  // observable signature was retryAfter counting down and then jumping back to
-  // ~1800s forever. Waiting the cooldown out is the whole point of having one.
-  const cooldownMs = rateLimitRetryAfter() * 1000;
-  const delay = Math.max(backoff, cooldownMs ? cooldownMs + 5_000 : 0);
-  console.log(`Startup retry: scheduling attempt ${startupRetryCount}/${STARTUP_MAX_RETRIES} in ${Math.round(delay / 60_000)}m${cooldownMs > backoff ? ' (waiting out Guesty cooldown)' : ''}`);
-  setTimeout(() => {
-    // Do NOT reset the breaker here. If the cooldown has genuinely expired,
-    // isRateLimited() is already false; if it has not, the retry must stay
-    // blocked. Backoff escalation is reset by the next successful call.
-    doStartupPrewarm(true);
-  }, delay);
-}
-
-// Delay startup pre-warm by 10s to let the server fully boot and
-// give the token loading (env vars / persisted file) time to settle.
-setTimeout(() => doStartupPrewarm(false), 10_000);
+// Guesty access is now strictly request-driven: the first real request to
+// /api/availability/* or /api/guesty/* calls getListings()/getCalendar()
+// on demand, which populates the cache and is already protected by the
+// isRateLimited()/shouldSkipLiveFetch() circuit breaker above. A cold boot
+// simply serves static/cached data until an actual visitor's request earns
+// the one live attempt — never a timer.
 
 /**
  * Clear all caches so the next request fetches fresh data from Guesty.

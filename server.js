@@ -6263,14 +6263,12 @@ app.listen(PORT, '0.0.0.0', () => {
 
   // Rebuild the trip_codes table from Guesty. The database sits on Render's
   // ephemeral disk and is wiped by every restart, so without this every magic
-  // link already in a guest's inbox would resolve to "Link Expired".
-  //
-  // Timing matters: the Guesty prewarm (guesty.js) starts at T+10s, fetches
-  // listings, sleeps 10s, then runs a 7-listing price scan paced 2s apart —
-  // so it is still issuing calls until roughly T+34s. Seeding at T+20s put
-  // this loop's 10 paged reservation calls (500ms apart) right on top of it,
-  // which is the burstiest moment of the whole process lifetime. T+45s lands
-  // clear of the prewarm so the two never overlap.
+  // link already in a guest's inbox would resolve to "Link Expired". This is
+  // the only Guesty call this server makes that isn't in direct response to
+  // an incoming request — guesty.js no longer has a startup pre-warm to
+  // stagger around, so the delay here just gives the process a moment to
+  // finish booting. It shares the same request-path circuit breaker as every
+  // other Guesty call, so it never retries into an active cooldown.
   setTimeout(() => {
     seedTripCodesFromGuesty({ reason: 'startup' }).catch(() => {});
   }, 45_000);
