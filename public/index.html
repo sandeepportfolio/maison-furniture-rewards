@@ -2721,11 +2721,11 @@ ul{list-style:none}
     </div>
     <div class="coll-kicker"><span class="coll-kicker-num">02</span> OUR COLLECTION</div>
     <h2 class="coll-title">Curated <em>Properties</em></h2>
-    <p class="coll-sub">Luxury stays across the Dallas–Fort Worth metroplex</p>
+    <p class="coll-sub">Luxury stays across Dallas–Fort Worth and Austin</p>
     <div class="coll-count-row" id="collCounts">
-      <div class="coll-count-item"><span class="coll-count-num" id="collCountProps">7</span><span class="coll-count-label">Properties</span></div>
+      <div class="coll-count-item"><span class="coll-count-num" id="collCountProps">8</span><span class="coll-count-label">Properties</span></div>
       <span class="coll-count-dot"></span>
-      <div class="coll-count-item"><span class="coll-count-num" id="collCountCities">3</span><span class="coll-count-label">Cities</span></div>
+      <div class="coll-count-item"><span class="coll-count-num" id="collCountCities">5</span><span class="coll-count-label">Cities</span></div>
       <span class="coll-count-dot"></span>
       <div class="coll-count-item"><span class="coll-count-num" id="collCountSupport">24/7</span><span class="coll-count-label">Support</span></div>
     </div>
@@ -2757,7 +2757,7 @@ ul{list-style:none}
       <!-- Inline stats -->
       <div class="rd-stats stats-bar">
         <div class="stat-item">
-          <div class="stat-number"><span class="stat-val" data-target="7">7</span></div>
+          <div class="stat-number"><span class="stat-val" data-target="8">8</span></div>
           <div class="stat-label">Properties</div>
         </div>
         <div class="stat-item">
@@ -2923,7 +2923,7 @@ ul{list-style:none}
         </div>
         <div class="map-legend">
           <span class="map-legend-dot"></span>
-          <span><b id="mapLegendCount">7</b> properties across Dallas&ndash;Fort Worth</span>
+          <span><b id="mapLegendCount">8</b> properties across Dallas&ndash;Fort Worth &amp; Austin</span>
         </div>
       </div>
       <div class="map-backdrop" id="mapBackdrop"></div>
@@ -4469,6 +4469,15 @@ function togglePropInfo(slug, btn) {
 const AUSTIN_METRO = ['austin','round rock','cedar park','georgetown','leander','pflugerville','lakeway','bee cave','kyle','buda','san marcos','dripping springs'];
 function propertyMetro(p) {
   return AUSTIN_METRO.indexOf(String(p.city || '').trim().toLowerCase()) !== -1 ? 'austin' : 'dallas';
+}
+
+/* The collection header's counts are derived, not typed -- they went stale the
+   last time a property was added. */
+function updateCollectionCounts() {
+  const propsEl = document.getElementById('collCountProps');
+  const citiesEl = document.getElementById('collCountCities');
+  if (propsEl) propsEl.textContent = PROPERTIES.length;
+  if (citiesEl) citiesEl.textContent = new Set(PROPERTIES.map(p => p.city)).size;
 }
 
 let currentCityFilter = 'all';
@@ -7937,6 +7946,7 @@ async function fetchSiteSettings() {
 
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
+  updateCollectionCounts();
   updateFilterSlider();
   updateCitySlider();
   // Web fonts land after first paint and change the tab widths
