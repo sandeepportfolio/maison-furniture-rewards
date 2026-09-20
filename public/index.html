@@ -365,6 +365,20 @@ ul{list-style:none}
 .coll-count-label{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:rgba(242,237,225,.35);text-transform:uppercase}
 .coll-count-dot{width:3px;height:3px;border-radius:50%;background:rgba(201,152,69,.3)}
 
+/* ── City Filter (segmented pill, sits above the collection kicker) ── */
+.city-filter{display:flex;justify-content:center;margin:0 auto 26px;animation:collFadeUp .7s var(--ease) .08s both}
+.city-filter-wrap{position:relative;display:inline-flex;align-items:center;padding:4px;border-radius:999px;border:1px solid var(--border-dark);background:rgba(242,237,225,.03)}
+.city-filter-thumb{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;background:var(--accent-pale);border:1px solid rgba(201,152,69,.3);transition:left .38s var(--ease),width .38s var(--ease);pointer-events:none}
+.city-filter-btn{position:relative;z-index:1;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:9px 22px;border:none;border-radius:999px;background:transparent;color:rgba(242,237,225,.45);cursor:pointer;white-space:nowrap;transition:color .3s var(--ease)}
+.city-filter-btn:hover{color:rgba(242,237,225,.8)}
+.city-filter-btn.active{color:var(--accent)}
+.city-filter-btn:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+.coll-empty{grid-column:1/-1;text-align:center;font-family:var(--sans);font-size:14px;color:var(--text-muted);padding:56px 16px;letter-spacing:.02em}
+@media(prefers-reduced-motion:reduce){
+  .city-filter{animation:none}
+  .city-filter-thumb,.city-filter-btn{transition:none}
+}
+
 /* ── Collection Filter Tabs (Modern Underline) ── */
 .coll-filters{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:48px;position:relative;animation:collFadeUp .7s var(--ease) .55s both}
 .coll-filter-wrap{display:flex;align-items:stretch;position:relative;border-bottom:1px solid rgba(242,237,225,.08)}
@@ -1288,6 +1302,8 @@ ul{list-style:none}
   .coll-count-label{font-size:8px}
   .coll-header .coll-count-row{gap:20px;margin-top:20px}
   .coll-filters{margin-bottom:36px}
+  .city-filter{margin-bottom:20px}
+  .city-filter-btn{padding:8px 15px;font-size:11px;letter-spacing:.1em}
   .coll-filter-btn{padding:12px 16px;font-size:12px}
   .features-grid{grid-template-columns:1fr;padding:0 16px}
   .section{padding:60px 16px}
@@ -2534,6 +2550,11 @@ ul{list-style:none}
 [data-theme="light"] .coll-filter-btn{color:rgba(26,22,16,.6)}
 [data-theme="light"] .coll-filter-btn:hover{color:rgba(26,22,16,.9)}
 [data-theme="light"] .coll-filter-wrap{border-bottom-color:rgba(26,22,16,.1)}
+[data-theme="light"] .city-filter-wrap{border-color:rgba(26,22,16,.12);background:rgba(26,22,16,.025)}
+[data-theme="light"] .city-filter-thumb{border-color:rgba(184,137,46,.35)}
+[data-theme="light"] .city-filter-btn{color:rgba(26,22,16,.55)}
+[data-theme="light"] .city-filter-btn:hover{color:rgba(26,22,16,.9)}
+[data-theme="light"] .city-filter-btn.active{color:var(--accent)}
 [data-theme="light"] .coll-header .coll-sub,[data-theme="light"] .coll-count-label{color:rgba(26,22,16,.5)}
 [data-theme="light"] .v2-kicker .v2-dim{color:rgba(26,22,16,.6)}
 [data-theme="light"] .cf-group input::placeholder,[data-theme="light"] .cf-group textarea::placeholder{color:rgba(26,22,16,.35)}
@@ -2690,6 +2711,14 @@ ul{list-style:none}
 <section class="section" id="properties">
   <div class="coll-header reveal">
     <span class="coll-line"></span>
+    <div class="city-filter" role="group" aria-label="Filter properties by city">
+      <div class="city-filter-wrap" id="cityFilterWrap">
+        <span class="city-filter-thumb" id="cityFilterThumb" aria-hidden="true"></span>
+        <button type="button" class="city-filter-btn active" data-city="all" aria-pressed="true" onclick="setCityFilter('all')">All</button>
+        <button type="button" class="city-filter-btn" data-city="dallas" aria-pressed="false" onclick="setCityFilter('dallas')">Dallas</button>
+        <button type="button" class="city-filter-btn" data-city="austin" aria-pressed="false" onclick="setCityFilter('austin')">Austin</button>
+      </div>
+    </div>
     <div class="coll-kicker"><span class="coll-kicker-num">02</span> OUR COLLECTION</div>
     <h2 class="coll-title">Curated <em>Properties</em></h2>
     <p class="coll-sub">Luxury stays across the Dallas–Fort Worth metroplex</p>
@@ -4433,6 +4462,42 @@ function togglePropInfo(slug, btn) {
   }
 }
 
+/* City filter. Cards carry a plain city name; the tabs are metros, so map one
+   onto the other. Anything outside the Austin metro is Dallas-Fort Worth, which
+   is where every other Regent property sits -- list a new metro here before
+   adding a property outside those two. */
+const AUSTIN_METRO = ['austin','round rock','cedar park','georgetown','leander','pflugerville','lakeway','bee cave','kyle','buda','san marcos','dripping springs'];
+function propertyMetro(p) {
+  return AUSTIN_METRO.indexOf(String(p.city || '').trim().toLowerCase()) !== -1 ? 'austin' : 'dallas';
+}
+
+let currentCityFilter = 'all';
+
+function setCityFilter(city) {
+  currentCityFilter = city;
+  document.querySelectorAll('.city-filter-btn').forEach(btn => {
+    const on = btn.dataset.city === city;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', String(on));
+  });
+  updateCitySlider();
+  renderProperties();
+}
+
+function updateCitySlider() {
+  const wrap = document.getElementById('cityFilterWrap');
+  const thumb = document.getElementById('cityFilterThumb');
+  const active = wrap ? wrap.querySelector('.city-filter-btn.active') : null;
+  if (!wrap || !thumb || !active) return;
+  const btnRect = active.getBoundingClientRect();
+  if (!btnRect.width) return; // not laid out yet
+  const wrapRect = wrap.getBoundingClientRect();
+  // thumb is absolute, so its left is measured from the wrap's padding box
+  const border = parseFloat(getComputedStyle(wrap).borderLeftWidth) || 0;
+  thumb.style.left = (btnRect.left - wrapRect.left - border) + 'px';
+  thumb.style.width = btnRect.width + 'px';
+}
+
 let currentCategoryFilter = 'all';
 let renderTimeout = null;
 
@@ -4461,6 +4526,7 @@ function renderProperties(cityFilter) {
   const grid = document.getElementById('propertiesGrid');
   let props = PROPERTIES;
   if (cityFilter) props = props.filter(p => p.city === cityFilter);
+  if (currentCityFilter !== 'all') props = props.filter(p => propertyMetro(p) === currentCityFilter);
   if (currentCategoryFilter === 'villa') props = props.filter(p => p.category === 'villa');
   else if (currentCategoryFilter === 'suite') props = props.filter(p => p.category === 'suite');
   // Always show villas first
@@ -4473,7 +4539,9 @@ function renderProperties(cityFilter) {
   grid.classList.add('fading');
   renderTimeout = setTimeout(() => {
     renderTimeout = null;
-    grid.innerHTML = ordered.map(p => renderPropertyCard(p)).join('');
+    grid.innerHTML = ordered.length
+      ? ordered.map(p => renderPropertyCard(p)).join('')
+      : '<p class="coll-empty">No properties match this selection.</p>';
     initPropertyReveal();
     initScrollReveal();
     requestAnimationFrame(() => {
@@ -5328,12 +5396,14 @@ function scrollToProperty(slug) {
     btn.classList.toggle('active', btn.dataset.filter === 'all');
   });
   updateFilterSlider();
+  setCityFilter('all');
   const cityEl = document.getElementById('searchCity');
   renderProperties(cityEl ? cityEl.value || null : null);
+  // Wait out the grid's fade-and-rebuild so the target card exists
   setTimeout(() => {
     const el = document.getElementById('prop-' + slug);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
+  }, 400);
 }
 
 /* ═══ Map ═══ */
@@ -6583,6 +6653,7 @@ window.addEventListener('resize', () => {
   clearTimeout(exploreResizeTimer);
   exploreResizeTimer = setTimeout(updateShowMoreCounts, 200);
   updateFilterSlider();
+  updateCitySlider();
 });
 
 function toggleExploreExpand(section) {
@@ -7867,6 +7938,9 @@ async function fetchSiteSettings() {
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
   updateFilterSlider();
+  updateCitySlider();
+  // Web fonts land after first paint and change the tab widths
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateCitySlider);
   fetchAndApplyPrices(); // async, non-blocking — updates cards when prices arrive
   fetchSiteSettings(); // async, non-blocking — applies admin settings
   initMiniMap();
