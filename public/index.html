@@ -75,7 +75,7 @@
   --shadow-lg:0 12px 40px rgba(0,0,0,.42),0 4px 12px rgba(0,0,0,.3);
   --shadow-xl:0 40px 90px rgba(0,0,0,.5),0 8px 20px rgba(0,0,0,.35);
   --radius:12px;--radius-lg:18px;--radius-xl:26px;
-  --ease:cubic-bezier(.2,.6,.2,1);--ease-out:cubic-bezier(.2,.6,.2,1);
+  --ease:cubic-bezier(.2,.6,.2,1);--ease-out:cubic-bezier(.2,.6,.2,1);--ease-sheet:cubic-bezier(.32,.72,0,1);
 }
 [data-theme="light"] {
   --bg:#FAF6EE;--bg-card:#FFFFFF;--bg-dark:#F0EBE0;--bg-dark-card:#FFFFFF;
@@ -1105,17 +1105,35 @@ ul{list-style:none}
 .map-prop-strip-item.filtered-out{display:none}
 @media(prefers-reduced-motion:reduce){
   .map-city-filter,.map-city-btn{transition:none}
+  .map-bottom-sheet{transition-duration:.01ms}
 }
 
 /* ═══ BOTTOM SHEET — unified card + strip container ═══ */
-.map-bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;display:flex;flex-direction:column;max-height:55dvh;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease),max-height .35s var(--ease)}
+.map-bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;display:flex;flex-direction:column;max-height:55dvh;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease),max-height .42s var(--ease-sheet)}
 .map-expanded .map-bottom-sheet{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
 .map-bottom-sheet.strip-only{max-height:calc(250px + env(safe-area-inset-bottom,34px));padding-bottom:0}
-/* Drag handle */
-.map-sheet-handle{display:flex;justify-content:center;padding:8px 0 4px;cursor:grab;flex-shrink:0}
-.map-sheet-handle-bar{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2)}
+/* Drag handle — the sheet is draggable anywhere, this just says so */
+.map-sheet-handle{display:flex;justify-content:center;padding:10px 0 6px;cursor:grab;flex-shrink:0;touch-action:none}
+.map-bottom-sheet.sheet-dragging .map-sheet-handle{cursor:grabbing}
+.map-sheet-handle-bar{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.26);transition:background .2s var(--ease),width .2s var(--ease)}
+.map-bottom-sheet:hover .map-sheet-handle-bar{background:rgba(255,255,255,.38)}
+.map-bottom-sheet.sheet-dragging .map-sheet-handle-bar{background:rgba(255,255,255,.5);width:52px}
+/* While a finger owns the sheet, height follows it directly — no transition to
+   fight, and no inertial scrolling inside the card. */
+.map-bottom-sheet.sheet-dragging{transition:none;user-select:none;-webkit-user-select:none}
+.map-bottom-sheet.sheet-dragging .map-card-section{overflow-y:hidden}
+/* The card stays rendered while the sheet is being dragged or is animating
+   shut, so it slides out of view instead of vanishing mid-collapse. */
+.map-bottom-sheet.sheet-dragging .map-card-section,
+.map-bottom-sheet.sheet-anim .map-card-section{display:block;animation:none}
+.map-bottom-sheet.sheet-measure{transition:none!important}
+.map-bottom-sheet.sheet-measure .map-card-section{animation:none!important}
 /* Card section — scrolls if overflows */
-.map-card-section{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none}
+/* flex:1 gave the card a flex-basis of 0, so in this auto-height sheet it
+   contributed nothing to the content height and rendered as a ~35px sliver
+   on phones. Size it to its content, and let it shrink (and scroll) only
+   once the sheet hits its 55dvh cap. */
+.map-card-section{flex:0 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none}
 .map-bottom-sheet:not(.strip-only) .map-card-section{display:block;animation:sheetExpand .35s var(--ease) forwards}
 /* Strip section — always visible, pinned at bottom */
 .map-strip-section{flex-shrink:0;border-top:1px solid rgba(255,255,255,.08)}
@@ -7223,8 +7241,186 @@ function selectPropertyOnMap(idx) {
     flyToVisibleCenter([prop.lat, prop.lng], 15, { duration: 1.5, easeLinearity: 0.25 });
   });
 
+  mapLastCardIndex = idx;
   updateMapPropStrip(idx);
   updateExploreMap();
+}
+
+/* ═══ Bottom sheet drag ═══ */
+/* Two states: expanded (property card above the strip) and collapsed (strip
+   only). A drag anywhere on the sheet moves it between them -- the height
+   follows the finger, and the release snaps on velocity first, position
+   second. Tapping a strip card still flips the same two states via CSS. */
+const SHEET_FLICK_VELOCITY = 0.4;  // px/ms — above this the direction decides
+const SHEET_SNAP_MS = 430;         // must outlast the max-height transition
+let sheetDrag = null;
+let sheetSuppressClick = false;
+let mapLastCardIndex = null;
+
+/* Both resting heights, measured rather than assumed: the collapsed height is
+   a different CSS value at three breakpoints, and the expanded one depends on
+   the card's content and the viewport. */
+function sheetHeights(sheet) {
+  const wasCollapsed = sheet.classList.contains('strip-only');
+  const inlineMax = sheet.style.maxHeight;
+  sheet.classList.add('sheet-measure');
+  sheet.style.maxHeight = '';
+  sheet.classList.add('strip-only');
+  const collapsed = sheet.offsetHeight;
+  sheet.classList.remove('strip-only');
+  const expanded = sheet.offsetHeight;
+  if (wasCollapsed) sheet.classList.add('strip-only');
+  sheet.style.maxHeight = inlineMax;
+  sheet.classList.remove('sheet-measure');
+  return { collapsed, expanded: Math.max(expanded, collapsed) };
+}
+
+/* Pulling up on an empty sheet would expand it onto a blank card, so give it
+   the last property viewed, or the first one the city filter allows. */
+function ensureSheetCard() {
+  if (mapActiveProperty != null) return true;
+  let idx = mapLastCardIndex;
+  if (idx == null || !mapCityMatches(PROPERTIES[idx])) {
+    idx = PROPERTIES.findIndex(mapCityMatches);
+  }
+  if (idx == null || idx < 0) return false;
+  selectPropertyOnMap(idx);
+  return true;
+}
+
+function snapSheet(sheet, heights, toExpanded) {
+  sheet.classList.remove('sheet-dragging');
+  sheet.classList.add('sheet-anim');
+  void sheet.offsetHeight; // lock in the dragged height as the start value
+  sheet.style.maxHeight = (toExpanded ? heights.expanded : heights.collapsed) + 'px';
+  clearTimeout(sheet._sheetSnapTimer);
+  sheet._sheetSnapTimer = setTimeout(() => {
+    sheet.classList.remove('sheet-anim');
+    sheet.classList.toggle('strip-only', !toExpanded);
+    sheet.style.maxHeight = '';
+    // Collapsing is the same end state as dismissing the card, pin included
+    if (!toExpanded) closeMapCard();
+  }, SHEET_SNAP_MS);
+}
+
+function resetSheetDrag() {
+  const sheet = document.getElementById('mapBottomSheet');
+  sheetDrag = null;
+  if (!sheet) return;
+  clearTimeout(sheet._sheetSnapTimer);
+  sheet.classList.remove('sheet-dragging', 'sheet-anim', 'sheet-measure');
+  sheet.style.maxHeight = '';
+}
+
+function initSheetDrag() {
+  const sheet = document.getElementById('mapBottomSheet');
+  if (!sheet) return;
+  const card = document.getElementById('mapCardSection');
+
+  function begin(x, y, target) {
+    sheetSuppressClick = false; // never let one gesture's flag reach the next
+    if (!mapIsExpanded) return;
+    clearTimeout(sheet._sheetSnapTimer);
+    sheetDrag = {
+      x0: x, y0: y, lastY: y, lastT: performance.now(), v: 0,
+      axis: null, active: false, moved: false, target: target,
+      fromCollapsed: sheet.classList.contains('strip-only'),
+      heights: null, base: 0
+    };
+  }
+
+  /* Returns false when the gesture belongs to something else — a sideways
+     flick through the strip, or a card that is scrolled and still has room to
+     scroll the way the finger is going. */
+  function claim(dy) {
+    const inCard = card && sheetDrag.target && card.contains(sheetDrag.target);
+    if (inCard && !sheetDrag.fromCollapsed && card.scrollHeight > card.clientHeight) {
+      if (dy < 0) return false;            // still scrolling the card down
+      if (card.scrollTop > 0) return false; // pull-to-collapse only from the top
+    }
+    return true;
+  }
+
+  function activate() {
+    const d = sheetDrag;
+    // Measure with the card present, or a pull-up has nothing to reveal
+    if (d.fromCollapsed) ensureSheetCard();
+    d.heights = sheetHeights(sheet);
+    d.base = d.fromCollapsed ? d.heights.collapsed : d.heights.expanded;
+    sheet.classList.remove('strip-only');
+    sheet.classList.remove('sheet-anim');
+    sheet.classList.add('sheet-dragging');
+    d.active = true;
+  }
+
+  function move(x, y) {
+    const d = sheetDrag;
+    if (!d) return false;
+    const dx = x - d.x0, dy = y - d.y0;
+    if (d.axis === null) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return false;
+      d.axis = Math.abs(dy) > Math.abs(dx) ? 'y' : 'x';
+      if (d.axis === 'x' || !claim(dy)) { sheetDrag = null; return false; }
+      activate();
+    }
+    const now = performance.now();
+    if (now > d.lastT) d.v = (y - d.lastY) / (now - d.lastT);
+    d.lastY = y; d.lastT = now;
+    d.moved = true;
+    const h = Math.max(d.heights.collapsed, Math.min(d.heights.expanded, d.base - dy));
+    sheet.style.maxHeight = h + 'px';
+    return true;
+  }
+
+  function end() {
+    const d = sheetDrag;
+    sheetDrag = null;
+    if (!d || !d.active) return;
+    const h = sheet.getBoundingClientRect().height;
+    const span = d.heights.expanded - d.heights.collapsed;
+    let toExpanded;
+    if (Math.abs(d.v) > SHEET_FLICK_VELOCITY) {
+      toExpanded = d.v < 0;             // a flick decides on its own direction
+    } else {
+      toExpanded = span > 0 && (h - d.heights.collapsed) / span > 0.4;
+    }
+    /* A mouse drag still fires a click on release; a touch drag usually does
+       not, because we preventDefault'd the move. Either way the flag is only
+       good for the tail of this gesture. */
+    sheetSuppressClick = d.moved;
+    if (d.moved) setTimeout(() => { sheetSuppressClick = false; }, 350);
+    snapSheet(sheet, d.heights, toExpanded);
+  }
+
+  sheet.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    begin(e.touches[0].clientX, e.touches[0].clientY, e.target);
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', (e) => {
+    if (!sheetDrag || e.touches.length !== 1) return;
+    if (move(e.touches[0].clientX, e.touches[0].clientY) && e.cancelable) e.preventDefault();
+  }, { passive: false });
+
+  sheet.addEventListener('touchend', end);
+  sheet.addEventListener('touchcancel', end);
+
+  sheet.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    begin(e.clientX, e.clientY, e.target);
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (sheetDrag) move(e.clientX, e.clientY);
+  });
+  document.addEventListener('mouseup', () => { if (sheetDrag) end(); });
+
+  // A drag that happens to finish over Book Now must not also press it
+  sheet.addEventListener('click', (e) => {
+    if (!sheetSuppressClick) return;
+    sheetSuppressClick = false;
+    e.stopPropagation();
+    e.preventDefault();
+  }, true);
 }
 
 function closeMapCard() {
@@ -7458,6 +7654,7 @@ function collapseMap(skipHistory) {
   const backdrop = document.getElementById('mapBackdrop');
 
   // Close any open property card
+  resetSheetDrag();
   closeMapCard();
 
   // Hide close button
@@ -8040,6 +8237,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
   updateCollectionCounts();
   initMapCityFilter();
+  initSheetDrag();
   updateFilterSlider();
   updateCitySlider();
   // Web fonts land after first paint and change the tab widths
