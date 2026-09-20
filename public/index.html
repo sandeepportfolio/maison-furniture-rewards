@@ -1092,6 +1092,21 @@ ul{list-style:none}
 .map-card-distance{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--accent-light);font-family:var(--mono);letter-spacing:.04em;margin-top:4px}
 .map-card-distance svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
 
+/* ── City filter — floats over the expanded map ── */
+.map-city-filter{position:absolute;top:18px;left:50%;z-index:560;display:flex;align-items:center;gap:4px;padding:5px;max-width:calc(100% - 140px);border-radius:100px;background:rgba(13,17,14,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(242,237,225,.12);box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-10px);transition:opacity .3s var(--ease),transform .3s var(--ease);overflow-x:auto;scrollbar-width:none}
+.map-city-filter::-webkit-scrollbar{display:none}
+.map-expanded .map-city-filter{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);transition-delay:.18s}
+.map-city-btn{display:flex;align-items:center;gap:7px;flex-shrink:0;padding:9px 18px;border:none;border-radius:100px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:.01em;color:rgba(242,237,225,.62);white-space:nowrap;transition:color .25s var(--ease),background .25s var(--ease),box-shadow .25s var(--ease)}
+.map-city-btn:hover{color:#F2EDE1;background:rgba(242,237,225,.07)}
+.map-city-btn.active{color:#0D110E;background:linear-gradient(135deg,var(--brass-light),var(--brass));box-shadow:0 2px 14px rgba(201,152,69,.35)}
+.map-city-btn:focus-visible{outline:2px solid var(--brass-light);outline-offset:2px}
+.map-city-count{font-family:var(--mono);font-size:10px;line-height:1;letter-spacing:.04em;padding:3px 6px;border-radius:100px;background:rgba(242,237,225,.12);color:inherit}
+.map-city-btn.active .map-city-count{background:rgba(13,17,14,.2)}
+.map-prop-strip-item.filtered-out{display:none}
+@media(prefers-reduced-motion:reduce){
+  .map-city-filter,.map-city-btn{transition:none}
+}
+
 /* ═══ BOTTOM SHEET — unified card + strip container ═══ */
 .map-bottom-sheet{position:absolute;bottom:0;left:0;right:0;z-index:600;display:flex;flex-direction:column;max-height:55dvh;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .4s var(--ease),transform .4s var(--ease),max-height .35s var(--ease)}
 .map-expanded .map-bottom-sheet{opacity:1;pointer-events:auto;transform:translateY(0);transition-delay:.15s}
@@ -1750,6 +1765,9 @@ ul{list-style:none}
   .explore-events-grid:not(.expanded) .explore-event-card:nth-child(n+4){display:none}
   .explore-map-wrap{height:480px}
   .map-bottom-sheet{border-radius:14px 14px 0 0}
+  .map-city-filter{top:14px;left:14px;right:70px;max-width:none;justify-content:flex-start;transform:translateX(0) translateY(-10px)}
+  .map-expanded .map-city-filter{transform:translateX(0) translateY(0)}
+  .map-city-btn{padding:8px 14px;font-size:12px;gap:5px}
   .map-bottom-sheet.strip-only{max-height:calc(120px + env(safe-area-inset-bottom,0px))}
   .map-property-card{padding:10px 14px 6px}
   .map-card-photo{width:90px;min-width:90px;height:90px;border-radius:8px}
@@ -1831,6 +1849,9 @@ ul{list-style:none}
   .xplr-grid .xplr-card:first-child .xplr-card-img{height:180px}
   .explore-map-wrap{height:400px}
   .map-bottom-sheet.strip-only{max-height:calc(230px + env(safe-area-inset-bottom,34px))}
+  .map-city-filter{top:12px;left:12px;right:58px;padding:4px;gap:3px}
+  .map-city-btn{padding:7px 11px;font-size:11.5px;gap:5px}
+  .map-city-count{font-size:9px;padding:2px 5px}
   .map-card-photo{width:80px;min-width:80px;height:80px}
   .map-card-name{font-size:15px}
   .map-card-specs{display:none}
@@ -2565,6 +2586,7 @@ ul{list-style:none}
 [data-theme="light"] .v2-float-fav,
 [data-theme="light"] .v2-float-stats,
 [data-theme="light"] .xplr-card-badge,
+[data-theme="light"] .map-city-filter,
 [data-theme="light"] .xplr-card-rating-badge{--accent:#C99845;--accent-hover:#E0B15C;--accent-light:#E0B15C;--accent-pale:rgba(201,152,69,.15);--brass:#C99845;--brass-light:#E0B15C}
 [data-theme="light"] .map-bottom-sheet,
 [data-theme="light"] .legal-modal{--accent:#C99845;--accent-light:#E0B15C;--brass-light:#E0B15C;--border-dark:rgba(242,237,225,.1)}
@@ -2948,6 +2970,11 @@ ul{list-style:none}
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/><circle cx="12" cy="12" r="8"/></svg>
         </button>
         <div class="map-nav-dots" id="mapNavDots"></div>
+        <div class="map-city-filter" id="mapCityFilter" role="group" aria-label="Filter properties by city">
+          <button type="button" class="map-city-btn active" data-city="all" aria-pressed="true" onclick="setMapCityFilter('all')">All <span class="map-city-count">8</span></button>
+          <button type="button" class="map-city-btn" data-city="dallas" aria-pressed="false" onclick="setMapCityFilter('dallas')">Dallas <span class="map-city-count">7</span></button>
+          <button type="button" class="map-city-btn" data-city="austin" aria-pressed="false" onclick="setMapCityFilter('austin')">Austin <span class="map-city-count">1</span></button>
+        </div>
         <div class="map-bottom-sheet strip-only" id="mapBottomSheet">
           <div class="map-sheet-handle"><div class="map-sheet-handle-bar"></div></div>
           <div class="map-card-section" id="mapCardSection">
@@ -6512,18 +6539,81 @@ function showMapCardDistance(prop) {
   distEl.style.display = '';
 }
 
+/* ── City filter over the map ── */
+/* Shares propertyMetro() with the collection filter, so both surfaces agree on
+   which metro a property belongs to. */
+let mapCityFilter = 'all';
+
+function mapCityMatches(prop) {
+  return mapCityFilter === 'all' || (prop && propertyMetro(prop) === mapCityFilter);
+}
+
+function mapFilteredProperties() {
+  return PROPERTIES.filter(mapCityMatches);
+}
+
+/* Counts come from the data, and a tab that could only ever be empty is not
+   shown at all. */
+function initMapCityFilter() {
+  const bar = document.getElementById('mapCityFilter');
+  if (!bar) return;
+  bar.querySelectorAll('.map-city-btn').forEach(btn => {
+    const city = btn.dataset.city;
+    const n = city === 'all'
+      ? PROPERTIES.length
+      : PROPERTIES.filter(p => propertyMetro(p) === city).length;
+    const countEl = btn.querySelector('.map-city-count');
+    if (countEl) countEl.textContent = n;
+    btn.hidden = n === 0;
+  });
+}
+
+function setMapCityFilter(city) {
+  mapCityFilter = city;
+  document.querySelectorAll('#mapCityFilter .map-city-btn').forEach(btn => {
+    const on = btn.dataset.city === city;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', String(on));
+  });
+  applyMapCityFilter();
+}
+
+function applyMapCityFilter() {
+  const strip = document.getElementById('mapPropStrip');
+  if (strip) {
+    strip.querySelectorAll('.map-prop-strip-item').forEach(item => {
+      const prop = PROPERTIES[parseInt(item.dataset.idx, 10)];
+      item.classList.toggle('filtered-out', !mapCityMatches(prop));
+    });
+  }
+  // Pins are added to / removed from the cluster group rather than rebuilt, so
+  // the group keeps its zoom and the markers keep their handlers.
+  if (mapClusterGroup) {
+    mapPropertyMarkers.forEach(m => {
+      const show = mapCityMatches(PROPERTIES[m.propertyIndex]);
+      const has = mapClusterGroup.hasLayer(m);
+      if (show && !has) mapClusterGroup.addLayer(m);
+      else if (!show && has) mapClusterGroup.removeLayer(m);
+    });
+  }
+  // A card left open for a property the filter just hid has to go with it
+  if (mapActiveProperty != null && !mapCityMatches(PROPERTIES[mapActiveProperty])) {
+    closeMapCard();
+  }
+  if (exploreMapInstance) fitMapToProperties({ animate: true, duration: 0.7 });
+}
+
 function getMapBounds() {
-  const coords = PROPERTIES.map(p => [p.lat, p.lng]);
+  const visible = mapFilteredProperties();
+  const coords = (visible.length ? visible : PROPERTIES).map(p => [p.lat, p.lng]);
   // Include the guest's own location ONLY when they're actually near DFW.
   // Unconditionally fitting to it zoomed the homepage preview out to a
   // multi-state view for any guest browsing from elsewhere — pins invisible,
   // map centered on empty country between them and Dallas.
   if (userLat != null) {
-    const DFW_CENTER = [32.9, -96.85];
     const NEARBY_MILES = 120;
-    if (haversine(userLat, userLng, DFW_CENTER[0], DFW_CENTER[1]) <= NEARBY_MILES) {
-      coords.push([userLat, userLng]);
-    }
+    const nearShown = coords.some(c => haversine(userLat, userLng, c[0], c[1]) <= NEARBY_MILES);
+    if (nearShown) coords.push([userLat, userLng]);
   }
   return L.latLngBounds(coords);
 }
@@ -6559,6 +6649,7 @@ function openExploreAttraction(lat, lng, name) {
 function viewPropertyOnMap(slug) {
   const idx = PROPERTIES.findIndex(p => p.slug === slug);
   if (idx === -1) return;
+  if (!mapCityMatches(PROPERTIES[idx])) setMapCityFilter('all');
   if (!exploreMapInstance) initExploreMap();
   expandMap();
   setTimeout(() => {
@@ -6810,6 +6901,7 @@ function initExploreMap() {
 
   addPropertyMarkers();
   buildMapPropStrip();
+  applyMapCityFilter();
   initMapInteraction();
 
   // Tap on map area closes the card (collapse bottom sheet)
@@ -7947,6 +8039,7 @@ async function fetchSiteSettings() {
 window.addEventListener('DOMContentLoaded', () => {
   renderProperties();
   updateCollectionCounts();
+  initMapCityFilter();
   updateFilterSlider();
   updateCitySlider();
   // Web fonts land after first paint and change the tab widths
