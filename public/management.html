@@ -461,6 +461,8 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
 .rs-footer-word{margin-top:clamp(28px,4vw,44px);text-align:center;font-weight:800;font-size:clamp(64px,15.5vw,236px);line-height:.88;letter-spacing:.02em;color:var(--ink);user-select:none}
 .rs-footer-legal{margin-top:clamp(24px,3vw,36px);border-top:1px solid rgba(var(--ink-rgb),.12);padding-top:20px;display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:center}
 .rs-footer-legal span{font-size:13.5px;font-weight:600;color:var(--ink-55);line-height:1.6}
+.rs-footer-legal a{color:var(--ink-55);transition:color .2s}
+.rs-footer-legal a:hover{color:var(--gold)}
 
 /* ═══ Hover states — gated so touch taps don't stick ═══ */
 @media(hover:hover) and (pointer:fine){
@@ -1088,6 +1090,7 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
     <div class="rs-footer-legal">
       <span>© 2026 Regent Stays · Regent Capital Ventures LLC</span>
       <span>Luxury stays &amp; property management · Dallas–Fort Worth, Texas</span>
+      <span><a href="/privacy-policy">Privacy Policy</a></span>
     </div>
   </div>
 </footer>

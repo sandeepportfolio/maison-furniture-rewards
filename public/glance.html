@@ -158,6 +158,9 @@ body{background:var(--bg);max-width:480px;margin:0 auto;padding-bottom:80px;over
 .gl-footer-text{text-align:center;padding:20px;font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--text-faint);text-transform:uppercase}
 
 /* ── Sticky Bar ── */
+.gl-legal{text-align:center;padding:0 20px calc(96px + var(--safe-b));font-size:11.5px;color:var(--text-dim)}
+.gl-legal a{color:var(--text-dim);transition:color .2s}
+.gl-legal a:hover{color:var(--accent)}
 .gl-sticky{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(to right,var(--bg) 0%,#111511 100%);border-top:1px solid rgba(201,152,69,0.2);padding:14px 20px calc(14px + var(--safe-b));display:flex;align-items:center;justify-content:space-between}
 .gl-sticky-inner{max-width:480px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
 .gl-sticky-price{display:flex;align-items:baseline;gap:6px}
@@ -1090,6 +1093,8 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   </nav>
   <span class="gl-deskfooter-loc" id="deskFooterLoc"></span>
 </div>
+
+<div class="gl-legal"><a href="/privacy-policy">Privacy Policy</a></div>
 
 <!-- Sticky Bar -->
 <div class="gl-sticky">

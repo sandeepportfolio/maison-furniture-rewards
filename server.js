@@ -491,7 +491,8 @@ app.get('/sitemap.xml', (req, res) => {
     { loc: '/management', priority: '0.7', changefreq: 'monthly' },
     { loc: '/reward', priority: '0.6', changefreq: 'monthly' },
     { loc: '/regent-ai', priority: '0.6', changefreq: 'monthly' },
-    { loc: '/careers', priority: '0.5', changefreq: 'monthly' }
+    { loc: '/careers', priority: '0.5', changefreq: 'monthly' },
+    { loc: '/privacy-policy', priority: '0.3', changefreq: 'yearly' }
   ];
   // Property URLs are listed at /property/<slug> because that is what the
   // glance pages declare as their canonical. A sitemap should only ever
@@ -2621,6 +2622,13 @@ app.get('/regent-ai', (req, res) => {
 app.get('/careers', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'careers.html'));
 });
+
+// Serve Privacy Policy page. /privacy is a common guess and a common link
+// target in email footers, so send it to the canonical URL rather than a 404.
+app.get('/privacy-policy', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'privacy-policy.html'));
+});
+app.get('/privacy', (req, res) => res.redirect(301, '/privacy-policy'));
 
 // ── ADMIN: Custom Invoice ──
 // Creates a reservation in Guesty with admin-specified pricing. Guesty's Guest
@@ -6129,7 +6137,7 @@ function getMaintenanceFormHTML() {
       </form>
       <div class="result" id="resultBox"></div>
     </div>
-    <p class="footer-note">Book with Regent &middot; <a href="/">Back to website</a></p>
+    <p class="footer-note">Book with Regent &middot; <a href="/">Back to website</a> &middot; <a href="/privacy-policy">Privacy Policy</a></p>
   </div>
   <script>
     const form = document.getElementById('maintenanceForm');

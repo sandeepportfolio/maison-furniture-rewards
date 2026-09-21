@@ -667,7 +667,7 @@ input,textarea{font-family:var(--font-b);outline:none;border:none}
     </div>
   </section>
   <footer class="t-footer">
-    <p>&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a></p>
+    <p>&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a> &middot; <a href="/privacy-policy">Privacy Policy</a></p>
   </footer>
 </div>
 
@@ -1185,7 +1185,7 @@ function showErrorUI(title,message){
   document.getElementById('loading-screen').classList.add('hidden');
   document.getElementById('login-screen').style.display='none';document.getElementById('login-screen').classList.add('hidden');
   var p=document.getElementById('trip-portal');p.style.display='block';p.classList.add('active');
-  p.innerHTML='<div class="err-screen"><div class="err-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><h2>'+esc(title)+'</h2><p>'+esc(message)+'</p><button onclick="window.location.reload()">Try Again</button></div><footer class="t-footer"><p>&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a></p></footer>';
+  p.innerHTML='<div class="err-screen"><div class="err-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><h2>'+esc(title)+'</h2><p>'+esc(message)+'</p><button onclick="window.location.reload()">Try Again</button></div><footer class="t-footer"><p>&copy; Regent &mdash; <a href="https://bookwithregent.com">bookwithregent.com</a> &middot; <a href="/privacy-policy">Privacy Policy</a></p></footer>';
 }
 
 // ═══════════════════════════════════════════
