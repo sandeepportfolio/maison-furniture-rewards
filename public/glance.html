@@ -1217,7 +1217,9 @@ var GLANCE_TAGS = {
   'designer-game': 'SKY LOUNGE · MINI GOLF · MARBLE · EV CHARGING',
   'lake-view': 'LAKE VIEW · WINE COOLER · POOL · GYM',
   'executive': 'SKY LOUNGE · EV CHARGER · FIRE PIT · DART',
-  'stunning-lake': 'LAKE VIEWS · FIBER · DUAL TVS · POOL'
+  'stunning-lake': 'LAKE VIEWS · FIBER · DUAL TVS · POOL',
+  'regent-crown': 'HOT TUB · GAME TABLE · GOOGLE FIBER · GATED',
+  'regent-sol': 'SKYLINE VIEWS · GARAGE · BALCONY · GIGABIT WI-FI'
 };
 
 // ── Init ──
@@ -1277,7 +1279,7 @@ function init() {
   var totalBeds = countTotalBeds();
   tickerItems.push(totalBeds + ' BED' + (totalBeds !== 1 ? 'S' : ''));
   tickerItems.push(PROP.baths + ' BATH' + (PROP.baths > 1 ? 'S' : ''));
-  if (PROP.isVilla) tickerItems.push('PET-FRIENDLY');
+  if (PETS_ALLOWED[SLUG] === true) tickerItems.push('PET-FRIENDLY');
   tickerItems.push(PROP.guests + ' GUESTS');
   var tickerHtml = '';
   // Duplicate for a seamless loop. Each item carries a TRAILING separator so
@@ -1324,8 +1326,9 @@ function init() {
 
   // Airbnb link — canonical rooms/{id} URL built from the listing's hostingId
   // (the same id the photo CDN uses, so it can't point at the wrong listing).
-  // The old /h/<handle> short links were hand-maintained and had drifted.
-  var airbnbUrl = 'https://www.airbnb.com/rooms/' + PROP.hostingId;
+  // Hand-maintained /h/<handle> short links had drifted, so a property only
+  // gets one when it sets airbnbUrl explicitly; everything else stays derived.
+  var airbnbUrl = PROP.airbnbUrl || 'https://www.airbnb.com/rooms/' + PROP.hostingId;
   document.getElementById('airbnbBtn').href = airbnbUrl;
 
   // About
@@ -1336,7 +1339,9 @@ function init() {
     'designer-game': 'Marble meets playful.\nLas Colinas at your door.',
     'lake-view': 'Wake up to the lake.\nStay for everything else.',
     'executive': 'Light pours in.\nThe city stays out.',
-    'stunning-lake': 'The lake is right there.\nSo is everything else.'
+    'stunning-lake': 'The lake is right there.\nSo is everything else.',
+    'regent-crown': 'Four suites, one roof.\nDowntown is two miles away.',
+    'regent-sol': 'Scandinavian light.\nFive minutes from downtown.'
   };
   var tagline = taglines[SLUG] || PROP.name;
   document.getElementById('glTagline').innerHTML = tagline.replace(/\n/g, '<br>');
@@ -1537,6 +1542,11 @@ function getBedrooms() {
       { label: 'BEDROOM 4', type: '1 king bed', note: 'EN-SUITE BATH · TV' },
       { label: 'LIVING ROOM', type: 'Sleeper sofa', note: 'NEXT TO GAME TABLE' },
       { label: 'GAME ROOM', type: 'Queen air mattress', note: 'SLEEPS UP TO 11 TOTAL' }
+    ],
+    'regent-sol': [
+      { label: 'BEDROOM 1', type: '1 queen bed', note: 'TV · UPSTAIRS' },
+      { label: 'BEDROOM 2', type: '1 full bed', note: 'TV' },
+      { label: 'LIVING ROOM', type: 'Couch + 2 air mattresses', note: 'SLEEPS UP TO 8 TOTAL' }
     ]
   };
   return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
@@ -1615,6 +1625,15 @@ var FEATURED_AMENITIES = {
     { name: 'TV in every bedroom', detail: 'ALL 4 EN-SUITE' },
     { name: 'BBQ grill & patio', detail: 'OUTDOOR' },
     { name: 'Dedicated workspace', detail: 'LIVING ROOM' }
+  ],
+  'regent-sol': [
+    { name: 'Private garage', detail: 'ON PREMISES' },
+    { name: 'Downtown skyline view', detail: 'FROM THE BALCONY' },
+    { name: 'Private balcony', detail: 'SUNSET FACING' },
+    { name: 'Private backyard', detail: 'FENCED' },
+    { name: 'Gigabit Wi-Fi', detail: '1 GBPS' },
+    { name: 'TV in every room', detail: 'BOTH BEDROOMS + LIVING' },
+    { name: 'Washer & dryer', detail: 'IN HOME' }
   ]
 };
 
@@ -1753,14 +1772,34 @@ var PARKING_DETAIL = {
   'regent-skyline': 'COMPLIMENTARY 24/7 VALET'
 };
 
+// Villas used to assert "Pets welcome" for every slug. Guesty's house rules say
+// petsAllowed:false for both villas we run (Regent Crown's rules literally read
+// "No Pets allowed"), so the page was promising something the booking does not
+// permit. Stated per slug from that record instead, and a slug with no entry
+// simply gets no pets line rather than an invented one.
+var PETS_ALLOWED = {
+  'regent-crown': false,
+  'regent-sol': false
+};
+// Same reason: "TWO-CAR GARAGE + DRIVE" is Regent Crown's driveway, not a fact
+// about villas in general.
+var VILLA_PARKING = {
+  'regent-crown': 'TWO-CAR GARAGE + DRIVE',
+  'regent-sol': 'PRIVATE GARAGE ON SITE'
+};
+
 function buildRules() {
   var rules = [
     { name: 'Self check-in', detail: 'SMART LOCK · 3:00 PM' },
     { name: 'Checkout', detail: '11:00 AM' }
   ];
   if (PROP.isVilla) {
-    rules.push({ name: 'Pets welcome', detail: 'PET-FRIENDLY HOME' });
-    rules.push({ name: 'Parking', detail: 'TWO-CAR GARAGE + DRIVE' });
+    if (PETS_ALLOWED[SLUG] === true) {
+      rules.push({ name: 'Pets welcome', detail: 'PET-FRIENDLY HOME' });
+    } else if (PETS_ALLOWED[SLUG] === false) {
+      rules.push({ name: 'Pets', detail: 'NOT PERMITTED' });
+    }
+    rules.push({ name: 'Parking', detail: VILLA_PARKING[SLUG] || 'ON-SITE PARKING' });
   } else {
     rules.push({ name: 'Parking', detail: 'FREE COVERED PARKING', alt: PARKING_DETAIL[SLUG] || null });
   }
@@ -1817,6 +1856,10 @@ var NEIGHBOURHOODS = {
   'stunning-lake': {
     desc: 'Waterfront in Las Colinas with stunning lake views. Steps to DART Orange Line, dining, trails, and the Entertainment District.',
     tags: ['LAKE CAROLYN', 'DART ORANGE LINE', 'LAS COLINAS', 'ENTERTAINMENT DISTRICT']
+  },
+  'regent-sol': {
+    desc: 'East Riverside, about five minutes from downtown Austin and close to Lady Bird Lake. Emo’s and Cidercade are on Riverside itself, with South Congress and the airport both a short drive away.',
+    tags: ['EAST RIVERSIDE', 'LADY BIRD LAKE', 'SOUTH CONGRESS', 'DOWNTOWN AUSTIN']
   }
 };
 

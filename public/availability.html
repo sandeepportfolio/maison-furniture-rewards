@@ -744,7 +744,9 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     'designer-game': 'Sky Lounge \xb7 Mini Golf \xb7 EV Charging \xb7 Coffee Bar',
     'lake-view': 'Lake View \xb7 Wine Cooler \xb7 500Mbps WiFi \xb7 Pool',
     'executive': '65" TV \xb7 Sky Lounge \xb7 Arcade Room \xb7 EV Charger',
-    'stunning-lake': 'Lake View \xb7 1GB Fiber \xb7 Dual TVs \xb7 Pool \xb7 Gym'
+    'stunning-lake': 'Lake View \xb7 1GB Fiber \xb7 Dual TVs \xb7 Pool \xb7 Gym',
+    'regent-crown': 'Hot Tub \xb7 Game Table \xb7 Google Fiber \xb7 Gated Drive',
+    'regent-sol': 'Skyline View \xb7 Private Garage \xb7 Balcony \xb7 Gigabit Wi-Fi'
   };
 
   // ── Card renderers ──
@@ -941,7 +943,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   searchBtn.addEventListener('click',function(){if(!cal.checkIn||!cal.checkOut)return;fetchRange(cal.checkIn,cal.checkOut);});
 
   // ── Property filter ──
-  var PROP_NAMES={'regent-villa':'Regent Villa','regent-skyline':'Regent Skyline','cozy-designer':'Cozy Designer','designer-game':'Designer Game','lake-view':'Lake View','executive':'Executive','stunning-lake':'Stunning Lake','regent-crown':'Regent Crown'};
+  var PROP_NAMES={'regent-villa':'Regent Villa','regent-skyline':'Regent Skyline','cozy-designer':'Cozy Designer','designer-game':'Designer Game','lake-view':'Lake View','executive':'Executive','stunning-lake':'Stunning Lake','regent-crown':'Regent Crown','regent-sol':'Regent Sol'};
   var propertyFilter=null;
 
   function renderPropertyFiltered(data){
