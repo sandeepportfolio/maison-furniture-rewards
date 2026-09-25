@@ -36,18 +36,19 @@
   --ease:cubic-bezier(.2,.6,.2,1);
 }
 [data-theme="light"] {
+  /* Deep golds + .7 ink so small accent/secondary text clears WCAG AA on cream. */
   --bg:#FAF6EE;--bg-card:#FFFFFF;--bg-dark:#F0EBE0;--bg-dark-card:#FFFFFF;
-  --accent:#B8892E;--accent-hover:#A07825;--accent-light:#D6A63E;--accent-pale:rgba(184,137,46,.1);
+  --accent:#7F5B1C;--accent-hover:#6E4B14;--accent-light:#6E4B14;--accent-pale:rgba(127,91,28,.1);
   --accent-ink:#FFFFFF;
-  --text:#1A1610;--text-muted:rgba(26,22,16,.6);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.55);
-  --text-dim:rgba(26,22,16,.4);
+  --text:#1A1610;--text-muted:rgba(26,22,16,.7);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.7);
+  --text-dim:rgba(26,22,16,.68);
   --border:rgba(26,22,16,.1);--border-dark:rgba(26,22,16,.08);
   --card-glass:rgba(26,22,16,.03);--card-glass-strong:rgba(26,22,16,.06);
   --shadow-md:0 4px 16px rgba(26,22,16,.08),0 2px 4px rgba(26,22,16,.05);
   --shadow-lg:0 12px 40px rgba(26,22,16,.1),0 4px 12px rgba(26,22,16,.06);
 }
 /* Italic heading accents in deep gold on the light background. */
-[data-theme="light"] .pp-h1 em{color:#8A6420}
+[data-theme="light"] .pp-h1 em{color:#6E4B14}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;max-width:100vw;overflow-x:clip;scroll-behavior:smooth;scroll-padding-top:110px}
 body{font-family:var(--sans);color:var(--text);background:var(--bg);line-height:1.6;overflow-x:clip}

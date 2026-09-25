@@ -79,12 +79,17 @@
 }
 [data-theme="light"] {
   --bg:#FAF6EE;--bg-card:#FFFFFF;--bg-dark:#F0EBE0;--bg-dark-card:#FFFFFF;
-  /* accent-light/brass-light are used as accent TEXT — on a light ground they must be darker than --accent, not lighter */
-  --accent:#B8892E;--accent-hover:#A07825;--accent-light:#A07825;--accent-pale:rgba(184,137,46,.1);
+  /* Accents double as small TEXT (kickers, chips, prices, links), so on the
+     cream grounds (#FAF6EE / #F0EBE0) they have to clear WCAG AA 4.5:1:
+     #7F5B1C is ~5.2:1 on the darker ground, #6E4B14 ~6.4:1. The paler golds
+     (#B8892E ~2.9:1) read as white-ish on light and were the root of the
+     low-contrast labels. accent-light/brass-light stay darker than --accent. */
+  --accent:#7F5B1C;--accent-hover:#6E4B14;--accent-light:#6E4B14;--accent-pale:rgba(127,91,28,.1);
   --accent-ink:#FFFFFF;
-  --brass:#B8892E;--brass-light:#A07825;
-  --text:#1A1610;--text-muted:rgba(26,22,16,.6);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.62);
-  --text-dim:rgba(26,22,16,.55);
+  --brass:#7F5B1C;--brass-light:#6E4B14;
+  /* Muted/dim ink at .7 / .68 alpha keeps secondary text at AA (~5.5:1+). */
+  --text:#1A1610;--text-muted:rgba(26,22,16,.7);--text-inv:#1A1610;--text-inv-muted:rgba(26,22,16,.7);
+  --text-dim:rgba(26,22,16,.68);
   --border:rgba(26,22,16,.1);--border-dark:rgba(26,22,16,.08);
   --card-glass:rgba(26,22,16,.03);--card-glass-strong:rgba(26,22,16,.06);
   --shadow-sm:0 1px 3px rgba(26,22,16,.06),0 1px 2px rgba(26,22,16,.04);
@@ -2600,15 +2605,15 @@ ul{list-style:none}
 [data-theme="light"] .map-zoom-btn,[data-theme="light"] .map-price-pin,[data-theme="light"] .map-bottom-sheet,
 [data-theme="light"] .map-prop-strip-item,[data-theme="light"] .event-date-chip,[data-theme="light"] .legal-modal{
   --text:#F2EDE1;--text-muted:rgba(242,237,225,.65);--text-inv:#F2EDE1;--text-inv-muted:rgba(242,237,225,.6)}
-[data-theme="light"] .coll-filter-btn{color:rgba(26,22,16,.6)}
+[data-theme="light"] .coll-filter-btn{color:rgba(26,22,16,.72)}
 [data-theme="light"] .coll-filter-btn:hover{color:rgba(26,22,16,.9)}
 [data-theme="light"] .coll-filter-wrap{border-bottom-color:rgba(26,22,16,.1)}
 [data-theme="light"] .city-filter-wrap{border-color:rgba(26,22,16,.12);background:rgba(26,22,16,.025)}
 [data-theme="light"] .city-filter-thumb{border-color:rgba(184,137,46,.35)}
-[data-theme="light"] .city-filter-btn{color:rgba(26,22,16,.55)}
+[data-theme="light"] .city-filter-btn{color:rgba(26,22,16,.72)}
 [data-theme="light"] .city-filter-btn:hover{color:rgba(26,22,16,.9)}
 [data-theme="light"] .city-filter-btn.active{color:var(--accent)}
-[data-theme="light"] .coll-header .coll-sub,[data-theme="light"] .coll-count-label{color:rgba(26,22,16,.5)}
+[data-theme="light"] .coll-header .coll-sub,[data-theme="light"] .coll-count-label{color:rgba(26,22,16,.72)}
 [data-theme="light"] .v2-kicker .v2-dim{color:rgba(26,22,16,.6)}
 [data-theme="light"] .cf-group input::placeholder,[data-theme="light"] .cf-group textarea::placeholder{color:rgba(26,22,16,.35)}
 
@@ -2625,14 +2630,39 @@ ul{list-style:none}
 [data-theme="light"] .map-price-pin .cur{color:#E0B15C}
 [data-theme="light"] .map-expand-btn svg{stroke:#F2EDE1}
 
+/* ── Light-mode contrast pass (WCAG AA, 4.5:1 for text) ──
+   Surfaces that stay dark in light mode keep the bright gold; everything
+   drawn on the cream ground uses the deep-gold / .7-ink tokens above. */
+/* Mobile book bar is dark glass: bright gold, not the deep light-mode gold. */
+[data-theme="light"] .v2-bookbar,[data-theme="light"] .event-date-chip{--accent:#E0B15C;--accent-light:#E0B15C}
+[data-theme="light"] .city-filter-btn.active{color:#6E4B14}
+/* Gold buttons: white type needs the deep gold behind it (~5.9:1). */
+[data-theme="light"] .v2-btn-gold{background:#7F5B1C}
+[data-theme="light"] .v2-btn-gold:hover{background:#6E4B14}
+/* Hero floating cards sit over the page as well as the photo: make the
+   glass opaque enough that its light text never sits on cream. */
+[data-theme="light"] .v2-float-fav,[data-theme="light"] .v2-float-stats{background:rgba(16,20,17,.94)}
+[data-theme="light"] .v2-float-m{color:rgba(242,237,225,.8)}
+[data-theme="light"] .v2-fstat i{color:rgba(242,237,225,.78)}
+/* Property card glass: denser panel/chips and brighter muted ink so the
+   specs, chips and price label read over bright photos. */
+[data-theme="light"] .prop-card{--obs-glass:rgba(10,12,9,.68);--obs-glass-panel:rgba(12,14,11,.74);--obs-muted:#D2CDBC}
+[data-theme="light"] .obs-chip.obs-rate b{color:#E0B15C}
+/* Contact numerals were faded to .55 opacity until hover. */
+[data-theme="light"] .contact-cell-num{opacity:1}
+/* Stat labels under the numerals. */
+[data-theme="light"] .stat-label{color:rgba(26,22,16,.72)}
+/* Reviews marquee separators and kicker on the cream band. */
+[data-theme="light"] .v2-mq-star{color:#6E4B14}
+
 /* Collection header: re-assert the active tab (the light .coll-filter-btn rule above
    has equal specificity to .coll-filter-btn.active and would otherwise win). */
 [data-theme="light"] .coll-filter-btn.active{color:var(--accent)}
 [data-theme="light"] .coll-header .coll-kicker{color:var(--accent)}
 
 /* Explore / events */
-[data-theme="light"] .event-when.soon{color:#15803D;border-color:rgba(21,128,61,.3);background:rgba(21,128,61,.08)}
-[data-theme="light"] .event-price.is-free{color:#15803D}
+[data-theme="light"] .event-when.soon{color:#166534;border-color:rgba(21,128,61,.3);background:rgba(21,128,61,.08)}
+[data-theme="light"] .event-price.is-free{color:#166534}
 @media(hover:hover){
   [data-theme="light"] .explore-event-card:hover .event-name{color:var(--text)}
   [data-theme="light"] .xplr-city-tab:hover .xplr-city-count{background:rgba(26,22,16,.1)}
@@ -2646,17 +2676,18 @@ ul{list-style:none}
 
 /* Hairlines / decorative strokes drawn with light-on-dark literals */
 [data-theme="light"] .v2-reviews{border-color:rgba(26,22,16,.08)}
-[data-theme="light"] .v2-mq-star{color:var(--accent)}
 [data-theme="light"] .v2-wm .out{-webkit-text-stroke-color:rgba(26,22,16,.22)}
 /* Italic gold accents ("story", "Properties", the STAYS watermark, stat
    numbers…). Their dark-mode gradients sweep through cream and pale gold,
    which vanishes on the light background — here they stay in deep gold, with
    the shimmer's moving highlight still dark enough to read. */
-[data-theme="light"] .v2-shimmer{background-image:linear-gradient(90deg,#7A5518,#B8892E,#7A5518);color:#8A6420}
+[data-theme="light"] .v2-shimmer{background-image:linear-gradient(90deg,#6E4B14,#9C7228,#6E4B14);color:#6E4B14}
 [data-theme="light"] .coll-header .coll-title em{background-image:linear-gradient(135deg,#7A5518 0%,#B08026 50%,#7A5518 100%);color:#8A6420}
-[data-theme="light"] .stat-number{background-image:linear-gradient(172deg,#A07825 6%,#8A6420 64%,#7A5518 100%)}
-[data-theme="light"] .stat-number .stat-suffix{color:#8A6420;-webkit-text-fill-color:#8A6420}
-[data-theme="light"] :is(.xplr-title,.rd-headline,.rd-lede,.rewards-title,.avail-drawer-title) em{color:#8A6420}
+/* Thin serif numerals on a pale card: a gradient fill washes out, so light
+   mode paints them solid deep gold (~6.4:1). */
+[data-theme="light"] .stat-number{background:none;color:#6E4B14;-webkit-text-fill-color:#6E4B14}
+[data-theme="light"] .stat-number .stat-suffix{color:#6E4B14;-webkit-text-fill-color:#6E4B14}
+[data-theme="light"] :is(.xplr-title,.rd-headline,.rd-lede,.rewards-title,.avail-drawer-title) em{color:#6E4B14}
 [data-theme="light"] .experience-grid{background:rgba(26,22,16,.08)}
 [data-theme="light"] .story-metric{border-color:rgba(26,22,16,.08)}
 [data-theme="light"] .story-metric:hover{border-color:rgba(184,137,46,.35)}

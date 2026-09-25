@@ -34,10 +34,11 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   --ink-rgb:25,20,16;--bg-rgb:250,246,238;--shadow-rgb:66,48,22;
-  --bg:#FAF6EE;--card:#FFFEFA;--ink:#191410;--ink-72:rgba(var(--ink-rgb),.72);--ink-55:rgba(var(--ink-rgb),.55);--ink-45:rgba(var(--ink-rgb),.52);
+  --bg:#FAF6EE;--card:#FFFEFA;--ink:#191410;--ink-72:rgba(var(--ink-rgb),.78);--ink-55:rgba(var(--ink-rgb),.7);--ink-45:rgba(var(--ink-rgb),.66);
   --line:rgba(var(--ink-rgb),.09);--line-strong:rgba(var(--ink-rgb),.14);
   --green:#1F4A38;--green-soft:#EFF3E8;--green-mid:#3E7A5C;
-  --gold:#B8862F;--gold-deep:#8A6420;--gold-soft:#F5E6C0;--gold-pale:#E8CD8F;
+  /* Light ground: gold doubles as small text, so it sits at AA (~5.5:1). */
+  --gold:#7F5B1C;--gold-deep:#6E4B14;--gold-soft:#F5E6C0;--gold-pale:#E8CD8F;
   --sage:#DCE5CB;--sky:#D8E2E8;--peach:#F1D8C3;--sand:#F2E7D3;--sky-ink:#2E4A5A;
   --dark:#1D1712;--dark-cream:rgba(250,246,238,.66);
   --sans:'Gabarito',system-ui,sans-serif;--serif:'Instrument Serif',Georgia,serif;
@@ -69,7 +70,7 @@
 [data-theme="dark"] .rs-perf .rs-h2,[data-theme="dark"] .rs-stat .num{color:var(--ink)}
 
 /* ═══ Theme toggle button ═══ */
-.theme-toggle-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid rgba(var(--ink-rgb),.12);background:rgba(var(--ink-rgb),.04);color:rgba(var(--ink-rgb),.5);cursor:pointer;transition:all .3s;flex:none}
+.theme-toggle-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid rgba(var(--ink-rgb),.12);background:rgba(var(--ink-rgb),.04);color:rgba(var(--ink-rgb),.7);cursor:pointer;transition:all .3s;flex:none}
 .theme-toggle-btn:hover{color:var(--gold);border-color:var(--gold)}
 [data-theme="dark"] .theme-toggle-btn{border-color:rgba(244,237,224,.15);background:rgba(244,237,224,.05);color:rgba(244,237,224,.5)}
 .rs-nav-links .theme-toggle-btn{margin-left:4px}
@@ -80,7 +81,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line
 a{color:var(--green);text-decoration:none}
 button{font-family:var(--sans);cursor:pointer}
 ::selection{background:#F0E0B8;color:var(--ink)}
-::placeholder{color:rgba(var(--ink-rgb),.5)}
+::placeholder{color:rgba(var(--ink-rgb),.7)}
 :focus-visible{outline:2.5px solid var(--green);outline-offset:2px;border-radius:6px}
 
 em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:-.01em}
@@ -177,7 +178,7 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:0}
 .rs-dash-l{padding:clamp(16px,2.5vw,24px);border-right:1px solid rgba(var(--ink-rgb),.07)}
 .rs-dash-r{padding:clamp(16px,2.5vw,24px)}
-.rs-kicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(var(--ink-rgb),.5)}
+.rs-kicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(var(--ink-rgb),.7)}
 .rs-dash-rev{display:flex;align-items:baseline;gap:10px;margin-top:6px;flex-wrap:wrap}
 .rs-dash-rev b{font-size:clamp(26px,3vw,34px);font-weight:800;letter-spacing:-.02em}
 .rs-badge-up{font-size:12.5px;font-weight:700;color:var(--green);background:var(--green-soft);border-radius:999px;padding:4px 10px;white-space:nowrap}
@@ -214,14 +215,14 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-why-card .body p{margin:8px 0 0;font-size:15.5px;line-height:1.55;color:rgba(var(--ink-rgb),.7);text-wrap:pretty}
 .rs-note-k{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);line-height:1.6}
 .rs-note-q{margin-top:7px;font-family:var(--serif);font-style:italic;font-size:17.5px;line-height:1.45}
-.rs-note-s{margin-top:6px;font-size:12.5px;font-weight:700;color:rgba(var(--ink-rgb),.5)}
+.rs-note-s{margin-top:6px;font-size:12.5px;font-weight:700;color:rgba(var(--ink-rgb),.7)}
 .rs-chat{display:flex;flex-direction:column;gap:8px}
 .rs-msg{max-width:85%;padding:9px 13px;font-size:13.5px;font-weight:600;line-height:1.4}
 .rs-msg small{display:block;font-size:11px;font-weight:700;margin-top:3px}
 .rs-msg.guest{align-self:flex-start;background:var(--bg);border-radius:14px 14px 14px 4px}
 .rs-msg.guest small{color:var(--ink-45)}
 .rs-msg.us{align-self:flex-end;background:var(--green);color:var(--bg);border-radius:14px 14px 4px 14px}
-.rs-msg.us small{color:rgba(250,246,238,.6)}
+.rs-msg.us small{color:rgba(250,246,238,.74)}
 .rs-rate-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .rs-rate-row span{font-size:13px;font-weight:700;color:var(--ink-55)}
 .rs-chip{font-size:12px;font-weight:800;background:var(--green-soft);color:var(--green);border-radius:999px;padding:4px 11px;white-space:nowrap}
@@ -229,7 +230,7 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-rate-val{display:flex;align-items:baseline;gap:9px;margin-top:5px;flex-wrap:wrap}
 .rs-rate-val b{font-size:26px;font-weight:800;letter-spacing:-.02em}
 .rs-rate-val .why{font-size:13px;font-weight:700;color:var(--green)}
-.rs-rate-foot{margin-top:8px;font-size:12.5px;font-weight:700;color:rgba(var(--ink-rgb),.5)}
+.rs-rate-foot{margin-top:8px;font-size:12.5px;font-weight:700;color:rgba(var(--ink-rgb),.7)}
 .rs-cmp{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .rs-cmp-row .lab{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--ink-55)}
 .rs-cmp-row .lab.strong{font-weight:800;color:var(--ink)}
@@ -288,7 +289,7 @@ em.rs-it{font-family:var(--serif);font-weight:400;font-style:italic;letter-spaci
 .rs-stat .num .acc{color:#D9C089}
 .rs-stat .num small{font-size:.42em;color:rgba(250,246,238,.55);font-weight:650}
 .rs-stat .lab{margin-top:10px;font-size:15px;font-weight:600;color:rgba(250,246,238,.62);line-height:1.45}
-.rs-perf-foot{margin-top:clamp(32px,4vw,48px);font-size:12.5px;font-weight:600;color:rgba(250,246,238,.4)}
+.rs-perf-foot{margin-top:clamp(32px,4vw,48px);font-size:12.5px;font-weight:600;color:rgba(250,246,238,.66)}
 
 /* ═══ Calculator ═══ */
 .rs-calc-panel{margin-top:clamp(36px,4.5vw,56px);background:var(--card);border:1px solid var(--line);border-radius:clamp(24px,3vw,36px);box-shadow:0 30px 70px rgba(var(--shadow-rgb),.12);overflow:hidden}
@@ -438,11 +439,11 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
 .rs-textarea{resize:vertical;line-height:1.5}
 .rs-select-wrap{position:relative}
 .rs-select{appearance:none;-webkit-appearance:none;padding-right:38px}
-.rs-select-wrap .car{position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none;color:rgba(var(--ink-rgb),.5);font-size:12px}
+.rs-select-wrap .car{position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none;color:rgba(var(--ink-rgb),.7);font-size:12px}
 .rs-form-submit{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--ink);color:var(--bg);border:none;border-radius:999px;padding:17px 28px;font-weight:700;font-size:16.5px;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
 .rs-form-submit:active{transform:scale(.98)}
 .rs-form-submit:disabled{opacity:.7;transform:none;box-shadow:none;cursor:default}
-.rs-form-note{text-align:center;font-size:13px;font-weight:600;color:rgba(var(--ink-rgb),.5)}
+.rs-form-note{text-align:center;font-size:13px;font-weight:600;color:rgba(var(--ink-rgb),.7)}
 .rs-success{display:none;text-align:center;padding:clamp(18px,3vw,30px) 6px}
 .rs-success .ok{width:64px;height:64px;border-radius:50%;background:var(--green-soft);color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:26px;font-weight:800}
 .rs-success h3{margin:18px 0 0;font-size:clamp(24px,2.6vw,30px);font-weight:750;letter-spacing:-.015em}
@@ -682,7 +683,7 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
       </div>
       <div class="rs-why-card rs-tint-peach rs-reveal">
         <div class="inset">
-          <div class="rs-note-k" style="color:rgba(var(--ink-rgb),.5)">Avg nightly rate</div>
+          <div class="rs-note-k" style="color:rgba(var(--ink-rgb),.7)">Avg nightly rate</div>
           <div class="rs-cmp">
             <div class="rs-cmp-row"><div class="lab"><span>DFW market average</span><span>$113</span></div><div class="rs-cmp-track"><div class="rs-cmp-fill" data-fill="62%"></div></div></div>
             <div class="rs-cmp-row"><div class="lab strong"><span>With Regent</span><span class="v">$156</span></div><div class="rs-cmp-track"><div class="rs-cmp-fill regent" data-fill="92%"></div></div></div>
@@ -783,7 +784,7 @@ input[type=range].rs-range::-moz-range-thumb{width:22px;height:22px;border-radiu
             <i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i>
             <i style="height:66%;background:rgba(31,74,56,.5)"></i><i style="height:80%;background:rgba(31,74,56,.7)"></i><i style="height:100%;background:#1F4A38"></i>
           </div>
-          <div style="margin-top:9px;font-size:12px;font-weight:800;color:rgba(var(--ink-rgb),.5)">Monthly report → your inbox</div>
+          <div style="margin-top:9px;font-size:12px;font-weight:800;color:rgba(var(--ink-rgb),.7)">Monthly report → your inbox</div>
         </div>
         <div class="rs-svc-num">06</div>
         <h3>Owner dashboard &amp; reports</h3>
