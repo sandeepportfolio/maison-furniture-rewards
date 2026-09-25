@@ -5,6 +5,9 @@ name: Fetch Austin assets
 
 on:
   push:
+    # Development branches only — it commits back, so it must never run on main.
+    branches:
+      - 'claude/**'
     paths:
       - scripts/fetch-austin-assets.mjs
       - .github/workflows/fetch-austin-assets.yml
