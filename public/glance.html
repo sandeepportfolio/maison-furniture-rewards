@@ -238,17 +238,19 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
    above this line was edited. Below 1024px the page is byte-identical to
    what shipped before.
 
-   The page shell becomes a full-bleed grid with a capped 1328px content
-   band, so hero / strip / footer / sticky bar can bleed edge-to-edge
-   while text stays measured. Named lines:
+   The page shell becomes a full-bleed grid with a content band that grows
+   with the window (--gl-band: 1328px up to 84vw, capped at 1760px), so a
+   maximised desktop browser fills out instead of leaving wide empty gutters,
+   while hero / strip / footer / sticky bar bleed edge-to-edge. Named lines:
      full ─ viewport edge   content ─ text band   side ─ 330px booking rail */
 @media(min-width:1024px){
   body{
+    --gl-band:clamp(1328px,84vw,1760px);
     max-width:none;margin:0;padding:0 0 78px;overflow-x:hidden;
     display:grid;align-content:start;
     grid-template-columns:
       [full-start] minmax(32px,1fr)
-      [content-start] minmax(0,942px)
+      [content-start] minmax(0,calc(var(--gl-band) - 386px))
       [gap-start] minmax(28px,56px)
       [side-start] 330px
       [content-end] minmax(32px,1fr)
@@ -547,6 +549,11 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   .gl-bed-label{font-size:9px;letter-spacing:.22em;margin-bottom:10px}
   .gl-bed-type{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:8px}
   .gl-bed-note{font-size:8.5px;letter-spacing:.2em}
+  /* No room photo for this listing -> the cells take the whole band instead
+     of leaving the right half empty. */
+  #sleepSection.no-photo #bedGrid{
+    grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))
+  }
   .gl-sleep-fig.has-photo{
     display:block;grid-column:2;position:relative;margin:0;
     overflow:hidden;border-radius:6px;cursor:pointer
@@ -643,8 +650,12 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
      links — no hover affordance, because there is nowhere for them to go. */
   #neighSection{
     position:relative;overflow:hidden;isolation:isolate;
-    display:grid;grid-template-columns:1fr 1fr;column-gap:64px;align-items:start
+    display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);column-gap:64px;align-items:start
   }
+  /* No landmark index -> the copy runs the full width of the plate. */
+  #neighSection.no-tags #neighDesc,
+  #neighSection.no-tags .gl-neigh-coords{grid-column:1/-1}
+  #neighSection.no-tags #locTags{display:none}
   /* The section becomes a location plate: a real outdoor/view photo from this
      listing sits behind it, dimmed under a directional scrim, with the copy,
      the landmark index and the property's true coordinates layered over it.
@@ -673,7 +684,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
     border-top:0;padding-top:0
   }
   #neighDesc{
-    grid-column:1;grid-row:2;max-width:430px;font-family:var(--serif);
+    grid-column:1;grid-row:2;max-width:none;font-family:var(--serif);
     font-size:clamp(18px,1.55vw,22px);font-weight:400;line-height:1.55;
     letter-spacing:.01em;color:var(--text);text-wrap:pretty
   }
@@ -760,7 +771,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   .gl-deskfooter{
     grid-column:full-start/full-end;display:flex;align-items:center;
     justify-content:space-between;gap:32px;margin-top:72px;
-    padding:28px max(32px,calc((100% - 1328px)/2));
+    padding:28px max(32px,calc((100% - var(--gl-band))/2));
     border-top:1px solid rgba(232,228,221,.15)
   }
   .gl-deskfooter-brand{
@@ -779,7 +790,7 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
 
   /* Pinned booking bar — the design's bottom strip, kept live */
   .gl-sticky{
-    display:flex;padding:16px max(32px,calc((100% - 1328px)/2));
+    display:flex;padding:16px max(32px,calc((100% - var(--gl-band))/2));
     background:rgba(16,20,15,.96);backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(201,152,69,.45);
     box-shadow:0 -16px 44px rgba(0,0,0,.5)
@@ -1458,6 +1469,9 @@ var SLEEP_PHOTO_EXCLUDE = /linen|smart tv/i;
 
 function buildSleepPhoto() {
   var fig = document.getElementById('sleepFig');
+  // Assume no plate until one is found, so the bed cells span the full band.
+  var section = document.getElementById('sleepSection');
+  if (section) section.classList.add('no-photo');
   if (!fig || !PROP.photos || !PROP.photoLabels) return;
   var idx = null;
   for (var p = 0; p < SLEEP_PHOTO_PATTERNS.length && idx === null; p++) {
@@ -1475,6 +1489,7 @@ function buildSleepPhoto() {
   document.getElementById('sleepFigCap').textContent =
     'FIG. ' + String(idx + 1).padStart(2, '0') + ' — ' + label.toUpperCase();
   fig.classList.add('has-photo');
+  if (section) section.classList.remove('no-photo');
   hydrateDesktopImages();
   fig.setAttribute('role', 'button');
   fig.setAttribute('tabindex', '0');
@@ -1772,13 +1787,12 @@ var PARKING_DETAIL = {
   'regent-skyline': 'COMPLIMENTARY 24/7 VALET'
 };
 
-// Villas used to assert "Pets welcome" for every slug. Guesty's house rules say
-// petsAllowed:false for both villas we run (Regent Crown's rules literally read
-// "No Pets allowed"), so the page was promising something the booking does not
-// permit. Stated per slug from that record instead, and a slug with no entry
-// simply gets no pets line rather than an invented one.
+// Villas used to assert "Pets welcome" for every slug, so pets are stated per
+// slug instead. Regent Crown welcomes pets (owner-confirmed); Regent Sol's
+// Guesty house rules say petsAllowed:false. A slug with no entry simply gets
+// no pets line rather than an invented one.
 var PETS_ALLOWED = {
-  'regent-crown': false,
+  'regent-crown': true,
   'regent-sol': false
 };
 // Same reason: "TWO-CAR GARAGE + DRIVE" is Regent Crown's driveway, not a fact
@@ -1857,6 +1871,10 @@ var NEIGHBOURHOODS = {
     desc: 'Waterfront in Las Colinas with stunning lake views. Steps to DART Orange Line, dining, trails, and the Entertainment District.',
     tags: ['LAKE CAROLYN', 'DART ORANGE LINE', 'LAS COLINAS', 'ENTERTAINMENT DISTRICT']
   },
+  'regent-crown': {
+    desc: 'Central East Austin, about two miles from downtown. East 6th Street\u2019s bars and live music are 1.5 miles away and Rainey Street is 2.3 — close enough for a night out, quiet enough to come home to a hot tub.',
+    tags: ['CENTRAL EAST AUSTIN', 'EAST 6TH STREET', 'RAINEY STREET', 'DOWNTOWN AUSTIN']
+  },
   'regent-sol': {
     desc: 'East Riverside, about five minutes from downtown Austin and close to Lady Bird Lake. Emo’s and Cidercade are on Riverside itself, with South Congress and the airport both a short drive away.',
     tags: ['EAST RIVERSIDE', 'LADY BIRD LAKE', 'SOUTH CONGRESS', 'DOWNTOWN AUSTIN']
@@ -1880,6 +1898,7 @@ function buildNeighbourhood() {
     html += '<span class="gl-loc-tag">' + tag + '</span>';
   });
   document.getElementById('locTags').innerHTML = html;
+  document.getElementById('neighSection').classList.toggle('no-tags', !n.tags.length);
 }
 
 // Backdrop for the neighbourhood plate: an outdoor / view / amenity-exterior

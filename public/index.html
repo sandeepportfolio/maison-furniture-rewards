@@ -949,7 +949,19 @@ ul{list-style:none}
 @media(hover:hover){.xplr-card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(201,152,69,.1)}}
 .xplr-card:active{transform:scale(.98)}
 .xplr-card-img{position:relative;height:210px;overflow:hidden}
-.xplr-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.23,1,.32,1);will-change:transform}
+.xplr-card-credit{position:absolute;right:10px;bottom:8px;z-index:2;max-width:70%;font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;color:rgba(255,255,255,.72);text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.xplr-credits{margin:4px 0 40px;font-family:var(--sans);font-size:12px;color:var(--text-inv-muted)}
+.xplr-credits summary{cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-inv-muted);width:max-content}
+.xplr-credits summary:hover{color:var(--accent-light)}
+.xplr-credits ul{margin:12px 0 0;padding:0 0 0 18px;columns:2 320px;column-gap:32px;line-height:1.7}
+.xplr-credits li{break-inside:avoid}
+.xplr-credits a{color:inherit;text-decoration:underline;text-decoration-color:rgba(201,152,69,.5);text-underline-offset:2px}
+.xplr-credits a:hover{color:var(--accent-light)}
+.xplr-card-panel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:18px 18px 44px;background:radial-gradient(120% 90% at 85% 0%,rgba(201,152,69,.22),transparent 60%),linear-gradient(150deg,#1B1F18 0%,#12160F 55%,#0D100B 100%)}
+.xplr-card-panel::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(135deg,rgba(242,237,225,.035) 0 1px,transparent 1px 14px);pointer-events:none}
+.xplr-card-panel-city{position:relative;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#E0B15C}
+.xplr-card-panel-name{position:relative;font-family:var(--serif);font-style:italic;font-size:clamp(22px,2.2vw,30px);line-height:1.1;color:rgba(242,237,225,.9);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.xplr-card-img img{position:relative;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.23,1,.32,1);will-change:transform}
 @media(hover:hover){.xplr-card:hover .xplr-card-img img{transform:scale(1.06)}}
 .xplr-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(13,13,13,.7) 100%)}
 .xplr-card-badge{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:rgba(13,13,13,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--accent-light);padding:5px 12px;border-radius:100px;z-index:2;border:1px solid rgba(201,152,69,.15);text-shadow:0 1px 2px rgba(0,0,0,.3)}
@@ -1211,6 +1223,8 @@ ul{list-style:none}
 .explore-events-title{font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.015em;color:var(--text-inv);display:flex;align-items:center;gap:14px}
 .explore-events-title .pulse-dot{width:8px;height:8px;border-radius:50%;background:#6FCF97;box-shadow:0 0 0 4px rgba(111,207,151,.14);animation:pulse 2s ease-in-out infinite;flex-shrink:0}
 .explore-events-sub{font-family:var(--sans);font-size:13.5px;color:var(--text-inv-muted);letter-spacing:.005em}
+.explore-events-heading{display:flex;flex-direction:column;gap:6px;min-width:0}
+.events-city-filter{margin-bottom:0;padding-bottom:0}
 .explore-events-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 
 /* Card shell */
@@ -2634,6 +2648,15 @@ ul{list-style:none}
 [data-theme="light"] .v2-reviews{border-color:rgba(26,22,16,.08)}
 [data-theme="light"] .v2-mq-star{color:var(--accent)}
 [data-theme="light"] .v2-wm .out{-webkit-text-stroke-color:rgba(26,22,16,.22)}
+/* Italic gold accents ("story", "Properties", the STAYS watermark, stat
+   numbers…). Their dark-mode gradients sweep through cream and pale gold,
+   which vanishes on the light background — here they stay in deep gold, with
+   the shimmer's moving highlight still dark enough to read. */
+[data-theme="light"] .v2-shimmer{background-image:linear-gradient(90deg,#7A5518,#B8892E,#7A5518);color:#8A6420}
+[data-theme="light"] .coll-header .coll-title em{background-image:linear-gradient(135deg,#7A5518 0%,#B08026 50%,#7A5518 100%);color:#8A6420}
+[data-theme="light"] .stat-number{background-image:linear-gradient(172deg,#A07825 6%,#8A6420 64%,#7A5518 100%)}
+[data-theme="light"] .stat-number .stat-suffix{color:#8A6420;-webkit-text-fill-color:#8A6420}
+[data-theme="light"] :is(.xplr-title,.rd-headline,.rd-lede,.rewards-title,.avail-drawer-title) em{color:#8A6420}
 [data-theme="light"] .experience-grid{background:rgba(26,22,16,.08)}
 [data-theme="light"] .story-metric{border-color:rgba(26,22,16,.08)}
 [data-theme="light"] .story-metric:hover{border-color:rgba(184,137,46,.35)}
@@ -2797,7 +2820,7 @@ ul{list-style:none}
       <!-- Inline stats -->
       <div class="rd-stats stats-bar">
         <div class="stat-item">
-          <div class="stat-number"><span class="stat-val" data-target="8">8</span></div>
+          <div class="stat-number"><span class="stat-val" id="storyStatProps" data-target="9">9</span></div>
           <div class="stat-label">Properties</div>
         </div>
         <div class="stat-item">
@@ -2886,14 +2909,14 @@ ul{list-style:none}
     <div class="xplr-hero-grain"></div>
     <div class="xplr-hero-content">
       <span class="xplr-label">04&ensp;EXPLORE THE AREA</span>
-      <h2 class="xplr-title">The Dallas-Fort Worth <em>Experience</em></h2>
-      <p class="xplr-subtitle">Five cities. Thirty destinations. One unforgettable stay.</p>
+      <h2 class="xplr-title">The Dallas &amp; Austin <em>Experience</em></h2>
+      <p class="xplr-subtitle">Two metros. <span id="xplrSpotWords">Fifty</span> curated destinations. One unforgettable stay.</p>
       <div class="xplr-stats" id="xplrStats">
-        <div class="xplr-stat"><span class="xplr-stat-num" data-target="27">0</span><span class="xplr-stat-label">Curated Spots</span></div>
+        <div class="xplr-stat"><span class="xplr-stat-num" id="xplrStatSpots" data-target="50">0</span><span class="xplr-stat-label">Curated Spots</span></div>
         <div class="xplr-stat-divider"></div>
-        <div class="xplr-stat"><span class="xplr-stat-num" data-target="6">0</span><span class="xplr-stat-label">Cities</span></div>
+        <div class="xplr-stat"><span class="xplr-stat-num" id="xplrStatCities" data-target="7">0</span><span class="xplr-stat-label">Cities</span></div>
         <div class="xplr-stat-divider"></div>
-        <div class="xplr-stat"><span class="xplr-stat-num" data-target="7">0</span><span class="xplr-stat-label">Properties</span></div>
+        <div class="xplr-stat"><span class="xplr-stat-num" id="xplrStatProps" data-target="9">0</span><span class="xplr-stat-label">Properties</span></div>
       </div>
     </div>
   </div>
@@ -2930,6 +2953,10 @@ ul{list-style:none}
           <span class="xplr-city-name">The Colony</span>
           <span class="xplr-city-count" id="xplrCountColony">1</span>
         </button>
+        <button class="xplr-city-tab" data-city="austin" onclick="selectCity('austin')">
+          <span class="xplr-city-name">Austin</span>
+          <span class="xplr-city-count" id="xplrCountAustin">23</span>
+        </button>
       </div>
       <div class="xplr-city-indicator" id="xplrCityIndicator"></div>
     </nav>
@@ -2953,6 +2980,11 @@ ul{list-style:none}
         <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
       </button>
     </div>
+
+    <details class="xplr-credits" id="xplrCredits">
+      <summary>Photo credits</summary>
+      <ul id="xplrCreditsList"></ul>
+    </details>
 
     <!-- Interactive Property Map -->
     <div class="explore-map-container" id="propertyMapSection">
@@ -3030,8 +3062,15 @@ ul{list-style:none}
     <!-- Events -->
     <div class="explore-events" id="exploreEvents">
       <div class="explore-events-header">
-        <h3 class="explore-events-title"><span class="pulse-dot"></span> Happening Nearby</h3>
-        <span class="explore-events-sub">Live events, concerts &amp; more near your stay</span>
+        <div class="explore-events-heading">
+          <h3 class="explore-events-title"><span class="pulse-dot"></span> Happening Nearby</h3>
+          <span class="explore-events-sub">Live events, concerts &amp; more near your stay</span>
+        </div>
+        <div class="xplr-cats events-city-filter" role="group" aria-label="Filter events by city">
+          <button type="button" class="xplr-cat active" data-events-city="all" aria-pressed="true" onclick="setEventsCity('all')">All</button>
+          <button type="button" class="xplr-cat" data-events-city="dallas" aria-pressed="false" onclick="setEventsCity('dallas')">Dallas</button>
+          <button type="button" class="xplr-cat" data-events-city="austin" aria-pressed="false" onclick="setEventsCity('austin')">Austin</button>
+        </div>
       </div>
       <div class="explore-events-grid" id="exploreEventsGrid"></div>
       <div class="xplr-show-more" id="eventsShowMore">
@@ -4223,7 +4262,7 @@ const PROPERTIES = [
       { label: 'BBQ Grill', premium: false }
     ],
     description: 'Welcome to your Central East Austin retreat! This spacious 4-bedroom, 4-bathroom home comfortably sleeps up to 11 guests, blending modern luxury with cozy comfort. Just 2 miles from Downtown Austin, 2.3 miles from Rainey Street, and 1.5 miles from East 6th Street\'s nightlife, it\'s the ideal home base for family trips, group getaways, or extended stays. Enjoy a 6-person hot tub in the fenced backyard, a 10-in-1 game table, TVs in every ensuite bedroom, a fully equipped kitchen with seating for 8, a private balcony, dedicated workspace, and 1 Gbps Google Fiber Wi-Fi throughout.',
-    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel'],'Bedroom & Laundry':['Bed linens','Clothing storage','Crib','Dryer','Essentials','Hangers','Iron','Pack ’n Play/travel crib','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating'],Entertainment:['Board games','Ping pong table','Pool table','TV'],'Kitchen & Dining':['Baking sheet','Blender','Coffee','Coffee maker','Cookware','Dining table','Dishes and silverware','Dishwasher','Kettle','Kitchen','Microwave','Oven','Refrigerator','Stove','Toaster','Wine glasses'],'Work & Tech':['Laptop friendly workspace','Wireless Internet'],Outdoor:['BBQ grill','Barbeque utensils','Garden or backyard','Hot tub','Outdoor seating (furniture)','Patio or balcony'],'Parking & Facilities':['Free parking on street','Private two-car driveway (gated)','Private entrance'],Safety:['Carbon monoxide detector','Cleaning products','Fire extinguisher','First aid kit','Smoke detector'],'Home Highlights':['Long term stays allowed']},
+    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel'],'Bedroom & Laundry':['Bed linens','Clothing storage','Crib','Dryer','Essentials','Hangers','Iron','Pack ’n Play/travel crib','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating'],Entertainment:['Board games','Ping pong table','Pool table','TV'],'Kitchen & Dining':['Baking sheet','Blender','Coffee','Coffee maker','Cookware','Dining table','Dishes and silverware','Dishwasher','Kettle','Kitchen','Microwave','Oven','Refrigerator','Stove','Toaster','Wine glasses'],'Work & Tech':['Laptop friendly workspace','Wireless Internet'],Outdoor:['BBQ grill','Barbeque utensils','Garden or backyard','Hot tub','Outdoor seating (furniture)','Patio or balcony'],'Parking & Facilities':['Free parking on street','Private two-car driveway (gated)','Private entrance'],Safety:['Carbon monoxide detector','Cleaning products','Fire extinguisher','First aid kit','Smoke detector'],'Home Highlights':['Pets allowed','Long term stays allowed']},
     photos: [
       'https://assets.guesty.com/image/upload/v1789014495/production/6a244b0b5428397ca54b4ebf/zomvnsuafnmiwauykxb5.jpg',
       'https://assets.guesty.com/image/upload/v1789012862/production/6a244b0b5428397ca54b4ebf/jhafejunu3hriiskgrsy.jpg',
@@ -4579,6 +4618,7 @@ function setCityFilter(city) {
   });
   updateCitySlider();
   renderProperties();
+  setEventsCity(city);
 }
 
 function updateCitySlider() {
@@ -5517,6 +5557,14 @@ function miniIconGet() {
   return _miniIcon;
 }
 
+/* CARTO raster basemaps show an "API key required" watermark without a key.
+   The key is a public, browser-side token (it rides on every tile request),
+   so it lives here rather than on the server. */
+const CARTO_KEY = 'cb1_3ybe_1_5724dc413473bb29ba767126';
+function cartoTiles(style) {
+  return `https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`;
+}
+
 let miniMapInstance = null;
 let miniMapMarkers = [];
 
@@ -5536,7 +5584,7 @@ function initMiniMap() {
   }).setView(miniBounds.getCenter(), 11);
   miniMapInstance.fitBounds(miniBounds.pad(0.1), { animate: false });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer(cartoTiles('light_all'), {
     subdomains: 'abcd', maxZoom: 19
   }).addTo(miniMapInstance);
 
@@ -5613,7 +5661,7 @@ function initDetailMap(prop) {
     keyboard: false
   });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer(cartoTiles('light_all'), {
     subdomains: 'abcd', maxZoom: 19
   }).addTo(detailMapInstance);
 
@@ -6208,6 +6256,9 @@ function initModalBackdropClose() {
 
 /* ═══ Animated Counters ═══ */
 function initCounters() {
+  // The property count follows the data, like the collection header's.
+  const propStat = document.getElementById('storyStatProps');
+  if (propStat) { propStat.dataset.target = PROPERTIES.length; propStat.textContent = PROPERTIES.length; }
   const counters = document.querySelectorAll('.stat-val');
   if (!counters.length) return;
   const observer = new IntersectionObserver((entries) => {
@@ -6299,7 +6350,36 @@ const ATTRACTIONS = [
   { name:'Dallas Arboretum', desc:'66-acre botanical garden on White Rock Lake with seasonal festivals, stunning gardens, and a children\'s adventure area.', cat:'outdoor', lat:32.8234, lng:-96.7168, rating:4.8, img:'/images/attractions/dallas-arboretum.jpg', area:'dallas', url:'https://www.dallasarboretum.org/', booking:'https://www.dallasarboretum.org/visitor-information/hours-and-admission/', address:'8525 Garland Rd, Dallas, TX 75218' },
   { name:'Dallas Zoo', desc:'106-acre zoo with 2,000+ animals, Giants of the Savanna habitat, and a world-renowned conservation program.', cat:'family', lat:32.7410, lng:-96.8150, rating:4.6, img:'/images/attractions/dallas-zoo.jpg', area:'dallas', url:'https://www.dallaszoo.com/', booking:'https://www.dallaszoo.com/plan-your-visit/buy-tickets/', address:'650 S R.L. Thornton Fwy, Dallas, TX 75203' },
   { name:'Six Flags Over Texas', desc:'Legendary theme park with world-class roller coasters, family rides, and seasonal events in Arlington.', cat:'family', lat:32.7560, lng:-97.0700, rating:4.5, img:'/images/attractions/six-flags-over-texas.jpg', area:'arlington', url:'https://www.sixflags.com/overtexas', booking:'https://www.sixflags.com/overtexas/daily-tickets', address:'2201 E Road to Six Flags St, Arlington, TX 76011' },
-  { name:'Galleria Dallas', desc:'Luxury shopping mall with 200+ stores, an ice rink, Westin hotel, and upscale dining.', cat:'shopping', lat:32.9310, lng:-96.8210, rating:4.5, img:'/images/attractions/galleria-dallas.jpg', area:'dallas', url:'https://galleriadallas.com/', booking:null, address:'13350 Dallas Pkwy, Dallas, TX 75240' }
+  { name:'Galleria Dallas', desc:'Luxury shopping mall with 200+ stores, an ice rink, Westin hotel, and upscale dining.', cat:'shopping', lat:32.9310, lng:-96.8210, rating:4.5, img:'/images/attractions/galleria-dallas.jpg', area:'dallas', url:'https://galleriadallas.com/', booking:null, address:'13350 Dallas Pkwy, Dallas, TX 75240' },
+  // ── AUSTIN ──
+  // Photos: Open Images (Flickr, CC BY) and Google Landmarks v2 (Wikimedia
+  // Commons), credited per image from /images/attractions/austin-credits.json.
+  { name:'Franklin Barbecue', desc:'Legendary central Texas brisket worth the famous morning line — smoked low and slow on East 11th Street.', cat:'dining', lat:30.2701, lng:-97.7312, rating:4.7, img:'/images/attractions/austin-franklin-barbecue.jpg', area:'austin', url:'https://franklinbbq.com/', booking:null, address:'900 E 11th St, Austin, TX 78702', credit:{ author:'The Austinot', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/theaustinot/16993851555' } },
+  { name:'The Salt Lick BBQ', desc:'Hill Country institution since 1967 — the open stone pit, family-style platters, and live oaks 25 minutes southwest of town.', cat:'dining', lat:30.1323, lng:-98.0181, rating:4.6, img:'/images/attractions/austin-salt-lick.jpg', area:'austin', url:'https://www.saltlickbbq.com/driftwood', booking:null, address:'18300 FM 1826, Driftwood, TX 78619', credit:{ author:'vxla', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/vxla/6144702502' } },
+  { name:'Rainey Street', desc:'Historic bungalows turned cocktail bars and patios — food trailers, dogs in tow, and one of Austin\'s liveliest nights out.', cat:'dining', lat:30.2584, lng:-97.7386, rating:4.5, img:'/images/attractions/austin-rainey-street.jpg', area:'austin', url:'https://www.austintexas.org/explore/entertainment-districts/rainey-street/', booking:null, address:'Rainey St, Austin, TX 78701', credit:{ author:'Larry D. Moore', license:'CC BY-SA 3.0', licenseUrl:'http://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:Bungalow_bar_rainey_street_2013.jpg' } },
+  { name:'Sixth Street', desc:'The live music capital\'s best-known strip — neon, pedicabs, dive bars and dance halls, closed to traffic on weekend nights.', cat:'dining', lat:30.2672, lng:-97.739, rating:4.4, img:'/images/attractions/austin-sixth-street.jpg', area:'austin', url:'https://www.austintexas.org/explore/entertainment-districts/sixth-street/', booking:null, address:'E 6th St, Austin, TX 78701', credit:{ author:'Ann Baekken', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/annspan/5627771840' } },
+  { name:'The Driskill', desc:'Austin\'s grand 1886 hotel on Sixth Street — a marble lobby, a clubby bar and the city\'s classic spot for a proper cocktail.', cat:'dining', lat:30.268, lng:-97.742, rating:4.7, img:'/images/attractions/austin-driskill.jpg', area:'austin', url:'https://driskillhotel.com/', booking:null, address:'604 Brazos St, Austin, TX 78701', credit:{ author:'Matthew Rutledge', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/rutlo/3947307238' } },
+  { name:'Zilker Metropolitan Park', desc:'350 acres of lawn on Lady Bird Lake with a skyline view — picnics, kayaks, kite flying, and home of ACL Fest.', cat:'outdoor', lat:30.2669, lng:-97.7729, rating:4.8, img:'/images/attractions/austin-zilker-park.jpg', area:'austin', url:'https://www.austintexas.gov/parks/locations/zilker-metropolitan-park', booking:null, address:'2100 Barton Springs Rd, Austin, TX 78746', credit:{ author:'Airainix', license:'CC BY-SA 3.0', licenseUrl:'http://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:Downtown_from_Zilker_Park.JPG' } },
+  { name:'Barton Springs Pool', desc:'Three-acre, spring-fed swimming hole that stays around 68°F all year, right in the middle of the city.', cat:'outdoor', lat:30.264, lng:-97.7713, rating:4.7, img:'/images/attractions/austin-barton-springs.jpg', area:'austin', url:'https://www.austintexas.gov/services/visit-barton-springs-pool', booking:null, address:'2201 William Barton Dr, Austin, TX 78746', credit:{ author:'TimothyJ', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/tjc/6923375982' } },
+  { name:'Lady Bird Lake Hike-and-Bike Trail', desc:'A 10-mile loop around downtown\'s river lake — skyline views for runners, walkers, cyclists and paddleboarders.', cat:'outdoor', lat:30.262, lng:-97.75, rating:4.8, img:'/images/attractions/austin-lady-bird-lake.jpg', area:'austin', url:'https://thetrailconservancy.org/', booking:null, address:'Ann and Roy Butler Hike-and-Bike Trail, Austin, TX', credit:{ author:'Tim Patterson', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/timpatterson/464379290' } },
+  { name:'Mount Bonnell', desc:'A short limestone climb to the highest point in the city, with sweeping views of Lake Austin and the Pennybacker Bridge.', cat:'outdoor', lat:30.3207, lng:-97.7735, rating:4.7, img:'/images/attractions/austin-mount-bonnell.jpg', area:'austin', url:'https://www.austintexas.org/listings/mt-bonnell-at-covert-park/2925/', booking:null, address:'3800 Mt Bonnell Rd, Austin, TX 78731', credit:{ author:'Nicolas Henderson', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/texasbackroads/8471801155' } },
+  { name:'Lady Bird Johnson Wildflower Center', desc:'284 acres of native Texas gardens, meadows and trails — spectacular in bluebonnet season.', cat:'outdoor', lat:30.1856, lng:-97.8731, rating:4.7, img:'/images/attractions/austin-wildflower-center.jpg', area:'austin', url:'https://www.wildflower.org/', booking:null, address:'4801 La Crosse Ave, Austin, TX 78739', credit:{ author:'Dcrjsr', license:'CC BY 3.0', licenseUrl:'http://creativecommons.org/licenses/by/3.0', source:'http://commons.wikimedia.org/wiki/File:Wildflower_Center_bluebonnet_trail.jpg' } },
+  { name:'Hamilton Pool Preserve', desc:'A jade-green swimming hole beneath a collapsed limestone grotto and a 50-foot waterfall. Reservations required.', cat:'outdoor', lat:30.3423, lng:-98.127, rating:4.7, img:'/images/attractions/austin-hamilton-pool.jpg', area:'austin', url:'https://parks.traviscountytx.gov/parks/hamilton-pool-preserve', booking:null, address:'24300 Hamilton Pool Rd, Dripping Springs, TX 78620', credit:{ author:'Eric in SF', license:'CC BY-SA 3.0', licenseUrl:'http://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:Hamilton_Pool_and_Falls.jpg' } },
+  { name:'South Congress Avenue', desc:'SoCo\'s mile of boutiques, vintage shops, western wear and patio bars with the Capitol framed at the end of the street.', cat:'shopping', lat:30.249, lng:-97.7496, rating:4.6, img:'/images/attractions/austin-south-congress.jpg', area:'austin', url:'https://www.austintexas.org/explore/entertainment-districts/south-congress/', booking:null, address:'S Congress Ave, Austin, TX 78704', credit:{ author:'Nan Palmero', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/nanpalmero/12889881225' } },
+  { name:'Allens Boots', desc:'The big red neon boot on South Congress — thousands of pairs of Lucchese, Tony Lama and more under one roof since 1977.', cat:'shopping', lat:30.2476, lng:-97.7512, rating:4.7, img:'/images/attractions/austin-allens-boots.jpg', area:'austin', url:'https://www.allensboots.com/pages/our-stores', booking:null, address:'1522 S Congress Ave, Austin, TX 78704', credit:{ author:'Sheila Scarborough', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/sheilascarborough/5212977544' } },
+  { name:'The Domain', desc:'Open-air North Austin shopping district with luxury flagships, rooftop bars and chef-driven restaurants.', cat:'shopping', lat:30.4021, lng:-97.7253, rating:4.6, img:'/images/attractions/austin-the-domain.jpg', area:'austin', url:'https://www.simon.com/mall/the-domain', booking:null, address:'11410 Century Oaks Terrace, Austin, TX 78758', credit:{ author:'peter french', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/pfrench99/2404724219' } },
+  { name:'Blanton Museum of Art', desc:'The University of Texas\' art museum — 22,000 works and Ellsworth Kelly\'s luminous chapel, "Austin". Free on Tuesdays.', cat:'arts', lat:30.2808, lng:-97.7375, rating:4.7, img:'/images/attractions/austin-blanton-museum.jpg', area:'austin', url:'https://blantonmuseum.org/visit/', booking:null, address:'200 E Martin Luther King Jr Blvd, Austin, TX 78712', credit:{ author:'Enoch Lai at English Wikipedia', license:'CC BY-SA 3.0', licenseUrl:'http://creativecommons.org/licenses/by-sa/3.0/', source:'http://commons.wikimedia.org/wiki/File:Blanton.jpg' } },
+  { name:'LBJ Presidential Library', desc:'Travertine landmark on the UT campus with a full-scale Oval Office replica and the President\'s recorded phone calls.', cat:'arts', lat:30.2858, lng:-97.7292, rating:4.7, img:'/images/attractions/austin-lbj-library.jpg', area:'austin', url:'https://www.lbjlibrary.org/visit', booking:null, address:'2313 Red River St, Austin, TX 78705', credit:{ author:'Michael Barera', license:'CC BY-SA 3.0', licenseUrl:'https://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:Lyndon_Baines_Johnson_Library_and_Museum_July_2017_1.jpg' } },
+  { name:'Long Center for the Performing Arts', desc:'Home of the Austin Symphony, Austin Opera and Ballet Austin, with a terrace framing the downtown skyline.', cat:'arts', lat:30.2594, lng:-97.7512, rating:4.7, img:'/images/attractions/austin-long-center.jpg', area:'austin', url:'https://thelongcenter.org/', booking:null, address:'701 W Riverside Dr, Austin, TX 78704', credit:{ author:'LoneStarMike', license:'CC BY-SA 3.0', licenseUrl:'http://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:LongCenter-2010d.JPG' } },
+  { name:'The Continental Club', desc:'South Congress\' legendary live-music room since 1955 — roots, rockabilly, country and blues every night of the week.', cat:'arts', lat:30.2505, lng:-97.7493, rating:4.7, img:'/images/attractions/austin-continental-club.jpg', area:'austin', url:'https://continentalclub.com/austinclub', booking:null, address:'1315 S Congress Ave, Austin, TX 78704', credit:{ author:'ercwttmn', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/ricoslounge/490857092' } },
+  { name:'Texas State Capitol', desc:'Pink-granite capitol taller than the one in D.C. — free guided tours, a grand rotunda and 22 acres of grounds.', cat:'family', lat:30.2747, lng:-97.7404, rating:4.8, img:'/images/attractions/austin-texas-capitol.jpg', area:'austin', url:'https://tspb.texas.gov/plan/tours/tours.html', booking:null, address:'1100 Congress Ave, Austin, TX 78701', credit:{ author:'David Berkowitz', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/davidberkowitz/3371499374' } },
+  { name:'Congress Avenue Bridge Bats', desc:'From spring to fall, up to 1.5 million bats pour out from under the bridge at sunset — a true Austin ritual.', cat:'family', lat:30.2617, lng:-97.7452, rating:4.6, img:'/images/attractions/austin-congress-bridge-bats.jpg', area:'austin', url:'https://www.austintexas.org/things-to-do/outdoors/bat-watching/', booking:null, address:'Ann W. Richards Congress Ave Bridge, Austin, TX 78701', credit:{ author:'BlazerMan', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/blazerman/8069097872' } },
+  { name:'Austin Zoo', desc:'Hill Country rescue zoo with tigers, lions, bears and primates — every animal here was given a second chance.', cat:'family', lat:30.2604, lng:-97.9377, rating:4.4, img:'/images/attractions/austin-zoo.jpg', area:'austin', url:'https://austinzoo.org/', booking:null, address:'10808 Rawhide Trail, Austin, TX 78736', credit:{ author:'Shootsalot', license:'CC BY-SA 4.0', licenseUrl:'https://creativecommons.org/licenses/by-sa/4.0', source:'http://commons.wikimedia.org/wiki/File:Bengal_Tiger_Portrait.jpg' } },
+  { name:'Zilker Botanical Garden', desc:'28 acres of themed gardens — a Japanese garden, koi ponds, and a prehistoric garden with life-size dinosaurs.', cat:'family', lat:30.27, lng:-97.77, rating:4.6, img:'/images/attractions/austin-zilker-botanical-garden.jpg', area:'austin', url:'https://zilkergarden.org/', booking:null, address:'2220 Barton Springs Rd, Austin, TX 78746', credit:{ author:'Krista', license:'CC BY 2.0', licenseUrl:'https://creativecommons.org/licenses/by/2.0/', source:'https://www.flickr.com/photos/scaredykat/12866239165' } },
+  { name:'Circuit of The Americas', desc:'Home of the Formula 1 United States Grand Prix, MotoGP and big-name concerts at its amphitheater.', cat:'sports', lat:30.1346, lng:-97.6411, rating:4.7, img:'/images/attractions/austin-cota.jpg', area:'austin', url:'https://circuitoftheamericas.com/', booking:null, address:'9201 Circuit of The Americas Blvd, Austin, TX 78617', credit:{ author:'mrlaugh', license:'CC BY-SA 2.0', licenseUrl:'https://creativecommons.org/licenses/by-sa/2.0', source:'http://commons.wikimedia.org/wiki/File:2017_FIA_Masters_Historic_Formula_One_Championship,_Circuit_of_the_Americas_(23970292508).jpg' } },
+  { name:'Darrell K Royal–Texas Memorial Stadium', desc:'Game day with the Longhorns — 100,000 fans in burnt orange, the Longhorn Band and Bevo on the sideline.', cat:'sports', lat:30.2837, lng:-97.7325, rating:4.8, img:'/images/attractions/austin-dkr-stadium.jpg', area:'austin', url:'https://texaslonghorns.com/facilities/dkr-texas-memorial-stadium/1', booking:null, address:'2139 San Jacinto Blvd, Austin, TX 78712', credit:{ author:'Johntex', license:'CC BY-SA 3.0', licenseUrl:'https://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:2007_Texas_Longhorns_football_team_entry_ppr_edit.jpg' } },
+  { name:'Barton Creek Greenbelt', desc:'Over 12 miles of rugged trail for mountain biking, rock climbing and swimming holes, minutes from downtown.', cat:'sports', lat:30.259, lng:-97.792, rating:4.7, img:'/images/attractions/austin-barton-creek-greenbelt.jpg', area:'austin', url:'https://www.austintexas.gov/department/barton-creek-greenbelt', booking:null, address:'3918 S MoPac Expy, Austin, TX 78746', credit:{ author:'LoneStarMike', license:'CC BY-SA 3.0', licenseUrl:'http://creativecommons.org/licenses/by-sa/3.0', source:'http://commons.wikimedia.org/wiki/File:BartonCreekGreenbelt-25.JPG' } },
+  { name:'Lake Travis', desc:'64 miles of Hill Country lake for boating, wakeboarding, paddleboarding and sunset cruises.', cat:'sports', lat:30.42, lng:-97.9, rating:4.7, img:'/images/attractions/austin-lake-travis.jpg', area:'austin', url:'https://www.austintexas.org/austin-insider-blog/blog/post/lake-travis/', booking:null, address:'Lake Travis, TX', credit:{ author:'Peter Potrowl', license:'CC BY 2.5', licenseUrl:'http://creativecommons.org/licenses/by/2.5', source:'http://commons.wikimedia.org/wiki/File:Lake_Travis_1.jpg' } }
 ];
 
 
@@ -6670,6 +6750,30 @@ function getMapBounds() {
 // City-based explore
 let exploreSelectedCity = 'all';
 
+/* Tab counts and hero stats come from ATTRACTIONS / PROPERTIES, so adding a
+   spot or a property can't leave a stale number behind. */
+const NUMBER_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const TENS_WORDS = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function numberWord(n) {
+  if (n < 20) return NUMBER_WORDS[n];
+  if (n < 100) return TENS_WORDS[Math.floor(n / 10)] + (n % 10 ? '-' + NUMBER_WORDS[n % 10].toLowerCase() : '');
+  return String(n);
+}
+function updateExploreCounts() {
+  document.querySelectorAll('.xplr-city-tab').forEach(tab => {
+    const city = tab.dataset.city;
+    const n = city === 'all' ? ATTRACTIONS.length : ATTRACTIONS.filter(a => a.area === city).length;
+    const el = tab.querySelector('.xplr-city-count');
+    if (el) el.textContent = n;
+  });
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.dataset.target = v; };
+  set('xplrStatSpots', ATTRACTIONS.length);
+  set('xplrStatCities', new Set(ATTRACTIONS.map(a => a.area)).size);
+  set('xplrStatProps', PROPERTIES.length);
+  const words = document.getElementById('xplrSpotWords');
+  if (words) words.textContent = numberWord(ATTRACTIONS.length);
+}
+
 function selectCity(city) {
   exploreSelectedCity = city;
   document.querySelectorAll('.xplr-city-tab').forEach(b => b.classList.toggle('active', b.dataset.city === city));
@@ -6678,7 +6782,7 @@ function selectCity(city) {
 
 function filterExplore(cat) {
   exploreSelectedCat = cat;
-  document.querySelectorAll('.xplr-cat').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  document.querySelectorAll('.xplr-cat[data-cat]').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
   renderExploreGrid();
 }
 
@@ -6710,7 +6814,7 @@ function renderExploreGrid() {
   const grid = document.getElementById('exploreGrid');
   if (!grid) return;
 
-  const cityLabels = {irving:'Irving / Las Colinas',plano:'Plano',dallas:'Dallas',richardson:'Richardson',arlington:'Arlington','the colony':'The Colony'};
+  const cityLabels = {irving:'Irving / Las Colinas',plano:'Plano',dallas:'Dallas',richardson:'Richardson',arlington:'Arlington','the colony':'The Colony',austin:'Austin'};
 
   let items = [...ATTRACTIONS];
 
@@ -6736,7 +6840,9 @@ function renderExploreGrid() {
   grid.innerHTML = items.map((a, i) => `
     <a class="xplr-card" href="${a.url}" target="_blank" rel="noopener" style="transition-delay:${Math.min(i, 8) * 50}ms">
       <div class="xplr-card-img">
-        <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#1a1a1a 0%,#2d1f1a 50%,#1a1a1a 100%)'">
+        <span class="xplr-card-panel" aria-hidden="true"><span class="xplr-card-panel-city">${cityLabels[a.area] || a.area}</span><span class="xplr-card-panel-name">${a.name}</span></span>
+        <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.onerror=null;this.remove()">
+        ${a.credit ? `<span class="xplr-card-credit">Photo: ${escHtml(a.credit.author)} · ${escHtml(a.credit.license)}</span>` : ''}
         <span class="xplr-card-badge">${a.cat}</span>
         <span class="xplr-card-rating-badge">
           <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -6915,7 +7021,7 @@ function initExploreMap() {
     fadeAnimation: false     // cheaper tile swaps on the dark basemap
   });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer(cartoTiles('dark_all'), {
     maxZoom: 18,
     subdomains: 'abcd',
     updateWhenIdle: true,    // don't refetch tiles mid-pan
@@ -7743,18 +7849,63 @@ function updateExploreMap() {
   }
 }
 
-// Events
+// Events — one feed per metro we have homes in, filtered by the city pills.
+const EVENT_METROS = {
+  dallas: { lat: 32.85, lng: -96.97, label: 'Dallas' },
+  austin: { lat: 30.2672, lng: -97.7431, label: 'Austin' }
+};
+const eventsByMetro = { dallas: [], austin: [] };
+let eventsLoaded = false;
+let currentEventsCity = 'all';
+
 async function fetchEvents() {
-  // Use center of DFW metro for events
-  const evLat = 32.85, evLng = -96.97;
-  try {
-    const resp = await fetch(`/api/events?lat=${evLat}&lng=${evLng}&radius=25`);
-    const data = await resp.json();
-    renderEvents(data.events || []);
-  } catch (err) {
-    console.error('Events fetch error:', err);
-    renderEvents([]);
+  await Promise.all(Object.keys(EVENT_METROS).map(async metro => {
+    const { lat, lng } = EVENT_METROS[metro];
+    try {
+      const resp = await fetch(`/api/events?lat=${lat}&lng=${lng}&radius=25`);
+      const data = await resp.json();
+      eventsByMetro[metro] = (data.events || []).map(ev => ({ ...ev, metro }));
+    } catch (err) {
+      console.error('Events fetch error (' + metro + '):', err);
+      eventsByMetro[metro] = [];
+    }
+  }));
+  eventsLoaded = true;
+  renderEventsForCity();
+}
+
+function setEventsCity(city) {
+  if (!EVENT_METROS[city]) city = 'all';
+  currentEventsCity = city;
+  document.querySelectorAll('.events-city-filter .xplr-cat').forEach(btn => {
+    const on = btn.dataset.eventsCity === city;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', String(on));
+  });
+  if (eventsLoaded) renderEventsForCity();
+}
+
+/* "All" alternates Dallas and Austin, each in date order, so both cities
+   show up in the first row rather than one feed crowding out the other. */
+function renderEventsForCity() {
+  const byDate = list => list.slice().sort((a, b) =>
+    (a.date + 'T' + (a.time || '')).localeCompare(b.date + 'T' + (b.time || '')));
+  let list;
+  if (currentEventsCity === 'all') {
+    const d = byDate(eventsByMetro.dallas), a = byDate(eventsByMetro.austin);
+    list = [];
+    for (let i = 0; i < Math.max(d.length, a.length); i++) {
+      if (d[i]) list.push(d[i]);
+      if (a[i]) list.push(a[i]);
+    }
+  } else {
+    list = byDate(eventsByMetro[currentEventsCity] || []);
   }
+  const grid = document.getElementById('exploreEventsGrid');
+  if (grid) grid.classList.remove('expanded');
+  const btn = document.querySelector('#eventsShowMore .xplr-more-btn');
+  if (btn) btn.classList.remove('expanded');
+  renderEvents(list);
 }
 
 /* Events come from a third-party feed — never trust their strings in markup. */
@@ -7795,7 +7946,8 @@ function renderEvents(events) {
   events = (events || []).filter(ev => ev.url && /^https?:\/\//.test(ev.url));
 
   if (!events.length) {
-    grid.innerHTML = '<div class="explore-empty" style="grid-column:1/-1"><p>No upcoming events found nearby. Check back soon!</p></div>';
+    const where = EVENT_METROS[currentEventsCity] ? ' in ' + EVENT_METROS[currentEventsCity].label : ' nearby';
+    grid.innerHTML = `<div class="explore-empty" style="grid-column:1/-1"><p>No upcoming events found${where}. Check back soon!</p></div>`;
     updateShowMoreCounts();
     return;
   }
@@ -7824,7 +7976,7 @@ function renderEvents(events) {
         <span class="event-row-date"><b>${d.getDate()}</b><i>${months[d.getMonth()]}</i></span>
         <span class="event-row-main">
           <span class="event-row-name">${escHtml(ev.name)}</span>
-          <span class="event-row-sub">${escHtml(ev.venue || 'Venue TBA')} &middot; ${days[d.getDay()]}, ${time}${price ? ' &middot; ' + price : ''}</span>
+          <span class="event-row-sub">${escHtml(ev.venue || 'Venue TBA')}${ev.metro ? ' &middot; ' + EVENT_METROS[ev.metro].label : ''} &middot; ${days[d.getDay()]}, ${time}${price ? ' &middot; ' + price : ''}</span>
         </span>
         <span class="event-cta">Tickets
           <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
@@ -7853,7 +8005,7 @@ function renderEvents(events) {
           <div class="event-meta">
             <span class="event-meta-row">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span class="event-venue">${escHtml(ev.venue || 'Venue TBA')}</span>
+              <span class="event-venue">${escHtml(ev.venue || 'Venue TBA')}${ev.metro ? ' &middot; ' + EVENT_METROS[ev.metro].label : ''}</span>
             </span>
             <span class="event-meta-row">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -7915,7 +8067,20 @@ function initExploreMapWhenNear() {
   obs.observe(section);
 }
 
+/* Licensed photos (CC BY / BY-SA) need their author, source and licence
+   shown; the cards carry a short line and this list carries the links. */
+function renderExploreCredits() {
+  const list = document.getElementById('xplrCreditsList');
+  if (!list) return;
+  list.innerHTML = ATTRACTIONS.filter(a => a.credit).map(a => {
+    const c = a.credit;
+    return `<li>${escHtml(a.name)} — photo by <a href="${escHtml(c.source)}" target="_blank" rel="noopener">${escHtml(c.author)}</a>, <a href="${escHtml(c.licenseUrl)}" target="_blank" rel="noopener license">${escHtml(c.license)}</a>, cropped and resized</li>`;
+  }).join('');
+}
+
 function initExplore() {
+  updateExploreCounts();
+  renderExploreCredits();
   renderExploreGrid();
   initExploreMapWhenNear();
   fetchEvents();

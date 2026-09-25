@@ -3704,7 +3704,8 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-// Curated sample events for when the API key is missing or API is down
+// Curated sample events for when the API key is missing or API is down.
+// Anything south of Waco is the Austin metro; everything else is DFW.
 function getSampleEvents(lat, lng) {
   const now = new Date();
   const makeDate = (daysAhead) => {
@@ -3712,6 +3713,18 @@ function getSampleEvents(lat, lng) {
     d.setDate(d.getDate() + daysAhead);
     return d.toISOString().slice(0, 10);
   };
+  if (lat < 31.5) {
+    return [
+      { id:'a1', name:'Live at ACL Live — Concert Night', date:makeDate(2), time:'20:00:00', venue:'ACL Live at The Moody Theater', city:'Austin', category:'Music', subcategory:'Rock', image:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=640&q=80', url:'https://www.acllive.com', lat:30.2653, lng:-97.7473, priceRange:{min:35,max:120,currency:'USD'} },
+      { id:'a2', name:'Austin FC Home Match', date:makeDate(4), time:'19:30:00', venue:'Q2 Stadium', city:'Austin', category:'Sports', subcategory:'Soccer', image:'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=640&q=80', url:'https://www.austinfc.com', lat:30.3882, lng:-97.7194, priceRange:{min:30,max:150,currency:'USD'} },
+      { id:'a3', name:'Live at Moody Center', date:makeDate(6), time:'19:00:00', venue:'Moody Center', city:'Austin', category:'Music', subcategory:'Pop', image:'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=640&q=80', url:'https://moodycenteratx.com', lat:30.2819, lng:-97.7322, priceRange:{min:45,max:250,currency:'USD'} },
+      { id:'a4', name:'Alamo Drafthouse South Lamar: Classic Film Night', date:makeDate(1), time:'19:00:00', venue:'Alamo Drafthouse South Lamar', city:'Austin', category:'Film', subcategory:'Cinema', image:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=640&q=80', url:'https://drafthouse.com', lat:30.2560, lng:-97.7627, priceRange:{min:12,max:22,currency:'USD'} },
+      { id:'a5', name:'SFC Farmers\' Market Downtown', date:makeDate(3), time:'09:00:00', venue:'Republic Square', city:'Austin', category:'Arts & Theatre', subcategory:'Food & Drink', image:'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=640&q=80', url:'https://sustainablefoodcenter.org', lat:30.2681, lng:-97.7472, priceRange:null },
+      { id:'a6', name:'East Austin Food & Drink Crawl', date:makeDate(8), time:'18:00:00', venue:'East 6th Street', city:'Austin', category:'Arts & Theatre', subcategory:'Food & Drink', image:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=640&q=80', url:'https://www.austintexas.org', lat:30.2640, lng:-97.7290, priceRange:{min:25,max:60,currency:'USD'} },
+      { id:'a7', name:'Circuit of The Americas: Track Night', date:makeDate(9), time:'17:00:00', venue:'Circuit of The Americas', city:'Austin', category:'Sports', subcategory:'Motorsports', image:'', url:'https://circuitoftheamericas.com', lat:30.1346, lng:-97.6411, priceRange:{min:20,max:80,currency:'USD'} },
+      { id:'a8', name:'Paramount Theatre: Live Comedy', date:makeDate(5), time:'20:00:00', venue:'Paramount Theatre', city:'Austin', category:'Arts & Theatre', subcategory:'Comedy', image:'', url:'https://austintheatre.org', lat:30.2690, lng:-97.7425, priceRange:{min:30,max:75,currency:'USD'} }
+    ];
+  }
   return [
     { id:'s1', name:'Live at the Pavilion — Summer Concert Series', date:makeDate(3), time:'19:30:00', venue:'Toyota Music Factory', city:'Irving', category:'Music', subcategory:'Pop', image:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=640&q=80', url:'https://www.toyotamusicfactory.com', lat:32.8779, lng:-96.9430, priceRange:{min:25,max:85,currency:'USD'} },
     { id:'s2', name:'FC Dallas vs. Austin FC', date:makeDate(5), time:'20:00:00', venue:'Toyota Stadium', city:'Frisco', category:'Sports', subcategory:'Soccer', image:'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=640&q=80', url:'https://www.fcdallas.com', lat:33.1543, lng:-96.8352, priceRange:{min:30,max:120,currency:'USD'} },
@@ -3723,6 +3736,11 @@ function getSampleEvents(lat, lng) {
     { id:'s8', name:'Dallas Farmers Market Weekend', date:makeDate(6), time:'09:00:00', venue:'Dallas Farmers Market', city:'Dallas', category:'Arts & Theatre', subcategory:'Food & Drink', image:'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=640&q=80', url:'https://dallasfarmersmarket.org', lat:32.7822, lng:-96.7965, priceRange:null }
   ];
 }
+
+// Per-slug pet policy for the JSON-LD petsAllowed flag, which otherwise
+// defaults to "villas allow pets". Regent Crown welcomes pets; Regent Sol's
+// Guesty house rules say petsAllowed:false.
+const PETS_ALLOWED_OVERRIDE = { 'regent-crown': true, 'regent-sol': false };
 
 // ── Property Data for Standalone Pages ──
 const PROPERTY_DATA = {
@@ -4221,7 +4239,7 @@ const PROPERTY_DATA = {
       { label: 'BBQ Grill', premium: false }
     ],
     description: 'Welcome to your Central East Austin retreat! This spacious 4-bedroom, 4-bathroom home comfortably sleeps up to 11 guests, blending modern luxury with cozy comfort. Just 2 miles from Downtown Austin, 2.3 miles from Rainey Street, and 1.5 miles from East 6th Street\'s nightlife, it\'s the ideal home base for family trips, group getaways, or extended stays. Enjoy a 6-person hot tub in the fenced backyard, a 10-in-1 game table, TVs in every ensuite bedroom, a fully equipped kitchen with seating for 8, a private balcony, dedicated workspace, and 1 Gbps Google Fiber Wi-Fi throughout.',
-    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel'],'Bedroom & Laundry':['Bed linens','Clothing storage','Crib','Dryer','Essentials','Hangers','Iron','Pack ’n Play/travel crib','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating'],Entertainment:['Board games','Ping pong table','Pool table','TV'],'Kitchen & Dining':['Baking sheet','Blender','Coffee','Coffee maker','Cookware','Dining table','Dishes and silverware','Dishwasher','Kettle','Kitchen','Microwave','Oven','Refrigerator','Stove','Toaster','Wine glasses'],'Work & Tech':['Laptop friendly workspace','Wireless Internet'],Outdoor:['BBQ grill','Barbeque utensils','Garden or backyard','Hot tub','Outdoor seating (furniture)','Patio or balcony'],'Parking & Facilities':['Free parking on street','Private two-car driveway (gated)','Private entrance'],Safety:['Carbon monoxide detector','Cleaning products','Fire extinguisher','First aid kit','Smoke detector'],'Home Highlights':['Long term stays allowed']},
+    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel'],'Bedroom & Laundry':['Bed linens','Clothing storage','Crib','Dryer','Essentials','Hangers','Iron','Pack ’n Play/travel crib','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating'],Entertainment:['Board games','Ping pong table','Pool table','TV'],'Kitchen & Dining':['Baking sheet','Blender','Coffee','Coffee maker','Cookware','Dining table','Dishes and silverware','Dishwasher','Kettle','Kitchen','Microwave','Oven','Refrigerator','Stove','Toaster','Wine glasses'],'Work & Tech':['Laptop friendly workspace','Wireless Internet'],Outdoor:['BBQ grill','Barbeque utensils','Garden or backyard','Hot tub','Outdoor seating (furniture)','Patio or balcony'],'Parking & Facilities':['Free parking on street','Private two-car driveway (gated)','Private entrance'],Safety:['Carbon monoxide detector','Cleaning products','Fire extinguisher','First aid kit','Smoke detector'],'Home Highlights':['Pets allowed','Long term stays allowed']},
     photos: [
       'https://assets.guesty.com/image/upload/v1789014495/production/6a244b0b5428397ca54b4ebf/zomvnsuafnmiwauykxb5.jpg',
       'https://assets.guesty.com/image/upload/v1789012862/production/6a244b0b5428397ca54b4ebf/jhafejunu3hriiskgrsy.jpg',
@@ -4577,7 +4595,7 @@ function buildPropertyJsonLd(prop, ogUrl, coverImage) {
     numberOfRooms: prop.beds,
     numberOfBathroomsTotal: prop.baths,
     occupancy: { '@type': 'QuantitativeValue', maxValue: prop.guests, unitText: 'guests' },
-    petsAllowed: !!prop.isVilla,
+    petsAllowed: prop.slug in PETS_ALLOWED_OVERRIDE ? PETS_ALLOWED_OVERRIDE[prop.slug] : !!prop.isVilla,
     brand: { '@type': 'Brand', name: 'Regent' },
     amenityFeature: amenities
   };
