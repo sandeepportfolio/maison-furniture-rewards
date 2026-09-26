@@ -490,7 +490,8 @@ app.get('/sitemap.xml', (req, res) => {
     { loc: '/availability', priority: '0.9', changefreq: 'daily' },
     { loc: '/management', priority: '0.7', changefreq: 'monthly' },
     { loc: '/reward', priority: '0.6', changefreq: 'monthly' },
-    { loc: '/regent-ai', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/regent-inbox', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/regent-inbox/privacy', priority: '0.3', changefreq: 'yearly' },
     { loc: '/careers', priority: '0.5', changefreq: 'monthly' },
     { loc: '/privacy-policy', priority: '0.3', changefreq: 'yearly' }
   ];
@@ -750,9 +751,14 @@ function availabilityDegradation(errors) {
 app.get('/api/guesty/listings', async (req, res) => {
   try {
     const listings = await guesty.getListings();
+    applyLivePhotos(listings);
+    // Raw picture lists stay server-side; only live-managed listings ship
+    // their gallery so the homepage cards and detail view can use it.
+    const out = listings.map(({ pictures, ...rest }) =>
+      liveGalleries[rest.slug] ? { ...rest, photos: liveGalleries[rest.slug].photos, photoLabels: liveGalleries[rest.slug].photoLabels } : rest);
     // Allow browsers/CDNs to cache for 5 min (server cache is 60 min)
     res.set('Cache-Control', 'public, max-age=120, stale-while-revalidate=300');
-    res.json({ listings });
+    res.json({ listings: out });
   } catch (err) {
     console.error('Guesty listings error:', err.status || '', err.message);
     res.status(502).json({ error: 'Could not load listings' });
@@ -2614,9 +2620,15 @@ app.get('/management', (req, res) => {
 });
 
 // Serve Regent AI page
-app.get('/regent-ai', (req, res) => {
+// Regent Inbox (the product site) lives at /regent-inbox; its privacy policy
+// at /regent-inbox/privacy. /regent-ai was the old address — keep it working.
+app.get(['/regent-inbox', '/regent-inbox/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'regent-ai.html'));
 });
+app.get(['/regent-inbox/privacy', '/regent-inbox/privacy/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'regent-inbox-privacy.html'));
+});
+app.get('/regent-ai', (req, res) => res.redirect(301, '/regent-inbox'));
 
 // Serve Careers page
 app.get('/careers', (req, res) => {
@@ -4478,6 +4490,54 @@ function photoUrl(prop, filename, width) {
       : filename;
   }
   return `https://a0.muscache.com/im/pictures/hosting/Hosting-${prop.hostingId}/original/${filename}?im_w=${width}`;
+}
+
+// ── Live galleries ──
+// Listings whose photos are read from Guesty at runtime rather than the hand-
+// synced arrays in PROPERTY_DATA, so a gallery updated in Guesty (new photos,
+// new order, new captions) reaches every page without a code change. The
+// static arrays stay as the fallback whenever Guesty is unreachable or returns
+// too few pictures to be a real gallery.
+const LIVE_PHOTO_SLUGS = ['regent-sol'];
+const MIN_LIVE_PHOTOS = 5;
+const STATIC_GALLERIES = {};
+const liveGalleries = {}; // slug -> { photos, photoLabels }
+
+function captionLabel(caption) {
+  const c = String(caption || '').replace(/\s+/g, ' ').trim();
+  return c.length > 70 ? c.slice(0, 67).trimEnd() + '…' : c;
+}
+
+// Swap the live gallery into PROPERTY_DATA in place, so every reader (pages,
+// JSON-LD, map/availability APIs) sees the same photos. Synchronous: callers
+// pass the listings they already fetched.
+function applyLivePhotos(listings) {
+  for (const slug of LIVE_PHOTO_SLUGS) {
+    const prop = PROPERTY_DATA[slug];
+    if (!prop) continue;
+    if (!STATIC_GALLERIES[slug]) {
+      STATIC_GALLERIES[slug] = { photos: prop.photos, photoLabels: prop.photoLabels, amenityPhotos: prop.amenityPhotos };
+    }
+    const l = (listings || []).find(x => x.slug === slug);
+    const pics = (l && Array.isArray(l.pictures) ? l.pictures : []).filter(p => p && /^https?:\/\//.test(p.url));
+    if (pics.length < MIN_LIVE_PHOTOS) continue; // keep whatever is current (live or static)
+    const photos = pics.map(p => p.url);
+    const photoLabels = pics.map(p => captionLabel(p.caption));
+    liveGalleries[slug] = { photos, photoLabels };
+    prop.photos = photos;
+    prop.photoLabels = photoLabels;
+    // amenityPhotos are indices into the old gallery; they would now point at
+    // the wrong pictures, so the amenity-to-photo links are dropped.
+    prop.amenityPhotos = {};
+  }
+}
+
+async function refreshLivePhotos() {
+  try {
+    applyLivePhotos(await guesty.getListings());
+  } catch (err) {
+    console.warn('Live gallery refresh failed:', err.message);
+  }
 }
 
 // ── Standalone Property Pages ──
@@ -6411,6 +6471,11 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n  Regent Review Portal`);
   console.log(`  Local:  http://localhost:${PORT}`);
   console.log(`  Admin:  http://localhost:${PORT}/admin\n`);
+
+  // Pull live galleries (e.g. Regent Sol) now and keep them fresh; pages read
+  // the cached result synchronously.
+  refreshLivePhotos();
+  setInterval(refreshLivePhotos, 30 * 60 * 1000).unref();
 
   // Keep-alive: ping own /health endpoint every 13 minutes to prevent Render free-tier sleep
   if (process.env.RENDER_EXTERNAL_URL) {

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Privacy Policy | Regent Inbox</title>
+<meta name="description" content="How Regent Inbox collects, uses, shares and protects information — including guest messages, property data, notes and collaborator details — and the choices you have.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Regent Inbox">
+<meta property="og:title" content="Privacy Policy | Regent Inbox">
+<meta property="og:description" content="How Regent Inbox collects, uses, shares and protects information, and the choices you have.">
+<meta property="og:url" content="https://www.bookwithregent.com/regent-inbox/privacy">
+<link rel="canonical" href="https://www.bookwithregent.com/regent-inbox/privacy">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2314120E'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='central' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='600' font-size='34' fill='%23D9B774'%3ER%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0B0B0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&display=swap" rel="stylesheet">
+<script src="/js/theme-toggle.js"></script>
+<style>
+/* Same system as /regent-inbox: one typeface, warm neutrals, gold accent.
+   All text colours meet WCAG AA on their surfaces in both themes. */
+:root{
+  --bg:#0B0B0A;--bg-2:#100F0D;--surface:#151412;--surface-2:#1C1B18;
+  --line:rgba(245,242,236,.09);--line-2:rgba(245,242,236,.14);
+  --text:#F5F2EC;--muted:rgba(245,242,236,.72);--faint:rgba(245,242,236,.56);
+  --accent:#D9B774;--accent-soft:rgba(217,183,116,.12);--accent-line:rgba(217,183,116,.32);
+  --btn-bg:#F5F2EC;--btn-fg:#12110E;
+  --glow:rgba(217,183,116,.09);--nav-bg:rgba(11,11,10,.74);
+  --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+[data-theme="light"]{
+  --bg:#F7F5F0;--bg-2:#F1EEE7;--surface:#FFFFFF;--surface-2:#F4F1EA;
+  --line:rgba(20,18,14,.09);--line-2:rgba(20,18,14,.15);
+  --text:#14120E;--muted:rgba(20,18,14,.74);--faint:rgba(20,18,14,.64);
+  --accent:#7A5718;--accent-soft:rgba(122,87,24,.08);--accent-line:rgba(122,87,24,.28);
+  --btn-bg:#14120E;--btn-fg:#F7F5F0;
+  --glow:rgba(122,87,24,.06);--nav-bg:rgba(247,245,240,.82);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;max-width:100vw}
+body{font-family:var(--sans);font-size:16px;line-height:1.65;color:var(--text);background:var(--bg);overflow-x:hidden;max-width:100vw}
+::selection{background:var(--accent);color:#12110E}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+ul,ol{list-style:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,40px);position:relative}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:50;background:var(--nav-bg);backdrop-filter:saturate(1.4) blur(18px);-webkit-backdrop-filter:saturate(1.4) blur(18px);border-bottom:1px solid var(--line)}
+.nav-in{height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16.5px;letter-spacing:-.02em}
+.brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#14120E;color:#D9B774;font-weight:650;font-size:15px;box-shadow:inset 0 0 0 1px rgba(217,183,116,.35)}
+.brand small{font-weight:450;color:var(--muted);font-size:16.5px;margin-left:-5px}
+.nav-right{display:flex;align-items:center;gap:8px}
+.back{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line-2);font-size:14px;font-weight:500;color:var(--muted);transition:color .2s,border-color .2s}
+.back:hover{color:var(--text);border-color:var(--text)}
+.icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);transition:color .2s,border-color .2s}
+.icon-btn:hover{color:var(--text);border-color:var(--line-2)}
+@media(max-width:520px){.back .lbl{display:none}.back{width:38px;padding:0;justify-content:center}}
+
+/* Header */
+.head{position:relative;padding:clamp(64px,9vw,112px) 0 clamp(40px,6vw,64px);overflow:hidden}
+.head::before{content:"";position:absolute;inset:-40% -10% auto -10%;height:600px;background:radial-gradient(45% 55% at 20% 30%,var(--glow),transparent 70%);pointer-events:none}
+.crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--faint)}
+.crumb a{color:var(--muted)}
+.crumb a:hover{color:var(--text)}
+h1{margin-top:18px;font-size:clamp(40px,6vw,68px);font-weight:600;line-height:1.02;letter-spacing:-.045em}
+.intro{margin-top:18px;max-width:640px;font-size:clamp(17px,1.6vw,19px);color:var(--muted)}
+.meta{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px}
+.meta span{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 13px;border-radius:999px;border:1px solid var(--line-2);font-size:13.5px;color:var(--muted);background:var(--surface)}
+.meta span b{font-weight:550;color:var(--text)}
+
+/* At a glance */
+.glance{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g{padding:22px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+.g .ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft)}
+.g h3{margin-top:16px;font-size:16px;font-weight:600;letter-spacing:-.015em}
+.g p{margin-top:6px;font-size:14.5px;color:var(--muted);line-height:1.55}
+@media(max-width:980px){.glance{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.glance{grid-template-columns:1fr}}
+
+/* Body */
+.layout{margin-top:clamp(56px,7vw,88px);display:grid;grid-template-columns:240px minmax(0,1fr);gap:clamp(40px,6vw,88px);align-items:start}
+.toc{position:sticky;top:96px}
+.toc h2{font-size:13.5px;font-weight:550;color:var(--faint)}
+.toc ol{margin-top:12px;display:grid;gap:2px;border-left:1px solid var(--line)}
+.toc a{display:block;padding:6px 0 6px 16px;margin-left:-1px;border-left:1.5px solid transparent;font-size:14px;color:var(--muted);line-height:1.4;transition:color .2s,border-color .2s}
+.toc a:hover{color:var(--text)}
+.toc a.on{color:var(--text);border-left-color:var(--accent);font-weight:500}
+.toc-m{display:none;border:1px solid var(--line);border-radius:16px;background:var(--surface);margin-bottom:32px}
+.toc-m summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;font-size:15px;font-weight:550}
+.toc-m summary::-webkit-details-marker{display:none}
+.toc-m summary svg{transition:transform .3s var(--ease)}
+.toc-m[open] summary svg{transform:rotate(180deg)}
+.toc-m ol{padding:0 18px 16px;display:grid;gap:4px}
+.toc-m a{display:block;padding:6px 0;font-size:14.5px;color:var(--muted)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.toc{display:none}.toc-m{display:block}}
+
+.doc section{padding-bottom:44px;margin-bottom:44px;border-bottom:1px solid var(--line);scroll-margin-top:96px}
+.doc section:last-child{border-bottom:0;margin-bottom:0}
+.doc .n{font-size:13.5px;font-weight:550;color:var(--accent)}
+.doc h2{margin-top:6px;font-size:clamp(24px,2.6vw,30px);font-weight:600;letter-spacing:-.03em;line-height:1.2}
+.doc h3{margin-top:28px;font-size:17px;font-weight:600;letter-spacing:-.015em}
+.doc p{margin-top:14px;color:var(--muted);max-width:720px}
+.doc p strong,.doc li strong{color:var(--text);font-weight:550}
+.doc ul{margin-top:14px;display:grid;gap:10px;max-width:720px}
+.doc ul li{position:relative;padding-left:20px;color:var(--muted)}
+.doc ul li::before{content:"";position:absolute;left:2px;top:.72em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.doc a{color:var(--text);text-decoration:underline;text-decoration-color:var(--accent-line);text-underline-offset:3px;transition:text-decoration-color .2s}
+.doc a:hover{text-decoration-color:var(--text)}
+.callout{margin-top:20px;max-width:720px;padding:18px 20px;border-radius:16px;background:var(--accent-soft);border:1px solid var(--accent-line);font-size:15px;color:var(--text)}
+.callout p{margin:0;color:var(--text)}
+.table{margin-top:18px;max-width:720px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.table div{display:grid;grid-template-columns:200px 1fr;gap:16px;padding:14px 18px;border-top:1px solid var(--line);font-size:15px}
+.table div:first-child{border-top:0}
+.table b{font-weight:550}
+.table span{color:var(--muted)}
+@media(max-width:560px){.table div{grid-template-columns:1fr;gap:4px}}
+.contact-card{margin-top:20px;max-width:720px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.contact-card div{padding:18px 20px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.contact-card small{display:block;font-size:13px;color:var(--faint)}
+.contact-card b{display:block;margin-top:4px;font-weight:550;font-size:15.5px}
+@media(max-width:560px){.contact-card{grid-template-columns:1fr}}
+
+/* Footer */
+.footer{margin-top:clamp(80px,10vw,128px);border-top:1px solid var(--line);padding:32px 0 40px}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--faint)}
+.foot nav{display:flex;gap:18px;flex-wrap:wrap}
+.foot a{color:var(--muted)}
+.foot a:hover{color:var(--text)}
+.top{position:fixed;right:20px;bottom:20px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line-2);color:var(--muted);box-shadow:0 10px 30px -12px rgba(0,0,0,.4);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .3s,transform .3s var(--ease),color .2s}
+.top.show{opacity:1;pointer-events:auto;transform:none}
+.top:hover{color:var(--text)}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="/regent-inbox" class="brand" aria-label="Regent Inbox home"><span class="brand-mark" aria-hidden="true">R</span>Regent <small>Inbox</small></a>
+    <div class="nav-right">
+      <button class="icon-btn theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch colour theme">
+        <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="theme-icon-moon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a href="/regent-inbox" class="back"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Back to Regent Inbox</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="head">
+    <div class="wrap">
+      <div class="crumb"><a href="/regent-inbox">Regent Inbox</a><span aria-hidden="true">/</span><span>Privacy</span></div>
+      <h1>Privacy Policy</h1>
+      <p class="intro">This policy explains what information Regent Inbox collects, how we use it, who we share it with, and the choices you have. We've written it to be read, not skimmed past.</p>
+      <div class="meta"><span>Effective <b>September 26, 2026</b></span><span>Last updated <b>September 26, 2026</b></span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="glance" aria-label="Privacy at a glance">
+      <div class="g"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span><h3>We never sell your data</h3><p>Not your account data, not your guests' data — to anyone, for any reason.</p></div>
+      <div class="g"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg></span><h3>No training on your data</h3><p>Guest messages and your content are never used to train AI models.</p></div>
+      <div class="g"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 12l1.8 1.8L15 10"/><rect x="3" y="4" width="18" height="16" rx="3"/></svg></span><h3>You control what's sent</h3><p>Replies go out only on your approval or through send gates you configure.</p></div>
+      <div class="g"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"/></svg></span><h3>Export or delete anytime</h3><p>Ask and we'll export or delete your workspace data.</p></div>
+    </div>
+
+    <div class="layout">
+      <aside class="toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol id="toc"></ol>
+      </aside>
+
+      <div>
+        <details class="toc-m">
+          <summary>On this page <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+          <ol id="tocM"></ol>
+        </details>
+
+        <article class="doc" id="doc">
+          <section id="who-we-are">
+            <span class="n">01</span>
+            <h2>Who we are</h2>
+            <p>Regent Inbox is a software service for short-term rental managers, operated by <strong>Regent Capital Ventures LLC</strong> ("Regent", "we", "us"), based in Dallas–Fort Worth, Texas. This policy covers the Regent Inbox web application, its integrations, and this website at bookwithregent.com/regent-inbox.</p>
+            <p>If you are a guest staying at a Regent Stays property, our guest-facing practices are described in the <a href="/privacy-policy">Book with Regent privacy policy</a>.</p>
+          </section>
+
+          <section id="information-we-collect">
+            <span class="n">02</span>
+            <h2>Information we collect</h2>
+            <h3>Information you give us</h3>
+            <ul>
+              <li><strong>Account details</strong> — your name, email address, phone number, company, number of properties and plan.</li>
+              <li><strong>Billing details</strong> — billing contact and plan information. Card numbers are handled by our payment processor; we don't store full card numbers.</li>
+              <li><strong>Demo and support requests</strong> — what you send us through our forms or email, such as your name, email, phone, portfolio size, plan interest and message.</li>
+            </ul>
+            <h3>Information from services you connect</h3>
+            <ul>
+              <li><strong>Property management system</strong> (such as Guesty) — listings, reservations, guest names and contact details, and message threads, as permitted by the access you grant.</li>
+              <li><strong>Messaging channels</strong> — guest and owner conversations from channels you connect, such as Airbnb, Vrbo, direct booking, SMS and email.</li>
+            </ul>
+            <h3>Content you create in Regent Inbox</h3>
+            <ul>
+              <li><strong>Knowledge base</strong> — property details, house rules, check-in instructions and other facts the AI uses to answer.</li>
+              <li><strong>Notes and their history</strong> — cleaner checklists, repair logs and other notes, including every saved version, who made each change and when.</li>
+              <li><strong>AI chat and approvals</strong> — instructions you give the AI assistant, the actions it takes on your behalf, and drafts you approve, edit or reject.</li>
+              <li><strong>Collaborators</strong> — names, email addresses and roles of the people you invite, and their activity in your workspace.</li>
+            </ul>
+            <h3>Information collected automatically</h3>
+            <ul>
+              <li><strong>Usage and device data</strong> — IP address, browser and device type, pages and features used, and timestamps, recorded in server logs.</li>
+              <li><strong>Cookies and local storage</strong> — essential cookies to keep you signed in and secure, and local storage for preferences such as your colour theme. We don't use advertising cookies.</li>
+            </ul>
+          </section>
+
+          <section id="how-we-use-information">
+            <span class="n">03</span>
+            <h2>How we use information</h2>
+            <ul>
+              <li>To provide the service — syncing conversations, drafting replies, running send gates, automating cleaner workflows, storing notes and their versions, and managing collaborator access.</li>
+              <li>To keep the service secure and reliable — authenticating users, preventing abuse, and diagnosing problems.</li>
+              <li>To support you — answering questions, onboarding, and responding to demo requests.</li>
+              <li>To bill for paid plans and keep records required by law.</li>
+              <li>To improve the product using aggregated or de-identified usage information — never by training AI models on your content or your guests' data.</li>
+              <li>To send service announcements. Marketing emails are optional and you can unsubscribe at any time.</li>
+            </ul>
+          </section>
+
+          <section id="how-ai-is-used">
+            <span class="n">04</span>
+            <h2>How AI is used</h2>
+            <p>Regent Inbox uses large language models from third-party AI providers to draft replies, answer questions in the AI chat, and carry out actions you request.</p>
+            <ul>
+              <li><strong>Minimum necessary context.</strong> We send only the conversation and property facts needed for the task, and redact guest personal data from AI context where possible.</li>
+              <li><strong>No training.</strong> We don't use your content or your guests' data to train models, and our AI providers are contractually prohibited from using it for training.</li>
+              <li><strong>Human control.</strong> Replies are sent only with your approval or through send gates you configure, such as quiet hours and policy checks.</li>
+              <li><strong>Scoped actions.</strong> The AI assistant can act only within the permissions of the person using it, and every action it takes is recorded in your workspace.</li>
+            </ul>
+          </section>
+
+          <section id="your-guests-data">
+            <span class="n">05</span>
+            <h2>Your guests' data</h2>
+            <p>When you use Regent Inbox to manage guest conversations, you decide what data comes into the service and why. For that data we act as your service provider (a "processor"), handling it only to provide Regent Inbox to you and as you instruct.</p>
+            <div class="callout"><p>Guests who want to access, correct or delete their information should contact the host or property manager they booked with. We'll help our customers respond to those requests.</p></div>
+          </section>
+
+          <section id="how-we-share-information">
+            <span class="n">06</span>
+            <h2>How we share information</h2>
+            <p>We don't sell personal information, and we don't share it for cross-context behavioural advertising. We share it only as follows:</p>
+            <div class="table">
+              <div><b>Service providers</b><span>Cloud hosting and databases, AI model providers, email and SMS delivery, and payment processing — each bound by contract to use the data only to provide their service to us.</span></div>
+              <div><b>Integrations you connect</b><span>Services such as your property management system or messaging channels, to send and receive data at your direction.</span></div>
+              <div><b>Collaborators you invite</b><span>People you add to your workspace see the data their role allows.</span></div>
+              <div><b>Shared links</b><span>Anyone with a share link to a note can view it until you revoke the link.</span></div>
+              <div><b>Legal and safety</b><span>When required by law, or to protect the rights, safety and security of our users, guests or others.</span></div>
+              <div><b>Business transfers</b><span>If we're involved in a merger, acquisition or sale of assets, subject to this policy's protections.</span></div>
+            </div>
+          </section>
+
+          <section id="google-user-data">
+            <span class="n">07</span>
+            <h2>Google user data</h2>
+            <p>If you connect a Google account (for example, to bring email conversations into Regent Inbox), we access only the data needed for the features you turn on. Regent Inbox's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements. We don't use Google user data to serve ads or to train AI models, and people can read it only with your permission, for security purposes, or where required by law. You can disconnect Google at any time from your account settings or your Google account permissions.</p>
+          </section>
+
+          <section id="data-retention">
+            <span class="n">08</span>
+            <h2>Data retention</h2>
+            <p>We keep workspace data — including conversations, notes and their version history — for as long as your account is active. When you close your account or ask us to delete your data, we delete or de-identify it within a reasonable period, typically within 30 days, except where we must keep certain records for legal, tax or security reasons. Copies in encrypted backups are removed as those backups expire. Demo and support requests are kept only as long as needed to respond and follow up.</p>
+          </section>
+
+          <section id="security">
+            <span class="n">09</span>
+            <h2>Security</h2>
+            <p>We protect information with encryption in transit and at rest, role-based access controls, least-privilege access for our team, and activity logging. Regent Inbox runs on cloud infrastructure providers that maintain industry-standard security certifications. No system is perfectly secure, so if we become aware of a breach affecting your information, we'll notify you as required by law.</p>
+          </section>
+
+          <section id="your-choices-and-rights">
+            <span class="n">10</span>
+            <h2>Your choices and rights</h2>
+            <p>Depending on where you live — including under the Texas Data Privacy and Security Act, the California Consumer Privacy Act, and the GDPR — you may have the right to:</p>
+            <ul>
+              <li>Access the personal information we hold about you, and get a copy of it.</li>
+              <li>Correct information that is inaccurate.</li>
+              <li>Delete your information, or export your workspace data.</li>
+              <li>Opt out of marketing emails, and object to or restrict certain processing.</li>
+              <li>Appeal a decision we make about your request.</li>
+            </ul>
+            <p>You can also disconnect integrations, remove collaborators and revoke share links at any time in the app. To make a request, email <a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a>. We'll verify your identity and respond within the time the law requires, and we won't treat you differently for exercising your rights.</p>
+          </section>
+
+          <section id="international-transfers">
+            <span class="n">11</span>
+            <h2>International transfers</h2>
+            <p>Regent Inbox is operated from the United States, and information is processed and stored there. Where the law requires, we use appropriate safeguards for transfers from other countries.</p>
+          </section>
+
+          <section id="children">
+            <span class="n">12</span>
+            <h2>Children</h2>
+            <p>Regent Inbox is a business tool and isn't directed to children under 18. We don't knowingly collect personal information from children.</p>
+          </section>
+
+          <section id="changes">
+            <span class="n">13</span>
+            <h2>Changes to this policy</h2>
+            <p>We'll update this policy as our service or the law changes, and revise the "Last updated" date above. If a change is material, we'll let you know in the app or by email before it takes effect.</p>
+          </section>
+
+          <section id="contact-us">
+            <span class="n">14</span>
+            <h2>Contact us</h2>
+            <p>Questions about this policy or your data? We're happy to help.</p>
+            <div class="contact-card">
+              <div><small>Email</small><b><a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a></b></div>
+              <div><small>Company</small><b>Regent Capital Ventures LLC</b><span style="display:block;margin-top:2px;font-size:14.5px;color:var(--muted)">Dallas–Fort Worth, Texas, United States</span></div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap foot">
+    <span>© 2026 Regent Capital Ventures LLC</span>
+    <nav aria-label="Footer"><a href="/regent-inbox">Regent Inbox</a><a href="/regent-inbox#pricing">Pricing</a><a href="/regent-inbox#contact">Book a demo</a><a href="/">Regent Stays</a></nav>
+  </div>
+</footer>
+
+<button class="top" id="toTop" aria-label="Back to top"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+<script>
+(function () {
+  'use strict';
+  /* Build both tables of contents from the section headings */
+  var sections = Array.prototype.slice.call(document.querySelectorAll('#doc section'));
+  var toc = document.getElementById('toc'), tocM = document.getElementById('tocM');
+  sections.forEach(function (s) {
+    var title = s.querySelector('h2').textContent;
+    [toc, tocM].forEach(function (list) {
+      var li = document.createElement('li'), a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = title; li.appendChild(a); list.appendChild(li);
+    });
+  });
+  var details = document.querySelector('.toc-m');
+  tocM.addEventListener('click', function (e) { if (e.target.tagName === 'A') details.open = false; });
+
+  /* Highlight the section in view */
+  var links = toc.querySelectorAll('a');
+  function mark(id) { links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + id); }); }
+  // Active = the last section whose top has passed 30% of the viewport
+  // (first section when above them all, last when scrolled to the end).
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var line = window.innerHeight * 0.3, current = sections[0].id;
+    sections.forEach(function (s) { if (s.getBoundingClientRect().top <= line) current = s.id; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = sections[sections.length - 1].id;
+    mark(current);
+  }
+  document.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+
+  /* Back to top */
+  var top = document.getElementById('toTop');
+  document.addEventListener('scroll', function () { top.classList.toggle('show', window.scrollY > 900); }, { passive: true });
+  top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+})();
+</script>
+</body>
+</html>

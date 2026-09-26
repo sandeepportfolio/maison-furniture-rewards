@@ -809,6 +809,14 @@ async function getListings() {
       accommodates: l.accommodates,
       bedrooms: l.bedrooms,
       bathrooms: l.bathrooms,
+      // Gallery as Guesty holds it now, in Guesty's order. server.js serves
+      // these for listings whose photos are managed live (see LIVE_PHOTO_SLUGS).
+      pictures: (Array.isArray(l.pictures) ? l.pictures : [])
+        .map(p => ({
+          url: (p && (p.original || p.large || p.regular || p.thumbnail)) || '',
+          caption: (p && typeof p.caption === 'string') ? p.caption.trim() : '',
+        }))
+        .filter(p => /^https?:\/\//.test(p.url)),
     };
   });
 
