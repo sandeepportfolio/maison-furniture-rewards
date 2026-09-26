@@ -1008,6 +1008,9 @@ ul{list-style:none}
 /* Map wrapper — expanded state */
 .explore-map-wrap.map-expanded{position:fixed;top:0!important;right:0!important;bottom:0!important;left:0!important;width:auto!important;height:auto!important;z-index:1001;border-radius:0;border:none;cursor:default;overflow:hidden}
 .explore-map-wrap.map-expanded .map-click-hint{opacity:0}
+/* One line at every width: on phones it wrapped to three lines and hid pins. */
+.explore-map-wrap .map-click-hint{white-space:nowrap;max-width:calc(100% - 32px)}
+@media(max-width:480px){.explore-map-wrap .map-click-hint{padding:9px 16px;font-size:9.5px;letter-spacing:.1em;bottom:16px}}
 /* Map element */
 #exploreMap{flex:1;min-height:0;width:100%;z-index:1;background:#0A0D0A}
 #exploreMap .leaflet-control-attribution{display:none}
@@ -2726,7 +2729,7 @@ ul{list-style:none}
       <a href="#story">Our Story</a>
       <a href="/management">Management</a>
       <a href="/reward">Rewards</a>
-      <a href="/regent-ai">Regent AI</a>
+      <a href="/regent-inbox">Regent AI</a>
       <a href="/careers">Careers</a>
       <a href="#contact">Contact</a>
       <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
@@ -2747,7 +2750,7 @@ ul{list-style:none}
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="/management" onclick="closeMobile()">Management</a>
   <a href="/reward" onclick="closeMobile()">Rewards</a>
-  <a href="/regent-ai" onclick="closeMobile()">Regent AI</a>
+  <a href="/regent-inbox" onclick="closeMobile()">Regent AI</a>
   <a href="/careers" onclick="closeMobile()">Careers</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
@@ -2827,7 +2830,7 @@ ul{list-style:none}
   <div class="coll-filters reveal" id="propFilters">
     <div class="coll-filter-wrap" id="collFilterWrap">
       <button class="coll-filter-btn active" data-filter="all" onclick="setPropertyFilter('all')">All Properties</button>
-      <button class="coll-filter-btn" data-filter="villa" onclick="setPropertyFilter('villa')">Villas</button>
+      <button class="coll-filter-btn" data-filter="villa" onclick="setPropertyFilter('villa')">Homes</button>
       <button class="coll-filter-btn" data-filter="suite" onclick="setPropertyFilter('suite')">Executive Suites</button>
       <div class="coll-filter-slider" id="collFilterSlider"></div>
     </div>
@@ -4528,7 +4531,7 @@ function renderPropertyCard(p) {
   /* Obsidian chips */
   const isVilla = p.category === 'villa';
   const villaClass = isVilla ? ' villa-card' : '';
-  const typeLabel = isVilla ? 'Villa' : 'Suite';
+  const typeLabel = isVilla ? 'Home' : 'Suite';
   const chipLeft = `<span class="obs-chip"><span class="obs-dot"></span>${typeLabel} &middot; ${p.city}</span>`;
   const chipRight = p.rating !== null
     ? `<span class="obs-chip obs-rate"><b>&#9733;</b> ${fmtRating(p.rating)} &middot; ${p.reviews}</span>`
@@ -4738,8 +4741,30 @@ function renderDiscountedPrice(basePrice, cssPrefix, lowestPrice) {
 /* ═══ Live pricing from Guesty API ═══ */
 // Start both requests at script-parse time so the network round-trip overlaps
 // with DOM construction instead of waiting for DOMContentLoaded.
+/* Live-managed galleries (e.g. Regent Sol) come from Guesty with the listings
+   response. They're applied the moment it lands — not after the slower
+   calendar price scan — so a new gallery never flashes the bundled photos. */
+function applyLiveGalleries(listings) {
+  let changed = false;
+  (listings || []).forEach(listing => {
+    const prop = PROPERTIES.find(p => p.slug === listing.slug);
+    if (!prop || !Array.isArray(listing.photos) || listing.photos.length < 5) return;
+    if (listing.photos.join('|') === (prop.photos || []).join('|')) return;
+    prop.photos = listing.photos;
+    prop.photoLabels = listing.photoLabels || [];
+    prop.amenityPhotos = {}; // indices pointed into the old gallery
+    changed = true;
+  });
+  // Cards already on screen re-render so their carousels use the new photos;
+  // if the grid hasn't rendered yet it will pick them up on first render.
+  if (changed && document.querySelector('#propertiesGrid .prop-card')) renderProperties();
+}
+const listingsRequest = fetch('/api/guesty/listings').then(res => {
+  if (res.ok) res.clone().json().then(d => applyLiveGalleries(d.listings)).catch(() => {});
+  return res;
+});
 const pricesPrefetch = Promise.all([
-  fetch('/api/guesty/listings'),
+  listingsRequest,
   fetch('/api/guesty/lowest-prices').catch(() => null),
 ]);
 pricesPrefetch.catch(() => {}); // handled for real inside fetchAndApplyPrices
@@ -6993,9 +7018,11 @@ function toggleExploreExpand(section) {
 /* Padding used for every "show all properties" fit. Leaves room for the header
    chrome at the top and the property strip / bottom sheet at the bottom. */
 const MAP_FIT_PADDING = { paddingTopLeft: [48, 44], paddingBottomRight: [48, 64] };
-/* Never zoom out past the DFW metro — a wider view is never useful here and was
-   what made the map read as "all of Texas" when it initialised at zero width. */
-const MAP_MIN_ZOOM = 9;
+/* Floor for zooming out. The portfolio spans Dallas–Fort Worth AND Austin
+   (~180 mi apart), so "show every property" needs roughly zoom 6.5 on a phone;
+   the old DFW-only floor of 9 clipped the fit and hid one metro. 5 still stops
+   the map drifting out to a whole-continent view. */
+const MAP_MIN_ZOOM = 5;
 const MAP_MAX_FIT_ZOOM = 13;
 
 /* The safe area of the map — the part not covered by the header chrome at the
@@ -7007,6 +7034,10 @@ function mapFitPadding() {
     paddingTopLeft: MAP_FIT_PADDING.paddingTopLeft.slice(),
     paddingBottomRight: MAP_FIT_PADDING.paddingBottomRight.slice(),
   };
+  if (!mapIsExpanded) {
+    // Collapsed preview: keep pins clear of the "Click to explore" pill.
+    pad.paddingBottomRight = [pad.paddingBottomRight[0], 84];
+  }
   if (mapIsExpanded && exploreMapInstance) {
     const sheet = document.getElementById('mapBottomSheet');
     const mapH = exploreMapInstance.getSize().y;
@@ -7341,7 +7372,7 @@ function selectPropertyOnMap(idx) {
   if (photo && prop.photos && prop.photos[0]) {
     photo.style.backgroundImage = `url(${imgUrl(prop.hostingId, prop.photos[0])})`;
   }
-  if (catEl) catEl.textContent = prop.category === 'villa' ? 'Luxury Villa' : 'Designer Suite';
+  if (catEl) catEl.textContent = prop.category === 'villa' ? 'Luxury Home' : 'Designer Suite';
   if (nameEl) nameEl.textContent = prop.name;
   if (locTextEl) {
     const stateAbbr = prop.state === 'Texas' ? 'TX' : prop.state;
@@ -7630,7 +7661,7 @@ function buildMapPropStrip() {
         </div>
         ${distHtml}
         ${priceHtml}
-        <span class="map-prop-strip-badge">${prop.category === 'villa' ? 'Villa' : 'Suite'}</span>
+        <span class="map-prop-strip-badge">${prop.category === 'villa' ? 'Home' : 'Suite'}</span>
       </div>
     </div>`;
   }).join('');

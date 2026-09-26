@@ -3,867 +3,847 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Regent Inbox | AI-Powered Guest Messaging</title>
-<meta name="description" content="Regent Inbox is the AI front desk for short-term rental managers — accurate, fact-checked replies to every guest and owner message, reviewed by your team, guarded by hard send controls. Built for Guesty. Live in an afternoon.">
+<title>Regent Inbox | The AI Front Desk for Short-Term Rentals</title>
+<meta name="description" content="Regent Inbox answers every guest and owner message with fact-checked AI replies your team approves. Add Operations for cleaner automation, an AI that runs the whole app, versioned notes and collaborators. From $25 per property.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Regent Inbox">
-<meta property="og:title" content="Regent Inbox | AI-Powered Guest Messaging">
-<meta property="og:description" content="Accurate AI replies to every guest and owner message, reviewed by your team, guarded by hard send controls. Built for Guesty. Live in an afternoon.">
-<meta property="og:url" content="https://www.bookwithregent.com/regent-ai">
+<meta property="og:title" content="Regent Inbox | The AI Front Desk for Short-Term Rentals">
+<meta property="og:description" content="Fact-checked AI replies to every guest and owner message, reviewed by your team. Add Operations for cleaner automation, AI control of the whole app, versioned notes and collaborators.">
+<meta property="og:url" content="https://www.bookwithregent.com/regent-inbox">
 <meta property="og:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Regent Inbox | AI-Powered Guest Messaging">
-<meta name="twitter:description" content="Accurate AI replies to every guest and owner message, reviewed by your team, guarded by hard send controls. Built for Guesty. Live in an afternoon.">
+<meta name="twitter:title" content="Regent Inbox | The AI Front Desk for Short-Term Rentals">
+<meta name="twitter:description" content="Fact-checked AI replies to every guest and owner message, reviewed by your team. From $25 per property.">
 <meta name="twitter:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
-<link rel="canonical" href="https://www.bookwithregent.com/regent-ai">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2314100A'/%3E%3Ctext x='50%25' y='57%25' dominant-baseline='central' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='36' fill='%23D6B36A'%3ER%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#0C0A07">
+<link rel="canonical" href="https://www.bookwithregent.com/regent-inbox">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2314120E'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='central' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='600' font-size='34' fill='%23D9B774'%3ER%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0B0B0A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/js/theme-toggle.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* ═══ Tokens ═══
+   One typeface (Geist) carries the whole page; hierarchy comes from size,
+   weight and tracking rather than mixed faces. Gold is an accent, not a fill.
+   Every text colour clears WCAG AA (4.5:1) on its surface in both themes. */
 :root{
-  --bg:#0C0A07;--surface:#14100A;
-  --text:#F4EDE0;--text-muted:rgba(244,237,224,.62);--text-dim:rgba(244,237,224,.4);
-  --gold:#D6B36A;--gold-bright:#E8CD92;--gold-deep:#A98543;
-  --gold-rgb:214,179,106;--text-rgb:244,237,224;
-  --border:rgba(214,179,106,.22);
-  --glass-bg:rgba(255,252,245,.04);--glass-border:rgba(244,237,224,.1);
-  --nav-bg:rgba(12,10,7,.66);--nav-bg-scroll:rgba(12,10,7,.9);
-  --card-shadow:0 20px 50px rgba(0,0,0,.4);--card-shadow-strong:0 24px 60px rgba(0,0,0,.55);
-  --input-bg:rgba(255,252,245,.03);
-  --success-bg:rgba(126,196,143,.12);--success-text:#8FD6A2;--success-border:rgba(126,196,143,.3);
-  --error-bg:rgba(214,110,90,.12);--error-text:#E39181;--error-border:rgba(214,110,90,.3);
-  --hero-glow-a:rgba(214,179,106,.13);--hero-glow-b:rgba(214,179,106,.07);
-  --serif:'Instrument Serif',Georgia,serif;
-  --sans:'Instrument Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
-  --mono:'IBM Plex Mono','SF Mono',monospace;
-  --ease:cubic-bezier(.22,.6,.2,1);
-  --shadow-md:0 20px 50px rgba(0,0,0,.4);
-  --shadow-lg:0 34px 90px rgba(0,0,0,.5);
+  --bg:#0B0B0A;--bg-2:#100F0D;--surface:#151412;--surface-2:#1C1B18;
+  --line:rgba(245,242,236,.09);--line-2:rgba(245,242,236,.14);
+  --text:#F5F2EC;--muted:rgba(245,242,236,.7);--faint:rgba(245,242,236,.56);
+  --accent:#D9B774;--accent-2:#E9CF98;--accent-soft:rgba(217,183,116,.12);--accent-line:rgba(217,183,116,.32);
+  --btn-bg:#F5F2EC;--btn-fg:#12110E;--btn-hover:#FFFFFF;
+  --ok:#8FD3A7;--ok-soft:rgba(143,211,167,.12);
+  --err:#F0A193;--err-soft:rgba(240,161,147,.12);
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 60px -24px rgba(0,0,0,.7);
+  --shadow-lg:0 1px 0 rgba(255,255,255,.05) inset,0 40px 100px -30px rgba(0,0,0,.8);
+  --glow:rgba(217,183,116,.10);
+  --nav-bg:rgba(11,11,10,.72);
+  --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --r:18px;--r-lg:26px;
 }
 [data-theme="light"]{
-  --bg:#FAF6EE;
-  --surface:#FFFFFF;
-  --text:#1A1610;
-  /* .7 ink and deep golds keep small labels at WCAG AA on cream. */
-  --text-muted:rgba(26,22,16,.72);
-  --text-dim:rgba(26,22,16,.68);
-  --gold:#7A5718;
-  --gold-bright:#7F5B1C;
-  --gold-deep:#5E4011;
-  --gold-rgb:122,87,24;--text-rgb:26,22,16;
-  --border:rgba(26,22,16,.12);
-  --glass-bg:rgba(26,22,16,.03);--glass-border:rgba(26,22,16,.08);
-  --nav-bg:rgba(250,246,238,.82);--nav-bg-scroll:rgba(250,246,238,.95);
-  --card-shadow:0 2px 12px rgba(26,22,16,.08);--card-shadow-strong:0 6px 24px rgba(26,22,16,.14);
-  --input-bg:rgba(26,22,16,.025);
-  --success-bg:rgba(46,125,68,.08);--success-text:#2E7D44;--success-border:rgba(46,125,68,.3);
-  --error-bg:rgba(178,50,34,.08);--error-text:#B23222;--error-border:rgba(178,50,34,.3);
-  --hero-glow-a:rgba(184,137,46,.08);--hero-glow-b:rgba(138,106,34,.06);
-  --shadow-md:0 10px 30px rgba(26,22,16,.1);
-  --shadow-lg:0 18px 46px rgba(26,22,16,.14);
+  --bg:#F7F5F0;--bg-2:#F1EEE7;--surface:#FFFFFF;--surface-2:#F4F1EA;
+  --line:rgba(20,18,14,.09);--line-2:rgba(20,18,14,.15);
+  --text:#14120E;--muted:rgba(20,18,14,.72);--faint:rgba(20,18,14,.64);
+  --accent:#7A5718;--accent-2:#6A4B13;--accent-soft:rgba(122,87,24,.08);--accent-line:rgba(122,87,24,.28);
+  --btn-bg:#14120E;--btn-fg:#F7F5F0;--btn-hover:#2A2620;
+  --ok:#1F6F43;--ok-soft:rgba(31,111,67,.09);
+  --err:#A23422;--err-soft:rgba(162,52,34,.08);
+  --shadow:0 1px 2px rgba(20,18,14,.04),0 18px 44px -22px rgba(20,18,14,.18);
+  --shadow-lg:0 1px 2px rgba(20,18,14,.05),0 34px 80px -30px rgba(20,18,14,.24);
+  --glow:rgba(122,87,24,.07);
+  --nav-bg:rgba(247,245,240,.8);
 }
-/* The logo tile stays dark in light mode, so its "R" keeps the bright gold. */
-[data-theme="light"] .ri-mark{color:#E8CD92}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;max-width:100vw;overflow-x:hidden}
-#top,#product,#safety,#pricing,#faq,#contact{scroll-margin-top:110px}
-@media(max-width:560px){#top,#product,#safety,#pricing,#faq,#contact{scroll-margin-top:88px}}
-body{font-family:var(--sans);color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden;max-width:100vw}
-::selection{background:var(--gold);color:#1A1408;-webkit-text-fill-color:#1A1408}
-a{text-decoration:none;color:inherit}
-button{border:none;background:none;cursor:pointer;font-family:inherit;color:inherit}
-img{max-width:100%;display:block}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;max-width:100vw}
+#top,#product,#operations,#security,#pricing,#faq,#contact{scroll-margin-top:96px}
+body{font-family:var(--sans);font-size:16px;line-height:1.6;color:var(--text);background:var(--bg);overflow-x:hidden;max-width:100vw;font-feature-settings:"ss01","cv11"}
+::selection{background:var(--accent);color:#12110E}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 ul{list-style:none}
-:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+img,svg{display:block}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 
-/* ── Grain ── */
-.grain{position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.025;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat:repeat;background-size:200px;transition:opacity .3s var(--ease)}
-[data-theme="light"] .grain{opacity:.012}
+/* ═══ Layout primitives ═══ */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,40px);position:relative}
+.section{padding:clamp(88px,11vw,148px) 0 0;position:relative}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;letter-spacing:-.005em;color:var(--accent)}
+.kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px var(--accent-soft)}
+.h2{margin-top:14px;font-size:clamp(32px,4.4vw,52px);font-weight:600;line-height:1.06;letter-spacing:-.035em;max-width:760px;text-wrap:balance}
+.lead{margin-top:16px;font-size:clamp(16.5px,1.5vw,18.5px);line-height:1.6;color:var(--muted);max-width:620px;text-wrap:pretty}
+.center{text-align:center}.center .h2,.center .lead{margin-left:auto;margin-right:auto}
+.muted{color:var(--muted)}
 
-/* ── Ambient glow ── */
-.ri-orb{position:absolute;border-radius:999px;pointer-events:none;z-index:0}
-.ri-orb-a{top:-260px;right:-200px;width:820px;height:640px;background:radial-gradient(closest-side,var(--hero-glow-a),transparent 72%)}
-.ri-orb-b{bottom:-240px;left:-220px;width:760px;height:600px;background:radial-gradient(closest-side,var(--hero-glow-b),transparent 70%)}
-
-/* ── Scroll progress ── */
-.ri-progress{position:fixed;top:0;left:0;height:2.5px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));z-index:1100;pointer-events:none}
-
-/* ── Utility: gold gradient text ── */
-.grad-gold{font-style:italic;background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright) 50%,var(--gold));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:var(--gold);-webkit-text-fill-color:transparent;animation:riShimmer 6s linear infinite}
-@keyframes riShimmer{to{background-position:200% center}}
-
-/* ── Eyebrow ── */
-.ri-eyebrow{display:inline-flex;align-items:center;gap:14px;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
-.ri-eyebrow .ln{width:clamp(20px,4vw,32px);height:1px;flex:none;background:linear-gradient(90deg,transparent,var(--gold));box-shadow:0 0 8px rgba(var(--gold-rgb),.35)}
-.ri-eyebrow .ln.r{background:linear-gradient(90deg,var(--gold),transparent)}
-.ri-eyebrow.center{justify-content:center}
-
-/* ── Section furniture ── */
-.ri-section{position:relative;padding:clamp(84px,11vw,140px) clamp(20px,5vw,64px) 0;z-index:1}
-.ri-wrap{max-width:1200px;margin:0 auto;position:relative;z-index:1}
-.ri-h2{margin:18px 0 0;font-family:var(--serif);font-weight:400;font-size:clamp(32px,4.4vw,54px);line-height:1.08;letter-spacing:-.01em;max-width:820px;text-wrap:balance;color:var(--text)}
-.ri-lead{margin:18px 0 0;font-size:clamp(16px,1.5vw,18.5px);line-height:1.6;color:var(--text-muted);max-width:600px;text-wrap:pretty}
-.ri-center{text-align:center}
-.ri-center .ri-h2,.ri-center .ri-lead{margin-left:auto;margin-right:auto}
-
-/* ── Reveal ── */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
-.reveal.on{opacity:1;transform:none}
-@keyframes riIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.ri-enter{opacity:0;animation:riIn .7s var(--ease) both}
-
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:999px;padding:16px clamp(22px,4vw,30px);font-weight:600;font-size:clamp(15px,4vw,16.5px);font-family:var(--sans);transition:transform .2s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease);white-space:nowrap;border:1px solid transparent}
-.btn:active{transform:scale(.97)}
-.btn-gold{background:var(--gold);color:#1A1408;box-shadow:0 14px 40px rgba(var(--gold-rgb),.28)}
-.btn-ghost{background:var(--glass-bg);color:var(--text);border-color:var(--glass-border)}
-.btn-sm{padding:12px 20px;font-size:14px}
-@media(hover:hover) and (pointer:fine){
-  .btn-gold:hover{background:var(--gold-bright);box-shadow:0 20px 54px rgba(var(--gold-rgb),.4);transform:translateY(-2px)}
-  .btn-ghost:hover{background:rgba(var(--text-rgb),.08);border-color:rgba(var(--text-rgb),.3);transform:translateY(-2px)}
+/* ═══ Buttons ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font-size:15px;font-weight:550;letter-spacing:-.01em;white-space:nowrap;transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .2s var(--ease),box-shadow .3s var(--ease)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--btn-bg);color:var(--btn-fg);box-shadow:0 10px 30px -12px rgba(0,0,0,.45)}
+.btn-ghost{border:1px solid var(--line-2);color:var(--text);background:transparent}
+.btn-sm{height:38px;padding:0 16px;font-size:14px}
+.btn .arr{transition:transform .25s var(--ease)}
+@media(hover:hover){
+  .btn-primary:hover{background:var(--btn-hover)}
+  .btn-ghost:hover{border-color:var(--text)}
+  .btn:hover .arr{transform:translateX(3px)}
 }
 
-/* ── Nav ── */
-.nav{position:fixed;top:14px;left:0;right:0;z-index:1000;padding:0 clamp(12px,3vw,24px);pointer-events:none}
-.nav-inner{pointer-events:auto;max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--nav-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:9px 10px 9px 16px;box-shadow:var(--card-shadow);transition:background .3s var(--ease),box-shadow .3s var(--ease)}
-.nav.scrolled .nav-inner{background:var(--nav-bg-scroll);box-shadow:var(--card-shadow-strong)}
-.ri-brand{display:flex;align-items:center;gap:10px;min-height:36px}
-.ri-mark{width:34px;height:34px;border-radius:10px;flex:none;background:linear-gradient(155deg,#1c160c,#14100A);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;font-size:19px;color:var(--gold-bright)}
-.ri-word{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
-.ri-word b{font-family:var(--serif);font-weight:400;font-size:19px;color:var(--text);letter-spacing:-.01em}
-.ri-word span{font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--gold)}
-.nav-links{display:flex;align-items:center;gap:2px}
-.nav-links a{font-size:14.5px;font-weight:500;color:rgba(var(--text-rgb),.78);padding:9px 15px;border-radius:999px;transition:background .2s var(--ease),color .2s var(--ease);white-space:nowrap}
-.nav-links a:hover{background:rgba(var(--text-rgb),.06);color:var(--text)}
-.nav-right{display:flex;align-items:center;gap:6px}
-.nav-back{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;color:rgba(var(--text-rgb),.65);padding:9px 12px;border-radius:999px;white-space:nowrap;transition:color .2s var(--ease),background .2s var(--ease)}
-.nav-back:hover{color:var(--text);background:rgba(var(--text-rgb),.06)}
-.nav-signin{font-size:14.5px;font-weight:600;color:var(--text);padding:9px 16px;border-radius:999px;white-space:nowrap;border:1px solid var(--glass-border);transition:background .2s var(--ease),border-color .2s var(--ease)}
-.nav-signin:hover{background:rgba(var(--text-rgb),.08);border-color:rgba(var(--text-rgb),.3)}
-.nav-cta{background:var(--gold)!important;color:#1A1408!important;font-weight:700!important;font-size:14px!important;padding:11px 20px!important;border-radius:999px!important;white-space:nowrap;box-shadow:0 10px 28px rgba(var(--gold-rgb),.3);transition:transform .2s var(--ease),box-shadow .3s var(--ease)}
-.nav-cta:active{transform:scale(.96)}
-@media(hover:hover) and (pointer:fine){.nav-cta:hover{transform:translateY(-1px);box-shadow:0 16px 38px rgba(var(--gold-rgb),.42)}}
-.theme-toggle-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--glass-bg);color:var(--text-muted);cursor:pointer;transition:all .3s var(--ease)}
-.theme-toggle-btn:hover{color:var(--gold);border-color:var(--gold)}
-.mobile-menu .theme-toggle-btn{align-self:flex-start;margin-top:22px}
-.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:42px;height:42px;border-radius:999px;border:1px solid var(--glass-border);background:rgba(var(--text-rgb),.05);align-items:center;flex:none}
-.nav-burger span{display:block;width:16px;height:2px;border-radius:2px;background:var(--text);transition:transform .3s var(--ease),opacity .2s var(--ease)}
-.nav-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.nav-burger.open span:nth-child(2){opacity:0}
-.nav-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-@media(max-width:920px){.nav-links{display:none}.nav-signin{display:none}.nav-back .nav-back-label{display:none}.nav-burger{display:flex}}
-@media(max-width:560px){.nav-inner{padding:7px 8px 7px 12px}.ri-mark{width:30px;height:30px;border-radius:9px;font-size:16px}.ri-word b{font-size:16px}.ri-word span{display:none}.nav-cta{padding:10px 15px!important;font-size:13px!important}}
+/* ═══ Nav ═══ */
+.nav{position:fixed;inset:0 0 auto 0;z-index:100;transition:background .3s var(--ease),border-color .3s var(--ease),backdrop-filter .3s}
+.nav.scrolled{background:var(--nav-bg);backdrop-filter:saturate(1.4) blur(18px);-webkit-backdrop-filter:saturate(1.4) blur(18px);border-bottom:1px solid var(--line)}
+.nav-in{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16.5px;letter-spacing:-.02em}
+.brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#14120E;color:#D9B774;font-weight:650;font-size:15px;box-shadow:inset 0 0 0 1px rgba(217,183,116,.35)}
+.brand small{font-weight:450;color:var(--muted);font-size:16.5px;margin-left:-5px}
+.nav-links{display:flex;gap:4px}
+.nav-links a{padding:8px 14px;border-radius:999px;font-size:14.5px;font-weight:450;color:var(--muted);transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--text);background:var(--accent-soft)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-link{font-size:14.5px;font-weight:500;color:var(--muted);padding:8px 12px;border-radius:999px;transition:color .2s}
+.nav-link:hover{color:var(--text)}
+.icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);transition:color .2s,border-color .2s}
+.icon-btn:hover{color:var(--text);border-color:var(--line-2)}
+.burger{display:none}
+.burger span{display:block;width:16px;height:1.5px;background:currentColor;border-radius:2px;transition:transform .3s var(--ease),opacity .2s}
+.burger span+span{margin-top:4px}
+.burger.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+.mmenu{position:fixed;inset:72px 0 0 0;z-index:99;background:var(--bg);padding:24px clamp(20px,4vw,40px) 40px;display:flex;flex-direction:column;gap:4px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .25s var(--ease),transform .25s var(--ease)}
+.mmenu.open{opacity:1;pointer-events:auto;transform:none}
+.mmenu a:not(.btn){padding:14px 2px;font-size:22px;font-weight:550;letter-spacing:-.02em;border-bottom:1px solid var(--line)}
+.mmenu .mm-row{display:flex;gap:10px;margin-top:24px}
+.mmenu .mm-row .btn{flex:1}
+@media(max-width:940px){.nav-links,.nav-link.hide-sm,.nav-right .btn.hide-sm{display:none}.burger{display:grid}}
 
-.mobile-menu{position:fixed;inset:0;z-index:1001;background:var(--bg);padding:88px 26px 34px;display:flex;flex-direction:column;gap:6px;opacity:0;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;overflow-y:auto}
-.mobile-menu.open{opacity:1;visibility:visible}
-.mobile-menu a{font-family:var(--serif);font-size:clamp(30px,9vw,44px);line-height:1.3;font-weight:400;color:var(--text);padding:3px 0}
-.mobile-menu a:hover{color:var(--gold)}
-.mobile-menu .mm-back{font-family:var(--sans);font-size:15px;font-weight:600;color:rgba(var(--text-rgb),.6);margin-top:22px}
-.mobile-menu .mm-signin{font-family:var(--sans);font-size:16px;font-weight:700;color:var(--gold);margin-top:10px}
-.mobile-menu .mm-cta{font-family:var(--sans)!important;font-size:16px!important;font-weight:700!important;color:#1A1408!important;background:var(--gold);padding:16px 26px!important;border-radius:999px;text-align:center;margin-top:24px;box-shadow:0 10px 30px rgba(var(--gold-rgb),.32)}
+/* ═══ Hero ═══ */
+.hero{position:relative;padding:clamp(128px,15vw,180px) 0 0;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto -10%;height:720px;background:radial-gradient(50% 55% at 70% 20%,var(--glow),transparent 70%),radial-gradient(40% 50% at 10% 0%,var(--glow),transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(40px,6vw,80px);align-items:center;position:relative}
+.pill{display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 14px 0 6px;border-radius:999px;border:1px solid var(--line-2);font-size:13.5px;color:var(--muted);background:var(--surface)}
+.pill b{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:12.5px}
+@media(max-width:480px){.pill{height:auto;min-height:34px;padding:5px 12px 5px 5px;line-height:1.35}}
+h1{margin-top:22px;font-size:clamp(42px,6.2vw,78px);font-weight:600;line-height:1;letter-spacing:-.045em;text-wrap:balance}
+h1 .soft{color:var(--faint)}
+.hero-sub{margin-top:22px;font-size:clamp(17px,1.6vw,19.5px);line-height:1.6;color:var(--muted);max-width:520px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.hero-note{margin-top:18px;font-size:14px;color:var(--faint)}
 
-/* ── Hero ── */
-.hero{position:relative;padding:clamp(120px,16vh,168px) clamp(20px,5vw,64px) 0;overflow:hidden}
-.hero-inner{max-width:900px;margin:0 auto;text-align:center;position:relative;z-index:1}
-.hero h1{margin:24px auto 0;font-family:var(--serif);font-weight:400;font-size:clamp(42px,7vw,88px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance;color:var(--text);max-width:820px}
-.hero-sub{margin:24px auto 0;font-size:clamp(16.5px,1.6vw,19px);line-height:1.6;color:var(--text-muted);max-width:52ch;text-wrap:pretty}
-.hero-ctas{margin-top:34px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+/* Product mock */
+.mock{position:relative;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-lg);overflow:hidden}
+.mock-bar{display:flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-bottom:1px solid var(--line);background:var(--bg-2)}
+.mock-bar i{width:9px;height:9px;border-radius:50%;background:var(--line-2)}
+.mock-bar span{margin-left:10px;font-size:12.5px;color:var(--faint)}
+.mock-body{display:grid;grid-template-columns:170px 1fr;min-height:390px}
+.mock-side{border-right:1px solid var(--line);padding:10px}
+.thread{display:flex;flex-direction:column;gap:2px;padding:10px 10px;border-radius:12px;font-size:13px}
+.thread b{font-weight:550;font-size:13px;display:flex;justify-content:space-between;gap:6px}
+.thread b em{font-style:normal;font-weight:450;color:var(--faint);font-size:11.5px}
+.thread span{color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.thread.on{background:var(--accent-soft)}
+.thread.on b{color:var(--text)}
+.mock-main{padding:18px;display:flex;flex-direction:column;gap:12px}
+.meta-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--faint)}
+.meta-row strong{color:var(--text);font-weight:550;font-size:14px}
+.chan{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;border:1px solid var(--line-2);font-size:11.5px;color:var(--muted)}
+.bubble{max-width:88%;padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.5}
+.bubble.guest{background:var(--surface-2);border-top-left-radius:6px}
+.bubble.ai{align-self:flex-end;background:var(--accent-soft);border:1px solid var(--accent-line);border-top-right-radius:6px}
+.bubble small{display:block;margin-bottom:5px;font-size:11.5px;font-weight:550;color:var(--faint)}
+.bubble.ai small{color:var(--accent)}
+.src{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-end;max-width:88%;justify-content:flex-end}
+.src span{height:24px;display:inline-flex;align-items:center;gap:6px;padding:0 9px;border-radius:999px;font-size:11.5px;color:var(--muted);background:var(--surface-2)}
+.checks{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line)}
+.checks ul{display:flex;gap:12px;flex-wrap:wrap}
+.checks li{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.checks li svg{color:var(--ok)}
+.checks .btn{height:34px;font-size:13px;padding:0 14px}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr}.mock{max-width:620px}}
+@media(max-width:560px){.mock-body{grid-template-columns:1fr}.mock-side{display:none}.checks{flex-direction:column;align-items:stretch}.checks .btn{width:100%}}
 
-/* Demo cards */
-.demo-row{margin:clamp(52px,7vw,84px) auto 0;max-width:1180px;position:relative;z-index:1;display:grid;grid-template-columns:1fr;gap:16px}
-@media(min-width:860px){.demo-row{grid-template-columns:repeat(3,1fr);align-items:stretch}}
-.demo-card{position:relative;background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:22px;padding:clamp(20px,2.4vw,26px);text-align:left;display:flex;flex-direction:column;gap:12px;transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease)}
-.demo-card.gold{border-color:rgba(var(--gold-rgb),.4);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.08) inset,var(--card-shadow)}
-.demo-label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
-.demo-label.gold{color:var(--gold)}
-.demo-text{font-size:15.5px;line-height:1.55;color:var(--text);font-weight:500;text-wrap:pretty}
-.demo-arrow{display:none;align-items:center;justify-content:center;color:var(--gold);font-family:var(--mono);font-size:18px}
-@media(min-width:860px) and (max-width:1180px){.demo-row{gap:12px}}
-@media(hover:hover) and (pointer:fine){.demo-card:hover{transform:translateY(-4px);box-shadow:var(--card-shadow)}}
+/* ═══ Proof strip ═══ */
+.proof{margin-top:clamp(64px,8vw,96px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.proof-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+.proof-cell{padding:28px 24px 26px;border-left:1px solid var(--line)}
+.proof-cell:first-child{border-left:0;padding-left:0}
+.proof-cell strong{display:block;font-size:clamp(26px,3vw,34px);font-weight:600;letter-spacing:-.035em;line-height:1.1}
+.proof-cell span{display:block;margin-top:6px;font-size:14px;color:var(--muted)}
+@media(max-width:760px){.proof-grid{grid-template-columns:1fr 1fr}.proof-cell{padding:22px 16px}.proof-cell:nth-child(3){border-left:0;padding-left:0}.proof-cell:nth-child(n+3){border-top:1px solid var(--line)}}
 
-/* ── Stats bar ── */
-.stats-wrap{position:relative;padding:clamp(56px,7vw,92px) clamp(20px,5vw,64px) 0;z-index:1}
-.stats-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:14px}
-@media(min-width:620px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1000px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
-.stat-card{background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:22px;padding:clamp(24px,2.6vw,30px) clamp(20px,2.2vw,26px);transition:transform .3s var(--ease),border-color .3s var(--ease)}
-.stat-num{font-family:var(--serif);font-weight:400;font-size:clamp(32px,3.4vw,44px);letter-spacing:-.01em;color:var(--gold-bright)}
-.stat-lab{margin-top:8px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);line-height:1.5}
-@media(hover:hover) and (pointer:fine){.stat-card:hover{transform:translateY(-3px);border-color:rgba(var(--gold-rgb),.3)}}
+/* ═══ Steps ═══ */
+.steps{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{padding:28px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.step .num{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft)}
+.step h3{margin-top:22px;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.step p{margin-top:8px;font-size:15px;color:var(--muted)}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
 
-/* ── How it works ── */
-.how-grid{margin-top:clamp(40px,5vw,64px);display:grid;grid-template-columns:1fr;gap:clamp(28px,3.5vw,20px);position:relative}
-@media(min-width:820px){.how-grid{grid-template-columns:repeat(3,1fr)}}
-.how-col{position:relative;padding:clamp(4px,1vw,8px) clamp(4px,1vw,8px) 0}
-.how-dot{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--gold);background:var(--surface)}
-.how-tag{margin-top:16px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-.how-col h3{margin-top:10px;font-family:var(--serif);font-weight:400;font-size:clamp(21px,2.2vw,26px);letter-spacing:-.005em;color:var(--text)}
-.how-col p{margin-top:10px;font-size:15px;line-height:1.65;color:var(--text-muted);text-wrap:pretty}
-@media(min-width:820px){.how-col:not(:last-child)::after{content:'';position:absolute;top:22px;left:calc(100% - 6px);width:calc(100% - 22px);height:1px;background:linear-gradient(90deg,var(--border),transparent)}}
+/* ═══ Operations bento ═══ */
+.ops-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--accent-line);color:var(--accent);font-size:13px;font-weight:550;background:var(--accent-soft)}
+.bento{margin-top:44px;display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.card{position:relative;padding:28px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column}
+.card h3{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.card p{margin-top:8px;font-size:15px;color:var(--muted);max-width:440px}
+.card .viz{margin-top:24px}
+.span-3{grid-column:span 3}.span-2{grid-column:span 2}.span-4{grid-column:span 4}
+@media(max-width:960px){.span-3,.span-2,.span-4{grid-column:span 6}}
+/* viz: cleaner timeline */
+.tl{display:flex;flex-direction:column;gap:0}
+.tl li{display:grid;grid-template-columns:62px 18px 1fr;align-items:center;gap:10px;padding:9px 0;font-size:14px}
+.tl li time{font-family:var(--mono);font-size:12.5px;color:var(--faint)}
+.tl li i{width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);justify-self:center}
+.tl li.done i{background:var(--accent)}
+.tl li span b{font-weight:550}
+.tl li span em{font-style:normal;color:var(--faint)}
+/* viz: chat */
+.cmd{display:flex;flex-direction:column;gap:10px}
+.cmd .me{align-self:flex-end;background:var(--btn-bg);color:var(--btn-fg);padding:11px 14px;border-radius:16px 16px 6px 16px;font-size:14px;max-width:92%}
+.cmd .ai{background:var(--surface-2);padding:12px 14px;border-radius:16px 16px 16px 6px;font-size:14px;max-width:96%}
+.cmd .ai ul{margin-top:8px;display:grid;gap:5px}
+.cmd .ai li{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.cmd .ai li svg{color:var(--ok);flex:none}
+.cmd-input{display:flex;align-items:center;gap:8px;height:44px;padding:0 6px 0 14px;border-radius:999px;border:1px solid var(--line-2);font-size:13.5px;color:var(--faint)}
+.cmd-input kbd{margin-left:auto;font:500 11.5px var(--mono);color:var(--faint);border:1px solid var(--line-2);border-radius:6px;padding:2px 6px}
+/* viz: notes w/ versions */
+.note{border-radius:16px;border:1px solid var(--line);background:var(--bg-2);padding:16px}
+.note-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--faint)}
+.note-top b{color:var(--text);font-weight:550;font-size:14px}
+.note ul{margin-top:12px;display:grid;gap:7px}
+.note li{display:flex;align-items:center;gap:10px;font-size:14px}
+.box{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--line-2);flex:none;display:grid;place-items:center}
+.box.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.note li.strike span{color:var(--faint);text-decoration:line-through}
+.versions{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.versions span{height:26px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border-radius:999px;font-size:12px;color:var(--muted);border:1px solid var(--line)}
+.versions span.cur{border-color:var(--accent-line);color:var(--accent);background:var(--accent-soft)}
+/* viz: collaborators */
+.people{display:grid;gap:8px}
+.person{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--bg-2)}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:#12110E;flex:none}
+.person b{font-size:14px;font-weight:550;display:block;line-height:1.2}
+.person small{font-size:12.5px;color:var(--faint)}
+.role{margin-left:auto;font-size:12px;color:var(--muted);padding:3px 9px;border-radius:999px;background:var(--surface-2)}
 
-/* ── Feature / Safety cards ── */
-.feat-grid{margin-top:clamp(36px,4.5vw,56px);display:grid;grid-template-columns:1fr;gap:16px}
-@media(min-width:760px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
-.feat-card{background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:24px;padding:clamp(24px,2.8vw,30px);transition:transform .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease)}
-.feat-icon{width:46px;height:46px;border-radius:14px;background:rgba(var(--gold-rgb),.1);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;color:var(--gold)}
-.feat-icon svg{width:22px;height:22px}
-.feat-card h3{margin-top:18px;font-family:var(--serif);font-weight:400;font-size:21px;color:var(--text);letter-spacing:-.005em}
-.feat-card p{margin-top:10px;font-size:15px;line-height:1.6;color:var(--text-muted);text-wrap:pretty}
-@media(hover:hover) and (pointer:fine){.feat-card:hover{transform:translateY(-4px);border-color:rgba(var(--gold-rgb),.32);box-shadow:var(--card-shadow)}}
+/* ═══ Security ═══ */
+.sec-grid{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sec{padding:28px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
+.sec .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft)}
+.sec h3{margin-top:20px;font-size:18px;font-weight:600;letter-spacing:-.02em}
+.sec p{margin-top:8px;font-size:15px;color:var(--muted)}
+@media(max-width:860px){.sec-grid{grid-template-columns:1fr}}
 
-/* ── Pricing ── */
-.price-grid{margin-top:clamp(36px,4.5vw,56px);display:grid;grid-template-columns:1fr;gap:18px}
-@media(min-width:820px){.price-grid{grid-template-columns:repeat(3,1fr);align-items:stretch}}
-.price-card{position:relative;background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:26px;padding:clamp(26px,3vw,34px);display:flex;flex-direction:column;transition:transform .3s var(--ease),border-color .3s var(--ease)}
-.price-card.pop{border-color:var(--gold);box-shadow:0 0 0 1px rgba(var(--gold-rgb),.16) inset,var(--card-shadow-strong);background:linear-gradient(180deg,rgba(var(--gold-rgb),.08),var(--glass-bg))}
-.price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1A1408;font-size:11.5px;font-weight:700;letter-spacing:.06em;padding:6px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 20px rgba(var(--gold-rgb),.35)}
-.price-name{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-.price-amt{margin-top:14px;font-family:var(--serif);font-weight:400;font-size:clamp(30px,3.2vw,38px);color:var(--text);letter-spacing:-.01em}
-.price-feats{margin-top:22px;display:flex;flex-direction:column;gap:11px;flex:1}
-.price-feats li{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;line-height:1.5;color:var(--text-muted)}
-.price-feats li .ck{flex:none;width:18px;height:18px;border-radius:50%;background:rgba(var(--gold-rgb),.14);color:var(--gold);display:inline-flex;align-items:center;justify-content:center;font-size:10px;margin-top:2px}
-.price-card .btn{margin-top:26px;width:100%}
+/* ═══ Pricing ═══ */
+.calc{margin-top:44px;padding:24px 28px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:28px}
+.calc label{font-size:15px;font-weight:550;letter-spacing:-.01em}
+.calc label small{display:block;font-weight:450;font-size:13.5px;color:var(--faint)}
+.count{min-width:118px;text-align:right;font-size:15px;color:var(--muted)}
+.count output{font-size:30px;font-weight:600;letter-spacing:-.035em;color:var(--text);margin-right:6px;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent) 0 var(--fill,10%),var(--line-2) var(--fill,10%) 100%)}
+input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line-2)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:999px;background:var(--accent)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.plans{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.plan{position:relative;padding:32px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column}
+.plan.feature{border-color:var(--accent-line);box-shadow:var(--shadow)}
+.plan.feature::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(80% 60% at 100% 0%,var(--accent-soft),transparent 70%);pointer-events:none}
+.plan-top{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
+.plan h3{font-size:22px;font-weight:600;letter-spacing:-.025em}
+.plan .for{margin-top:6px;font-size:15px;color:var(--muted);position:relative}
+.price{margin-top:26px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;position:relative}
+.price .amt{font-size:clamp(48px,5.4vw,60px);font-weight:600;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.price .was{font-size:22px;font-weight:500;color:var(--faint);text-decoration:line-through;letter-spacing:-.02em}
+.price .per{font-size:15px;color:var(--muted)}
+.tier{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);position:relative}
+.tier .dot{width:7px;height:7px;border-radius:50%;background:var(--line-2);flex:none;transition:background .3s}
+.tier.on{color:var(--text)}
+.tier.on .dot{background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
+.total{margin-top:22px;padding:14px 16px;border-radius:14px;background:var(--bg-2);display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted);position:relative}
+.total b{font-size:18px;color:var(--text);font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.feats{margin-top:24px;display:grid;gap:11px;position:relative}
+.feats li{display:flex;gap:11px;font-size:15px;line-height:1.5}
+.feats li svg{flex:none;margin-top:3px;color:var(--accent)}
+.feats li.head{font-size:13.5px;font-weight:550;color:var(--faint);margin-top:6px}
+.plan .btn{margin-top:auto;width:100%;position:relative}
+.plan .feats{margin-bottom:30px}
+@media(min-width:861px){.plan .for{min-height:3.2em}}
+.fine{margin-top:18px;font-size:14px;color:var(--faint);text-align:center}
+.fine a{color:var(--text);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
+@media(max-width:860px){.plans{grid-template-columns:1fr}.calc{grid-template-columns:1fr;gap:12px}.count{text-align:left}}
 
-/* ── FAQ ── */
-.faq-list{margin-top:clamp(30px,4vw,48px);max-width:820px}
-.faq-item{border-bottom:1px solid var(--border)}
-.faq-item:first-child{border-top:1px solid var(--border)}
-.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 4px;text-align:left;font-size:clamp(16px,1.7vw,18px);font-weight:600;color:var(--text)}
-.faq-chev{flex:none;font-family:var(--mono);font-size:18px;color:var(--gold);transition:transform .3s var(--ease)}
-.faq-item.open .faq-chev{transform:rotate(180deg)}
-.faq-a-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
-.faq-item.open .faq-a-wrap{grid-template-rows:1fr}
-.faq-a{overflow:hidden}
-.faq-a p{padding:0 4px 22px;font-size:15px;line-height:1.65;color:var(--text-muted);max-width:70ch;text-wrap:pretty}
+/* ═══ FAQ ═══ */
+.faq{margin-top:40px;border-top:1px solid var(--line)}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:22px 0;text-align:left;font-size:17px;font-weight:550;letter-spacing:-.015em}
+.faq-q .pm{width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;flex:none;transition:transform .3s var(--ease),background .3s}
+.faq-item.open .faq-q .pm{transform:rotate(45deg);background:var(--accent-soft)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+.faq-a>div{overflow:hidden}
+.faq-a p{padding:0 48px 24px 0;font-size:15.5px;color:var(--muted);max-width:760px}
+.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,80px);align-items:start}
+@media(max-width:860px){.faq-grid{grid-template-columns:1fr}}
 
-/* ── Contact ── */
-.contact-panel{
-  position:relative;overflow:hidden;max-width:1180px;margin:clamp(38px,4.8vw,62px) auto 0;
-  border:1px solid var(--border);border-radius:clamp(22px,2.6vw,30px);
-  padding:clamp(30px,4.4vw,62px) clamp(22px,4vw,58px) clamp(32px,4.4vw,58px);
-  background:
-    radial-gradient(120% 88% at 100% -10%,rgba(var(--gold-rgb),.075),transparent 58%),
-    linear-gradient(180deg,rgba(var(--text-rgb),.03),transparent 42%),
-    var(--surface);
-  box-shadow:var(--shadow-lg)}
-.contact-panel::before{content:'';position:absolute;top:0;left:14%;right:14%;height:1px;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(var(--gold-rgb),.6),transparent)}
-.contact-grid{display:grid;grid-template-columns:1fr;gap:0}
-.contact-form-col{position:relative;margin-top:clamp(32px,5vw,44px);padding-top:clamp(32px,5vw,44px);border-top:1px solid var(--border)}
-@media(min-width:960px){
-  .contact-grid{--cgap:clamp(46px,5.4vw,78px);grid-template-columns:minmax(0,4.5fr) minmax(0,6.5fr);gap:var(--cgap);align-items:start}
-  .contact-form-col{margin-top:0;padding-top:0;border-top:0}
-  .contact-form-col::before{content:'';position:absolute;left:calc(var(--cgap) / -2);top:4px;bottom:4px;width:1px;
-    background:linear-gradient(180deg,transparent,var(--border) 12%,var(--border) 88%,transparent)}
-}
+/* ═══ Contact ═══ */
+.contact{margin-top:44px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px}
+.contact-side{padding:32px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column}
+.contact-side h3{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.2}
+.contact-side p{margin-top:10px;color:var(--muted);font-size:15px}
+.contact-side ul{margin-top:24px;display:grid;gap:12px}
+.contact-side li{display:flex;gap:11px;font-size:15px}
+.contact-side li svg{color:var(--accent);flex:none;margin-top:3px}
+.contact-side .reply{margin-top:auto;padding-top:28px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.live{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
+.form{padding:32px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);display:grid;gap:18px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fld{display:grid;gap:8px}
+.fld-label{display:flex;justify-content:space-between;font-size:14px;font-weight:550;letter-spacing:-.005em}
+.fld-label .opt{font-weight:450;color:var(--faint)}
+.input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--text);font:inherit;font-size:15.5px;transition:border-color .2s,box-shadow .2s,background .2s}
+textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-height:1.5}
+.input::placeholder{color:var(--faint)}
+.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);background:var(--surface)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line-2);font-size:14px;font-weight:500;color:var(--muted);transition:all .2s var(--ease)}
+.chip:hover{color:var(--text);border-color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.form .btn{width:100%;height:52px;font-size:15.5px}
+.form .btn:disabled{opacity:.6;cursor:progress}
+.form-note{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--faint);justify-content:center}
+.form-msg{display:none;padding:12px 14px;border-radius:12px;font-size:14.5px}
+.form-msg.show{display:block}
+.form-msg.success{background:var(--ok-soft);color:var(--ok)}
+.form-msg.error{background:var(--err-soft);color:var(--err)}
+.spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:860px){.contact{grid-template-columns:1fr}}
+@media(max-width:560px){.row2{grid-template-columns:1fr}.form,.contact-side,.plan,.card,.step,.sec{padding:24px}}
 
-/* Left column — editorial */
-.contact-h3{margin-top:16px;font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,36px);line-height:1.1;letter-spacing:-.015em;color:var(--text);text-wrap:balance}
-.contact-sub{margin-top:14px;font-size:15.5px;line-height:1.65;color:var(--text-muted);max-width:38ch;text-wrap:pretty}
-.contact-points{margin-top:clamp(26px,3vw,34px);border-top:1px solid var(--border)}
-.contact-point{display:flex;align-items:baseline;gap:15px;padding:14px 2px;border-bottom:1px solid var(--border);
-  font-size:14.5px;font-weight:500;line-height:1.5;color:var(--text-muted);
-  transition:color .35s var(--ease),padding-left .35s var(--ease)}
-.contact-point .idx{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.14em;color:var(--gold);opacity:.9;transition:opacity .35s var(--ease)}
-@media(hover:hover) and (pointer:fine){.contact-point:hover{color:var(--text);padding-left:7px}.contact-point:hover .idx{opacity:1}}
-.contact-meta{margin-top:24px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
-.live-dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--gold);animation:riPulse 2.6s var(--ease) infinite}
-@keyframes riPulse{0%{box-shadow:0 0 0 0 rgba(var(--gold-rgb),.5)}70%{box-shadow:0 0 0 8px rgba(var(--gold-rgb),0)}100%{box-shadow:0 0 0 0 rgba(var(--gold-rgb),0)}}
+/* ═══ Footer ═══ */
+.footer{margin-top:clamp(96px,12vw,148px);border-top:1px solid var(--line);padding:48px 0 40px}
+.foot-top{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.foot-cols{display:flex;gap:clamp(32px,6vw,72px);flex-wrap:wrap}
+.foot-col h4{font-size:13.5px;font-weight:550;color:var(--faint)}
+.foot-col ul{margin-top:12px;display:grid;gap:9px}
+.foot-col a{font-size:14.5px;color:var(--muted);transition:color .2s}
+.foot-col a:hover{color:var(--text)}
+.foot-blurb{margin-top:14px;max-width:320px;font-size:14.5px;color:var(--muted)}
+.foot-bottom{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--faint)}
+.foot-bottom a{color:var(--muted)}
+.foot-bottom a:hover{color:var(--text)}
 
-/* Form */
-.ri-form{display:flex;flex-direction:column;gap:clamp(21px,2.3vw,27px)}
-.form-row{display:grid;grid-template-columns:1fr;gap:clamp(21px,2.3vw,27px)}
-@media(min-width:540px){.form-row{grid-template-columns:1fr 1fr}}
-.fld{position:relative}
-.fld-label{display:flex;align-items:baseline;gap:9px;margin-bottom:11px;
-  font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--text-dim);transition:color .3s var(--ease)}
-.fld-label .n{color:var(--gold);opacity:.9;font-size:10px;letter-spacing:.1em;transition:opacity .3s var(--ease)}
-.fld-label .opt{margin-left:auto;font-size:10px;letter-spacing:.12em;opacity:.9}
-.fld:focus-within .fld-label{color:var(--text)}
-.fld:focus-within .fld-label .n{opacity:1}
-.ri-input,.ri-textarea{
-  display:block;width:100%;padding:0 2px 13px;border:0;border-bottom:1px solid var(--glass-border);border-radius:0;
-  background-color:transparent;
-  background-image:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));
-  background-repeat:no-repeat;background-origin:border-box;background-position:0 100%;background-size:0 1.5px;
-  font-family:var(--sans);font-weight:450;font-size:16px;line-height:1.55;color:var(--text);outline:none;
-  transition:background-size .5s var(--ease),border-color .3s var(--ease)}
-.ri-input::placeholder,.ri-textarea::placeholder{color:var(--text-dim);font-weight:400;transition:opacity .3s var(--ease)}
-.ri-input:focus::placeholder,.ri-textarea:focus::placeholder{opacity:.4}
-.ri-input:focus,.ri-textarea:focus{background-size:100% 1.5px}
-@media(hover:hover) and (pointer:fine){.ri-input:hover,.ri-textarea:hover{border-color:rgba(var(--text-rgb),.24)}}
-.ri-input:-webkit-autofill{-webkit-text-fill-color:var(--text);transition:background-color 9999s}
-.ri-textarea{resize:none;min-height:86px;padding-bottom:14px;overflow:hidden}
-
-/* Segmented range picker */
-.chip-row{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.03em;color:var(--text-muted);
-  padding:9px 16px;border-radius:999px;border:1px solid var(--glass-border);background:transparent;
-  transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease),transform .16s var(--ease),box-shadow .25s var(--ease)}
-.chip:active{transform:scale(.95)}
-@media(hover:hover) and (pointer:fine){.chip:hover{color:var(--text);border-color:rgba(var(--gold-rgb),.42)}}
-.chip[aria-pressed="true"]{color:var(--gold);border-color:rgba(var(--gold-rgb),.55);background:rgba(var(--gold-rgb),.1);box-shadow:0 6px 18px rgba(var(--gold-rgb),.14)}
-
-/* Submit + footer */
-.form-submit{position:relative;overflow:hidden;width:100%;margin-top:6px;padding:18px 26px;border-radius:14px;font-size:15.5px;letter-spacing:.005em;
-  background:linear-gradient(180deg,var(--gold-bright),var(--gold) 62%,var(--gold-deep));
-  border-color:rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(var(--gold-rgb),.26),inset 0 1px 0 rgba(255,255,255,.28)}
-@media(hover:hover) and (pointer:fine){.form-submit:hover{background:linear-gradient(180deg,var(--gold-bright),var(--gold-bright) 58%,var(--gold));box-shadow:0 22px 54px rgba(var(--gold-rgb),.36),inset 0 1px 0 rgba(255,255,255,.34)}}
-/* Light theme gold is dark, so keep the ramp at or above the flat button colour */
-[data-theme="light"] .form-submit{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border-color:rgba(255,255,255,.1);box-shadow:0 14px 34px rgba(var(--gold-rgb),.24),inset 0 1px 0 rgba(255,255,255,.18)}
-/* Light mode darkens --gold for contrast against a cream page, but these
-   buttons kept the dark-on-gold text color meant for the brighter dark-mode
-   gold — white reads far better against the darker light-mode gold. */
-[data-theme="light"] .btn-gold,[data-theme="light"] .nav-cta,[data-theme="light"] .mobile-menu .mm-cta,
-[data-theme="light"] .price-badge,[data-theme="light"] .form-submit{color:#FFFFFF!important}
-[data-theme="light"] .form-submit::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent)}
-[data-theme="light"] .spin{border-color:rgba(255,255,255,.3);border-top-color:#fff}
-[data-theme="light"] ::selection{color:#fff;-webkit-text-fill-color:#fff}
-.form-submit .arw{display:inline-block;transition:transform .3s var(--ease)}
-.form-submit::after{content:'';position:absolute;top:0;left:-60%;width:42%;height:100%;opacity:0;pointer-events:none;
-  transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent)}
-@media(hover:hover) and (pointer:fine){
-  .form-submit:hover .arw{transform:translateX(5px)}
-  .form-submit:hover::after{opacity:1;animation:riSheen .85s var(--ease)}
-}
-@keyframes riSheen{from{left:-60%}to{left:112%}}
-.form-submit:disabled{opacity:.6;transform:none;box-shadow:none;cursor:default}
-.form-submit:disabled::after{display:none}
-.form-foot{margin-top:14px;text-align:center}
-.form-foot .lk{display:inline-block;vertical-align:-1px;margin-right:7px;color:var(--gold);opacity:.55;width:11px;height:11px}
-.form-note{display:inline;font-size:12px;font-weight:500;line-height:1.6;color:var(--text-dim);letter-spacing:.005em}
-.form-msg{margin-top:2px;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;display:none;text-align:center;border:1px solid transparent}
-.form-msg.show{display:block;animation:riMsgIn .45s var(--ease) both}
-@keyframes riMsgIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-.form-msg.success{background:var(--success-bg);color:var(--success-text);border-color:var(--success-border)}
-.form-msg.error{background:var(--error-bg);color:var(--error-text);border-color:var(--error-border)}
-.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(26,20,8,.3);border-top-color:#1A1408;border-radius:50%;animation:riSpin .6s linear infinite;vertical-align:-3px}
-@keyframes riSpin{to{transform:rotate(360deg)}}
-
-/* Staggered entrance for the form fields */
-.contact-panel .stag{opacity:0;transform:translateY(16px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
-.contact-panel.on .stag{opacity:1;transform:none}
-.contact-panel.on .stag:nth-of-type(1){transition-delay:.10s}
-.contact-panel.on .stag:nth-of-type(2){transition-delay:.17s}
-.contact-panel.on .stag:nth-of-type(3){transition-delay:.24s}
-.contact-panel.on .stag:nth-of-type(4){transition-delay:.31s}
-.contact-panel.on .stag:nth-of-type(5){transition-delay:.38s}
-.contact-panel.on .stag:nth-of-type(6){transition-delay:.45s}
-
-/* ── Footer ── */
-.ri-footer{position:relative;padding:clamp(70px,9vw,110px) clamp(20px,5vw,64px) 40px;z-index:1;border-top:1px solid var(--border)}
-.footer-inner{max-width:1200px;margin:0 auto}
-.footer-top{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
-.footer-links{display:flex;flex-wrap:wrap;gap:6px 26px}
-.footer-links a{font-size:14.5px;font-weight:500;color:var(--text-muted);padding:4px 0;white-space:nowrap;transition:color .2s var(--ease)}
-.footer-links a:hover{color:var(--gold)}
-.footer-legal{margin-top:34px;padding-top:24px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:center}
-.footer-legal span{font-size:13px;font-weight:500;color:var(--text-dim);line-height:1.6}
-.footer-legal a{font-size:13px;font-weight:600;color:var(--gold-deep);transition:color .2s var(--ease)}
-.footer-legal a:hover{color:var(--gold)}
-
-@media(prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  .reveal{opacity:1;transform:none}
-  .contact-panel .stag{opacity:1;transform:none}
-}
+/* ═══ Motion ═══ */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.on{opacity:1;transform:none}
+.in{opacity:0;animation:in .9s var(--ease) forwards}
+@keyframes in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.rv,.in{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
-<div class="grain" aria-hidden="true"></div>
-<div class="ri-progress" id="riProgress" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
 
 <!-- ═══ Nav ═══ -->
-<nav class="nav" id="riNav" aria-label="Main">
-  <div class="nav-inner">
-    <a href="/" class="ri-brand" aria-label="Regent Inbox home">
-      <span class="ri-mark" aria-hidden="true">R</span>
-      <span class="ri-word"><b>Regent</b><span>Inbox</span></span>
-    </a>
-    <div class="nav-links">
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="/regent-inbox" class="brand" aria-label="Regent Inbox home"><span class="brand-mark" aria-hidden="true">R</span>Regent <small>Inbox</small></a>
+    <nav class="nav-links" aria-label="Primary">
       <a href="#product">Product</a>
-      <a href="#safety">Safety</a>
+      <a href="#operations">Operations</a>
+      <a href="#security">Security</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
-    </div>
+    </nav>
     <div class="nav-right">
-      <a href="/" class="nav-back"><span aria-hidden="true">&larr;</span><span class="nav-back-label">Back to Regent Stays</span></a>
-      <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
-        <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg class="theme-icon-moon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <button class="icon-btn theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch colour theme">
+        <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="theme-icon-moon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>
-      <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" class="nav-signin" target="_blank" rel="noopener">Sign in</a>
-      <a href="#contact" class="nav-cta">Book a demo</a>
-      <button class="nav-burger" id="riBurger" aria-label="Menu" aria-expanded="false" aria-controls="riMobileMenu"><span></span><span></span><span></span></button>
+      <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" class="nav-link hide-sm" target="_blank" rel="noopener">Sign in</a>
+      <a href="#contact" class="btn btn-primary btn-sm hide-sm">Book a demo</a>
+      <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mmenu"><span></span><span></span><span></span></button>
     </div>
   </div>
-</nav>
+</header>
 
-<div class="mobile-menu" id="riMobileMenu">
+<div class="mmenu" id="mmenu" aria-label="Menu">
   <a href="#product" data-close>Product</a>
-  <a href="#safety" data-close>Safety</a>
+  <a href="#operations" data-close>Operations</a>
+  <a href="#security" data-close>Security</a>
   <a href="#pricing" data-close>Pricing</a>
   <a href="#faq" data-close>FAQ</a>
-  <a href="/" class="mm-back">&larr; Back to Regent Stays</a>
-  <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
-    <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-    <svg class="theme-icon-moon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-  </button>
-  <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" class="mm-signin" target="_blank" rel="noopener">Sign in &rarr;</a>
-  <a href="#contact" class="mm-cta" data-close>Book a demo</a>
+  <a href="/regent-inbox/privacy">Privacy</a>
+  <div class="mm-row">
+    <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" class="btn btn-ghost" target="_blank" rel="noopener">Sign in</a>
+    <a href="#contact" class="btn btn-primary" data-close>Book a demo</a>
+  </div>
 </div>
 
+<main id="top">
 <!-- ═══ Hero ═══ -->
-<section class="hero" id="top">
-  <div class="ri-orb ri-orb-a" aria-hidden="true"></div>
-  <div class="hero-inner">
-    <div class="ri-eyebrow center ri-enter"><span class="ln" aria-hidden="true"></span>The front desk for all your rentals<span class="ln r" aria-hidden="true"></span></div>
-    <h1 class="ri-enter" style="animation-delay:70ms">The front desk that <span class="grad-gold">never sleeps.</span></h1>
-    <p class="hero-sub ri-enter" style="animation-delay:140ms">Accurate AI replies to every guest and owner message, reviewed by your team, guarded by hard send controls. Built for Guesty. Live in an afternoon.</p>
-    <div class="hero-ctas ri-enter" style="animation-delay:210ms">
-      <a href="#contact" class="btn btn-gold">Book a demo<span aria-hidden="true">→</span></a>
-      <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" class="btn btn-ghost" target="_blank" rel="noopener">Sign in <span aria-hidden="true">→</span></a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="pill in"><b>New</b>Operations — cleaners, notes &amp; collaborators</div>
+      <h1 class="in" style="animation-delay:.06s">The front desk that never sleeps<span class="soft">.</span></h1>
+      <p class="hero-sub in" style="animation-delay:.12s">Regent Inbox answers every guest and owner message with fact-checked replies your team approves — across Airbnb, Vrbo, direct, SMS and email. Built for Guesty, live in an afternoon.</p>
+      <div class="hero-ctas in" style="animation-delay:.18s">
+        <a href="#contact" class="btn btn-primary">Book a demo <svg class="arr" width="16" height="16"><use href="#i-arrow"/></svg></a>
+        <a href="#pricing" class="btn btn-ghost">See pricing</a>
+      </div>
+      <p class="hero-note in" style="animation-delay:.24s">From $25 per property, per month · No long-term contract</p>
+    </div>
+
+    <div class="mock in" style="animation-delay:.2s" role="img" aria-label="Regent Inbox showing a guest message, a fact-checked AI draft and passed send checks">
+      <div class="mock-bar" aria-hidden="true"><i></i><i></i><i></i><span>Inbox — All properties</span></div>
+      <div class="mock-body" aria-hidden="true">
+        <div class="mock-side">
+          <div class="thread on"><b>Jordan M. <em>2:41 AM</em></b><span>Flight delayed — can we still…</span></div>
+          <div class="thread"><b>Priya S. <em>1:10 AM</em></b><span>Is early check-in possible?</span></div>
+          <div class="thread"><b>Owner · Lake Suite <em>Yesterday</em></b><span>Can you send the payout…</span></div>
+          <div class="thread"><b>Chris T. <em>Yesterday</em></b><span>Thanks for a great stay!</span></div>
+          <div class="thread"><b>Ana R. <em>Mon</em></b><span>Where do we park?</span></div>
+        </div>
+        <div class="mock-main">
+          <div class="meta-row"><strong>Jordan M. · Regent Villa</strong><span class="chan">Airbnb</span></div>
+          <div class="bubble guest"><small>Guest · 2:41 AM</small>Our flight is delayed — can we still get in tonight?</div>
+          <div class="bubble ai"><small>AI draft · fact-checked</small>No problem at all — self check-in is open until 4 AM and your entry code is already active. Safe travels!</div>
+          <div class="src"><span>Source: Check-in guide</span><span>Source: Door code policy</span></div>
+          <div class="checks">
+            <ul>
+              <li><svg width="14" height="14"><use href="#i-check"/></svg>Quiet hours</li>
+              <li><svg width="14" height="14"><use href="#i-check"/></svg>Privacy</li>
+              <li><svg width="14" height="14"><use href="#i-check"/></svg>Policy</li>
+            </ul>
+            <span class="btn btn-primary">Approve &amp; send</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="demo-row ri-enter" style="animation-delay:280ms">
-    <div class="demo-card">
-      <div class="demo-label">Guest · 2:41 AM</div>
-      <div class="demo-text">"Flight delayed — can we still get in tonight?"</div>
+  <div class="wrap">
+    <div class="proof rv">
+      <div class="proof-grid">
+        <div class="proof-cell"><strong>$10M+</strong><span>Managed through AI</span></div>
+        <div class="proof-cell"><strong>5.0★</strong><span>Service maintained</span></div>
+        <div class="proof-cell"><strong>90%+</strong><span>Time saved by managers</span></div>
+        <div class="proof-cell"><strong>$25</strong><span>Per property at 11+ homes</span></div>
+      </div>
     </div>
-    <div class="demo-card gold">
-      <div class="demo-label gold">AI Draft · 2:41 AM · Fact-checked</div>
-      <div class="demo-text">"No problem at all — self check-in is open until 4 AM. Your verified entry link is already active."</div>
-    </div>
-    <div class="demo-card gold">
-      <div class="demo-label gold">✓ Sent · All checks passed</div>
-      <div class="demo-text">Quiet hours, privacy and policy checks — all clear.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ Stats ═══ -->
-<section class="stats-wrap">
-  <div class="stats-grid reveal">
-    <div class="stat-card"><div class="stat-num">$10M+</div><div class="stat-lab">Managed through AI</div></div>
-    <div class="stat-card"><div class="stat-num">5.0★</div><div class="stat-lab">Service maintained</div></div>
-    <div class="stat-card"><div class="stat-num">90%+</div><div class="stat-lab">Time saved by managers</div></div>
-    <div class="stat-card"><div class="stat-num">From $3</div><div class="stat-lab">Per property · Lowest on the market</div></div>
   </div>
 </section>
 
 <!-- ═══ How it works ═══ -->
-<section class="ri-section" id="product">
-  <div class="ri-wrap">
-    <div class="reveal">
-      <div class="ri-eyebrow"><span class="ln" aria-hidden="true"></span>How it works</div>
-      <h2 class="ri-h2">From guest ping to perfect reply, in three moves.</h2>
+<section class="section" id="product">
+  <div class="wrap">
+    <div class="rv">
+      <span class="kicker">How it works</span>
+      <h2 class="h2">From guest message to perfect reply, in three steps.</h2>
     </div>
-    <div class="how-grid">
-      <div class="how-col reveal">
-        <span class="how-dot">01</span>
-        <div class="how-tag">01 · Arrives</div>
-        <h3>One queue for everything</h3>
-        <p>Airbnb, Vrbo, direct, SMS, email — every guest and owner thread lands in a single unified inbox — no duplicates, no pile-ups.</p>
-      </div>
-      <div class="how-col reveal" style="transition-delay:.08s">
-        <span class="how-dot">02</span>
-        <div class="how-tag">02 · Drafts</div>
-        <h3>Answers from your facts</h3>
-        <p>The AI reads the full thread and answers only from your verified property facts — every answer backed by a source, private details held back. If it doesn't know, it asks you instead of guessing.</p>
-      </div>
-      <div class="how-col reveal" style="transition-delay:.16s">
-        <span class="how-dot">03</span>
-        <div class="how-tag">03 · Sends</div>
-        <h3>You approve — or gates do</h3>
-        <p>Tap approve, edit, or let auto-send handle it — quiet hours, privacy and policy checks all pass before anything leaves.</p>
-      </div>
+    <div class="steps">
+      <div class="step rv"><span class="num">1</span><h3>Every thread, one inbox</h3><p>Airbnb, Vrbo, direct, SMS and email — every guest and owner conversation lands in a single queue. No duplicates, no pile-ups.</p></div>
+      <div class="step rv" style="transition-delay:.06s"><span class="num">2</span><h3>Answers from your facts</h3><p>The AI reads the whole thread and replies only from your verified property details, with every answer traced to a source. If it doesn't know, it asks you instead of guessing.</p></div>
+      <div class="step rv" style="transition-delay:.12s"><span class="num">3</span><h3>You approve — or the gates do</h3><p>Approve with a tap, edit, or let auto-send handle it once quiet-hours, privacy and policy checks all pass.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ═══ Safety ═══ -->
-<section class="ri-section" id="safety">
-  <div class="ri-wrap">
-    <div class="reveal">
-      <div class="ri-eyebrow"><span class="ln" aria-hidden="true"></span>Safety first</div>
-      <h2 class="ri-h2">Your guests' data stays yours.</h2>
+<!-- ═══ Operations ═══ -->
+<section class="section" id="operations">
+  <div class="wrap">
+    <div class="ops-head rv">
+      <div>
+        <span class="kicker">Operations</span>
+        <h2 class="h2">Run the whole operation, not just the inbox.</h2>
+        <p class="lead">Turnovers, notes and your team — in the same place your guests already talk to you. Included in the Operations plan.</p>
+      </div>
+      <span class="tag">$40 per property / month</span>
     </div>
-    <div class="feat-grid">
-      <div class="feat-card reveal">
-        <div class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></div>
-        <h3>Hard send controls</h3>
-        <p>Every AI reply requires human approval, or passes through configurable quiet-hours and policy gates before sending.</p>
-      </div>
-      <div class="feat-card reveal" style="transition-delay:.08s">
-        <div class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.2 2.2L16 10"/></svg></div>
-        <h3>Fact-checked responses</h3>
-        <p>Answers are sourced only from your verified property details. No hallucinations — if the AI doesn't know, it asks you.</p>
-      </div>
-      <div class="feat-card reveal" style="transition-delay:.16s">
-        <div class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
-        <h3>Privacy by design</h3>
-        <p>Guest personal data is never used for training. PII is automatically redacted from AI context. SOC 2 compliant infrastructure.</p>
-      </div>
+
+    <div class="bento">
+      <article class="card span-3 rv">
+        <h3>Cleaner automation</h3>
+        <p>Every checkout schedules the clean, notifies the right cleaner and tracks the checklist through to "ready" — no group texts.</p>
+        <ol class="viz tl" aria-label="Example turnover">
+          <li class="done"><time>11:00</time><i></i><span><b>Guest checked out</b> <em>· Regent Crown</em></span></li>
+          <li class="done"><time>11:01</time><i></i><span><b>Maria notified</b> <em>· clean at 11:30</em></span></li>
+          <li class="done"><time>1:48</time><i></i><span><b>Checklist</b> <em>· 22 of 22 complete</em></span></li>
+          <li><time>2:02</time><i></i><span><b>Home ready</b> <em>· next guest 3:00 PM</em></span></li>
+        </ol>
+      </article>
+
+      <article class="card span-3 rv" style="transition-delay:.06s">
+        <h3>An AI that runs the app</h3>
+        <p>Ask in plain English and it does it — rescheduling cleans, updating listings, drafting owner reports, changing any setting.</p>
+        <div class="viz cmd" aria-label="Example AI command">
+          <div class="me">Move Saturday's clean at Regent Sol to 1 PM and let Maria know.</div>
+          <div class="ai">Done.
+            <ul>
+              <li><svg width="14" height="14"><use href="#i-check"/></svg>Clean rescheduled to Sat, 1:00 PM</li>
+              <li><svg width="14" height="14"><use href="#i-check"/></svg>Maria notified by SMS</li>
+              <li><svg width="14" height="14"><use href="#i-check"/></svg>Change logged to the calendar</li>
+            </ul>
+          </div>
+          <div class="cmd-input">Ask Regent to do anything… <kbd>⌘ K</kbd></div>
+        </div>
+      </article>
+
+      <article class="card span-4 rv">
+        <h3>Dynamic notes, with full version history</h3>
+        <p>Cleaner checklists, repair logs, owner notes and house manuals that stay current. Every edit is versioned, restorable and shareable with a link.</p>
+        <div class="viz note" aria-label="Example note with version history">
+          <div class="note-top"><b>Turnover checklist — Regent Crown</b><span>Shared with 3</span></div>
+          <ul>
+            <li class="strike"><span class="box on"><svg width="11" height="11"><use href="#i-check"/></svg></span><span>Strip beds, start laundry</span></li>
+            <li class="strike"><span class="box on"><svg width="11" height="11"><use href="#i-check"/></svg></span><span>Hot tub: test chemicals, log reading</span></li>
+            <li><span class="box"></span><span>Restock coffee pods and filters</span></li>
+            <li><span class="box"></span><span>Photo of game room before leaving</span></li>
+          </ul>
+          <div class="versions"><span class="cur">v14 · Maria · 2h ago</span><span>v13 · Alex · Tue</span><span>v12 · Restore</span></div>
+        </div>
+      </article>
+
+      <article class="card span-2 rv" style="transition-delay:.06s">
+        <h3>Collaborators</h3>
+        <p>Invite co-hosts, cleaners, maintenance and owners — each with the right access across the whole app.</p>
+        <div class="viz people" aria-label="Example collaborators">
+          <div class="person"><span class="av" style="background:#D9B774">MR</span><div><b>Maria R.</b><small>Cleaning</small></div><span class="role">Editor</span></div>
+          <div class="person"><span class="av" style="background:#A9C7B4">JT</span><div><b>James T.</b><small>Maintenance</small></div><span class="role">Editor</span></div>
+          <div class="person"><span class="av" style="background:#C9BFE3">LK</span><div><b>Lena K.</b><small>Owner</small></div><span class="role">Viewer</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Security ═══ -->
+<section class="section" id="security">
+  <div class="wrap">
+    <div class="rv">
+      <span class="kicker">Security</span>
+      <h2 class="h2">Your guests' data stays yours.</h2>
+    </div>
+    <div class="sec-grid">
+      <div class="sec rv"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></span><h3>Hard send controls</h3><p>Every AI reply needs a human approval, or passes configurable quiet-hours and policy gates before it sends.</p></div>
+      <div class="sec rv" style="transition-delay:.06s"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.2 2.2L16 10"/></svg></span><h3>Fact-checked replies</h3><p>Answers come only from your verified property details. If the AI doesn't know, it asks you — it never makes things up.</p></div>
+      <div class="sec rv" style="transition-delay:.12s"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span><h3>Private by design</h3><p>Guest personal data is never used to train models and is redacted from AI context. Read the <a href="/regent-inbox/privacy" style="text-decoration:underline;text-underline-offset:3px">privacy policy</a>.</p></div>
     </div>
   </div>
 </section>
 
 <!-- ═══ Pricing ═══ -->
-<section class="ri-section" id="pricing">
-  <div class="ri-wrap">
-    <div class="reveal">
-      <div class="ri-eyebrow"><span class="ln" aria-hidden="true"></span>Pricing</div>
-      <h2 class="ri-h2">Transparent pricing that scales with you.</h2>
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="rv center">
+      <span class="kicker">Pricing</span>
+      <h2 class="h2">Simple, per&#8209;property pricing.</h2>
+      <p class="lead">Pay for the homes you manage. Onboard more than ten and every property drops to $25.</p>
     </div>
-    <div class="price-grid">
-      <div class="price-card reveal">
-        <div class="price-name">Starter</div>
-        <div class="price-amt">From $3<span style="font-size:15px;font-family:var(--sans);color:var(--text-muted);font-style:normal">/property/mo</span></div>
-        <ul class="price-feats">
-          <li><span class="ck">✓</span>Up to 5 properties</li>
-          <li><span class="ck">✓</span>Unified inbox</li>
-          <li><span class="ck">✓</span>AI drafts</li>
-          <li><span class="ck">✓</span>Manual approve</li>
-          <li><span class="ck">✓</span>Email support</li>
+
+    <div class="calc rv">
+      <label for="homes">How many properties?<small>Drag to see your monthly price</small></label>
+      <input type="range" id="homes" min="1" max="100" value="10" aria-describedby="homesOut">
+      <div class="count"><output id="homesOut" for="homes">10</output>properties</div>
+    </div>
+
+    <div class="plans">
+      <div class="plan rv">
+        <div class="plan-top"><h3>Inbox</h3></div>
+        <p class="for">The AI front desk for every guest and owner conversation.</p>
+        <div class="price"><span class="was" id="inboxWas" hidden>$30</span><span class="amt" id="inboxAmt">$30</span><span class="per">per property / month</span></div>
+        <div class="tier" id="inboxTier"><span class="dot"></span><span>$25 per property when you onboard 11+ properties</span></div>
+        <div class="total"><span>Your monthly total</span><b id="inboxTotal">$300</b></div>
+        <ul class="feats">
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Unified inbox for Airbnb, Vrbo, direct, SMS &amp; email</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Fact-checked AI drafts from your property details</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Approvals and auto-send with quiet-hours &amp; policy gates</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Property knowledge base</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Native Guesty integration</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Email support</li>
         </ul>
-        <a href="#contact" class="btn btn-ghost">Get started</a>
+        <a href="#contact" class="btn btn-ghost" data-plan="Inbox">Get started with Inbox</a>
       </div>
-      <div class="price-card pop reveal" style="transition-delay:.08s">
-        <div class="price-badge">Most popular</div>
-        <div class="price-name">Professional</div>
-        <div class="price-amt">$9<span style="font-size:15px;font-family:var(--sans);color:var(--text-muted);font-style:normal">/property/mo</span></div>
-        <ul class="price-feats">
-          <li><span class="ck">✓</span>Unlimited properties</li>
-          <li><span class="ck">✓</span>Auto-send gates</li>
-          <li><span class="ck">✓</span>Priority support</li>
-          <li><span class="ck">✓</span>Analytics dashboard</li>
-          <li><span class="ck">✓</span>Custom knowledge base</li>
+
+      <div class="plan feature rv" style="transition-delay:.06s">
+        <div class="plan-top"><h3>Operations</h3><span class="tag">Most complete</span></div>
+        <p class="for">Everything in Inbox, plus the tools to run every turnover and your whole team.</p>
+        <div class="price"><span class="amt">$40</span><span class="per">per property / month</span></div>
+        <div class="tier on"><span class="dot"></span><span>One flat rate at any portfolio size</span></div>
+        <div class="total"><span>Your monthly total</span><b id="opsTotal">$400</b></div>
+        <ul class="feats">
+          <li class="head">Everything in Inbox, plus</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Cleaner automation — scheduling, notifications &amp; checklists</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>AI chat that can control every part of the app</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Dynamic notes — cleaner checklists, repair logs and more</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Full version control and shareable links for every note</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Collaborators with roles across the entire app</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Priority support</li>
         </ul>
-        <a href="#contact" class="btn btn-gold">Get started</a>
-      </div>
-      <div class="price-card reveal" style="transition-delay:.16s">
-        <div class="price-name">Enterprise</div>
-        <div class="price-amt">Custom</div>
-        <ul class="price-feats">
-          <li><span class="ck">✓</span>Dedicated account manager</li>
-          <li><span class="ck">✓</span>SLA</li>
-          <li><span class="ck">✓</span>SSO</li>
-          <li><span class="ck">✓</span>API access</li>
-          <li><span class="ck">✓</span>Custom integrations</li>
-          <li><span class="ck">✓</span>White-label option</li>
-        </ul>
-        <a href="#contact" class="btn btn-ghost">Contact us</a>
+        <a href="#contact" class="btn btn-primary" data-plan="Operations">Get started with Operations <svg class="arr" width="16" height="16"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
+    <p class="fine rv">Billed monthly per active property. Managing 100+ homes? <a href="#contact">Talk to us</a> about a custom plan.</p>
   </div>
 </section>
 
 <!-- ═══ FAQ ═══ -->
-<section class="ri-section" id="faq">
-  <div class="ri-wrap">
-    <div class="reveal">
-      <div class="ri-eyebrow"><span class="ln" aria-hidden="true"></span>FAQ</div>
-      <h2 class="ri-h2">Common questions</h2>
+<section class="section" id="faq">
+  <div class="wrap faq-grid">
+    <div class="rv">
+      <span class="kicker">FAQ</span>
+      <h2 class="h2">Questions, answered.</h2>
+      <p class="lead">Anything else? <a href="#contact" style="color:var(--text);text-decoration:underline;text-underline-offset:3px">Send us a note</a> — we reply within 24 hours.</p>
     </div>
-    <div class="faq-list reveal">
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">Does Regent Inbox work with my PMS?<span class="faq-chev" aria-hidden="true">⌄</span></button>
-        <div class="faq-a-wrap"><div class="faq-a"><p>Yes — built for Guesty with native integration. Hostaway, Hospitable, and direct API connections coming soon.</p></div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">Can the AI send messages without my approval?<span class="faq-chev" aria-hidden="true">⌄</span></button>
-        <div class="faq-a-wrap"><div class="faq-a"><p>Only if you explicitly enable auto-send with configurable gates: quiet hours, policy compliance, and privacy checks must all pass first. You stay in control.</p></div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">How does the AI learn about my properties?<span class="faq-chev" aria-hidden="true">⌄</span></button>
-        <div class="faq-a-wrap"><div class="faq-a"><p>You provide your property knowledge base — house rules, check-in instructions, amenities, local recommendations. The AI only answers from this verified source material.</p></div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">Is my data safe?<span class="faq-chev" aria-hidden="true">⌄</span></button>
-        <div class="faq-a-wrap"><div class="faq-a"><p>Absolutely. Guest PII is automatically redacted. We never use your data to train models. Infrastructure is SOC 2 compliant.</p></div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">How long does setup take?<span class="faq-chev" aria-hidden="true">⌄</span></button>
-        <div class="faq-a-wrap"><div class="faq-a"><p>Most hosts are live within an afternoon. Connect your Guesty account, upload your property details, and start reviewing AI drafts immediately.</p></div></div>
-      </div>
+    <div class="faq rv">
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How does volume pricing work?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Inbox is $30 per property each month. Once you onboard more than ten properties, every property drops to $25 — not just the ones above ten. Operations is a flat $40 per property at any portfolio size.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">What does Operations add?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Cleaner automation, an AI chat that can control every part of the app, dynamic notes such as cleaner checklists and repair logs with full version control and sharing, and collaborators with roles across your whole account.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can I switch plans later?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Yes. Move between Inbox and Operations whenever you like; the change applies from your next billing month.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Does Regent Inbox work with my PMS?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Yes — it's built for Guesty with a native integration. Hostaway, Hospitable and direct API connections are coming soon.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can the AI send messages without my approval?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Only if you turn on auto-send, and only when quiet-hours, policy and privacy checks all pass. You stay in control.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is my data safe?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Guest personal data is redacted from AI context and never used to train models. Our <a href="/regent-inbox/privacy" style="color:var(--text);text-decoration:underline;text-underline-offset:3px">privacy policy</a> sets out exactly what we collect and why.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">How long does setup take?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Most hosts are live in an afternoon: connect Guesty, add your property details, and start reviewing drafts right away.</p></div></div></div>
     </div>
   </div>
 </section>
 
 <!-- ═══ Contact ═══ -->
-<section class="ri-section" id="contact">
-  <div class="ri-wrap">
-    <div class="reveal ri-center">
-      <div class="ri-eyebrow center"><span class="ln" aria-hidden="true"></span>Get started<span class="ln r" aria-hidden="true"></span></div>
-      <h2 class="ri-h2">See Regent Inbox in action.</h2>
-      <p class="ri-lead">Book a personalized demo or leave your details — we'll reach out within 24 hours.</p>
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="rv center">
+      <span class="kicker">Get started</span>
+      <h2 class="h2">See Regent Inbox with your own listings.</h2>
+      <p class="lead">A 20-minute walkthrough using your real properties and messages. We'll reply within 24 hours.</p>
     </div>
 
-    <div class="contact-panel reveal">
-      <div class="ri-orb ri-orb-b" aria-hidden="true" style="opacity:.5"></div>
-      <div class="contact-grid">
-        <div>
-          <div class="ri-eyebrow"><span class="ln" aria-hidden="true"></span>Why hosts switch</div>
-          <h3 class="contact-h3">Fewer inboxes.<br>Faster replies.<br>Zero surprises.</h3>
-          <p class="contact-sub">A 20-minute walkthrough of your own portfolio — real listings, real messages, real drafts.</p>
-          <div class="contact-points">
-            <div class="contact-point"><span class="idx" aria-hidden="true">01</span>Live in an afternoon, no migration headaches</div>
-            <div class="contact-point"><span class="idx" aria-hidden="true">02</span>Native Guesty integration</div>
-            <div class="contact-point"><span class="idx" aria-hidden="true">03</span>Human approval always available</div>
-            <div class="contact-point"><span class="idx" aria-hidden="true">04</span>Pricing from $3 per property, per month</div>
-          </div>
-          <div class="contact-meta"><span class="live-dot" aria-hidden="true"></span>Replies within 24 hours</div>
-        </div>
-
-        <div class="contact-form-col">
-          <form class="ri-form" id="riForm" novalidate>
-            <input type="hidden" name="subject" value="Regent AI Demo Request">
-            <div class="form-row stag">
-              <div class="fld">
-                <label class="fld-label" for="riName"><span class="n" aria-hidden="true">01</span>Full name</label>
-                <input class="ri-input" type="text" id="riName" name="name" placeholder="Jane Carter" required autocomplete="name">
-              </div>
-              <div class="fld">
-                <label class="fld-label" for="riEmail"><span class="n" aria-hidden="true">02</span>Email</label>
-                <input class="ri-input" type="email" id="riEmail" name="email" placeholder="jane@example.com" required autocomplete="email">
-              </div>
-            </div>
-            <div class="fld stag">
-              <label class="fld-label" for="riPhone"><span class="n" aria-hidden="true">03</span>Phone<span class="opt">Optional</span></label>
-              <input class="ri-input" type="tel" id="riPhone" name="phone" placeholder="(555) 123-4567" autocomplete="tel">
-            </div>
-            <div class="stag">
-              <input type="hidden" id="riProperties" name="properties" value="">
-              <span class="fld-label" id="riPropsLabel"><span class="n" aria-hidden="true">04</span>Number of properties</span>
-              <div class="chip-row" role="group" aria-labelledby="riPropsLabel" id="riPropsChips">
-                <button type="button" class="chip" data-val="1-5" aria-pressed="false">1–5</button>
-                <button type="button" class="chip" data-val="6-20" aria-pressed="false">6–20</button>
-                <button type="button" class="chip" data-val="21-50" aria-pressed="false">21–50</button>
-                <button type="button" class="chip" data-val="51-100" aria-pressed="false">51–100</button>
-                <button type="button" class="chip" data-val="100+" aria-pressed="false">100+</button>
-              </div>
-            </div>
-            <div class="fld stag">
-              <label class="fld-label" for="riMessage"><span class="n" aria-hidden="true">05</span>Message<span class="opt">Optional</span></label>
-              <textarea class="ri-textarea" id="riMessage" name="message" rows="3" placeholder="Tell us about your portfolio or what you'd like to see in the demo."></textarea>
-            </div>
-            <div class="stag">
-              <button type="submit" class="btn btn-gold form-submit" id="riSubmitBtn"><span id="riSubmitLabel">Book a demo</span><span class="arw" aria-hidden="true">→</span></button>
-              <div class="form-foot"><svg class="lk" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><p class="form-note">We'll never share your information. Unsubscribe anytime.</p></div>
-              <div class="form-msg" id="riFormMsg"></div>
-            </div>
-          </form>
-        </div>
+    <div class="contact">
+      <div class="contact-side rv">
+        <h3>Fewer inboxes. Faster replies. No surprises.</h3>
+        <p>Here's what you can expect from the demo and onboarding.</p>
+        <ul>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Live in an afternoon — no migration headaches</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Native Guesty integration</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>Human approval always available</li>
+          <li><svg width="16" height="16"><use href="#i-check"/></svg>$30 per property, $25 at 11+ properties</li>
+        </ul>
+        <div class="reply"><span class="live" aria-hidden="true"></span>Replies within 24 hours</div>
       </div>
+
+      <form class="form rv" id="riForm" novalidate style="transition-delay:.06s">
+        <input type="hidden" name="subject" value="Regent Inbox Demo Request">
+        <div class="row2">
+          <div class="fld"><label class="fld-label" for="riName">Full name</label><input class="input" type="text" id="riName" name="name" placeholder="Jane Carter" required autocomplete="name"></div>
+          <div class="fld"><label class="fld-label" for="riEmail">Email</label><input class="input" type="email" id="riEmail" name="email" placeholder="jane@example.com" required autocomplete="email"></div>
+        </div>
+        <div class="fld"><label class="fld-label" for="riPhone">Phone <span class="opt">Optional</span></label><input class="input" type="tel" id="riPhone" name="phone" placeholder="(555) 123-4567" autocomplete="tel"></div>
+        <div class="fld">
+          <input type="hidden" id="riProperties" name="properties" value="">
+          <span class="fld-label" id="riPropsLabel">Number of properties</span>
+          <div class="chips" role="group" aria-labelledby="riPropsLabel" id="riPropsChips">
+            <button type="button" class="chip" data-val="1-10" aria-pressed="false">1–10</button>
+            <button type="button" class="chip" data-val="11-25" aria-pressed="false">11–25</button>
+            <button type="button" class="chip" data-val="26-50" aria-pressed="false">26–50</button>
+            <button type="button" class="chip" data-val="51-100" aria-pressed="false">51–100</button>
+            <button type="button" class="chip" data-val="100+" aria-pressed="false">100+</button>
+          </div>
+        </div>
+        <div class="fld">
+          <input type="hidden" id="riPlan" name="plan" value="">
+          <span class="fld-label" id="riPlanLabel">Plan you're interested in <span class="opt">Optional</span></span>
+          <div class="chips" role="group" aria-labelledby="riPlanLabel" id="riPlanChips">
+            <button type="button" class="chip" data-val="Inbox" aria-pressed="false">Inbox</button>
+            <button type="button" class="chip" data-val="Operations" aria-pressed="false">Operations</button>
+            <button type="button" class="chip" data-val="Not sure yet" aria-pressed="false">Not sure yet</button>
+          </div>
+        </div>
+        <div class="fld"><label class="fld-label" for="riMessage">Message <span class="opt">Optional</span></label><textarea class="input" id="riMessage" name="message" rows="3" placeholder="Tell us about your portfolio or what you'd like to see."></textarea></div>
+        <button type="submit" class="btn btn-primary" id="riSubmitBtn"><span id="riSubmitLabel">Book a demo</span><svg class="arr" width="16" height="16" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <p class="form-note"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>We never share your details. See our <a href="/regent-inbox/privacy" style="color:var(--text);text-decoration:underline;text-underline-offset:3px;margin-left:4px">privacy policy</a>.</p>
+        <div class="form-msg" id="riFormMsg" role="status" aria-live="polite"></div>
+      </form>
     </div>
   </div>
 </section>
+</main>
 
 <!-- ═══ Footer ═══ -->
-<footer class="ri-footer">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <a href="/" class="ri-brand" aria-label="Regent Inbox home">
-        <span class="ri-mark" aria-hidden="true">R</span>
-        <span class="ri-word"><b>Regent</b><span>Inbox</span></span>
-      </a>
-      <div class="footer-links">
-        <a href="#product">Product</a>
-        <a href="#safety">Safety</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#faq">FAQ</a>
-        <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" target="_blank" rel="noopener">Sign in</a>
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <a href="/regent-inbox" class="brand" aria-label="Regent Inbox home"><span class="brand-mark" aria-hidden="true">R</span>Regent <small>Inbox</small></a>
+        <p class="foot-blurb">The AI front desk and operations hub for short-term rental managers.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col"><h4>Product</h4><ul><li><a href="#product">How it works</a></li><li><a href="#operations">Operations</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+        <div class="foot-col"><h4>Company</h4><ul><li><a href="#contact">Book a demo</a></li><li><a href="https://regent-inbox-otg2etzolq-uc.a.run.app" target="_blank" rel="noopener">Sign in</a></li><li><a href="/">Regent Stays</a></li></ul></div>
+        <div class="foot-col"><h4>Legal</h4><ul><li><a href="/regent-inbox/privacy">Privacy policy</a></li><li><a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a></li></ul></div>
       </div>
     </div>
-    <div class="footer-legal">
-      <span>A product by Regent Capital Ventures LLC</span>
-      <span>© 2026 Regent Capital Ventures LLC · <a href="/privacy-policy">Privacy Policy</a> · <a href="/">← Back to Regent Stays</a></span>
+    <div class="foot-bottom">
+      <span>© 2026 Regent Capital Ventures LLC. All rights reserved.</span>
+      <span><a href="/regent-inbox/privacy">Privacy</a> · <a href="/">Back to Regent Stays</a></span>
     </div>
   </div>
 </footer>
 
 <script>
-(function(){
-  "use strict";
+(function () {
+  'use strict';
 
-  /* Scroll progress + nav shadow */
-  var progress = document.getElementById('riProgress');
-  var nav = document.getElementById('riNav');
-  function onScroll(){
-    var h = document.documentElement;
-    var max = h.scrollHeight - h.clientHeight;
-    var pct = max > 0 ? h.scrollTop / max : 0;
-    if (progress) progress.style.transform = 'scaleX(' + pct + ')';
-    if (nav) nav.classList.toggle('scrolled', h.scrollTop > 8);
-  }
+  /* Nav background once scrolled */
+  var nav = document.getElementById('nav');
+  function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 8); }
   document.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
   /* Mobile menu */
-  var burger = document.getElementById('riBurger');
-  var mmenu = document.getElementById('riMobileMenu');
-  function closeMenu(){
-    if (!mmenu) return;
-    mmenu.classList.remove('open');
-    if (burger) burger.classList.remove('open');
-    if (burger) burger.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
+  var burger = document.getElementById('burger');
+  var mmenu = document.getElementById('mmenu');
+  function setMenu(open) {
+    mmenu.classList.toggle('open', open);
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
   }
-  function openMenu(){
-    if (!mmenu) return;
-    mmenu.classList.add('open');
-    if (burger) burger.classList.add('open');
-    if (burger) burger.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }
-  if (burger) {
-    burger.addEventListener('click', function(){
-      if (mmenu.classList.contains('open')) closeMenu(); else openMenu();
-    });
-  }
-  if (mmenu) {
-    mmenu.querySelectorAll('[data-close], a').forEach(function(a){
-      a.addEventListener('click', closeMenu);
-    });
-  }
+  burger.addEventListener('click', function () { setMenu(!mmenu.classList.contains('open')); });
+  mmenu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+  window.addEventListener('resize', function () { if (window.innerWidth > 940 && mmenu.classList.contains('open')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && mmenu.classList.contains('open')) setMenu(false); });
 
-  /* FAQ accordion */
-  document.querySelectorAll('.faq-item').forEach(function(item){
-    var btn = item.querySelector('.faq-q');
-    btn.addEventListener('click', function(){
-      var isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(function(other){
-        if (other !== item) {
-          other.classList.remove('open');
-          other.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
-        }
+  /* Scroll reveal */
+  var rv = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('on'); io.unobserve(en.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    rv.forEach(function (el) { io.observe(el); });
+  } else { rv.forEach(function (el) { el.classList.add('on'); }); }
+  /* Safety net: a fast fling can skip past the observer's thresholds, so
+     anything already in view or scrolled past is revealed on scroll too. */
+  var pending = true;
+  function sweep() {
+    pending = false;
+    var limit = window.innerHeight * 0.96;
+    rv.forEach(function (el) { if (!el.classList.contains('on') && el.getBoundingClientRect().top < limit) el.classList.add('on'); });
+  }
+  document.addEventListener('scroll', function () { if (!pending) { pending = true; requestAnimationFrame(sweep); } }, { passive: true });
+  window.addEventListener('load', sweep);
+
+  /* FAQ */
+  document.querySelectorAll('.faq-item').forEach(function (item) {
+    var q = item.querySelector('.faq-q');
+    q.addEventListener('click', function () {
+      var open = !item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function (o) {
+        if (o !== item) { o.classList.remove('open'); o.querySelector('.faq-q').setAttribute('aria-expanded', 'false'); }
       });
-      item.classList.toggle('open', !isOpen);
-      btn.setAttribute('aria-expanded', String(!isOpen));
+      item.classList.toggle('open', open);
+      q.setAttribute('aria-expanded', String(open));
     });
   });
 
-  /* Scroll reveal */
-  var revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if (entry.isIntersecting) {
-          entry.target.classList.add('on');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach(function(el){ io.observe(el); });
-  } else {
-    revealEls.forEach(function(el){ el.classList.add('on'); });
+  /* Pricing calculator.
+     Inbox: $30 per property; more than 10 properties → $25 for every property.
+     Operations: flat $40 per property. */
+  var INBOX = 30, INBOX_VOLUME = 25, VOLUME_FROM = 11, OPS = 40;
+  var range = document.getElementById('homes');
+  var out = document.getElementById('homesOut');
+  var fmt = function (n) { return '$' + n.toLocaleString('en-US'); };
+  function price() {
+    var n = parseInt(range.value, 10) || 1;
+    var volume = n >= VOLUME_FROM;
+    var rate = volume ? INBOX_VOLUME : INBOX;
+    out.textContent = n;
+    document.getElementById('inboxAmt').textContent = fmt(rate);
+    document.getElementById('inboxWas').hidden = !volume;
+    document.getElementById('inboxTier').classList.toggle('on', volume);
+    document.getElementById('inboxTotal').textContent = fmt(rate * n);
+    document.getElementById('opsTotal').textContent = fmt(OPS * n);
+    range.style.setProperty('--fill', ((n - 1) / 99 * 100) + '%');
+    range.setAttribute('aria-valuetext', n + (n === 1 ? ' property' : ' properties'));
   }
+  range.addEventListener('input', price);
+  price();
+
+  /* Chip groups write to hidden inputs */
+  function chipGroup(groupId, inputId) {
+    var group = document.getElementById(groupId), input = document.getElementById(inputId);
+    var chips = group.querySelectorAll('.chip');
+    function set(val) {
+      input.value = val;
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.val === val ? 'true' : 'false'); });
+    }
+    chips.forEach(function (c) {
+      c.addEventListener('click', function () { set(c.getAttribute('aria-pressed') === 'true' ? '' : c.dataset.val); });
+    });
+    return set;
+  }
+  var setProps = chipGroup('riPropsChips', 'riProperties');
+  var setPlan = chipGroup('riPlanChips', 'riPlan');
+
+  /* Plan buttons pre-select the plan and a matching portfolio size */
+  document.querySelectorAll('[data-plan]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      setPlan(b.dataset.plan);
+      var n = parseInt(range.value, 10);
+      setProps(n <= 10 ? '1-10' : n <= 25 ? '11-25' : n <= 50 ? '26-50' : n < 100 ? '51-100' : '100+');
+    });
+  });
 
   /* Contact form */
   var form = document.getElementById('riForm');
   var msgEl = document.getElementById('riFormMsg');
-  var submitBtn = document.getElementById('riSubmitBtn');
-  var submitLabel = document.getElementById('riSubmitLabel');
-
-  /* Message field grows with its content instead of showing a resize grip */
+  var btn = document.getElementById('riSubmitBtn');
+  var label = document.getElementById('riSubmitLabel');
   var msgField = document.getElementById('riMessage');
-  if (msgField) {
-    var growField = function(){
-      msgField.style.height = 'auto';
-      msgField.style.height = Math.max(86, msgField.scrollHeight) + 'px';
-    };
-    msgField.addEventListener('input', growField);
-    if (form) form.addEventListener('reset', function(){ setTimeout(function(){ msgField.style.height = ''; }, 0); });
-  }
+  msgField.addEventListener('input', function () { msgField.style.height = 'auto'; msgField.style.height = Math.max(104, msgField.scrollHeight) + 'px'; });
+  form.addEventListener('reset', function () { setTimeout(function () { msgField.style.height = ''; setProps(''); setPlan(''); }, 0); });
 
-  /* Properties range — segmented chips writing to the hidden input */
-  var propsInput = document.getElementById('riProperties');
-  var propsChips = document.getElementById('riPropsChips');
-  if (propsChips && propsInput) {
-    var chips = propsChips.querySelectorAll('.chip');
-    function setProps(val){
-      propsInput.value = val;
-      chips.forEach(function(c){ c.setAttribute('aria-pressed', c.dataset.val === val ? 'true' : 'false'); });
-    }
-    chips.forEach(function(c){
-      c.addEventListener('click', function(){
-        setProps(c.getAttribute('aria-pressed') === 'true' ? '' : c.dataset.val);
-      });
-    });
-    if (form) form.addEventListener('reset', function(){ setTimeout(function(){ setProps(''); }, 0); });
-  }
+  function show(kind, text) { msgEl.className = 'form-msg ' + kind + ' show'; msgEl.textContent = text; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('riName').value.trim();
+    var email = document.getElementById('riEmail').value.trim();
+    var phone = document.getElementById('riPhone').value.trim();
+    var properties = document.getElementById('riProperties').value;
+    var plan = document.getElementById('riPlan').value;
+    var message = msgField.value.trim();
+    msgEl.className = 'form-msg'; msgEl.textContent = '';
+    if (!name || !email) { show('error', 'Please add your name and email.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { show('error', 'Please enter a valid email address.'); return; }
 
-  if (form) {
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-
-      var name = document.getElementById('riName').value.trim();
-      var email = document.getElementById('riEmail').value.trim();
-      var phone = document.getElementById('riPhone').value.trim();
-      var properties = document.getElementById('riProperties').value;
-      var message = document.getElementById('riMessage').value.trim();
-      var subject = form.querySelector('[name="subject"]').value;
-
-      msgEl.className = 'form-msg';
-      msgEl.textContent = '';
-
-      if (!name || !email) {
-        msgEl.className = 'form-msg error show';
-        msgEl.textContent = 'Please fill in your name and email.';
-        return;
-      }
-      var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) {
-        msgEl.className = 'form-msg error show';
-        msgEl.textContent = 'Please enter a valid email address.';
-        return;
-      }
-
-      submitBtn.disabled = true;
-      var prevLabel = submitLabel.textContent;
-      submitLabel.innerHTML = '<span class="spin" aria-hidden="true"></span> Sending…';
-
-      var payload = {
-        name: name,
-        email: email,
-        phone: phone,
-        properties: properties,
-        subject: subject,
-        message: message || 'No additional details provided. Number of properties: ' + (properties || 'not specified') + '.'
-      };
-
-      fetch('/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function(res){
-        if (!res.ok) {
-          return res.json().catch(function(){ return {}; }).then(function(data){
-            throw new Error(data.error || 'Failed to send message');
-          });
-        }
-        msgEl.className = 'form-msg success show';
-        msgEl.textContent = "Thanks — we'll be in touch within 24 hours.";
-        form.reset();
-        setTimeout(function(){ msgEl.className = 'form-msg'; }, 7000);
-      }).catch(function(){
-        msgEl.className = 'form-msg error show';
-        msgEl.textContent = 'Could not send your message. Please try again or email us directly.';
-      }).finally(function(){
-        submitBtn.disabled = false;
-        submitLabel.textContent = prevLabel;
-      });
-    });
-  }
+    btn.disabled = true;
+    var prev = label.textContent;
+    label.innerHTML = '<span class="spin" aria-hidden="true"></span>&nbsp; Sending…';
+    var details = 'Properties: ' + (properties || 'not specified') + ' · Plan: ' + (plan || 'not specified') + '.';
+    fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name, email: email, phone: phone, properties: properties, plan: plan,
+        subject: form.querySelector('[name="subject"]').value,
+        message: (message ? message + '\n\n' : '') + details
+      })
+    }).then(function (res) {
+      if (!res.ok) throw new Error('send failed');
+      show('success', "Thanks — we'll be in touch within 24 hours.");
+      form.reset();
+    }).catch(function () {
+      show('error', 'Could not send your message. Please try again or email hello@bookwithregent.com.');
+    }).finally(function () { btn.disabled = false; label.textContent = prev; });
+  });
 })();
 </script>
 </body>
