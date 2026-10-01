@@ -4836,6 +4836,13 @@ function renderGlancePage(slug, res) {
     .replace(/'/g, "\\'")
     .replace(/<\//g, '<\\/');
 
+// Per-property host / co-host overrides
+  const SANDEEP_HOST_SLUGS = ['regent-soco', 'regent-skyline', 'executive', 'lake-view', 'regent-crown'];
+  const hostName = SANDEEP_HOST_SLUGS.includes(slug) ? 'Sandeep' : 'Jatin';
+  const coHostLine = SANDEEP_HOST_SLUGS.includes(slug)
+    ? 'CO-HOST JATIN'
+    : 'CO-HOSTS SANDEEP \& CHAMANTHI';
+
   html = html
     .replace(/\{\{PROPERTY_JSON\}\}/g, propertyJson)
     .replace(/\{\{SLUG\}\}/g, slug)
@@ -4855,7 +4862,9 @@ function renderGlancePage(slug, res) {
     .replace(/\{\{IS_VILLA\}\}/g, String(prop.isVilla))
     .replace(/\{\{CATEGORY\}\}/g, prop.category)
     .replace(/\{\{HERO_INDEX\}\}/g, String(heroIdx))
-    .replace(/\{\{JSON_LD\}\}/g, buildPropertyJsonLd(prop, ogUrl, coverImage));
+    .replace(/\{\{JSON_LD\}\}/g, buildPropertyJsonLd(prop, ogUrl, coverImage))
+    .replace(/\{\{HOST_NAME\}\}/g, hostName)
+    .replace(/\{\{CO_HOST_LINE\}\}/g, coHostLine);
 
   res.send(html);
 }
