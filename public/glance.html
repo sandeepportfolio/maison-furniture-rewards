@@ -1217,7 +1217,8 @@ var HERO_CAPTIONS = {
   'designer-game': 'THE LIVING ROOM',
   'lake-view': 'THE VIEW',
   'executive': 'THE RESIDENCE',
-  'stunning-lake': 'THE LAKEFRONT'
+  'stunning-lake': 'THE LAKEFRONT',
+  'regent-soco': 'THE HOME THEATRE'
 };
 
 // ── Curated Tag Lines (match Airbnb listing subtitles) ──
@@ -1230,7 +1231,8 @@ var GLANCE_TAGS = {
   'executive': 'SKY LOUNGE · EV CHARGER · FIRE PIT · DART',
   'stunning-lake': 'LAKE VIEWS · FIBER · DUAL TVS · POOL',
   'regent-crown': 'HOT TUB · GAME TABLE · GOOGLE FIBER · GATED',
-  'regent-sol': 'SKYLINE VIEWS · GARAGE · BALCONY · GIGABIT WI-FI'
+  'regent-sol': 'SKYLINE VIEWS · GARAGE · BALCONY · GIGABIT WI-FI',
+  'regent-soco': 'HOME THEATRE · GAME ROOM · GARAGE · BACKYARD'
 };
 
 // ── Init ──
@@ -1352,7 +1354,8 @@ function init() {
     'executive': 'Light pours in.\nThe city stays out.',
     'stunning-lake': 'The lake is right there.\nSo is everything else.',
     'regent-crown': 'Four suites, one roof.\nDowntown is two miles away.',
-    'regent-sol': 'Scandinavian light.\nFive minutes from downtown.'
+    'regent-sol': 'Scandinavian light.\nFive minutes from downtown.',
+    'regent-soco': 'Brand new off South Congress.\nTheatre, game room, backyard.'
   };
   var tagline = taglines[SLUG] || PROP.name;
   document.getElementById('glTagline').innerHTML = tagline.replace(/\n/g, '<br>');
@@ -1562,6 +1565,11 @@ function getBedrooms() {
       { label: 'BEDROOM 1', type: '1 queen bed', note: 'TV · UPSTAIRS' },
       { label: 'BEDROOM 2', type: '1 full bed', note: 'TV' },
       { label: 'LIVING ROOM', type: 'Couch + 2 air mattresses', note: 'SLEEPS UP TO 8 TOTAL' }
+    ],
+    'regent-soco': [
+      { label: 'BEDROOM 1', type: '1 king bed + 1 air mattress', note: 'TEMPUR-PEDIC · SMART TV' },
+      { label: 'BEDROOM 2', type: '1 queen bed', note: 'TEMPUR-PEDIC · SMART TV' },
+      { label: 'LIVING ROOM', type: '1 sofa bed', note: 'SLEEPS UP TO 8 TOTAL' }
     ]
   };
   return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
@@ -1649,6 +1657,15 @@ var FEATURED_AMENITIES = {
     { name: 'Gigabit Wi-Fi', detail: '1 GBPS' },
     { name: 'TV in every room', detail: 'BOTH BEDROOMS + LIVING' },
     { name: 'Washer & dryer', detail: 'IN HOME' }
+  ],
+  'regent-soco': [
+    { name: 'Built-in home theatre', detail: '7.1 SURROUND' },
+    { name: 'Game room', detail: 'FOOSBALL · GOLF · HOOPS' },
+    { name: 'Private garage', detail: 'DIRECT ACCESS' },
+    { name: 'Private backyard', detail: 'FENCED · SEATING' },
+    { name: 'Tempur-Pedic mattresses', detail: 'BOTH BEDROOMS' },
+    { name: '1 Gbps Wi-Fi', detail: 'WHOLE HOME' },
+    { name: 'Smart TV in every room', detail: 'PLUS SOUND SYSTEM' }
   ]
 };
 
@@ -1793,13 +1810,15 @@ var PARKING_DETAIL = {
 // no pets line rather than an invented one.
 var PETS_ALLOWED = {
   'regent-crown': true,
-  'regent-sol': false
+  'regent-sol': false,
+  'regent-soco': false
 };
 // Same reason: "TWO-CAR GARAGE + DRIVE" is Regent Crown's driveway, not a fact
 // about villas in general.
 var VILLA_PARKING = {
   'regent-crown': 'TWO-CAR GARAGE + DRIVE',
-  'regent-sol': 'PRIVATE GARAGE ON SITE'
+  'regent-sol': 'PRIVATE GARAGE ON SITE',
+  'regent-soco': 'PRIVATE GARAGE ON SITE'
 };
 
 function buildRules() {
@@ -1878,6 +1897,10 @@ var NEIGHBOURHOODS = {
   'regent-sol': {
     desc: 'East Riverside, about five minutes from downtown Austin and close to Lady Bird Lake. Emo’s and Cidercade are on Riverside itself, with South Congress and the airport both a short drive away.',
     tags: ['EAST RIVERSIDE', 'LADY BIRD LAKE', 'SOUTH CONGRESS', 'DOWNTOWN AUSTIN']
+  },
+  'regent-soco': {
+    desc: 'South Austin, minutes from South Congress and its restaurants, boutiques, coffee shops and live music, with downtown a short drive north.',
+    tags: ['SOUTH CONGRESS', 'SOUTH AUSTIN', 'LIVE MUSIC', 'DOWNTOWN AUSTIN']
   }
 };
 
