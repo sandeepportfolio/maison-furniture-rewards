@@ -3,365 +3,366 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Regent Inbox | The AI Front Desk for Short-Term Rentals</title>
-<meta name="description" content="Regent Inbox answers every guest and owner message with fact-checked AI replies your team approves. Add Operations for cleaner automation, an AI that runs the whole app, versioned notes and collaborators. From $25 per property.">
+<title>Regent Inbox | AI messaging and operations for short-term rentals</title>
+<meta name="description" content="Regent Inbox answers guest and owner messages from your own property facts, and runs turnovers, notes and collaborators alongside. $45 per property per month, $40 at eleven or more.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Regent Inbox">
-<meta property="og:title" content="Regent Inbox | The AI Front Desk for Short-Term Rentals">
-<meta property="og:description" content="Fact-checked AI replies to every guest and owner message, reviewed by your team. Add Operations for cleaner automation, AI control of the whole app, versioned notes and collaborators.">
-<meta property="og:url" content="https://www.bookwithregent.com/regent-inbox">
+<meta property="og:title" content="Regent Inbox | AI messaging and operations for short-term rentals">
+<meta property="og:description" content="Guest and owner messages answered from your own property facts, with turnovers, notes and collaborators in the same place. From $45 per property per month.">
+<meta property="og:url" content="https://www.bookwithregent.com/regent-ai">
 <meta property="og:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Regent Inbox | The AI Front Desk for Short-Term Rentals">
-<meta name="twitter:description" content="Fact-checked AI replies to every guest and owner message, reviewed by your team. From $25 per property.">
+<meta name="twitter:title" content="Regent Inbox | AI messaging and operations for short-term rentals">
+<meta name="twitter:description" content="Guest and owner messages answered from your own property facts. From $45 per property per month.">
 <meta name="twitter:image" content="https://a0.muscache.com/im/pictures/hosting/Hosting-1711340298974810369/original/c4264787-996e-49d3-b314-ffd1ec44a651.jpeg?im_w=1200">
-<link rel="canonical" href="https://www.bookwithregent.com/regent-inbox">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2314120E'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='central' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='600' font-size='34' fill='%23D9B774'%3ER%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#0B0B0A">
+<link rel="canonical" href="https://www.bookwithregent.com/regent-ai">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230D110E'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='central' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='34' fill='%23C99845'%3ER%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0D110E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/js/theme-toggle.js"></script>
 <style>
 /* ═══ Tokens ═══
-   One typeface (Geist) carries the whole page; hierarchy comes from size,
-   weight and tracking rather than mixed faces. Gold is an accent, not a fill.
-   Every text colour clears WCAG AA (4.5:1) on its surface in both themes. */
+   Manrope carries the page; hierarchy is size, weight and tracking rather
+   than mixed faces. JetBrains Mono is reserved for labels and figures, where
+   its fixed widths stop numbers jittering as they change. Gold is the site's
+   #C99845, used as an accent and never as a text fill on light surfaces,
+   where it cannot clear AA. */
 :root{
-  --bg:#0B0B0A;--bg-2:#100F0D;--surface:#151412;--surface-2:#1C1B18;
-  --line:rgba(245,242,236,.09);--line-2:rgba(245,242,236,.14);
-  --text:#F5F2EC;--muted:rgba(245,242,236,.7);--faint:rgba(245,242,236,.56);
-  --accent:#D9B774;--accent-2:#E9CF98;--accent-soft:rgba(217,183,116,.12);--accent-line:rgba(217,183,116,.32);
-  --btn-bg:#F5F2EC;--btn-fg:#12110E;--btn-hover:#FFFFFF;
-  --ok:#8FD3A7;--ok-soft:rgba(143,211,167,.12);
-  --err:#F0A193;--err-soft:rgba(240,161,147,.12);
-  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 60px -24px rgba(0,0,0,.7);
-  --shadow-lg:0 1px 0 rgba(255,255,255,.05) inset,0 40px 100px -30px rgba(0,0,0,.8);
-  --glow:rgba(217,183,116,.10);
-  --nav-bg:rgba(11,11,10,.72);
-  --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
-  --ease:cubic-bezier(.22,.61,.36,1);
-  --r:18px;--r-lg:26px;
+  --bg:#0D110E;--bg-2:#11150F;--surface:#141A15;--surface-2:#1A211B;
+  --line:rgba(242,237,225,.10);--line-2:rgba(242,237,225,.17);
+  --text:#F2EDE1;--muted:rgba(242,237,225,.74);--faint:rgba(242,237,225,.58);
+  --accent:#C99845;--accent-2:#E0B15C;--accent-soft:rgba(201,152,69,.13);--accent-line:rgba(201,152,69,.34);
+  --on-accent:#0D110E;
+  --btn-bg:#F2EDE1;--btn-fg:#0D110E;--btn-hover:#FFFFFF;
+  --ok:#8FD3A7;--ok-soft:rgba(143,211,167,.13);
+  --err:#F0A193;--err-soft:rgba(240,161,147,.13);
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 22px 56px -24px rgba(0,0,0,.72);
+  --shadow-lg:0 1px 0 rgba(255,255,255,.05) inset,0 40px 96px -32px rgba(0,0,0,.82);
+  --nav-bg:rgba(13,17,14,.74);
+  --sans:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  /* The built-in curves are too weak to read as intentional. */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+  --spring:cubic-bezier(.34,1.42,.64,1);   /* slight overshoot, no wobble */
+  --r:16px;--r-lg:24px;--r-xl:32px;
 }
 [data-theme="light"]{
-  --bg:#F7F5F0;--bg-2:#F1EEE7;--surface:#FFFFFF;--surface-2:#F4F1EA;
-  --line:rgba(20,18,14,.09);--line-2:rgba(20,18,14,.15);
-  --text:#14120E;--muted:rgba(20,18,14,.72);--faint:rgba(20,18,14,.64);
-  --accent:#7A5718;--accent-2:#6A4B13;--accent-soft:rgba(122,87,24,.08);--accent-line:rgba(122,87,24,.28);
-  --btn-bg:#14120E;--btn-fg:#F7F5F0;--btn-hover:#2A2620;
-  --ok:#1F6F43;--ok-soft:rgba(31,111,67,.09);
-  --err:#A23422;--err-soft:rgba(162,52,34,.08);
-  --shadow:0 1px 2px rgba(20,18,14,.04),0 18px 44px -22px rgba(20,18,14,.18);
-  --shadow-lg:0 1px 2px rgba(20,18,14,.05),0 34px 80px -30px rgba(20,18,14,.24);
-  --glow:rgba(122,87,24,.07);
-  --nav-bg:rgba(247,245,240,.8);
+  --bg:#FAF8F4;--bg-2:#F3F0E9;--surface:#FFFFFF;--surface-2:#F5F2EB;
+  --line:rgba(13,17,14,.10);--line-2:rgba(13,17,14,.17);
+  --text:#12160F;--muted:rgba(18,22,15,.76);--faint:rgba(18,22,15,.64);
+  /* #C99845 is 2.6:1 on this background — nowhere near AA — so light mode
+     uses a darkened gold for anything that carries meaning as text. */
+  --accent:#7A5718;--accent-2:#634512;--accent-soft:rgba(122,87,24,.09);--accent-line:rgba(122,87,24,.30);
+  --on-accent:#FFFFFF;
+  --btn-bg:#12160F;--btn-fg:#FAF8F4;--btn-hover:#262C21;
+  --ok:#1F6F43;--ok-soft:rgba(31,111,67,.10);
+  --err:#A23422;--err-soft:rgba(162,52,34,.09);
+  --shadow:0 1px 2px rgba(18,22,15,.05),0 18px 40px -22px rgba(18,22,15,.20);
+  --shadow-lg:0 1px 2px rgba(18,22,15,.06),0 34px 76px -30px rgba(18,22,15,.26);
+  --nav-bg:rgba(250,248,244,.82);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;max-width:100vw}
-#top,#product,#operations,#security,#pricing,#faq,#contact{scroll-margin-top:96px}
-body{font-family:var(--sans);font-size:16px;line-height:1.6;color:var(--text);background:var(--bg);overflow-x:hidden;max-width:100vw;font-feature-settings:"ss01","cv11"}
-::selection{background:var(--accent);color:#12110E}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip;max-width:100vw}
+#top,#product,#platform,#pricing,#security,#faq,#contact{scroll-margin-top:92px}
+body{font-family:var(--sans);font-size:16px;line-height:1.6;color:var(--text);background:var(--bg);overflow-x:clip;max-width:100vw}
+::selection{background:var(--accent);color:var(--on-accent)}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 ul{list-style:none}
 img,svg{display:block}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
 
-/* ═══ Layout primitives ═══ */
-.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,40px);position:relative}
-.section{padding:clamp(88px,11vw,148px) 0 0;position:relative}
-.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;letter-spacing:-.005em;color:var(--accent)}
-.kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px var(--accent-soft)}
-.h2{margin-top:14px;font-size:clamp(32px,4.4vw,52px);font-weight:600;line-height:1.06;letter-spacing:-.035em;max-width:760px;text-wrap:balance}
-.lead{margin-top:16px;font-size:clamp(16.5px,1.5vw,18.5px);line-height:1.6;color:var(--muted);max-width:620px;text-wrap:pretty}
-.center{text-align:center}.center .h2,.center .lead{margin-left:auto;margin-right:auto}
-.muted{color:var(--muted)}
+/* ── Type scale ── */
+h1,h2,h3,h4{line-height:1.08;letter-spacing:-.028em;font-weight:700}
+h1{font-size:clamp(40px,6.4vw,70px);letter-spacing:-.035em;font-weight:800}
+h2{font-size:clamp(30px,4vw,46px)}
+h3{font-size:clamp(19px,2vw,23px);letter-spacing:-.02em;line-height:1.22}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:clamp(16.5px,1.9vw,19px);color:var(--muted);line-height:1.62;max-width:62ch}
+.sec{padding:clamp(72px,10vw,124px) 0}
+.sec-head{max-width:62ch;margin-bottom:clamp(36px,5vw,60px)}
+.sec-head h2{margin:14px 0 16px}
 
-/* ═══ Buttons ═══ */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font-size:15px;font-weight:550;letter-spacing:-.01em;white-space:nowrap;transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .2s var(--ease),box-shadow .3s var(--ease)}
-.btn:active{transform:scale(.98)}
-.btn-primary{background:var(--btn-bg);color:var(--btn-fg);box-shadow:0 10px 30px -12px rgba(0,0,0,.45)}
-.btn-ghost{border:1px solid var(--line-2);color:var(--text);background:transparent}
-.btn-sm{height:38px;padding:0 16px;font-size:14px}
-.btn .arr{transition:transform .25s var(--ease)}
-@media(hover:hover){
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;
+  transition:transform 160ms var(--ease-out),background-color 200ms ease,border-color 200ms ease,color 200ms ease}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--btn-bg);color:var(--btn-fg)}
+.btn-ghost{border:1px solid var(--line-2);color:var(--text)}
+.btn-sm{height:40px;padding:0 17px;font-size:14px}
+.btn-lg{height:54px;padding:0 28px;font-size:16px}
+@media (hover:hover) and (pointer:fine){
   .btn-primary:hover{background:var(--btn-hover)}
-  .btn-ghost:hover{border-color:var(--text)}
-  .btn:hover .arr{transform:translateX(3px)}
+  .btn-ghost:hover{border-color:var(--accent-line);color:var(--accent)}
 }
 
-/* ═══ Nav ═══ */
-.nav{position:fixed;inset:0 0 auto 0;z-index:100;transition:background .3s var(--ease),border-color .3s var(--ease),backdrop-filter .3s}
-.nav.scrolled{background:var(--nav-bg);backdrop-filter:saturate(1.4) blur(18px);-webkit-backdrop-filter:saturate(1.4) blur(18px);border-bottom:1px solid var(--line)}
-.nav-in{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16.5px;letter-spacing:-.02em}
-.brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#14120E;color:#D9B774;font-weight:650;font-size:15px;box-shadow:inset 0 0 0 1px rgba(217,183,116,.35)}
-.brand small{font-weight:450;color:var(--muted);font-size:16.5px;margin-left:-5px}
-.nav-links{display:flex;gap:4px}
-.nav-links a{padding:8px 14px;border-radius:999px;font-size:14.5px;font-weight:450;color:var(--muted);transition:color .2s,background .2s}
-.nav-links a:hover{color:var(--text);background:var(--accent-soft)}
-.nav-right{display:flex;align-items:center;gap:8px}
-.nav-link{font-size:14.5px;font-weight:500;color:var(--muted);padding:8px 12px;border-radius:999px;transition:color .2s}
-.nav-link:hover{color:var(--text)}
-.icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);transition:color .2s,border-color .2s}
-.icon-btn:hover{color:var(--text);border-color:var(--line-2)}
-.burger{display:none}
-.burger span{display:block;width:16px;height:1.5px;background:currentColor;border-radius:2px;transition:transform .3s var(--ease),opacity .2s}
-.burger span+span{margin-top:4px}
+/* ── Nav ── */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:100;transition:background-color 240ms ease,border-color 240ms ease,backdrop-filter 240ms ease;border-bottom:1px solid transparent}
+.hdr.scrolled{background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:var(--line)}
+.hdr-in{display:flex;align-items:center;gap:20px;height:68px;max-width:1160px;margin:0 auto;padding:0 24px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:17px}
+.brand .mark{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:800}
+.brand .dim{color:var(--faint);font-weight:600}
+.nav-links{display:flex;gap:4px;margin-left:12px}
+.nav-links a{padding:8px 12px;border-radius:9px;font-size:14.5px;font-weight:500;color:var(--muted);transition:color 180ms ease,background-color 180ms ease}
+@media (hover:hover) and (pointer:fine){.nav-links a:hover{color:var(--text);background:var(--surface-2)}}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nav-link{font-size:14.5px;font-weight:500;color:var(--muted);padding:8px 10px;transition:color 180ms ease}
+@media (hover:hover) and (pointer:fine){.nav-link:hover{color:var(--text)}}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:transform 160ms var(--ease-out),color 180ms ease,border-color 180ms ease}
+.icon-btn:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){.icon-btn:hover{color:var(--text);border-color:var(--line-2)}}
+.burger{display:none;flex-direction:column;gap:4px}
+.burger span{width:16px;height:1.5px;background:currentColor;border-radius:2px;transition:transform 220ms var(--ease-out),opacity 160ms ease}
 .burger.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
 .burger.open span:nth-child(2){opacity:0}
 .burger.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
-.mmenu{position:fixed;inset:72px 0 0 0;z-index:99;background:var(--bg);padding:24px clamp(20px,4vw,40px) 40px;display:flex;flex-direction:column;gap:4px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .25s var(--ease),transform .25s var(--ease)}
-.mmenu.open{opacity:1;pointer-events:auto;transform:none}
-.mmenu a:not(.btn){padding:14px 2px;font-size:22px;font-weight:550;letter-spacing:-.02em;border-bottom:1px solid var(--line)}
-.mmenu .mm-row{display:flex;gap:10px;margin-top:24px}
-.mmenu .mm-row .btn{flex:1}
-@media(max-width:940px){.nav-links,.nav-link.hide-sm,.nav-right .btn.hide-sm{display:none}.burger{display:grid}}
+@media(max-width:940px){.nav-links{display:none}.burger{display:flex}.hide-sm{display:none}}
 
-/* ═══ Hero ═══ */
-.hero{position:relative;padding:clamp(128px,15vw,180px) 0 0;overflow:hidden}
-.hero::before{content:"";position:absolute;inset:-20% -10% auto -10%;height:720px;background:radial-gradient(50% 55% at 70% 20%,var(--glow),transparent 70%),radial-gradient(40% 50% at 10% 0%,var(--glow),transparent 70%);pointer-events:none}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(40px,6vw,80px);align-items:center;position:relative}
-.pill{display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 14px 0 6px;border-radius:999px;border:1px solid var(--line-2);font-size:13.5px;color:var(--muted);background:var(--surface)}
-.pill b{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:12.5px}
-@media(max-width:480px){.pill{height:auto;min-height:34px;padding:5px 12px 5px 5px;line-height:1.35}}
-h1{margin-top:22px;font-size:clamp(42px,6.2vw,78px);font-weight:600;line-height:1;letter-spacing:-.045em;text-wrap:balance}
-h1 .soft{color:var(--faint)}
-.hero-sub{margin-top:22px;font-size:clamp(17px,1.6vw,19.5px);line-height:1.6;color:var(--muted);max-width:520px}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
-.hero-note{margin-top:18px;font-size:14px;color:var(--faint)}
+.mmenu{position:fixed;inset:68px 0 0;z-index:99;background:var(--bg);padding:20px 24px 40px;display:flex;flex-direction:column;gap:2px;
+  opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity 220ms var(--ease-out),transform 220ms var(--ease-out),visibility 220ms}
+.mmenu.open{opacity:1;visibility:visible;transform:translateY(0)}
+.mmenu a{padding:15px 4px;font-size:19px;font-weight:600;letter-spacing:-.02em;border-bottom:1px solid var(--line)}
+.mm-row{display:flex;gap:10px;margin-top:22px}
+.mm-row .btn{flex:1}
 
-/* Product mock */
-.mock{position:relative;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-lg);overflow:hidden}
-.mock-bar{display:flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-bottom:1px solid var(--line);background:var(--bg-2)}
-.mock-bar i{width:9px;height:9px;border-radius:50%;background:var(--line-2)}
-.mock-bar span{margin-left:10px;font-size:12.5px;color:var(--faint)}
-.mock-body{display:grid;grid-template-columns:170px 1fr;min-height:390px}
-.mock-side{border-right:1px solid var(--line);padding:10px}
-.thread{display:flex;flex-direction:column;gap:2px;padding:10px 10px;border-radius:12px;font-size:13px}
-.thread b{font-weight:550;font-size:13px;display:flex;justify-content:space-between;gap:6px}
-.thread b em{font-style:normal;font-weight:450;color:var(--faint);font-size:11.5px}
-.thread span{color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
-.thread.on{background:var(--accent-soft)}
-.thread.on b{color:var(--text)}
-.mock-main{padding:18px;display:flex;flex-direction:column;gap:12px}
-.meta-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--faint)}
-.meta-row strong{color:var(--text);font-weight:550;font-size:14px}
-.chan{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;border:1px solid var(--line-2);font-size:11.5px;color:var(--muted)}
-.bubble{max-width:88%;padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.5}
-.bubble.guest{background:var(--surface-2);border-top-left-radius:6px}
-.bubble.ai{align-self:flex-end;background:var(--accent-soft);border:1px solid var(--accent-line);border-top-right-radius:6px}
-.bubble small{display:block;margin-bottom:5px;font-size:11.5px;font-weight:550;color:var(--faint)}
-.bubble.ai small{color:var(--accent)}
-.src{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-end;max-width:88%;justify-content:flex-end}
-.src span{height:24px;display:inline-flex;align-items:center;gap:6px;padding:0 9px;border-radius:999px;font-size:11.5px;color:var(--muted);background:var(--surface-2)}
-.checks{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line)}
-.checks ul{display:flex;gap:12px;flex-wrap:wrap}
-.checks li{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
-.checks li svg{color:var(--ok)}
-.checks .btn{height:34px;font-size:13px;padding:0 14px}
-@media(max-width:980px){.hero-grid{grid-template-columns:1fr}.mock{max-width:620px}}
-@media(max-width:560px){.mock-body{grid-template-columns:1fr}.mock-side{display:none}.checks{flex-direction:column;align-items:stretch}.checks .btn{width:100%}}
+/* ── Hero ── */
+.hero{position:relative;padding:calc(68px + clamp(56px,9vw,104px)) 0 clamp(60px,8vw,96px);overflow:clip}
+/* Decorative only: a soft gold wash that drifts on scroll to give the hero
+   depth. transform-only, so it never costs a layout. */
+.hero-glow{position:absolute;top:-28%;left:50%;width:min(1100px,130%);aspect-ratio:1.6;margin-left:-min(550px,65%);
+  background:radial-gradient(ellipse at 50% 40%,var(--accent-soft) 0%,transparent 62%);pointer-events:none;will-change:transform}
+.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);gap:clamp(36px,5vw,70px);align-items:center}
+.pill{display:inline-flex;align-items:center;gap:9px;min-height:32px;padding:5px 14px 5px 6px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface);font-size:13px;line-height:1.35;color:var(--muted);margin-bottom:22px;max-width:100%}
+.pill b{flex:none}
+.pill b{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:3px 7px;border-radius:999px}
+.hero h1 .soft{color:var(--accent)}
+.hero-sub{margin:20px 0 30px;font-size:clamp(16.5px,1.9vw,19px);color:var(--muted);line-height:1.6;max-width:54ch}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:11px}
+.hero-note{margin-top:20px;font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.01em}
 
-/* ═══ Proof strip ═══ */
-.proof{margin-top:clamp(64px,8vw,96px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.proof-grid{display:grid;grid-template-columns:repeat(4,1fr)}
-.proof-cell{padding:28px 24px 26px;border-left:1px solid var(--line)}
-.proof-cell:first-child{border-left:0;padding-left:0}
-.proof-cell strong{display:block;font-size:clamp(26px,3vw,34px);font-weight:600;letter-spacing:-.035em;line-height:1.1}
-.proof-cell span{display:block;margin-top:6px;font-size:14px;color:var(--muted)}
-@media(max-width:760px){.proof-grid{grid-template-columns:1fr 1fr}.proof-cell{padding:22px 16px}.proof-cell:nth-child(3){border-left:0;padding-left:0}.proof-cell:nth-child(n+3){border-top:1px solid var(--line)}}
+/* Inbox mock */
+.mock{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow-lg);overflow:hidden}
+.mock-bar{display:flex;align-items:center;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line-2)}
+.mock-bar span{margin-left:8px;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.mock-body{padding:18px}
+.msg{border-radius:13px;padding:13px 14px;font-size:14px;line-height:1.52}
+.msg-in{background:var(--surface-2);color:var(--muted)}
+.msg-meta{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.msg-out{margin-top:12px;background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--text)}
+.msg-out .msg-meta{color:var(--accent)}
+.src{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.src i{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.mock-foot{display:flex;align-items:center;gap:9px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
+.tick{width:16px;height:16px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;font-size:9px;flex:none}
 
-/* ═══ Steps ═══ */
-.steps{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.step{padding:28px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
-.step .num{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft)}
-.step h3{margin-top:22px;font-size:19px;font-weight:600;letter-spacing:-.02em}
-.step p{margin-top:8px;font-size:15px;color:var(--muted)}
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.stat{background:var(--bg);padding:26px 22px}
+.stat b{display:block;font-size:clamp(26px,3.4vw,36px);font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:5px;font-size:13px;color:var(--faint);line-height:1.4}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ── Steps ── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.4vw,26px)}
+.step{padding:28px 24px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);transition:transform 260ms var(--spring),border-color 220ms ease}
+.step .n{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.14em;margin-bottom:16px}
+.step h3{margin-bottom:9px}
+.step p{font-size:15px;color:var(--muted);line-height:1.58}
+@media (hover:hover) and (pointer:fine){.step:hover{transform:translateY(-3px);border-color:var(--line-2)}}
 @media(max-width:860px){.steps{grid-template-columns:1fr}}
 
-/* ═══ Operations bento ═══ */
-.ops-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
-.tag{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--accent-line);color:var(--accent);font-size:13px;font-weight:550;background:var(--accent-soft)}
-.bento{margin-top:44px;display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
-.card{position:relative;padding:28px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column}
-.card h3{font-size:20px;font-weight:600;letter-spacing:-.02em}
-.card p{margin-top:8px;font-size:15px;color:var(--muted);max-width:440px}
-.card .viz{margin-top:24px}
-.span-3{grid-column:span 3}.span-2{grid-column:span 2}.span-4{grid-column:span 4}
-@media(max-width:960px){.span-3,.span-2,.span-4{grid-column:span 6}}
-/* viz: cleaner timeline */
-.tl{display:flex;flex-direction:column;gap:0}
-.tl li{display:grid;grid-template-columns:62px 18px 1fr;align-items:center;gap:10px;padding:9px 0;font-size:14px}
-.tl li time{font-family:var(--mono);font-size:12.5px;color:var(--faint)}
-.tl li i{width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);justify-self:center}
-.tl li.done i{background:var(--accent)}
-.tl li span b{font-weight:550}
-.tl li span em{font-style:normal;color:var(--faint)}
-/* viz: chat */
-.cmd{display:flex;flex-direction:column;gap:10px}
-.cmd .me{align-self:flex-end;background:var(--btn-bg);color:var(--btn-fg);padding:11px 14px;border-radius:16px 16px 6px 16px;font-size:14px;max-width:92%}
-.cmd .ai{background:var(--surface-2);padding:12px 14px;border-radius:16px 16px 16px 6px;font-size:14px;max-width:96%}
-.cmd .ai ul{margin-top:8px;display:grid;gap:5px}
-.cmd .ai li{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
-.cmd .ai li svg{color:var(--ok);flex:none}
-.cmd-input{display:flex;align-items:center;gap:8px;height:44px;padding:0 6px 0 14px;border-radius:999px;border:1px solid var(--line-2);font-size:13.5px;color:var(--faint)}
-.cmd-input kbd{margin-left:auto;font:500 11.5px var(--mono);color:var(--faint);border:1px solid var(--line-2);border-radius:6px;padding:2px 6px}
-/* viz: notes w/ versions */
-.note{border-radius:16px;border:1px solid var(--line);background:var(--bg-2);padding:16px}
-.note-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--faint)}
-.note-top b{color:var(--text);font-weight:550;font-size:14px}
-.note ul{margin-top:12px;display:grid;gap:7px}
-.note li{display:flex;align-items:center;gap:10px;font-size:14px}
-.box{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--line-2);flex:none;display:grid;place-items:center}
-.box.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-.note li.strike span{color:var(--faint);text-decoration:line-through}
-.versions{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
-.versions span{height:26px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border-radius:999px;font-size:12px;color:var(--muted);border:1px solid var(--line)}
-.versions span.cur{border-color:var(--accent-line);color:var(--accent);background:var(--accent-soft)}
-/* viz: collaborators */
-.people{display:grid;gap:8px}
-.person{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--bg-2)}
-.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;color:#12110E;flex:none}
-.person b{font-size:14px;font-weight:550;display:block;line-height:1.2}
-.person small{font-size:12.5px;color:var(--faint)}
-.role{margin-left:auto;font-size:12px;color:var(--muted);padding:3px 9px;border-radius:999px;background:var(--surface-2)}
-
-/* ═══ Security ═══ */
-.sec-grid{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.sec{padding:28px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
-.sec .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--accent);background:var(--accent-soft)}
-.sec h3{margin-top:20px;font-size:18px;font-weight:600;letter-spacing:-.02em}
-.sec p{margin-top:8px;font-size:15px;color:var(--muted)}
-@media(max-width:860px){.sec-grid{grid-template-columns:1fr}}
+/* ── Platform grid ── */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.feat-i{background:var(--bg);padding:30px 26px}
+.feat-i .ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:17px}
+.feat-i .ic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}
+.feat-i h3{font-size:17px;margin-bottom:8px}
+.feat-i p{font-size:14.5px;color:var(--muted);line-height:1.56}
+@media(max-width:940px){.feat{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.feat{grid-template-columns:1fr}}
 
 /* ═══ Pricing ═══ */
-.calc{margin-top:44px;padding:24px 28px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:28px}
-.calc label{font-size:15px;font-weight:550;letter-spacing:-.01em}
-.calc label small{display:block;font-weight:450;font-size:13.5px;color:var(--faint)}
-.count{min-width:118px;text-align:right;font-size:15px;color:var(--muted)}
-.count output{font-size:30px;font-weight:600;letter-spacing:-.035em;color:var(--text);margin-right:6px;font-variant-numeric:tabular-nums}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;cursor:pointer}
-input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--accent) 0 var(--fill,10%),var(--line-2) var(--fill,10%) 100%)}
-input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line-2)}
-input[type=range]::-moz-range-progress{height:6px;border-radius:999px;background:var(--accent)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.25)}
-input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
-.plans{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.plan{position:relative;padding:32px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column}
-.plan.feature{border-color:var(--accent-line);box-shadow:var(--shadow)}
-.plan.feature::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(80% 60% at 100% 0%,var(--accent-soft),transparent 70%);pointer-events:none}
-.plan-top{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
-.plan h3{font-size:22px;font-weight:600;letter-spacing:-.025em}
-.plan .for{margin-top:6px;font-size:15px;color:var(--muted);position:relative}
-.price{margin-top:26px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;position:relative}
-.price .amt{font-size:clamp(48px,5.4vw,60px);font-weight:600;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
-.price .was{font-size:22px;font-weight:500;color:var(--faint);text-decoration:line-through;letter-spacing:-.02em}
-.price .per{font-size:15px;color:var(--muted)}
-.tier{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);position:relative}
-.tier .dot{width:7px;height:7px;border-radius:50%;background:var(--line-2);flex:none;transition:background .3s}
-.tier.on{color:var(--text)}
-.tier.on .dot{background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
-.total{margin-top:22px;padding:14px 16px;border-radius:14px;background:var(--bg-2);display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted);position:relative}
-.total b{font-size:18px;color:var(--text);font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.feats{margin-top:24px;display:grid;gap:11px;position:relative}
-.feats li{display:flex;gap:11px;font-size:15px;line-height:1.5}
-.feats li svg{flex:none;margin-top:3px;color:var(--accent)}
-.feats li.head{font-size:13.5px;font-weight:550;color:var(--faint);margin-top:6px}
-.plan .btn{margin-top:auto;width:100%;position:relative}
-.plan .feats{margin-bottom:30px}
-@media(min-width:861px){.plan .for{min-height:3.2em}}
-.fine{margin-top:18px;font-size:14px;color:var(--faint);text-align:center}
-.fine a{color:var(--text);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-2)}
-@media(max-width:860px){.plans{grid-template-columns:1fr}.calc{grid-template-columns:1fr;gap:12px}.count{text-align:left}}
+.price-wrap{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:clamp(20px,3vw,34px);align-items:start}
+@media(max-width:1000px){.price-wrap{grid-template-columns:1fr}}
 
-/* ═══ FAQ ═══ */
-.faq{margin-top:40px;border-top:1px solid var(--line)}
+.calc{position:sticky;top:92px;border:1px solid var(--line);border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--shadow-lg);padding:clamp(24px,3vw,32px)}
+@media(max-width:1000px){.calc{position:static}}
+.calc-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:18px}
+
+/* Segmented toggle — the thumb slides on transform, so switching never
+   reflows the labels sitting on top of it. */
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);margin-bottom:26px}
+.seg-thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);border-radius:999px;background:var(--bg);border:1px solid var(--line-2);box-shadow:var(--shadow);
+  transition:transform 320ms var(--spring)}
+.seg[data-plan="premium"] .seg-thumb{transform:translateX(calc(100% + 4px))}
+.seg button{position:relative;z-index:1;height:38px;border-radius:999px;font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--faint);transition:color 200ms ease}
+.seg button[aria-pressed="true"]{color:var(--text)}
+
+.count-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:11px}
+.count-row .k{font-size:14px;color:var(--muted)}
+.count-row .v{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}
+.count-row .v i{font-style:normal;font-size:12px;color:var(--faint);margin-left:5px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:none;cursor:grab}
+input[type=range]:active{cursor:grabbing}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:999px;background:linear-gradient(90deg,var(--accent) var(--fill,0%),var(--line-2) var(--fill,0%))}
+input[type=range]::-moz-range-track{height:5px;border-radius:999px;background:linear-gradient(90deg,var(--accent) var(--fill,0%),var(--line-2) var(--fill,0%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-7.5px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);box-shadow:var(--shadow);transition:transform 160ms var(--ease-out)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);box-shadow:var(--shadow);transition:transform 160ms var(--ease-out)}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.14)}
+input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
+
+.bulk{display:flex;align-items:center;gap:9px;margin-top:14px;padding:11px 13px;border-radius:13px;background:var(--surface-2);border:1px solid var(--line);
+  font-size:13px;color:var(--faint);transition:background-color 240ms ease,border-color 240ms ease,color 240ms ease}
+.bulk.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--text)}
+.bulk b{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);transition:color 240ms ease}
+.bulk.on b{color:var(--accent)}
+
+.amount{margin-top:26px;padding-top:24px;border-top:1px solid var(--line)}
+.amount-k{font-size:13.5px;color:var(--faint);margin-bottom:6px}
+.rate{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.rate-n{font-size:clamp(44px,6vw,60px);font-weight:800;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.rate-was{font-family:var(--mono);font-size:16px;color:var(--faint);text-decoration:line-through}
+.rate-per{font-size:14px;color:var(--muted)}
+.total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:20px;padding:15px 17px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.total .k{font-size:13.5px;color:var(--muted)}
+.total .v{font-size:23px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+/* Dragging the slider is direct manipulation, so the figures track the thumb
+   with no transition. Switching plan is a discrete choice, so those figures
+   cross-blur — it reads as one value becoming another rather than two
+   numbers swapping places. */
+.swap{transition:opacity 180ms ease,filter 180ms ease}
+.swap.changing{opacity:.45;filter:blur(3px)}
+.calc .btn{width:100%;margin-top:20px}
+.calc-fine{margin-top:13px;font-size:12.5px;color:var(--faint);line-height:1.5;text-align:center}
+
+.plans{display:grid;gap:clamp(16px,2.2vw,20px)}
+.plan{border:1px solid var(--line);border-radius:var(--r-xl);background:var(--surface);padding:clamp(24px,3vw,32px);
+  transition:transform 300ms var(--spring),border-color 240ms ease,box-shadow 300ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.plan:hover{transform:translateY(-4px);border-color:var(--line-2);box-shadow:var(--shadow-lg)}}
+.plan.lit{border-color:var(--accent-line)}
+.plan-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.plan h3{font-size:21px}
+.plan-price{font-family:var(--mono);font-size:14px;color:var(--accent);white-space:nowrap;padding-top:4px}
+.plan-sub{font-size:14.5px;color:var(--muted);line-height:1.56;margin-bottom:22px;max-width:60ch}
+.plan-tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);padding:4px 9px;border-radius:999px}
+.plist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 22px}
+@media(max-width:700px){.plist{grid-template-columns:1fr}}
+.plist li{display:flex;gap:10px;font-size:14.5px;color:var(--muted);line-height:1.5}
+.plist .ck{flex:none;width:17px;height:17px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-top:2px}
+.plist .ck svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.6}
+
+/* ── Security ── */
+.sec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.4vw,26px)}
+.sec-card{padding:28px 24px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface)}
+.sec-card h3{font-size:17px;margin-bottom:9px}
+.sec-card p{font-size:14.5px;color:var(--muted);line-height:1.56}
+@media(max-width:860px){.sec-grid{grid-template-columns:1fr}}
+
+/* ── FAQ ── */
+.faq{border-top:1px solid var(--line)}
 .faq-item{border-bottom:1px solid var(--line)}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:22px 0;text-align:left;font-size:17px;font-weight:550;letter-spacing:-.015em}
-.faq-q .pm{width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;flex:none;transition:transform .3s var(--ease),background .3s}
-.faq-item.open .faq-q .pm{transform:rotate(45deg);background:var(--accent-soft)}
-.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:18px;width:100%;padding:22px 2px;text-align:left;font-size:16.5px;font-weight:600;letter-spacing:-.016em;transition:color 180ms ease}
+@media (hover:hover) and (pointer:fine){.faq-q:hover{color:var(--accent)}}
+.faq-q .pm{flex:none;width:22px;height:22px;position:relative}
+.faq-q .pm::before,.faq-q .pm::after{content:'';position:absolute;inset:50% 2px auto 2px;height:1.5px;background:currentColor;border-radius:2px;transition:transform 260ms var(--ease-out)}
+.faq-q .pm::after{transform:rotate(90deg)}
+.faq-item.open .pm::after{transform:rotate(0)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows 300ms var(--ease-in-out)}
 .faq-item.open .faq-a{grid-template-rows:1fr}
 .faq-a>div{overflow:hidden}
-.faq-a p{padding:0 48px 24px 0;font-size:15.5px;color:var(--muted);max-width:760px}
-.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,80px);align-items:start}
-@media(max-width:860px){.faq-grid{grid-template-columns:1fr}}
+.faq-a p{padding:0 2px 24px;font-size:15px;color:var(--muted);line-height:1.62;max-width:72ch}
 
-/* ═══ Contact ═══ */
-.contact{margin-top:44px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:16px}
-.contact-side{padding:32px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column}
-.contact-side h3{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.2}
-.contact-side p{margin-top:10px;color:var(--muted);font-size:15px}
-.contact-side ul{margin-top:24px;display:grid;gap:12px}
-.contact-side li{display:flex;gap:11px;font-size:15px}
-.contact-side li svg{color:var(--accent);flex:none;margin-top:3px}
-.contact-side .reply{margin-top:auto;padding-top:28px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
-.live{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
-.form{padding:32px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);display:grid;gap:18px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.fld{display:grid;gap:8px}
-.fld-label{display:flex;justify-content:space-between;font-size:14px;font-weight:550;letter-spacing:-.005em}
-.fld-label .opt{font-weight:450;color:var(--faint)}
-.input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--text);font:inherit;font-size:15.5px;transition:border-color .2s,box-shadow .2s,background .2s}
-textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-height:1.5}
-.input::placeholder{color:var(--faint)}
-.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);background:var(--surface)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line-2);font-size:14px;font-weight:500;color:var(--muted);transition:all .2s var(--ease)}
-.chip:hover{color:var(--text);border-color:var(--text)}
-.chip[aria-pressed="true"]{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
-.form .btn{width:100%;height:52px;font-size:15.5px}
-.form .btn:disabled{opacity:.6;cursor:progress}
-.form-note{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--faint);justify-content:center}
-.form-msg{display:none;padding:12px 14px;border-radius:12px;font-size:14.5px}
+/* ── Contact ── */
+.contact{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,4vw,56px);align-items:start}
+@media(max-width:940px){.contact{grid-template-columns:1fr}}
+.expect li{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--muted)}
+.expect li:last-child{border-bottom:0}
+.expect .ck{flex:none;width:17px;height:17px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-top:2px}
+.expect .ck svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.6}
+.form{border:1px solid var(--line);border-radius:var(--r-xl);background:var(--surface);padding:clamp(22px,3vw,32px);box-shadow:var(--shadow)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.frow{grid-template-columns:1fr}}
+.fld{margin-bottom:14px}
+.fld label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.fld label .opt{text-transform:none;letter-spacing:0;color:var(--faint);opacity:.8}
+.fld input,.fld textarea{width:100%;height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg);color:var(--text);font:inherit;font-size:15px;transition:border-color 180ms ease,box-shadow 180ms ease}
+.fld textarea{height:auto;min-height:104px;padding:13px 14px;resize:vertical;line-height:1.55}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--accent-line);box-shadow:0 0 0 3px var(--accent-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line-2);font-size:13.5px;font-weight:500;color:var(--muted);
+  transition:transform 160ms var(--ease-out),border-color 180ms ease,color 180ms ease,background-color 180ms ease}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed="true"]{border-color:var(--accent-line);background:var(--accent-soft);color:var(--accent)}
+.form-msg{display:none;margin-top:14px;padding:11px 13px;border-radius:12px;font-size:14px}
 .form-msg.show{display:block}
 .form-msg.success{background:var(--ok-soft);color:var(--ok)}
 .form-msg.error{background:var(--err-soft);color:var(--err)}
-.spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .6s linear infinite;vertical-align:-2px}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:860px){.contact{grid-template-columns:1fr}}
-@media(max-width:560px){.row2{grid-template-columns:1fr}.form,.contact-side,.plan,.card,.step,.sec{padding:24px}}
 
-/* ═══ Footer ═══ */
-.footer{margin-top:clamp(96px,12vw,148px);border-top:1px solid var(--line);padding:48px 0 40px}
-.foot-top{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
-.foot-cols{display:flex;gap:clamp(32px,6vw,72px);flex-wrap:wrap}
-.foot-col h4{font-size:13.5px;font-weight:550;color:var(--faint)}
-.foot-col ul{margin-top:12px;display:grid;gap:9px}
-.foot-col a{font-size:14.5px;color:var(--muted);transition:color .2s}
-.foot-col a:hover{color:var(--text)}
-.foot-blurb{margin-top:14px;max-width:320px;font-size:14.5px;color:var(--muted)}
-.foot-bottom{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--faint)}
-.foot-bottom a{color:var(--muted)}
-.foot-bottom a:hover{color:var(--text)}
+/* ── Footer ── */
+.foot{border-top:1px solid var(--line);padding:56px 0 34px;background:var(--bg-2)}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));gap:34px}
+@media(max-width:820px){.foot-grid{grid-template-columns:1fr 1fr}}
+.foot p{margin-top:13px;font-size:14px;color:var(--faint);max-width:38ch;line-height:1.56}
+.foot h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:13px;font-weight:500}
+.foot li{margin-bottom:9px}
+.foot li a{font-size:14px;color:var(--muted);transition:color 180ms ease}
+@media (hover:hover) and (pointer:fine){.foot li a:hover{color:var(--accent)}}
+.foot-base{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:13px;color:var(--faint)}
 
-/* ═══ Motion ═══ */
-.rv{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+/* ── Reveal ──
+   One mechanism for every section: fade up 10px, staggered by --d. Transform
+   and opacity only. */
+.rv{opacity:0;transform:translateY(10px);transition:opacity 520ms var(--ease-out),transform 520ms var(--ease-out);transition-delay:var(--d,0ms)}
 .rv.on{opacity:1;transform:none}
-.in{opacity:0;animation:in .9s var(--ease) forwards}
-@keyframes in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.rv,.in{opacity:1;transform:none}}
+/* Hero runs on load rather than on scroll — it is already in view. */
+.in{opacity:0;transform:translateY(10px);animation:rise 620ms var(--ease-out) forwards;animation-delay:var(--d,0ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  /* Reduced motion means gentler, not none: opacity still carries the
+     reveal, every movement is dropped. */
+  .rv{transform:none;transition:opacity 220ms ease;transition-delay:0ms}
+  .in{transform:none;animation:fadeOnly 220ms ease forwards;animation-delay:0ms}
+  @keyframes fadeOnly{to{opacity:1}}
+  .hero-glow{display:none}
+  .btn:active,.chip:active,.icon-btn:active{transform:none}
+  .step:hover,.plan:hover{transform:none}
+  .seg-thumb{transition:none}
+  .faq-a{transition:none}
+  .swap.changing{filter:none}
+  input[type=range]:active::-webkit-slider-thumb{transform:none}
+}
+
+@media(max-width:1000px){.hero-grid{grid-template-columns:1fr}}
+@media(max-width:620px){
+  .wrap{padding:0 18px}
+  .hdr-in{padding:0 18px}
+  .btn{height:46px}
+  .stat{padding:20px 16px}
+  .calc,.plan,.form{padding:20px}
+}
 </style>
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-</svg>
-
-<!-- ═══ Nav ═══ -->
-<header class="nav" id="nav">
-  <div class="wrap nav-in">
-    <a href="/regent-inbox" class="brand" aria-label="Regent Inbox home"><span class="brand-mark" aria-hidden="true">R</span>Regent <small>Inbox</small></a>
+<header class="hdr" id="nav">
+  <div class="hdr-in">
+    <a href="#top" class="brand"><span class="mark">R</span>Regent <span class="dim">Inbox</span></a>
     <nav class="nav-links" aria-label="Primary">
-      <a href="#product">Product</a>
-      <a href="#operations">Operations</a>
-      <a href="#security">Security</a>
+      <a href="#product">How it works</a>
+      <a href="#platform">Platform</a>
       <a href="#pricing">Pricing</a>
+      <a href="#security">Security</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="nav-right">
@@ -377,322 +378,364 @@ textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-h
 </header>
 
 <div class="mmenu" id="mmenu" aria-label="Menu">
-  <a href="#product" data-close>Product</a>
-  <a href="#operations" data-close>Operations</a>
-  <a href="#security" data-close>Security</a>
-  <a href="#pricing" data-close>Pricing</a>
-  <a href="#faq" data-close>FAQ</a>
+  <a href="#product">How it works</a>
+  <a href="#platform">Platform</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#security">Security</a>
+  <a href="#faq">FAQ</a>
   <a href="/regent-inbox/privacy">Privacy</a>
   <div class="mm-row">
     <a href="https://regent-inbox-otg2etzolq-uc.a.run.app" class="btn btn-ghost" target="_blank" rel="noopener">Sign in</a>
-    <a href="#contact" class="btn btn-primary" data-close>Book a demo</a>
+    <a href="#contact" class="btn btn-primary">Book a demo</a>
   </div>
 </div>
 
 <main id="top">
+
 <!-- ═══ Hero ═══ -->
 <section class="hero">
+  <div class="hero-glow" id="glow" aria-hidden="true"></div>
   <div class="wrap hero-grid">
     <div>
-      <div class="pill in"><b>New</b>Operations — cleaners, notes &amp; collaborators</div>
-      <h1 class="in" style="animation-delay:.06s">The front desk that never sleeps<span class="soft">.</span></h1>
-      <p class="hero-sub in" style="animation-delay:.12s">Regent Inbox answers every guest and owner message with fact-checked replies your team approves — across Airbnb, Vrbo, direct, SMS and email. Built for Guesty, live in an afternoon.</p>
-      <div class="hero-ctas in" style="animation-delay:.18s">
-        <a href="#contact" class="btn btn-primary">Book a demo <svg class="arr" width="16" height="16"><use href="#i-arrow"/></svg></a>
-        <a href="#pricing" class="btn btn-ghost">See pricing</a>
+      <div class="pill in"><b>New</b>Voice replies, cleaner automation and versioned notes</div>
+      <h1 class="in" style="--d:70ms">Every guest message, answered from your own facts<span class="soft">.</span></h1>
+      <p class="hero-sub in" style="--d:140ms">Regent Inbox reads the whole thread and writes the reply, drawing only on the property details you have given it. Send it yourself or let it send on its own. Setup takes about thirty seconds.</p>
+      <div class="hero-ctas in" style="--d:210ms">
+        <a href="#contact" class="btn btn-primary btn-lg">Book a demo</a>
+        <a href="#pricing" class="btn btn-ghost btn-lg">See pricing</a>
       </div>
-      <p class="hero-note in" style="animation-delay:.24s">From $25 per property, per month · No long-term contract</p>
+      <p class="hero-note in" style="--d:280ms">$45 per property each month · $40 at eleven or more · no contract</p>
     </div>
 
-    <div class="mock in" style="animation-delay:.2s" role="img" aria-label="Regent Inbox showing a guest message, a fact-checked AI draft and passed send checks">
-      <div class="mock-bar" aria-hidden="true"><i></i><i></i><i></i><span>Inbox — All properties</span></div>
-      <div class="mock-body" aria-hidden="true">
-        <div class="mock-side">
-          <div class="thread on"><b>Jordan M. <em>2:41 AM</em></b><span>Flight delayed — can we still…</span></div>
-          <div class="thread"><b>Priya S. <em>1:10 AM</em></b><span>Is early check-in possible?</span></div>
-          <div class="thread"><b>Owner · Lake Suite <em>Yesterday</em></b><span>Can you send the payout…</span></div>
-          <div class="thread"><b>Chris T. <em>Yesterday</em></b><span>Thanks for a great stay!</span></div>
-          <div class="thread"><b>Ana R. <em>Mon</em></b><span>Where do we park?</span></div>
+    <div class="mock in" style="--d:170ms" aria-hidden="true">
+      <div class="mock-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>Inbox · Regent Villa</span></div>
+      <div class="mock-body">
+        <div class="msg msg-in">
+          <div class="msg-meta">Guest · 2:41 AM · Airbnb</div>
+          Our flight is delayed — can we still get in tonight?
         </div>
-        <div class="mock-main">
-          <div class="meta-row"><strong>Jordan M. · Regent Villa</strong><span class="chan">Airbnb</span></div>
-          <div class="bubble guest"><small>Guest · 2:41 AM</small>Our flight is delayed — can we still get in tonight?</div>
-          <div class="bubble ai"><small>AI draft · fact-checked</small>No problem at all — self check-in is open until 4 AM and your entry code is already active. Safe travels!</div>
-          <div class="src"><span>Source: Check-in guide</span><span>Source: Door code policy</span></div>
-          <div class="checks">
-            <ul>
-              <li><svg width="14" height="14"><use href="#i-check"/></svg>Quiet hours</li>
-              <li><svg width="14" height="14"><use href="#i-check"/></svg>Privacy</li>
-              <li><svg width="14" height="14"><use href="#i-check"/></svg>Policy</li>
-            </ul>
-            <span class="btn btn-primary">Approve &amp; send</span>
-          </div>
+        <div class="msg msg-out">
+          <div class="msg-meta">Draft · checked against your details</div>
+          Yes — self check-in is open until 4 AM and your entry code is already active. Safe travels.
+          <div class="src"><i>Check-in guide</i><i>Door code policy</i></div>
         </div>
+        <div class="mock-foot"><span class="tick">✓</span> Quiet hours, privacy and policy checks all passed</div>
       </div>
     </div>
   </div>
+</section>
 
+<!-- ═══ Stats ═══ -->
+<section class="sec" style="padding-top:0">
   <div class="wrap">
-    <div class="proof rv">
-      <div class="proof-grid">
-        <div class="proof-cell"><strong>$10M+</strong><span>Managed through AI</span></div>
-        <div class="proof-cell"><strong>5.0★</strong><span>Service maintained</span></div>
-        <div class="proof-cell"><strong>90%+</strong><span>Time saved by managers</span></div>
-        <div class="proof-cell"><strong>$25</strong><span>Per property at 11+ homes</span></div>
-      </div>
+    <div class="stats rv">
+      <div class="stat"><b>$10M+</b><span>Bookings managed through the AI</span></div>
+      <div class="stat"><b>5.0★</b><span>Service rating maintained</span></div>
+      <div class="stat"><b>90%</b><span>Less time spent in the inbox</span></div>
+      <div class="stat"><b>30s</b><span>From connecting to first draft</span></div>
     </div>
   </div>
 </section>
 
 <!-- ═══ How it works ═══ -->
-<section class="section" id="product">
+<section class="sec" id="product" style="padding-top:0">
   <div class="wrap">
-    <div class="rv">
-      <span class="kicker">How it works</span>
-      <h2 class="h2">From guest message to perfect reply, in three steps.</h2>
+    <div class="sec-head rv">
+      <div class="eyebrow">How it works</div>
+      <h2>Three steps, no migration.</h2>
+      <p class="lede">Connect your channel manager and the AI reads your past conversations to learn how you write. There is nothing to import and nothing to configure first.</p>
     </div>
     <div class="steps">
-      <div class="step rv"><span class="num">1</span><h3>Every thread, one inbox</h3><p>Airbnb, Vrbo, direct, SMS and email — every guest and owner conversation lands in a single queue. No duplicates, no pile-ups.</p></div>
-      <div class="step rv" style="transition-delay:.06s"><span class="num">2</span><h3>Answers from your facts</h3><p>The AI reads the whole thread and replies only from your verified property details, with every answer traced to a source. If it doesn't know, it asks you instead of guessing.</p></div>
-      <div class="step rv" style="transition-delay:.12s"><span class="num">3</span><h3>You approve — or the gates do</h3><p>Approve with a tap, edit, or let auto-send handle it once quiet-hours, privacy and policy checks all pass.</p></div>
+      <article class="step rv" style="--d:0ms">
+        <div class="n">01</div>
+        <h3>One queue for every channel</h3>
+        <p>Airbnb, Vrbo, direct bookings, SMS and email arrive in the same place. Guest and owner threads sit side by side, deduplicated.</p>
+      </article>
+      <article class="step rv" style="--d:70ms">
+        <div class="n">02</div>
+        <h3>Replies drawn from your details</h3>
+        <p>The AI answers from the property information you have entered, and cites which document each fact came from. When it does not know, it asks you rather than guessing.</p>
+      </article>
+      <article class="step rv" style="--d:140ms">
+        <div class="n">03</div>
+        <h3>You send, or it does</h3>
+        <p>Review and send with one tap, or turn on auto-send and let quiet-hours, privacy and policy checks decide. You can switch between the two per property.</p>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- ═══ Operations ═══ -->
-<section class="section" id="operations">
+<!-- ═══ Platform ═══ -->
+<section class="sec" id="platform" style="padding-top:0">
   <div class="wrap">
-    <div class="ops-head rv">
-      <div>
-        <span class="kicker">Operations</span>
-        <h2 class="h2">Run the whole operation, not just the inbox.</h2>
-        <p class="lead">Turnovers, notes and your team — in the same place your guests already talk to you. Included in the Operations plan.</p>
+    <div class="sec-head rv">
+      <div class="eyebrow">Platform</div>
+      <h2>The rest of the job, in the same place.</h2>
+      <p class="lede">Messaging is where most of the day goes, but it is not the whole day. Property facts, turnovers, your team and your notes live alongside the inbox rather than in four other tools.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-i rv" style="--d:0ms">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+        <h3>One record per property</h3>
+        <p>Codes, parking, wifi, quirks and house rules in one place, syncing with your channel manager so the AI and your team read the same thing.</p>
       </div>
-      <span class="tag">$40 per property / month</span>
-    </div>
-
-    <div class="bento">
-      <article class="card span-3 rv">
-        <h3>Cleaner automation</h3>
-        <p>Every checkout schedules the clean, notifies the right cleaner and tracks the checklist through to "ready" — no group texts.</p>
-        <ol class="viz tl" aria-label="Example turnover">
-          <li class="done"><time>11:00</time><i></i><span><b>Guest checked out</b> <em>· Regent Crown</em></span></li>
-          <li class="done"><time>11:01</time><i></i><span><b>Maria notified</b> <em>· clean at 11:30</em></span></li>
-          <li class="done"><time>1:48</time><i></i><span><b>Checklist</b> <em>· 22 of 22 complete</em></span></li>
-          <li><time>2:02</time><i></i><span><b>Home ready</b> <em>· next guest 3:00 PM</em></span></li>
-        </ol>
-      </article>
-
-      <article class="card span-3 rv" style="transition-delay:.06s">
-        <h3>An AI that runs the app</h3>
-        <p>Ask in plain English and it does it — rescheduling cleans, updating listings, drafting owner reports, changing any setting.</p>
-        <div class="viz cmd" aria-label="Example AI command">
-          <div class="me">Move Saturday's clean at Regent Sol to 1 PM and let Maria know.</div>
-          <div class="ai">Done.
-            <ul>
-              <li><svg width="14" height="14"><use href="#i-check"/></svg>Clean rescheduled to Sat, 1:00 PM</li>
-              <li><svg width="14" height="14"><use href="#i-check"/></svg>Maria notified by SMS</li>
-              <li><svg width="14" height="14"><use href="#i-check"/></svg>Change logged to the calendar</li>
-            </ul>
-          </div>
-          <div class="cmd-input">Ask Regent to do anything… <kbd>⌘ K</kbd></div>
-        </div>
-      </article>
-
-      <article class="card span-4 rv">
-        <h3>Dynamic notes, with full version history</h3>
-        <p>Cleaner checklists, repair logs, owner notes and house manuals that stay current. Every edit is versioned, restorable and shareable with a link.</p>
-        <div class="viz note" aria-label="Example note with version history">
-          <div class="note-top"><b>Turnover checklist — Regent Crown</b><span>Shared with 3</span></div>
-          <ul>
-            <li class="strike"><span class="box on"><svg width="11" height="11"><use href="#i-check"/></svg></span><span>Strip beds, start laundry</span></li>
-            <li class="strike"><span class="box on"><svg width="11" height="11"><use href="#i-check"/></svg></span><span>Hot tub: test chemicals, log reading</span></li>
-            <li><span class="box"></span><span>Restock coffee pods and filters</span></li>
-            <li><span class="box"></span><span>Photo of game room before leaving</span></li>
-          </ul>
-          <div class="versions"><span class="cur">v14 · Maria · 2h ago</span><span>v13 · Alex · Tue</span><span>v12 · Restore</span></div>
-        </div>
-      </article>
-
-      <article class="card span-2 rv" style="transition-delay:.06s">
-        <h3>Collaborators</h3>
-        <p>Invite co-hosts, cleaners, maintenance and owners — each with the right access across the whole app.</p>
-        <div class="viz people" aria-label="Example collaborators">
-          <div class="person"><span class="av" style="background:#D9B774">MR</span><div><b>Maria R.</b><small>Cleaning</small></div><span class="role">Editor</span></div>
-          <div class="person"><span class="av" style="background:#A9C7B4">JT</span><div><b>James T.</b><small>Maintenance</small></div><span class="role">Editor</span></div>
-          <div class="person"><span class="av" style="background:#C9BFE3">LK</span><div><b>Lena K.</b><small>Owner</small></div><span class="role">Viewer</span></div>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ Security ═══ -->
-<section class="section" id="security">
-  <div class="wrap">
-    <div class="rv">
-      <span class="kicker">Security</span>
-      <h2 class="h2">Your guests' data stays yours.</h2>
-    </div>
-    <div class="sec-grid">
-      <div class="sec rv"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg></span><h3>Hard send controls</h3><p>Every AI reply needs a human approval, or passes configurable quiet-hours and policy gates before it sends.</p></div>
-      <div class="sec rv" style="transition-delay:.06s"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.2 2.2L16 10"/></svg></span><h3>Fact-checked replies</h3><p>Answers come only from your verified property details. If the AI doesn't know, it asks you — it never makes things up.</p></div>
-      <div class="sec rv" style="transition-delay:.12s"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span><h3>Private by design</h3><p>Guest personal data is never used to train models and is redacted from AI context. Read the <a href="/regent-inbox/privacy" style="text-decoration:underline;text-underline-offset:3px">privacy policy</a>.</p></div>
+      <div class="feat-i rv" style="--d:60ms">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+        <h3>Collaborators with roles</h3>
+        <p>Add and remove co-hosts, cleaners, maintenance and owners, each seeing only what their job needs.</p>
+      </div>
+      <div class="feat-i rv" style="--d:120ms">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg></div>
+        <h3>Mobile app and desktop</h3>
+        <p>The same account on a phone and in a browser, so approving a draft from a car park works as well as from a desk.</p>
+      </div>
+      <div class="feat-i rv" style="--d:0ms">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><circle cx="12" cy="12" r="3.5"/></svg></div>
+        <h3>Connect any platform</h3>
+        <p>Built for Guesty, with direct connections for the other channels you already sell on.</p>
+      </div>
+      <div class="feat-i rv" style="--d:60ms">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg></div>
+        <h3>It learns as it goes</h3>
+        <p>Every edit you make to a draft teaches it how you write. The replies need less correction the longer you use it.</p>
+      </div>
+      <div class="feat-i rv" style="--d:120ms">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>Support inside 48 hours</h3>
+        <p>A real support team with a 48-hour response commitment, included at every plan size.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ Pricing ═══ -->
-<section class="section" id="pricing">
+<section class="sec" id="pricing" style="padding-top:0">
   <div class="wrap">
-    <div class="rv center">
-      <span class="kicker">Pricing</span>
-      <h2 class="h2">Simple, per&#8209;property pricing.</h2>
-      <p class="lead">Pay for the homes you manage. Onboard more than ten and every property drops to $25.</p>
+    <div class="sec-head rv">
+      <div class="eyebrow">Pricing</div>
+      <h2>One price per property.</h2>
+      <p class="lede">$45 per property each month. Add Premium for $10 more. At eleven properties or more, both drop by $5 — on every property, not only the ones above the threshold.</p>
     </div>
 
-    <div class="calc rv">
-      <label for="homes">How many properties?<small>Drag to see your monthly price</small></label>
-      <input type="range" id="homes" min="1" max="100" value="10" aria-describedby="homesOut">
-      <div class="count"><output id="homesOut" for="homes">10</output>properties</div>
-    </div>
+    <div class="price-wrap">
+      <!-- Calculator -->
+      <aside class="calc rv">
+        <div class="calc-label">Your monthly cost</div>
 
-    <div class="plans">
-      <div class="plan rv">
-        <div class="plan-top"><h3>Inbox</h3></div>
-        <p class="for">The AI front desk for every guest and owner conversation.</p>
-        <div class="price"><span class="was" id="inboxWas" hidden>$30</span><span class="amt" id="inboxAmt">$30</span><span class="per">per property / month</span></div>
-        <div class="tier" id="inboxTier"><span class="dot"></span><span>$25 per property when you onboard 11+ properties</span></div>
-        <div class="total"><span>Your monthly total</span><b id="inboxTotal">$300</b></div>
-        <ul class="feats">
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Unified inbox for Airbnb, Vrbo, direct, SMS &amp; email</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Fact-checked AI drafts from your property details</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Approvals and auto-send with quiet-hours &amp; policy gates</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Property knowledge base</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Native Guesty integration</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Email support</li>
-        </ul>
-        <a href="#contact" class="btn btn-ghost" data-plan="Inbox">Get started with Inbox</a>
+        <div class="seg" id="seg" data-plan="base">
+          <div class="seg-thumb" aria-hidden="true"></div>
+          <button type="button" data-plan="base" aria-pressed="true">Base</button>
+          <button type="button" data-plan="premium" aria-pressed="false">Base + Premium</button>
+        </div>
+
+        <div class="count-row">
+          <span class="k">Properties</span>
+          <span class="v"><span id="countOut">10</span><i id="countWord">properties</i></span>
+        </div>
+        <input type="range" id="count" min="1" max="100" value="10" step="1"
+               aria-label="Number of properties" aria-valuetext="10 properties">
+
+        <div class="bulk" id="bulk"><b id="bulkTag">Volume</b> <span id="bulkMsg">$5 off every property at eleven or more</span></div>
+
+        <div class="amount">
+          <div class="amount-k">Per property, per month</div>
+          <div class="rate">
+            <span class="rate-n swap" id="rateNow">$45</span>
+            <span class="rate-was swap" id="rateWas" hidden>$50</span>
+            <span class="rate-per">/ month</span>
+          </div>
+          <div class="total">
+            <span class="k">Total for <span id="totalCount">10</span> properties</span>
+            <span class="v swap" id="totalNow">$450</span>
+          </div>
+          <a href="#contact" class="btn btn-primary btn-lg" data-cta>Book a demo</a>
+          <p class="calc-fine">Billed monthly per active property. No contract, no setup fee.</p>
+        </div>
+      </aside>
+
+      <!-- Plans -->
+      <div class="plans">
+        <article class="plan rv lit" style="--d:60ms">
+          <div class="plan-top">
+            <h3>Base</h3>
+            <div class="plan-price">$45 / property / month</div>
+          </div>
+          <p class="plan-sub">Everything needed to hand the inbox over, and the platform the rest of the operation runs on.</p>
+          <ul class="plist">
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>AI messaging on auto-send or draft mode</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Support team with a 48-hour response time</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Onboarding in about thirty seconds</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Learns your voice from past conversations</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Automated AI property-manager platform</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Add and remove collaborators</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Property records that sync with your channel manager</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Mobile app and desktop site</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Connect any platform</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Self-learning AI that improves over time</li>
+          </ul>
+        </article>
+
+        <article class="plan rv" id="planPremium" style="--d:120ms">
+          <div class="plan-top">
+            <h3>Premium <span class="plan-tag">Add-on</span></h3>
+            <div class="plan-price">+$10 / property / month</div>
+          </div>
+          <p class="plan-sub">For managers who want the AI to run settings and turnovers as well as the replies.</p>
+          <ul class="plist">
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>The CEO's phone number for immediate support</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Chat interface that performs any action or setting</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Voice-to-reply for answering guests out loud</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Cleaner scheduling across every property</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Designated cleaner links and payment processing</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Cleaning photos and air-cover claims in one place</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Notes: documents, checklists and version history</li>
+            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Tone and style settings for how replies read</li>
+          </ul>
+        </article>
+
+        <article class="plan rv" style="--d:180ms">
+          <div class="plan-top">
+            <h3>Eleven properties or more</h3>
+            <div class="plan-price">&minus;$5 / property / month</div>
+          </div>
+          <p class="plan-sub">The discount applies to every property on the account, not only those past the eleventh. Base becomes $40, and Base with Premium becomes $50. Managing more than a hundred homes? <a href="#contact" style="color:var(--accent)">Talk to us</a>.</p>
+        </article>
       </div>
+    </div>
+  </div>
+</section>
 
-      <div class="plan feature rv" style="transition-delay:.06s">
-        <div class="plan-top"><h3>Operations</h3><span class="tag">Most complete</span></div>
-        <p class="for">Everything in Inbox, plus the tools to run every turnover and your whole team.</p>
-        <div class="price"><span class="amt">$40</span><span class="per">per property / month</span></div>
-        <div class="tier on"><span class="dot"></span><span>One flat rate at any portfolio size</span></div>
-        <div class="total"><span>Your monthly total</span><b id="opsTotal">$400</b></div>
-        <ul class="feats">
-          <li class="head">Everything in Inbox, plus</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Cleaner automation — scheduling, notifications &amp; checklists</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>AI chat that can control every part of the app</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Dynamic notes — cleaner checklists, repair logs and more</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Full version control and shareable links for every note</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Collaborators with roles across the entire app</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Priority support</li>
-        </ul>
-        <a href="#contact" class="btn btn-primary" data-plan="Operations">Get started with Operations <svg class="arr" width="16" height="16"><use href="#i-arrow"/></svg></a>
+<!-- ═══ Security ═══ -->
+<section class="sec" id="security" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">Security</div>
+      <h2>Your guests' data stays yours.</h2>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-card rv" style="--d:0ms">
+        <h3>Send controls you set</h3>
+        <p>Every reply either waits for a person or passes the quiet-hours, privacy and policy checks you configure. Auto-send is off until you turn it on.</p>
+      </div>
+      <div class="sec-card rv" style="--d:70ms">
+        <h3>Answers tied to sources</h3>
+        <p>Replies are drawn from the property details you entered, each answer citing where it came from. The AI asks you rather than inventing a fact.</p>
+      </div>
+      <div class="sec-card rv" style="--d:140ms">
+        <h3>Guest data stays out of training</h3>
+        <p>Personal details are redacted before anything reaches the model and are never used to train it. The <a href="/regent-inbox/privacy" style="color:var(--accent)">privacy policy</a> sets out what we hold and why.</p>
       </div>
     </div>
-    <p class="fine rv">Billed monthly per active property. Managing 100+ homes? <a href="#contact">Talk to us</a> about a custom plan.</p>
   </div>
 </section>
 
 <!-- ═══ FAQ ═══ -->
-<section class="section" id="faq">
-  <div class="wrap faq-grid">
-    <div class="rv">
-      <span class="kicker">FAQ</span>
-      <h2 class="h2">Questions, answered.</h2>
-      <p class="lead">Anything else? <a href="#contact" style="color:var(--text);text-decoration:underline;text-underline-offset:3px">Send us a note</a> — we reply within 24 hours.</p>
+<section class="sec" id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="eyebrow">FAQ</div>
+      <h2>Questions.</h2>
     </div>
     <div class="faq rv">
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">How does volume pricing work?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Inbox is $30 per property each month. Once you onboard more than ten properties, every property drops to $25 — not just the ones above ten. Operations is a flat $40 per property at any portfolio size.</p></div></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">What does Operations add?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Cleaner automation, an AI chat that can control every part of the app, dynamic notes such as cleaner checklists and repair logs with full version control and sharing, and collaborators with roles across your whole account.</p></div></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can I switch plans later?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Yes. Move between Inbox and Operations whenever you like; the change applies from your next billing month.</p></div></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Does Regent Inbox work with my PMS?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Yes — it's built for Guesty with a native integration. Hostaway, Hospitable and direct API connections are coming soon.</p></div></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Can the AI send messages without my approval?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Only if you turn on auto-send, and only when quiet-hours, policy and privacy checks all pass. You stay in control.</p></div></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">Is my data safe?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Guest personal data is redacted from AI context and never used to train models. Our <a href="/regent-inbox/privacy" style="color:var(--text);text-decoration:underline;text-underline-offset:3px">privacy policy</a> sets out exactly what we collect and why.</p></div></div></div>
-      <div class="faq-item"><button class="faq-q" aria-expanded="false">How long does setup take?<span class="pm" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></button><div class="faq-a"><div><p>Most hosts are live in an afternoon: connect Guesty, add your property details, and start reviewing drafts right away.</p></div></div></div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How does the volume discount work?<span class="pm" aria-hidden="true"></span></button>
+        <div class="faq-a"><div><p>At eleven properties or more, $5 comes off every property on the account rather than only the ones past the eleventh. Base goes from $45 to $40, and Base with Premium from $55 to $50.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">What does Premium add?<span class="pm" aria-hidden="true"></span></button>
+        <div class="faq-a"><div><p>A chat interface that can carry out any action or setting on your behalf, voice-to-reply, cleaner scheduling with designated links and payment processing, centralised cleaning photos and air-cover claims, version-controlled notes and checklists, tone and style settings, and the CEO's phone number for immediate support.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">How long does setup take?<span class="pm" aria-hidden="true"></span></button>
+        <div class="faq-a"><div><p>About thirty seconds. Connect your channel manager and the AI reads your past conversations to learn how you write. There is no import step and nothing to configure before the first draft appears.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Can the AI send without my approval?<span class="pm" aria-hidden="true"></span></button>
+        <div class="faq-a"><div><p>Only if you turn auto-send on, and only when the quiet-hours, privacy and policy checks all pass. Draft mode is the default, and you can set it per property.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Does it work with my channel manager?<span class="pm" aria-hidden="true"></span></button>
+        <div class="faq-a"><div><p>It is built for Guesty with a native integration, and connects to the other platforms you sell on. Property records sync both ways, so a change in one place shows up in the other.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Can I change plans later?<span class="pm" aria-hidden="true"></span></button>
+        <div class="faq-a"><div><p>Yes. Premium can be added or dropped whenever you like, and the change applies from your next billing month. Properties are billed only while they are active.</p></div></div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ Contact ═══ -->
-<section class="section" id="contact">
+<section class="sec" id="contact" style="padding-top:0">
   <div class="wrap">
-    <div class="rv center">
-      <span class="kicker">Get started</span>
-      <h2 class="h2">See Regent Inbox with your own listings.</h2>
-      <p class="lead">A 20-minute walkthrough using your real properties and messages. We'll reply within 24 hours.</p>
+    <div class="sec-head rv">
+      <div class="eyebrow">Get started</div>
+      <h2>See it on your own listings.</h2>
+      <p class="lede">A twenty-minute walkthrough using your real properties and your real messages. We reply within 24 hours.</p>
     </div>
 
     <div class="contact">
-      <div class="contact-side rv">
-        <h3>Fewer inboxes. Faster replies. No surprises.</h3>
-        <p>Here's what you can expect from the demo and onboarding.</p>
-        <ul>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Live in an afternoon — no migration headaches</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Native Guesty integration</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>Human approval always available</li>
-          <li><svg width="16" height="16"><use href="#i-check"/></svg>$30 per property, $25 at 11+ properties</li>
+      <div class="rv">
+        <ul class="expect">
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Connected and drafting in about thirty seconds</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Native Guesty integration</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Draft mode until you decide otherwise</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>$45 per property, $40 at eleven or more</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>A reply within 24 hours</li>
         </ul>
-        <div class="reply"><span class="live" aria-hidden="true"></span>Replies within 24 hours</div>
       </div>
 
-      <form class="form rv" id="riForm" novalidate style="transition-delay:.06s">
-        <input type="hidden" name="subject" value="Regent Inbox Demo Request">
-        <div class="row2">
-          <div class="fld"><label class="fld-label" for="riName">Full name</label><input class="input" type="text" id="riName" name="name" placeholder="Jane Carter" required autocomplete="name"></div>
-          <div class="fld"><label class="fld-label" for="riEmail">Email</label><input class="input" type="email" id="riEmail" name="email" placeholder="jane@example.com" required autocomplete="email"></div>
+      <form class="form rv" id="riForm" style="--d:80ms" novalidate>
+        <input type="hidden" name="subject" value="Regent Inbox demo request">
+        <input type="hidden" id="riProperties" name="properties" value="">
+        <input type="hidden" id="riPlan" name="plan" value="">
+        <div class="frow">
+          <div class="fld"><label for="riName">Full name</label><input id="riName" name="name" type="text" autocomplete="name" required></div>
+          <div class="fld"><label for="riEmail">Email</label><input id="riEmail" name="email" type="email" autocomplete="email" required></div>
         </div>
-        <div class="fld"><label class="fld-label" for="riPhone">Phone <span class="opt">Optional</span></label><input class="input" type="tel" id="riPhone" name="phone" placeholder="(555) 123-4567" autocomplete="tel"></div>
+        <div class="fld"><label for="riPhone">Phone <span class="opt">(optional)</span></label><input id="riPhone" name="phone" type="tel" autocomplete="tel"></div>
         <div class="fld">
-          <input type="hidden" id="riProperties" name="properties" value="">
-          <span class="fld-label" id="riPropsLabel">Number of properties</span>
-          <div class="chips" role="group" aria-labelledby="riPropsLabel" id="riPropsChips">
-            <button type="button" class="chip" data-val="1-10" aria-pressed="false">1–10</button>
-            <button type="button" class="chip" data-val="11-25" aria-pressed="false">11–25</button>
-            <button type="button" class="chip" data-val="26-50" aria-pressed="false">26–50</button>
-            <button type="button" class="chip" data-val="51-100" aria-pressed="false">51–100</button>
+          <label id="lblProps">Number of properties</label>
+          <div class="chips" id="riPropsChips" role="group" aria-labelledby="lblProps">
+            <button type="button" class="chip" data-val="1-10" aria-pressed="false">1&ndash;10</button>
+            <button type="button" class="chip" data-val="11-25" aria-pressed="false">11&ndash;25</button>
+            <button type="button" class="chip" data-val="26-50" aria-pressed="false">26&ndash;50</button>
+            <button type="button" class="chip" data-val="51-100" aria-pressed="false">51&ndash;100</button>
             <button type="button" class="chip" data-val="100+" aria-pressed="false">100+</button>
           </div>
         </div>
         <div class="fld">
-          <input type="hidden" id="riPlan" name="plan" value="">
-          <span class="fld-label" id="riPlanLabel">Plan you're interested in <span class="opt">Optional</span></span>
-          <div class="chips" role="group" aria-labelledby="riPlanLabel" id="riPlanChips">
-            <button type="button" class="chip" data-val="Inbox" aria-pressed="false">Inbox</button>
-            <button type="button" class="chip" data-val="Operations" aria-pressed="false">Operations</button>
+          <label id="lblPlan">Plan <span class="opt">(optional)</span></label>
+          <div class="chips" id="riPlanChips" role="group" aria-labelledby="lblPlan">
+            <button type="button" class="chip" data-val="Base" aria-pressed="false">Base</button>
+            <button type="button" class="chip" data-val="Base + Premium" aria-pressed="false">Base + Premium</button>
             <button type="button" class="chip" data-val="Not sure yet" aria-pressed="false">Not sure yet</button>
           </div>
         </div>
-        <div class="fld"><label class="fld-label" for="riMessage">Message <span class="opt">Optional</span></label><textarea class="input" id="riMessage" name="message" rows="3" placeholder="Tell us about your portfolio or what you'd like to see."></textarea></div>
-        <button type="submit" class="btn btn-primary" id="riSubmitBtn"><span id="riSubmitLabel">Book a demo</span><svg class="arr" width="16" height="16" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        <p class="form-note"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>We never share your details. See our <a href="/regent-inbox/privacy" style="color:var(--text);text-decoration:underline;text-underline-offset:3px;margin-left:4px">privacy policy</a>.</p>
+        <div class="fld"><label for="riMessage">Message <span class="opt">(optional)</span></label><textarea id="riMessage" name="message" rows="3"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-lg" id="riSubmitBtn" style="width:100%"><span id="riSubmitLabel">Book a demo</span></button>
         <div class="form-msg" id="riFormMsg" role="status" aria-live="polite"></div>
+        <p class="calc-fine" style="text-align:left;margin-top:12px">We never share your details. See our <a href="/regent-inbox/privacy" style="color:var(--accent)">privacy policy</a>.</p>
       </form>
     </div>
   </div>
 </section>
 </main>
 
-<!-- ═══ Footer ═══ -->
-<footer class="footer">
+<footer class="foot">
   <div class="wrap">
-    <div class="foot-top">
+    <div class="foot-grid">
       <div>
-        <a href="/regent-inbox" class="brand" aria-label="Regent Inbox home"><span class="brand-mark" aria-hidden="true">R</span>Regent <small>Inbox</small></a>
-        <p class="foot-blurb">The AI front desk and operations hub for short-term rental managers.</p>
+        <a href="#top" class="brand"><span class="mark">R</span>Regent <span class="dim">Inbox</span></a>
+        <p>Guest and owner messaging, property records and turnovers for short-term rental managers.</p>
       </div>
-      <div class="foot-cols">
-        <div class="foot-col"><h4>Product</h4><ul><li><a href="#product">How it works</a></li><li><a href="#operations">Operations</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-        <div class="foot-col"><h4>Company</h4><ul><li><a href="#contact">Book a demo</a></li><li><a href="https://regent-inbox-otg2etzolq-uc.a.run.app" target="_blank" rel="noopener">Sign in</a></li><li><a href="/">Regent Stays</a></li></ul></div>
-        <div class="foot-col"><h4>Legal</h4><ul><li><a href="/regent-inbox/privacy">Privacy policy</a></li><li><a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a></li></ul></div>
-      </div>
+      <div><h4>Product</h4><ul><li><a href="#product">How it works</a></li><li><a href="#platform">Platform</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="#contact">Book a demo</a></li><li><a href="https://regent-inbox-otg2etzolq-uc.a.run.app" target="_blank" rel="noopener">Sign in</a></li><li><a href="/">Regent Stays</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="/regent-inbox/privacy">Privacy policy</a></li><li><a href="mailto:hello@bookwithregent.com">hello@bookwithregent.com</a></li></ul></div>
     </div>
-    <div class="foot-bottom">
-      <span>© 2026 Regent Capital Ventures LLC. All rights reserved.</span>
-      <span><a href="/regent-inbox/privacy">Privacy</a> · <a href="/">Back to Regent Stays</a></span>
+    <div class="foot-base">
+      <span>&copy; 2026 Regent Capital Ventures LLC. All rights reserved.</span>
+      <span><a href="/privacy-policy">Privacy</a> &nbsp;·&nbsp; <a href="/">&larr; Back to Regent Stays</a></span>
     </div>
   </div>
 </footer>
@@ -700,14 +743,14 @@ textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-h
 <script>
 (function () {
   'use strict';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Nav background once scrolled */
+  /* ── Nav ── */
   var nav = document.getElementById('nav');
   function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 8); }
   document.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* Mobile menu */
   var burger = document.getElementById('burger');
   var mmenu = document.getElementById('mmenu');
   function setMenu(open) {
@@ -722,26 +765,50 @@ textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-h
   window.addEventListener('resize', function () { if (window.innerWidth > 940 && mmenu.classList.contains('open')) setMenu(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && mmenu.classList.contains('open')) setMenu(false); });
 
-  /* Scroll reveal */
+  /* ── Scroll reveal ──
+     Staggering is declared per element with --d so the observer stays dumb,
+     and each element is unobserved once shown — a reveal should happen once. */
   var rv = document.querySelectorAll('.rv');
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('on'); io.unobserve(en.target); } });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -48px 0px' });
     rv.forEach(function (el) { io.observe(el); });
-  } else { rv.forEach(function (el) { el.classList.add('on'); }); }
-  /* Safety net: a fast fling can skip past the observer's thresholds, so
-     anything already in view or scrolled past is revealed on scroll too. */
-  var pending = true;
+  } else {
+    rv.forEach(function (el) { el.classList.add('on'); });
+  }
+  /* A fast fling can outrun the observer's thresholds, so anything already
+     past the fold is revealed on scroll as well. */
+  var queued = false;
   function sweep() {
-    pending = false;
-    var limit = window.innerHeight * 0.96;
+    queued = false;
+    var limit = window.innerHeight * 0.97;
     rv.forEach(function (el) { if (!el.classList.contains('on') && el.getBoundingClientRect().top < limit) el.classList.add('on'); });
   }
-  document.addEventListener('scroll', function () { if (!pending) { pending = true; requestAnimationFrame(sweep); } }, { passive: true });
+  document.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(sweep); } }, { passive: true });
+  window.addEventListener('resize', sweep, { passive: true });
   window.addEventListener('load', sweep);
+  /* Reveal whatever is already on screen straight away rather than waiting
+     for the first scroll. Without this, anything above the fold stays at
+     opacity 0 for a reader who never scrolls, and an observer that fails to
+     fire at all would leave the page blank. */
+  requestAnimationFrame(sweep);
+  setTimeout(sweep, 400);
 
-  /* FAQ */
+  /* ── Hero depth ──
+     Decorative parallax on the gold wash only. Transform-only, rAF-throttled,
+     and skipped entirely under reduced motion. */
+  var glow = document.getElementById('glow');
+  if (glow && !reduce) {
+    var gq = false;
+    var move = function () {
+      gq = false;
+      glow.style.transform = 'translate3d(0,' + (window.scrollY * 0.16).toFixed(1) + 'px,0)';
+    };
+    document.addEventListener('scroll', function () { if (!gq) { gq = true; requestAnimationFrame(move); } }, { passive: true });
+  }
+
+  /* ── FAQ ── */
   document.querySelectorAll('.faq-item').forEach(function (item) {
     var q = item.querySelector('.faq-q');
     q.addEventListener('click', function () {
@@ -754,30 +821,88 @@ textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-h
     });
   });
 
-  /* Pricing calculator.
-     Inbox: $30 per property; more than 10 properties → $25 for every property.
-     Operations: flat $40 per property. */
-  var INBOX = 30, INBOX_VOLUME = 25, VOLUME_FROM = 11, OPS = 40;
-  var range = document.getElementById('homes');
-  var out = document.getElementById('homesOut');
-  var fmt = function (n) { return '$' + n.toLocaleString('en-US'); };
-  function price() {
+  /* ── Pricing ──
+     Base $45, Premium adds $10. Eleven properties or more takes $5 off every
+     property. The brief scoped the base rate to "10 or fewer", so the
+     discount starts at eleven. */
+  var BASE = 45, PREMIUM = 10, VOLUME_OFF = 5, VOLUME_FROM = 11;
+
+  var seg = document.getElementById('seg');
+  var range = document.getElementById('count');
+  var countOut = document.getElementById('countOut');
+  var countWord = document.getElementById('countWord');
+  var totalCount = document.getElementById('totalCount');
+  var rateNow = document.getElementById('rateNow');
+  var rateWas = document.getElementById('rateWas');
+  var totalNow = document.getElementById('totalNow');
+  var bulk = document.getElementById('bulk');
+  var bulkTag = document.getElementById('bulkTag');
+  var bulkMsg = document.getElementById('bulkMsg');
+  var planPremium = document.getElementById('planPremium');
+  var plan = 'base';
+
+  function money(n) { return '$' + n.toLocaleString('en-US'); }
+
+  function render() {
     var n = parseInt(range.value, 10) || 1;
     var volume = n >= VOLUME_FROM;
-    var rate = volume ? INBOX_VOLUME : INBOX;
-    out.textContent = n;
-    document.getElementById('inboxAmt').textContent = fmt(rate);
-    document.getElementById('inboxWas').hidden = !volume;
-    document.getElementById('inboxTier').classList.toggle('on', volume);
-    document.getElementById('inboxTotal').textContent = fmt(rate * n);
-    document.getElementById('opsTotal').textContent = fmt(OPS * n);
+    var full = BASE + (plan === 'premium' ? PREMIUM : 0);
+    var rate = full - (volume ? VOLUME_OFF : 0);
+
+    countOut.textContent = n;
+    countWord.textContent = n === 1 ? 'property' : 'properties';
+    totalCount.textContent = n;
+    rateNow.textContent = money(rate);
+    rateWas.textContent = money(full);
+    rateWas.hidden = !volume;
+    totalNow.textContent = money(rate * n);
+    bulk.classList.toggle('on', volume);
+    /* The hint keeps its place in the layout at every count, so crossing the
+       threshold changes colour and wording rather than pushing the price
+       down the card. Below the threshold it says how close you are. */
+    if (volume) {
+      bulkTag.textContent = 'Applied';
+      bulkMsg.textContent = '$5 off every property \u2014 saving ' + money(VOLUME_OFF * n) + ' a month';
+    } else {
+      bulkTag.textContent = 'Volume';
+      var away = VOLUME_FROM - n;
+      bulkMsg.textContent = away === 1
+        ? 'One more property takes $5 off every one'
+        : away + ' more properties takes $5 off every one';
+    }
+    planPremium.classList.toggle('lit', plan === 'premium');
+
     range.style.setProperty('--fill', ((n - 1) / 99 * 100) + '%');
     range.setAttribute('aria-valuetext', n + (n === 1 ? ' property' : ' properties'));
   }
-  range.addEventListener('input', price);
-  price();
 
-  /* Chip groups write to hidden inputs */
+  /* Dragging is direct manipulation — the figures track the thumb with no
+     transition. Changing plan is a discrete choice, so those same figures
+     blur through the change instead of snapping between two numbers. */
+  function blurSwap() {
+    if (reduce) return;
+    var els = [rateNow, rateWas, totalNow];
+    els.forEach(function (el) { el.classList.add('changing'); });
+    setTimeout(function () { els.forEach(function (el) { el.classList.remove('changing'); }); }, 170);
+  }
+
+  range.addEventListener('input', render);
+
+  seg.querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (plan === b.dataset.plan) return;
+      plan = b.dataset.plan;
+      seg.dataset.plan = plan;
+      seg.querySelectorAll('button').forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x.dataset.plan === plan));
+      });
+      blurSwap();
+      setTimeout(render, reduce ? 0 : 90);
+    });
+  });
+  render();
+
+  /* ── Form ── */
   function chipGroup(groupId, inputId) {
     var group = document.getElementById(groupId), input = document.getElementById(inputId);
     var chips = group.querySelectorAll('.chip');
@@ -793,32 +918,38 @@ textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-h
   var setProps = chipGroup('riPropsChips', 'riProperties');
   var setPlan = chipGroup('riPlanChips', 'riPlan');
 
-  /* Plan buttons pre-select the plan and a matching portfolio size */
-  document.querySelectorAll('[data-plan]').forEach(function (b) {
+  /* The calculator's own CTA carries its state into the form, so nobody
+     re-enters what they just chose. */
+  document.querySelectorAll('[data-cta]').forEach(function (b) {
     b.addEventListener('click', function () {
-      setPlan(b.dataset.plan);
-      var n = parseInt(range.value, 10);
+      var n = parseInt(range.value, 10) || 1;
       setProps(n <= 10 ? '1-10' : n <= 25 ? '11-25' : n <= 50 ? '26-50' : n < 100 ? '51-100' : '100+');
+      setPlan(plan === 'premium' ? 'Base + Premium' : 'Base');
     });
   });
 
-  /* Contact form */
   var form = document.getElementById('riForm');
   var msgEl = document.getElementById('riFormMsg');
   var btn = document.getElementById('riSubmitBtn');
   var label = document.getElementById('riSubmitLabel');
   var msgField = document.getElementById('riMessage');
-  msgField.addEventListener('input', function () { msgField.style.height = 'auto'; msgField.style.height = Math.max(104, msgField.scrollHeight) + 'px'; });
-  form.addEventListener('reset', function () { setTimeout(function () { msgField.style.height = ''; setProps(''); setPlan(''); }, 0); });
+  msgField.addEventListener('input', function () {
+    msgField.style.height = 'auto';
+    msgField.style.height = Math.max(104, msgField.scrollHeight) + 'px';
+  });
+  form.addEventListener('reset', function () {
+    setTimeout(function () { msgField.style.height = ''; setProps(''); setPlan(''); }, 0);
+  });
 
   function show(kind, text) { msgEl.className = 'form-msg ' + kind + ' show'; msgEl.textContent = text; }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var name = document.getElementById('riName').value.trim();
     var email = document.getElementById('riEmail').value.trim();
     var phone = document.getElementById('riPhone').value.trim();
     var properties = document.getElementById('riProperties').value;
-    var plan = document.getElementById('riPlan').value;
+    var planVal = document.getElementById('riPlan').value;
     var message = msgField.value.trim();
     msgEl.className = 'form-msg'; msgEl.textContent = '';
     if (!name || !email) { show('error', 'Please add your name and email.'); return; }
@@ -827,12 +958,16 @@ textarea.input{height:auto;min-height:104px;padding:12px 14px;resize:none;line-h
     btn.disabled = true;
     var prev = label.textContent;
     label.innerHTML = '<span class="spin" aria-hidden="true"></span>&nbsp; Sending…';
-    var details = 'Properties: ' + (properties || 'not specified') + ' · Plan: ' + (plan || 'not specified') + '.';
+    var details = 'Properties: ' + (properties || 'not specified') + ' · Plan: ' + (planVal || 'not specified') + '.';
     fetch('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: name, email: email, phone: phone, properties: properties, plan: plan,
+        name: name, email: email, phone: phone,
+        properties: properties, plan: planVal,
+        /* The endpoint stores `property`; send it under that name too so the
+           portfolio size lands in its own column, not only in the body. */
+        property: properties,
         subject: form.querySelector('[name="subject"]').value,
         message: (message ? message + '\n\n' : '') + details
       })
