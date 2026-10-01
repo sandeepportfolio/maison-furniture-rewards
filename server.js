@@ -4841,7 +4841,9 @@ function renderGlancePage(slug, res) {
   const hostName = SANDEEP_HOST_SLUGS.includes(slug) ? 'Sandeep' : 'Jatin';
   const coHostLine = SANDEEP_HOST_SLUGS.includes(slug)
     ? 'CO-HOST JATIN'
-    : 'CO-HOSTS SANDEEP \& CHAMANTHI';
+    : slug === 'regent-villa'
+      ? 'CO-HOSTS SANDEEP \& CHAMANTHI'
+      : 'CO-HOST SANDEEP';
 
   html = html
     .replace(/\{\{PROPERTY_JSON\}\}/g, propertyJson)
