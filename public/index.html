@@ -456,6 +456,20 @@ ul{list-style:none}
 .carousel-dots{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
 .carousel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .35s var(--ease);box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .carousel-dot.active{background:#fff;transform:scale(1.4);box-shadow:0 0 8px rgba(255,255,255,.5)}
+/* Collapsed, the glass panel's top edge stands 92px off the card's bottom while
+   the dots and the counter sit at 90px, so their lower 2px — and more of the
+   active dot, which scales to 1.4 — hid behind it. Lift both clear of the
+   panel. Moved on transform rather than `bottom` so they ride up with the
+   panel's collapse instead of jumping, and only above the phone breakpoint:
+   there the panel is shorter and already clears them by 12px. */
+@media(min-width:769px){
+  .carousel-dots,.carousel-counter{transition:transform .5s var(--ease)}
+  .info-min .carousel-dots{transform:translate(-50%,-14px)}
+  .info-min .carousel-counter{transform:translateY(-14px)}
+  @media(prefers-reduced-motion:reduce){
+    .carousel-dots,.carousel-counter{transition:none}
+  }
+}
 
 /* Hide old overlays — replaced by chips and glass */
 .prop-carousel-overlay{display:none}
