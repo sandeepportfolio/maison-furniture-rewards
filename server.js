@@ -4836,13 +4836,24 @@ function renderGlancePage(slug, res) {
     .replace(/'/g, "\\'")
     .replace(/<\//g, '<\\/');
 
-// Per-property host / co-host overrides
-  const SANDEEP_HOST_SLUGS = ['regent-soco', 'regent-skyline', 'executive', 'lake-view', 'regent-crown'];
+// Per-property host / co-host overrides.
+  // 'stunning-lake' is Regent Lakefront; 'lake-view' is Regent Waterfront.
+  // Those two names read alike and the slugs do not match them in the obvious
+  // order, so check guesty.js LISTINGS before editing this list.
+  const SANDEEP_HOST_SLUGS = ['regent-soco', 'regent-skyline', 'designer-game', 'executive', 'stunning-lake', 'regent-crown'];
+  // Both faces come from the hosts' own Airbnb profiles: the avatar rendered
+  // beside "Hosted by Sandeep" on Regent SoCo, and beside "Hosted by Jatin"
+  // on Regent Sol.
+  const HOST_AVATARS = {
+    Sandeep: 'fcc53636-8e42-4282-8315-0bbb9ae56fd4',
+    Jatin: 'cfcc56a0-6613-450a-bed5-6426106cf3ec',
+  };
   const hostName = SANDEEP_HOST_SLUGS.includes(slug) ? 'Sandeep' : 'Jatin';
+  const hostAvatar = `https://a0.muscache.com/im/pictures/user/User/original/${HOST_AVATARS[hostName]}.jpeg?im_w=120`;
   const coHostLine = SANDEEP_HOST_SLUGS.includes(slug)
     ? 'CO-HOST JATIN'
     : slug === 'regent-villa'
-      ? 'CO-HOSTS SANDEEP \& CHAMANTHI'
+      ? 'CO-HOSTS SANDEEP &amp; CHAMANTHI'
       : 'CO-HOST SANDEEP';
 
   html = html
@@ -4866,6 +4877,7 @@ function renderGlancePage(slug, res) {
     .replace(/\{\{HERO_INDEX\}\}/g, String(heroIdx))
     .replace(/\{\{JSON_LD\}\}/g, buildPropertyJsonLd(prop, ogUrl, coverImage))
     .replace(/\{\{HOST_NAME\}\}/g, hostName)
+    .replace(/\{\{HOST_AVATAR\}\}/g, hostAvatar)
     .replace(/\{\{CO_HOST_LINE\}\}/g, coHostLine);
 
   res.send(html);
