@@ -25,7 +25,7 @@
 <style>
 :root {
   --bg:#0A0D0A;--bg-card:#141A15;
-  --accent:#C99845;--accent-hover:#E0B15C;--accent-pale:rgba(201,152,69,.12);
+  --accent:#C99845;--accent-hover:#E0B15C;--accent-pale:rgba(201,152,69,.12);--accent-glow:rgba(201,152,69,.45);
   --accent-ink:#10130F;
   --text:#F2EDE1;--text-muted:rgba(242,237,225,.55);--text-dim:rgba(242,237,225,.35);
   --border:rgba(242,237,225,.1);
@@ -37,7 +37,7 @@
 [data-theme="light"] {
   /* Deep golds + .7 ink so small accent/secondary text clears WCAG AA on cream. */
   --bg:#FAF6EE;--bg-card:#FFFFFF;--bg-dark:#F0EBE0;
-  --accent:#7F5B1C;--accent-hover:#6E4B14;--accent-light:#6E4B14;--accent-pale:rgba(127,91,28,.1);
+  --accent:#7F5B1C;--accent-hover:#6E4B14;--accent-light:#6E4B14;--accent-pale:rgba(127,91,28,.1);--accent-glow:rgba(127,91,28,.4);
   --accent-ink:#FFFFFF;
   --text:#1A1610;--text-muted:rgba(26,22,16,.7);--text-inv:#1A1610;
   --text-dim:rgba(26,22,16,.68);
@@ -124,6 +124,23 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 .search-btn.is-searching{pointer-events:none}
 .search-btn.is-searching svg{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Once both dates are valid the button is the only thing left to do, so it
+   draws attention to itself: three soft gold rings that expand and fade, then
+   it settles. Rings are drawn with box-shadow (no layout cost, nothing to
+   clip) and the button itself only breathes a fraction of a percent. */
+@keyframes searchReady{
+  0%  {box-shadow:0 0 0 0 var(--accent-glow);transform:scale(1)}
+  18% {transform:scale(1.025)}
+  60% {box-shadow:0 0 0 14px rgba(201,152,69,0)}
+  100%{box-shadow:0 0 0 0 rgba(201,152,69,0);transform:scale(1)}
+}
+.search-btn.is-ready{animation:searchReady 1.7s var(--ease) 3}
+.search-btn.is-ready:hover{animation:none}
+@media(prefers-reduced-motion:reduce){
+  /* Keep the cue, drop the motion: a steady ring instead of a pulse. */
+  .search-btn.is-ready{animation:none;box-shadow:0 0 0 3px var(--accent-glow)}
+}
 .search-hint{font-size:11px;color:var(--accent);opacity:.6;margin-top:10px;display:none;padding:0 4px}
 .search-hint.visible{display:block}
 
@@ -161,11 +178,15 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   position:relative;display:flex;align-items:center;justify-content:center;
   height:40px;font-size:13.5px;font-weight:500;color:var(--text);
   cursor:pointer;user-select:none;
+  --day-size:36px;          /* circle diameter — the band matches it exactly */
+  --band:var(--accent-pale);
 }
 .calendar-day.empty{visibility:hidden;cursor:default}
 .calendar-day.disabled{color:var(--text-dim);opacity:.25;cursor:default;pointer-events:none}
 .calendar-day-num{
-  position:relative;z-index:1;width:36px;height:36px;
+  position:relative;z-index:1;width:var(--day-size);height:var(--day-size);
+  flex-shrink:0;  /* else the flex cell squeezes it a fraction under --day-size
+                     and the band, which is exactly --day-size, peeks out */
   display:flex;align-items:center;justify-content:center;
   border-radius:50%;transition:background .15s,color .15s;
   transform:translateZ(0);
@@ -177,16 +198,24 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 }
 .calendar-day.range-start .calendar-day-num,
 .calendar-day.range-end .calendar-day-num{background:var(--accent);color:var(--accent-ink);font-weight:700}
-.calendar-day.in-range{background:var(--accent-pale)}
-.calendar-day.range-start::before,
-.calendar-day.range-end::before{
-  content:'';position:absolute;top:0;bottom:0;width:50%;
-  background:var(--accent-pale);z-index:0;
+
+/* The connecting band between the two caps. It is drawn at exactly the
+   circle's diameter and vertically centred on it, so a selected day always
+   reads as a COMPLETE circle sitting on the band — the old version painted a
+   full-cell-height rectangle over the right or left half of the cell, which
+   squared off one side of the gold circle and made it look like a semicircle.
+   It is also only drawn when there is a real range (or a live hover preview)
+   to connect, so a lone check-in is a clean circle with no stub hanging off. */
+.calendar-day::before{
+  content:'';position:absolute;top:50%;height:var(--day-size);
+  transform:translateY(-50%);background:var(--band);z-index:0;display:none;
 }
-.calendar-day.range-start::before{right:0}
-.calendar-day.range-end::before{left:0}
-.calendar-day.range-start.range-end::before{display:none}
-.calendar-day.hover-range{background:rgba(201,152,69,.06)}
+.calendar-day.band-l::before,
+.calendar-day.band-r::before{display:block}
+.calendar-day.band-l::before{left:0;right:50%}
+.calendar-day.band-r::before{left:50%;right:0}
+.calendar-day.band-l.band-r::before{left:0;right:0}
+.calendar-day.band-hover{--band:rgba(201,152,69,.06)}
 .calendar-day.hover-end .calendar-day-num{background:rgba(201,152,69,.15)}
 .calendar-footer{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -392,8 +421,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   .calendar-months{flex-direction:column;flex:1}
   .calendar-month{width:auto;padding:18px 20px 14px}
   .calendar-month+.calendar-month{border-left:none;border-top:1px solid var(--border)}
-  .calendar-day{height:46px}
-  .calendar-day-num{width:42px;height:42px}
+  .calendar-day{height:46px;--day-size:42px}
   .calendar-footer{padding:14px 20px calc(24px + env(safe-area-inset-bottom,0px));flex-shrink:0}
 }
 @media(min-width:601px){.calendar-mobile-header{display:none}}
@@ -654,6 +682,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
             if(ds===cal.hoveredDate)cls.push('hover-end');
           }
         }
+        cls=cls.concat(bandClasses(ds,isPast));
         html+='<div class="'+cls.join(' ')+'" data-date="'+ds+'"><span class="calendar-day-num">'+d+'</span></div>';
       }
       html+='</div></div>';
@@ -661,6 +690,34 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     calMonths.innerHTML=html;
     updateCalFooter();
     attachCalendarEvents();
+  }
+
+  // Attention cue on Search. Re-adding the class alone would not restart a
+  // finished animation, so force a reflow between remove and add.
+  function setSearchReady(on) {
+    searchBtn.classList.remove('is-ready');
+    if(!on)return;
+    void searchBtn.offsetWidth;
+    searchBtn.classList.add('is-ready');
+  }
+
+  // Which half/halves of a cell carry the selection band. Returns [] when there
+  // is nothing to connect, so a lone check-in renders as a bare circle. Shared
+  // by renderCalendar() and updateDayClasses() so the two can't drift apart.
+  function bandClasses(ds, isPast) {
+    var ci=cal.checkIn, co=cal.checkOut, hd=cal.hoveredDate;
+    if(ci&&co&&co>ci){
+      if(ds===ci)return['band-r'];
+      if(ds===co)return['band-l'];
+      if(ds>ci&&ds<co)return['band-l','band-r'];
+      return[];
+    }
+    if(ci&&!co&&hd&&cal.selecting==='checkOut'&&hd>ci&&!isPast){
+      if(ds===ci)return['band-r','band-hover'];
+      if(ds===hd)return['band-l','band-hover'];
+      if(ds>ci&&ds<hd)return['band-l','band-r','band-hover'];
+    }
+    return[];
   }
 
   function attachCalendarEvents() {
@@ -685,12 +742,13 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
 
   function handleDayClick(ds) {
     if(cal.selecting==='checkIn'){
-      cal.checkIn=ds;cal.checkOut=null;cal.selecting='checkOut';cal.hoveredDate=null;searchBtn.disabled=true;
+      cal.checkIn=ds;cal.checkOut=null;cal.selecting='checkOut';cal.hoveredDate=null;searchBtn.disabled=true;setSearchReady(false);
       updateInputValues();updateActiveInput();renderCalendar();
     } else {
-      if(ds<=cal.checkIn){cal.checkIn=ds;cal.checkOut=null;cal.selecting='checkOut';cal.hoveredDate=null;searchBtn.disabled=true;updateInputValues();updateActiveInput();renderCalendar();}
+      if(ds<=cal.checkIn){cal.checkIn=ds;cal.checkOut=null;cal.selecting='checkOut';cal.hoveredDate=null;searchBtn.disabled=true;setSearchReady(false);updateInputValues();updateActiveInput();renderCalendar();}
       else{
         cal.checkOut=ds;cal.selecting='checkIn';cal.hoveredDate=null;searchBtn.disabled=false;
+        setSearchReady(true);
         updateInputValues();renderCalendar();
         searchHint.textContent='Min-night requirements vary by property and check-in date.';searchHint.classList.add('visible');
         // Close calendar after brief delay so user sees the range highlight
@@ -704,13 +762,15 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     var all=calMonths.querySelectorAll('.calendar-day');
     for(var i=0;i<all.length;i++){
       var el=all[i];if(el.classList.contains('empty')||el.classList.contains('disabled'))continue;
-      var ds=el.dataset.date;el.classList.remove('range-start','range-end','in-range','hover-range','hover-end');
+      var ds=el.dataset.date;el.classList.remove('range-start','range-end','in-range','hover-range','hover-end','band-l','band-r','band-hover');
       if(cal.checkIn&&ds===cal.checkIn)el.classList.add('range-start');
       if(cal.checkOut&&ds===cal.checkOut)el.classList.add('range-end');
       if(cal.checkIn&&cal.checkOut&&ds>cal.checkIn&&ds<cal.checkOut)el.classList.add('in-range');
       if(cal.checkIn&&!cal.checkOut&&cal.hoveredDate&&cal.selecting==='checkOut'){
         if(cal.hoveredDate>cal.checkIn){if(ds>cal.checkIn&&ds<cal.hoveredDate)el.classList.add('hover-range');if(ds===cal.hoveredDate)el.classList.add('hover-end');}
       }
+      var bands=bandClasses(ds,false);
+      for(var b=0;b<bands.length;b++)el.classList.add(bands[b]);
     }
   }
 
@@ -730,7 +790,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     clearDatesBtn.style.display=(cal.checkIn||cal.checkOut)?'':'none';
   }
 
-  function clearDates(){cal.checkIn=null;cal.checkOut=null;cal.selecting='checkIn';cal.hoveredDate=null;searchBtn.disabled=true;searchHint.classList.remove('visible');searchHint.textContent='';updateInputValues();updateActiveInput();if(cal.isOpen)renderCalendar();}
+  function clearDates(){cal.checkIn=null;cal.checkOut=null;cal.selecting='checkIn';cal.hoveredDate=null;searchBtn.disabled=true;setSearchReady(false);searchHint.classList.remove('visible');searchHint.textContent='';updateInputValues();updateActiveInput();if(cal.isOpen)renderCalendar();}
 
   checkinInput.addEventListener('click',function(e){e.stopPropagation();if(cal.isOpen&&cal.selecting==='checkIn'){closeCalendar();return;}cal.selecting='checkIn';openCalendar();});
   checkoutInput.addEventListener('click',function(e){e.stopPropagation();if(!cal.checkIn){cal.selecting='checkIn';openCalendar();return;}if(cal.isOpen&&cal.selecting==='checkOut'){closeCalendar();return;}cal.selecting='checkOut';openCalendar();});
@@ -947,7 +1007,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
       .finally(function(){searchBtn.disabled=!(cal.checkIn&&cal.checkOut);searchBtn.classList.remove('is-searching');searchBtn.innerHTML='<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search';});
   }
 
-  searchBtn.addEventListener('click',function(){if(!cal.checkIn||!cal.checkOut)return;fetchRange(cal.checkIn,cal.checkOut);});
+  searchBtn.addEventListener('click',function(){if(!cal.checkIn||!cal.checkOut)return;setSearchReady(false);fetchRange(cal.checkIn,cal.checkOut);});
 
   // ── Property filter ──
   var PROP_NAMES={'regent-villa':'Regent Villa','regent-skyline':'Regent Skyline','cozy-designer':'Cozy Designer','designer-game':'Designer Game','lake-view':'Lake View','executive':'Executive','stunning-lake':'Stunning Lake','regent-crown':'Regent Crown','regent-sol':'Regent Sol','regent-soco':'Regent SoCo','regent-texan':'Regent Texan'};
