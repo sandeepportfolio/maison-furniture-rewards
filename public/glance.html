@@ -1825,10 +1825,23 @@ var PARKING_DETAIL = {
 // slug instead. Regent Crown welcomes pets (owner-confirmed); Regent Sol's
 // Guesty house rules say petsAllowed:false. A slug with no entry simply gets
 // no pets line rather than an invented one.
+// Every property takes pets, for an additional fee — stated by the owner on
+// 2026-10-15. Guesty's own house-rules record agrees for nine of the eleven but
+// still has petsAllowed:false on Regent Sol and Regent SoCo, and Regent Crown's
+// free-text rules still read "No pets, please". Those three want correcting at
+// the source so the booking flow matches the page.
 var PETS_ALLOWED = {
+  'regent-villa': true,
+  'cozy-designer': true,
+  'lake-view': true,
+  'designer-game': true,
+  'executive': true,
+  'stunning-lake': true,
+  'regent-skyline': true,
   'regent-crown': true,
-  'regent-sol': false,
-  'regent-soco': false
+  'regent-sol': true,
+  'regent-soco': true,
+  'regent-texan': true
 };
 // Same reason: "TWO-CAR GARAGE + DRIVE" is Regent Crown's driveway, not a fact
 // about villas in general.
@@ -1843,12 +1856,15 @@ function buildRules() {
     { name: 'Self check-in', detail: 'SMART LOCK · 3:00 PM' },
     { name: 'Checkout', detail: '11:00 AM' }
   ];
+  // Whether pets are allowed is a fact about the property, not about whether
+  // it is a house, so it is stated for suites too. Every value comes from that
+  // listing's petsAllowed record in Guesty, including the one-pet limit.
+  if (PETS_ALLOWED[SLUG] === true) {
+    rules.push({ name: 'Pets', detail: 'WELCOME \u00b7 ADDITIONAL FEE' });
+  } else if (PETS_ALLOWED[SLUG] === false) {
+    rules.push({ name: 'Pets', detail: 'NOT PERMITTED' });
+  }
   if (PROP.isVilla) {
-    if (PETS_ALLOWED[SLUG] === true) {
-      rules.push({ name: 'Pets welcome', detail: 'PET-FRIENDLY HOME' });
-    } else if (PETS_ALLOWED[SLUG] === false) {
-      rules.push({ name: 'Pets', detail: 'NOT PERMITTED' });
-    }
     rules.push({ name: 'Parking', detail: VILLA_PARKING[SLUG] || 'ON-SITE PARKING' });
   } else {
     rules.push({ name: 'Parking', detail: 'FREE COVERED PARKING', alt: PARKING_DETAIL[SLUG] || null });
