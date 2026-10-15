@@ -64,6 +64,7 @@ const LISTINGS = {
   'regent-crown':   { id: '6aa1b54d75e76f0072ea85f9', name: 'Regent Crown',                        basePrice: 350, cleaningFee: 238, minNights: 1, accommodates: 11, bedrooms: 4, bathrooms: 4,   city: 'Austin', state: 'Texas' },
   'regent-sol':     { id: '6ab471bc946a45001142aa79', name: 'Regent Sol',                          basePrice: 278, cleaningFee: 120, minNights: 1, accommodates: 8,  bedrooms: 2, bathrooms: 2.5, city: 'Austin', state: 'Texas' },
   'regent-soco':    { id: '6abeb5131911ca0049cbf028', name: 'Regent SoCo',                         basePrice: 288, cleaningFee: 120, minNights: 1, accommodates: 8,  bedrooms: 2, bathrooms: 2.5, city: 'Austin', state: 'Texas' },
+  'regent-texan':   { id: '6ad0645f394a9700317801ec', name: 'Regent Texan',                        basePrice: 90,  cleaningFee: 85,  minNights: 2, accommodates: 3,  bedrooms: 1, bathrooms: 1,   city: 'Round Rock', state: 'Texas' },
 };
 
 // Build static fallback listing data from LISTINGS — used when both
