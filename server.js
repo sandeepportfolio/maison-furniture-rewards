@@ -4647,7 +4647,10 @@ const PROPERTY_DATA = {
       'Arcade & Games',
       'Arcade & Games',
       'Arcade & Games',
-      'In-Unit Laundry'
+      'In-Unit Laundry',
+      'Private Patio',
+      'In-Unit Laundry',
+      'Private Patio'
     ],
     photos: [
       'd2835652-5328-41e1-991a-ba39e2d34b95.png',
@@ -4681,7 +4684,10 @@ const PROPERTY_DATA = {
       'd31aa558-1b8f-4fd8-b156-b70d09243538.png',
       '2cea42e3-6719-440c-a9d3-300ecd5f8226.png',
       'd0ce2bcc-bb02-4e69-90be-e2a88a67fb8d.png',
-      'd2e16214-c30a-4bcc-bd29-932256c8322f.png'
+      'd2e16214-c30a-4bcc-bd29-932256c8322f.png',
+      '/images/properties/regent-texan-patio-seating.jpg',
+      '/images/properties/regent-texan-laundry-shelf.jpg',
+      '/images/properties/regent-texan-covered-patio.jpg'
     ]
   },
 };
@@ -4706,6 +4712,10 @@ const GUESTY_MAP = {
 // store full Cloudinary asset URLs already, which just need a width
 // transform inserted for responsive sizing.
 function photoUrl(prop, filename, width) {
+  // Locally hosted photos (served from public/) are stored pre-sized and
+  // already compressed, with no CDN to resize them, so they pass through
+  // untouched and the requested width is ignored.
+  if (typeof filename === 'string' && filename.startsWith('/')) return filename;
   if (typeof filename === 'string' && /^https?:\/\//.test(filename)) {
     return filename.includes('/image/upload/')
       ? filename.replace('/image/upload/', `/image/upload/w_${width},q_auto,f_auto/`)

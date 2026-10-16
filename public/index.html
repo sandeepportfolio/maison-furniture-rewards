@@ -3807,6 +3807,8 @@ ul{list-style:none}
    ═══════════════════════════════════════════════════════════════ */
 const CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-';
 const imgUrl = (hid, uuid, w) => {
+  // Locally hosted photos are pre-sized; pass them straight through.
+  if (typeof uuid === 'string' && uuid.charAt(0) === '/') return uuid;
   if (typeof uuid === 'string' && /^https?:\/\//.test(uuid)) {
     return uuid.includes('/image/upload/')
       ? uuid.replace('/image/upload/', `/image/upload/w_${w||720},q_auto,f_auto/`)
@@ -4707,7 +4709,10 @@ const PROPERTIES = [
       'Arcade & Games',
       'Arcade & Games',
       'Arcade & Games',
-      'In-Unit Laundry'
+      'In-Unit Laundry',
+      'Private Patio',
+      'In-Unit Laundry',
+      'Private Patio'
     ],
     photos: [
       'd2835652-5328-41e1-991a-ba39e2d34b95.png',
@@ -4741,7 +4746,10 @@ const PROPERTIES = [
       'd31aa558-1b8f-4fd8-b156-b70d09243538.png',
       '2cea42e3-6719-440c-a9d3-300ecd5f8226.png',
       'd0ce2bcc-bb02-4e69-90be-e2a88a67fb8d.png',
-      'd2e16214-c30a-4bcc-bd29-932256c8322f.png'
+      'd2e16214-c30a-4bcc-bd29-932256c8322f.png',
+      '/images/properties/regent-texan-patio-seating.jpg',
+      '/images/properties/regent-texan-laundry-shelf.jpg',
+      '/images/properties/regent-texan-covered-patio.jpg'
     ]
   },
 ];

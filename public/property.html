@@ -1919,6 +1919,8 @@ const SLUG = '{{SLUG}}';
 
 // ── Image URL Helpers ──
 function imgUrl(uuid, width) {
+  // Locally hosted photos are pre-sized; pass them straight through.
+  if (typeof uuid === 'string' && uuid.charAt(0) === '/') return uuid;
   if (typeof uuid === 'string' && /^https?:\/\//.test(uuid)) {
     return uuid.includes('/image/upload/')
       ? uuid.replace('/image/upload/', '/image/upload/w_' + (width || 720) + ',q_auto,f_auto/')
@@ -2025,6 +2027,15 @@ function toggleMobileMenu() {
   document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
 }
 
+// Alt text for a gallery photo. Uses the photo's own label when the property
+// has one, so screen readers hear "Regent Texan — Private Patio" rather than
+// "Regent Texan photo 33"; falls back to the index when no label exists.
+function photoAlt(i) {
+  var base = PROPERTY.name || 'Property';
+  var lab = PROPERTY.photoLabels && PROPERTY.photoLabels[i];
+  return lab ? base + ' \u2014 ' + lab : base + ' photo ' + (i + 1);
+}
+
 // ── Photo Gallery ──
 (function() {
   var photos = PROPERTY.photos || [];
@@ -2038,7 +2049,7 @@ function toggleMobileMenu() {
     var extraCount = photos.length - maxPhotos;
 
     html += '<div class="gallery-item' + (isLarge ? ' large' : '') + '" onclick="openLightbox(' + i + ')">';
-    html += '<img src="' + imgUrl(photos[i], isLarge ? 1200 : 720) + '" alt="' + (PROPERTY.name || 'Property') + ' photo ' + (i + 1) + '" loading="' + (i < 3 ? 'eager' : 'lazy') + '">';
+    html += '<img src="' + imgUrl(photos[i], isLarge ? 1200 : 720) + '" alt="' + photoAlt(i) + '" loading="' + (i < 3 ? 'eager' : 'lazy') + '">';
     if (isLast && extraCount > 0) {
       html += '<div class="gallery-count"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>+' + extraCount + ' more</div>';
     }
@@ -2078,7 +2089,7 @@ function updateLightbox() {
   img.style.opacity = '0';
   setTimeout(function() {
     img.src = lbPhotos[lbIndex];
-    img.alt = (PROPERTY.name || 'Property') + ' photo ' + (lbIndex + 1);
+    img.alt = photoAlt(lbIndex);
     img.style.opacity = '1';
   }, 150);
   document.getElementById('lightboxCounter').textContent = (lbIndex + 1) + ' / ' + lbPhotos.length;

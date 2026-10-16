@@ -1160,6 +1160,8 @@ if (urlPhoto !== null) HERO_INDEX = parseInt(urlPhoto) || 0;
 var CDN = 'https://a0.muscache.com/im/pictures/hosting/Hosting-' + HOSTING_ID + '/original/';
 
 function photoUrl(filename, w) {
+  // Locally hosted photos are pre-sized; pass them straight through.
+  if (typeof filename === 'string' && filename.charAt(0) === '/') return filename;
   if (typeof filename === 'string' && /^https?:\/\//.test(filename)) {
     return filename.includes('/image/upload/')
       ? filename.replace('/image/upload/', '/image/upload/w_' + (w || 720) + ',q_auto,f_auto/')
