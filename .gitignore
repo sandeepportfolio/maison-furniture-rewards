@@ -11,3 +11,4 @@ private/
 guesty-token*.json
 design-reference/
 shots/
+.deploy-log

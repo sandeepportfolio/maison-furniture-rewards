@@ -31,6 +31,22 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
+# Every deploy is a fresh container with an empty disk, so it has to ask Guesty's
+# OAuth endpoint for a new token. That quota is 5 per 24h per client, shared
+# with local dev servers, and it resets at midnight UTC — so deploys are counted
+# per UTC day and the sixth ask is where live availability goes dark. Refuse the
+# 4th deploy of a UTC day unless FORCE_DEPLOY=1, leaving headroom for restarts.
+DEPLOY_LOG=".deploy-log"
+MAX_DEPLOYS_PER_UTC_DAY=3
+TODAY_UTC="$(date -u +%Y-%m-%d)"
+DEPLOYS_TODAY="$(grep -c "^$TODAY_UTC " "$DEPLOY_LOG" 2>/dev/null || true)"
+DEPLOYS_TODAY="${DEPLOYS_TODAY:-0}"
+if [ "$DEPLOYS_TODAY" -ge "$MAX_DEPLOYS_PER_UTC_DAY" ] && [ "${FORCE_DEPLOY:-0}" != "1" ]; then
+  echo "ERROR: $DEPLOYS_TODAY deploys already logged for $TODAY_UTC (UTC). Each one spends a Guesty OAuth token" >&2
+  echo "(quota 5/24h, resets 00:00 UTC). Batch changes into one deploy, wait for the reset, or rerun with FORCE_DEPLOY=1." >&2
+  exit 1
+fi
+
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if [ "$BRANCH" != "main" ]; then
   echo "ERROR: on branch '$BRANCH', not 'main'. Render deploys from main." >&2
@@ -61,6 +77,7 @@ fi
 echo "==> Triggering Render deploy hook..."
 DEPLOY_RESPONSE="$(curl -sS -X POST "$RENDER_DEPLOY_HOOK_URL")"
 echo "    $DEPLOY_RESPONSE"
+echo "$TODAY_UTC $(date -u +%H:%M:%S) $LOCAL_SHA" >> "$DEPLOY_LOG"
 
 echo "==> Waiting for $SITE_URL to report commit $LOCAL_SHA (up to ${MAX_WAIT_SECONDS}s)..."
 ELAPSED=0

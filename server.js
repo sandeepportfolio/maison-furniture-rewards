@@ -4701,7 +4701,7 @@ const PROPERTY_DATA = {
     guests: 16, beds: 5, baths: 2.5,
     bedConfig: [{ label: 'King Bed', quantity: 2 }, { label: 'Queen Bed', quantity: 2 }, { label: 'Full Bed', quantity: 2 }, { label: 'Sleeper Couch', quantity: 1 }, { label: 'Queen Air Mattress', quantity: 1 }],
     rating: null, reviews: 0,
-    lat: 32.9183, lng: -96.7193,
+    lat: 32.9183339, lng: -96.719317,
     isVilla: true,
     amenities: [
       { label: 'Private Pool & Hot Tub', premium: true },
@@ -6871,10 +6871,21 @@ app.listen(PORT, '0.0.0.0', () => {
   // stagger around, so the delay here just gives the process a moment to
   // finish booting. It shares the same request-path circuit breaker as every
   // other Guesty call, so it never retries into an active cooldown.
-  setTimeout(() => {
-    seedTripCodesFromGuesty({ reason: 'startup' }).catch(() => {});
-  }, 45_000);
-  setInterval(() => {
-    seedTripCodesFromGuesty({ reason: 'refresh' }).catch(() => {});
-  }, 6 * 3600 * 1000);
+  //
+  // Production hosts only. Guesty's OAuth quota is 5 tokens per 24h per client
+  // and a local dev server shares the production credentials, so a developer
+  // booting the app for a UI check used to spend one of production's tokens 45
+  // seconds later, purely to seed codes into a database that persists locally
+  // anyway. Set GUESTY_SEED_TRIP_CODES=true to opt a local run back in.
+  const isProductionHost = Boolean(process.env.RENDER) || process.env.NODE_ENV === 'production';
+  if (isProductionHost || process.env.GUESTY_SEED_TRIP_CODES === 'true') {
+    setTimeout(() => {
+      seedTripCodesFromGuesty({ reason: 'startup' }).catch(() => {});
+    }, 45_000);
+    setInterval(() => {
+      seedTripCodesFromGuesty({ reason: 'refresh' }).catch(() => {});
+    }, 6 * 3600 * 1000);
+  } else {
+    console.log('Trip-code seeding from Guesty skipped (not a production host) — set GUESTY_SEED_TRIP_CODES=true to run it.');
+  }
 });
