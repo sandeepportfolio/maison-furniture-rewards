@@ -17,7 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const tokenStore = require('./guesty-token-store');
+const tokenHandoff = require('./guesty-token-handoff');
 
 // ── Booking Engine API integration (optional) ─────────────────────────
 let beapi;
@@ -269,19 +269,17 @@ function burnToken(token) {
   burnedTokens.add(token);
   burnedHashes.add(tokenHash(token));
   persistToken(); // record the burn on disk so restarts don't retry a dead token
-  // If the shared store holds this same token, remove it so no other process
-  // adopts a token Guesty has rejected. Fire-and-forget; never throws.
-  tokenStore.clear(token).catch(() => {});
 }
 
-// Adopt the token another process already minted instead of spending an OAuth
-// slot on a new one (see guesty-token-store.js). Only called when this process
-// has no usable token — or, for the daily refresh, to prefer a newer shared
-// token over minting. `newerThan` is the expiry the shared token must beat.
+// Adopt the token the live site (the previous container, or production when
+// this is a dev server) already holds instead of spending an OAuth slot on a
+// new one — see guesty-token-handoff.js. Only called when this process has no
+// usable token, or, for the daily refresh, to prefer a newer token over
+// minting. `newerThan` is the expiry the shared token must beat.
 // Returns the adopted token or null; never throws and never calls OAuth.
 const SHARED_TOKEN_MIN_RUNWAY_MS = 35 * 60_000; // beyond the 30-min refresh margin
 async function adoptSharedToken(newerThan = 0) {
-  const shared = await tokenStore.load();
+  const shared = await tokenHandoff.fetchFromPeer();
   if (!shared) return null;
   if (isBurned(shared.token)) return null;
   if (shared.expiry - Date.now() < SHARED_TOKEN_MIN_RUNWAY_MS) return null;
@@ -387,9 +385,9 @@ if (!cachedToken) {
 }
 // Schedule the once-a-day refresh off the request path (no-op without creds).
 setTimeout(() => scheduleProactiveRefresh(), 0);
-// With a shared store configured, pick up the live token now so the first guest
-// request finds it ready. This only ever reads — it never spends an OAuth slot.
-if (!cachedToken && tokenStore.isConfigured()) {
+// Ask the live site for its token now so the first guest request finds one
+// ready. This only ever reads — it never spends an OAuth slot.
+if (!cachedToken && tokenHandoff.isConfigured()) {
   setTimeout(() => { adoptSharedToken().catch(() => {}); }, 0);
 }
 
@@ -496,14 +494,13 @@ async function proactiveRefresh() {
   if (!id || !secret) return;
   if (inflight) return; // a request-path refresh is already running
   try {
-    // Another process may already have refreshed — take its newer token.
+    // The live site may already have a newer token — take it.
     if (await adoptSharedToken(tokenExpiry)) return;
     const json = await requestTokenWithBackoff(id, secret);
     cachedToken = json.access_token;
     tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
     tokenExpiryAssumed = false; // real expiry straight from Guesty
     persistToken();
-    tokenStore.save(cachedToken, tokenExpiry).catch(() => {});
     scheduleProactiveRefresh();
     console.log(`Proactive Guesty token refresh OK — valid until ${new Date(tokenExpiry).toISOString()}`);
   } catch (err) {
@@ -555,7 +552,7 @@ async function getToken() {
   if (inflight) return inflight;
 
   inflight = (async () => {
-    // A token another process already minted beats spending an OAuth slot.
+    // The live site's token beats spending an OAuth slot.
     const adopted = await adoptSharedToken();
     if (adopted) return adopted;
     const json = await requestTokenWithBackoff(id, secret);
@@ -563,7 +560,6 @@ async function getToken() {
     tokenExpiry = Date.now() + (json.expires_in || 86400) * 1000;
     tokenExpiryAssumed = false; // real expiry straight from Guesty
     persistToken();
-    tokenStore.save(cachedToken, tokenExpiry).catch(() => {});
     scheduleProactiveRefresh();
     return cachedToken;
   })();
@@ -605,8 +601,19 @@ function tokenStatus() {
     rateLimitScope,
     retryAfter: rateLimitRetryAfter(),
     skippingLiveFetch: shouldSkipLiveFetch(),
-    sharedStore: tokenStore.describe(),
+    handoff: tokenHandoff.describe(),
   };
+}
+
+/**
+ * The token this process is willing to hand to a booting peer: one Guesty
+ * itself dated (not our assumed-expiry guess), not rejected, with enough life
+ * left that the peer won't immediately need a refresh. Null otherwise.
+ */
+function shareableToken() {
+  if (!cachedToken || tokenExpiryAssumed || isBurned(cachedToken)) return null;
+  if (tokenExpiry - Date.now() < SHARED_TOKEN_MIN_RUNWAY_MS) return null;
+  return { token: cachedToken, expiry: tokenExpiry };
 }
 
 /** Re-adopt a token past its stated expiry for another re-validation window. */
@@ -1647,6 +1654,7 @@ module.exports = {
   isRateLimited,
   rateLimitRetryAfter,
   tokenStatus,
+  shareableToken,
   getCachedCalendar,
   clearAllCaches,
   injectToken,

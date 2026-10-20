@@ -24,6 +24,7 @@ const { isDirectRegentBookingCandidate, DEFAULT_ALLOWED_DOMAINS } = require('./g
 
 const jwt = require('jsonwebtoken');
 const guesty = require('./guesty');
+const tokenHandoff = require('./guesty-token-handoff');
 const truvi = require('./guesty-truvi-provider');
 
 const app = express();
@@ -1290,6 +1291,12 @@ app.get('/api/guesty/token-status', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json(guesty.tokenStatus());
 });
+
+// Token handoff for a booting container (see guesty-token-handoff.js): a signed,
+// encrypted read of the token this process already holds, so a deploy or dev
+// server adopts it instead of spending one of Guesty's 5 daily OAuth tokens.
+// Answers 404 to anything unsigned, stale, replayed or over the rate limit.
+app.get(tokenHandoff.PATH, tokenHandoff.handler(() => guesty.shareableToken()));
 
 // Inject a fresh OAuth token into the running server. This breaks the
 // rate-limit death spiral by bypassing Guesty's OAuth endpoint entirely.
