@@ -4690,6 +4690,118 @@ const PROPERTY_DATA = {
       '/images/properties/regent-texan-covered-patio.jpg'
     ]
   },
+  'regent-highland': {
+    name: 'Regent Highland',
+    slug: 'regent-highland',
+    category: 'villa',
+    city: 'Dallas',
+    state: 'Texas',
+    hostingId: '1800288693260869611',
+    airbnbUrl: 'https://www.airbnb.com/h/regent-highland',
+    guests: 16, beds: 5, baths: 2.5,
+    bedConfig: [{ label: 'King Bed', quantity: 2 }, { label: 'Queen Bed', quantity: 2 }, { label: 'Full Bed', quantity: 2 }, { label: 'Sleeper Couch', quantity: 1 }, { label: 'Queen Air Mattress', quantity: 1 }],
+    rating: null, reviews: 0,
+    lat: 32.9183, lng: -96.7193,
+    isVilla: true,
+    amenities: [
+      { label: 'Private Pool & Hot Tub', premium: true },
+      { label: 'Game Room', premium: true },
+      { label: 'Pool Table', premium: true },
+      { label: 'Arcade & Foosball', premium: true },
+      { label: 'Fire Pit & BBQ', premium: false },
+      { label: 'Kids’ Playroom', premium: false }
+    ],
+    description: 'Your own pool and spa, a game room with a pool table, foosball, arcade and mini hoops, and a kitchen big enough for everybody to cook together. This five-bedroom Lake Highlands home feels like a boutique resort, with designer touches in every room and a backyard you won’t want to leave. Sleeps up to 16 for family trips, birthdays and friend getaways, a short drive from White Rock Lake and the Dallas Arboretum.',
+    fullAmenities: {Bathroom:['Bathtub','Body soap','Conditioner','Hair dryer','Hot water','Shampoo','Shower gel','Cleaning products'],'Bedroom & Laundry':['Bed linens','Clothing storage','Dryer','Egyptian cotton linens','Essentials','Extra pillows and blankets','Hangers','Iron','Mosquito net','Room-darkening shades','Washer'],'Heating & Cooling':['Air conditioning','Ceiling fan','Heating','Indoor fireplace'],Entertainment:['Arcade games','Books and reading material','Life size games','Pool table','Sound system','Theme room','TV'],'Kitchen & Dining':['Baking sheet','Barbecue utensils','Blender','Coffee','Coffee maker','Cooking basics','Dining table','Dishes and silverware','Dishwasher','Freezer','Hot water kettle','Kitchen','Microwave','Mini fridge','Oven','Refrigerator','Rice maker','Stove','Toaster','Wine glasses'],'Work & Tech':['Dedicated workspace','Ethernet connection','Wifi'],Outdoor:['Backyard','Fire pit','Outdoor dining area','Outdoor furniture','Private BBQ grill: charcoal','Private outdoor kitchen','Private patio or balcony','Sun loungers','Beach essentials'],'Parking & Facilities':['Free parking garage on premises','Hot tub','Pool','Private entrance','Free resort access','Laundromat nearby'],Family:['Board games','Babysitter recommendations','Children’s books and toys','Children’s dinnerware','Children\'s playroom','Crib','Fireplace guards','Outlet covers','Pack ’n play/Travel crib','Window guards'],Safety:['Carbon monoxide alarm','Exterior security cameras on property','Fire extinguisher','First aid kit','Smoke alarm'],'Home Highlights':['Cleaning available during stay','Composting','Long term stays allowed','Pets allowed','Recycling','Self check-in','Solar panels']},
+    photoLabels: [
+      'Pool & Backyard',
+      'Pool & Backyard',
+      'Pool & Backyard',
+      'Pool & Backyard',
+      'Pool & Backyard',
+      'Pool & Backyard',
+      'Exterior',
+      'Living Room',
+      'Living Room',
+      'Living Room',
+      'Living Room',
+      'Kitchen & Dining',
+      'Kitchen & Dining',
+      'Kitchen & Dining',
+      'Kitchen & Dining',
+      'Kitchen & Dining',
+      'Kitchen & Dining',
+      'Kitchen & Dining',
+      'Game Room',
+      'Game Room',
+      'Game Room',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bedroom',
+      'Bathroom',
+      'Bathroom',
+      'Bathroom',
+      'Bathroom',
+      'Bathroom',
+      'Bathroom',
+      'Laundry',
+      'Entryway'
+    ],
+    photos: [
+      '6714449d-0708-41a8-a939-2ce3bde078b6.png',
+      '058ee034-22ba-4b8f-a095-fba1a094874e.png',
+      '8268a75f-165a-4c47-b6eb-fc37f917cb1c.png',
+      '1da8df0b-b7e7-43d1-8cb9-7d3e0a6f2bae.png',
+      '2b96279f-e664-46ee-886c-ea5d89e10708.png',
+      '0deb29aa-0eca-49d0-877c-21bee060203f.png',
+      '22d65859-76f2-4676-ab8e-e5f1edc84e3d.png',
+      '3e6f11e8-7e0f-4634-ade2-eaa8248157c7.jpeg',
+      '38bfa8ef-01ff-46ac-b539-284790a3244e.jpeg',
+      '80f52a49-f96b-4fd8-8c74-4545f68a5aa6.jpeg',
+      '314f813a-d4aa-46c2-9adb-cf76a6c3cf95.png',
+      '44e729af-c8df-40f7-a21e-37e95d00bb7f.png',
+      'a7724c9a-352e-4cc5-bbd8-6d3af8d87e49.png',
+      'c69d32e7-ad4e-4509-9563-04609de1504b.png',
+      '9e82a603-5170-4f59-9e60-334981befff9.jpeg',
+      '74a25cea-4db4-43e6-bb35-35af26fb33d4.png',
+      'db0b234c-f52b-4075-975d-e7c9d3556f0b.png',
+      '6abf1e35-05c0-499f-8419-58aee1292406.jpeg',
+      'f8103018-bfdc-45fc-82bf-c2af3a3df6ff.png',
+      'a1565ede-d476-46e5-9d3a-a2f62939a777.png',
+      '523ace52-d5ed-4307-bafa-d9d8529daf99.png',
+      'b0cb1686-9e6d-4507-9386-c8dc5de83038.png',
+      '5c82ac36-c8c6-479a-ba13-31b41e8fa9e7.png',
+      '85d6886e-dfdd-4ac4-ab83-4d90ffb046a9.png',
+      '6f4d293d-2a48-4cfb-9c10-54ae0db80a8b.png',
+      '3fa654d6-02c9-4812-8926-5ae8deb43060.jpeg',
+      'fdb53bdf-b7e0-4e43-895b-f03dff7ce80b.png',
+      '3f09c99b-95a6-40bd-85d1-26bf2c7e7d6c.png',
+      '226dc398-3069-4502-8464-6669c9985c55.jpeg',
+      '24169c8e-7af7-4599-abeb-39c0f1b64ddf.png',
+      '759d3f62-e336-44fc-b6b6-8f01becc9612.png',
+      '4a961f3b-e29c-4d3b-adfc-455fd7e2cb3d.png',
+      '0bd9b2b7-d021-4b9b-85c7-3f74b193f97d.jpeg',
+      'c09c6f05-9572-4f2f-8697-6196ca4dc5c6.jpeg',
+      'd0f6a4ba-a50b-4f19-b8b2-a4dca96865d5.jpeg',
+      'fe5bea8a-c785-4c87-9f71-b75b0ca2896e.jpeg',
+      'a33bc8d1-2436-4201-aeda-c275fd02bb11.png',
+      '55ad4616-bd80-490a-9490-1e95629a2eaf.png',
+      '42cef8f8-f265-43ad-bfa0-7767a4fcf9be.jpeg',
+      '24ccc4a5-56f6-4574-9971-6166693730d4.jpeg',
+      '76f4ac7a-c14b-4418-93cd-634170da1fad.png',
+      '887071a4-d06e-4f48-9795-eaeaa56dbf7d.png'
+    ]
+  },
 };
 
 const GUESTY_MAP = {
@@ -4704,6 +4816,7 @@ const GUESTY_MAP = {
   'regent-sol': '6ab471bc946a45001142aa79',
   'regent-soco': '6abeb5131911ca0049cbf028',
   'regent-texan': '6ad0645f394a9700317801ec',
+  'regent-highland': '6ad69a605a5e40008ab1ae48',
 };
 
 // Builds a displayable photo URL for a property photo entry. Legacy
@@ -4835,7 +4948,7 @@ function renderPropertyPage(slug, res) {
     .replace(/\{\{BEDS_SUFFIX\}\}/g, prop.beds > 1 ? 's' : '')
     .replace(/\{\{BATHS\}\}/g, String(prop.baths))
     .replace(/\{\{BATHS_SUFFIX\}\}/g, prop.baths > 1 ? 's' : '')
-    .replace(/\{\{AIR_MATTRESS_PILL\}\}/g, (slug === 'regent-skyline' || slug === 'lake-view' || slug === 'executive' || slug === 'regent-crown' || slug === 'regent-sol' || slug === 'regent-soco')
+    .replace(/\{\{AIR_MATTRESS_PILL\}\}/g, (slug === 'regent-skyline' || slug === 'lake-view' || slug === 'executive' || slug === 'regent-crown' || slug === 'regent-sol' || slug === 'regent-soco' || slug === 'regent-highland')
       ? '<div class="stat-pill air-mattress"><svg viewBox="0 0 24 24"><path d="M2 18v-1a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v1"/><path d="M6 13V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9"/><path d="M2 18h20"/><path d="M4 21h16"/></svg><span class="stat-text">+ Queen Air Mattress</span></div>'
       : '')
     .replace(/\{\{HOSTING_ID\}\}/g, prop.hostingId)
@@ -4943,7 +5056,7 @@ function renderGlancePage(slug, res) {
   // 'stunning-lake' is Regent Lakefront; 'lake-view' is Regent Waterfront.
   // Those two names read alike and the slugs do not match them in the obvious
   // order, so check guesty.js LISTINGS before editing this list.
-  const SANDEEP_HOST_SLUGS = ['regent-soco', 'regent-skyline', 'designer-game', 'executive', 'stunning-lake', 'regent-crown'];
+  const SANDEEP_HOST_SLUGS = ['regent-soco', 'regent-skyline', 'designer-game', 'executive', 'stunning-lake', 'regent-crown', 'regent-highland'];
   // Both faces come from the hosts' own Airbnb profiles: the avatar rendered
   // beside "Hosted by Sandeep" on Regent SoCo, and beside "Hosted by Jatin"
   // on Regent Sol.

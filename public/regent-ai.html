@@ -106,6 +106,7 @@ h3{font-size:clamp(19px,2vw,23px);letter-spacing:-.02em;line-height:1.22}
 .hdr.scrolled{background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:var(--line)}
 .hdr-in{display:flex;align-items:center;gap:20px;height:68px;max-width:1160px;margin:0 auto;padding:0 24px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:17px}
+.brand .wordmark{display:block;line-height:1;white-space:nowrap}
 .brand .mark{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:800}
 .brand .dim{color:var(--faint);font-weight:600}
 .nav-links{display:flex;gap:4px;margin-left:12px}
@@ -357,7 +358,7 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
 
 <header class="hdr" id="nav">
   <div class="hdr-in">
-    <a href="#top" class="brand"><span class="mark">R</span>Regent <span class="dim">Inbox</span></a>
+    <a href="#top" class="brand"><span class="mark">R</span><span class="wordmark">Regent <span class="dim">Inbox</span></span></a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#product">How it works</a>
       <a href="#platform">Platform</a>
@@ -726,7 +727,7 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <a href="#top" class="brand"><span class="mark">R</span>Regent <span class="dim">Inbox</span></a>
+        <a href="#top" class="brand"><span class="mark">R</span><span class="wordmark">Regent <span class="dim">Inbox</span></span></a>
         <p>Guest and owner messaging, property records and turnovers for short-term rental managers.</p>
       </div>
       <div><h4>Product</h4><ul><li><a href="#product">How it works</a></li><li><a href="#platform">Platform</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq">FAQ</a></li></ul></div>

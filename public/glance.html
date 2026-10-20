@@ -533,33 +533,36 @@ textarea.gl-contact-input{min-height:100px;resize:vertical}
   .gl-amenities-cat-item{padding:11px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.05)}
   .gl-amenities-cat-item:last-child{border-bottom:0;padding-bottom:0}
 
-  /* N°3 — where you sleep: real bed cells left, real room photo right */
+  /* N°3 — where you sleep: the bed cells run the full width of the band and
+     share it equally, so a wide window puts them all in one line and they only
+     drop to a second row once a cell would get narrower than the minimum. The
+     real room photo sits underneath as a banner. */
   #sleepSection{
-    display:grid;grid-template-columns:1fr 1fr;column-gap:56px;align-items:start
+    display:grid;grid-template-columns:minmax(0,1fr);align-items:start
   }
   #sleepSection .gl-section-head{grid-column:1/-1;margin-bottom:28px}
   #bedGrid{
-    grid-column:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;
+    grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:14px;
     border:0;border-radius:0;overflow:visible
   }
   .gl-bed-cell{
-    padding:26px 28px;border-radius:6px;background:var(--bg-card);
+    min-width:0;padding:clamp(18px,2vw,26px) clamp(14px,1.5vw,24px);border-radius:6px;background:var(--bg-card);
     border:1px solid rgba(232,228,221,.12)
   }
   .gl-bed-label{font-size:9px;letter-spacing:.22em;margin-bottom:10px}
-  .gl-bed-type{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:8px}
+  .gl-bed-type{font-family:var(--serif);font-size:clamp(19px,1.8vw,26px);font-weight:500;margin-bottom:8px}
   .gl-bed-note{font-size:8.5px;letter-spacing:.2em}
   /* No room photo for this listing -> the cells take the whole band instead
      of leaving the right half empty. */
   #sleepSection.no-photo #bedGrid{
-    grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))
+    grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(124px,1fr))
   }
   .gl-sleep-fig.has-photo{
-    display:block;grid-column:2;position:relative;margin:0;
+    display:block;grid-column:1/-1;position:relative;margin:22px 0 0;
     overflow:hidden;border-radius:6px;cursor:pointer
   }
   .gl-sleep-fig img{
-    display:block;width:100%;height:clamp(360px,30vw,430px);object-fit:cover;
+    display:block;width:100%;height:clamp(280px,26vw,400px);object-fit:cover;
     transition:transform .8s cubic-bezier(.2,.6,.2,1)
   }
   .gl-sleep-fig:hover img{transform:scale(1.03)}
@@ -1221,7 +1224,8 @@ var HERO_CAPTIONS = {
   'executive': 'THE RESIDENCE',
   'stunning-lake': 'THE LAKEFRONT',
   'regent-soco': 'THE HOME THEATRE',
-  'regent-texan': 'THE LIVING ROOM'
+  'regent-texan': 'THE LIVING ROOM',
+  'regent-highland': 'THE POOL'
 };
 
 // ── Curated Tag Lines (match Airbnb listing subtitles) ──
@@ -1236,7 +1240,8 @@ var GLANCE_TAGS = {
   'regent-crown': 'HOT TUB · GAME TABLE · GOOGLE FIBER · GATED',
   'regent-sol': 'SKYLINE VIEWS · GARAGE · BALCONY · GIGABIT WI-FI',
   'regent-soco': 'HOME THEATRE · GAME ROOM · GARAGE · BACKYARD',
-  'regent-texan': 'RESORT POOL · ARCADE · 75\" TV · PATIO'
+  'regent-texan': 'RESORT POOL · ARCADE · 75\" TV · PATIO',
+  'regent-highland': 'PRIVATE POOL · HOT TUB · GAME ROOM · SLEEPS 16'
 };
 
 // ── Init ──
@@ -1360,7 +1365,8 @@ function init() {
     'regent-crown': 'Four suites, one roof.\nDowntown is two miles away.',
     'regent-sol': 'Scandinavian light.\nFive minutes from downtown.',
     'regent-soco': 'Brand new off South Congress.\nTheatre, game room, backyard.',
-    'regent-texan': 'Designer one-bedroom.\nArcade hoops included.'
+    'regent-texan': 'Designer one-bedroom.\nArcade hoops included.',
+    'regent-highland': 'Sixteen sleep here.\nPool, spa and a game room.'
   };
   var tagline = taglines[SLUG] || PROP.name;
   document.getElementById('glTagline').innerHTML = tagline.replace(/\n/g, '<br>');
@@ -1579,6 +1585,15 @@ function getBedrooms() {
     'regent-texan': [
       { label: 'BEDROOM', type: '1 king bed', note: 'WALK-IN CLOSET · TV' },
       { label: 'LIVING ROOM', type: 'Sleeper couch', note: 'SLEEPS UP TO 3 TOTAL' }
+    ],
+    'regent-highland': [
+      { label: 'BEDROOM 1', type: '1 king bed', note: 'PRIMARY SUITE · MAIN FLOOR' },
+      { label: 'BEDROOM 2', type: '2 full beds', note: 'SLEEPS 4' },
+      { label: 'BEDROOM 3', type: '1 queen bed', note: 'SLEEPS 2' },
+      { label: 'BEDROOM 4', type: '1 king bed', note: 'SLEEPS 2' },
+      { label: 'BEDROOM 5', type: '1 queen bed', note: 'SLEEPS 2' },
+      { label: 'GAME ROOM', type: 'Sleeper couch', note: 'SLEEPS 2' },
+      { label: 'GAME ROOM', type: 'Queen air mattress', note: 'SLEEPS UP TO 16 TOTAL' }
     ]
   };
   return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
@@ -1684,6 +1699,15 @@ var FEATURED_AMENITIES = {
     { name: 'Private patio', detail: 'LOUNGE SEATING' },
     { name: 'Walk-in closet', detail: 'PLUS VANITY MIRROR' },
     { name: 'In-unit washer & dryer', detail: 'DETERGENT INCLUDED' }
+  ],
+  'regent-highland': [
+    { name: 'Private pool & spa', detail: 'FENCED BACKYARD' },
+    { name: 'Game room', detail: 'POOL TABLE · FOOSBALL · ARCADE' },
+    { name: 'Mini basketball hoops', detail: 'GAME ROOM + POOL' },
+    { name: 'Chef-sized kitchen', detail: 'GRANITE ISLAND · WET BAR' },
+    { name: 'Kids\u2019 playroom', detail: 'TEEPEE · PLAY KITCHEN' },
+    { name: 'Fire pit & outdoor dining', detail: 'BACKYARD' },
+    { name: 'Washer & dryer', detail: 'LAUNDRY ROOM' }
   ]
 };
 
@@ -1843,19 +1867,26 @@ var PETS_ALLOWED = {
   'regent-crown': true,
   'regent-sol': true,
   'regent-soco': true,
-  'regent-texan': true
+  'regent-texan': true,
+  'regent-highland': true
 };
 // Same reason: "TWO-CAR GARAGE + DRIVE" is Regent Crown's driveway, not a fact
 // about villas in general.
 var VILLA_PARKING = {
   'regent-crown': 'TWO-CAR GARAGE + DRIVE',
   'regent-sol': 'PRIVATE GARAGE ON SITE',
-  'regent-soco': 'PRIVATE GARAGE ON SITE'
+  'regent-soco': 'PRIVATE GARAGE ON SITE',
+  'regent-highland': 'FREE PARKING GARAGE'
+};
+
+// Check-in is 3:00 PM unless Guesty says otherwise for the listing.
+var CHECKIN_TIME = {
+  'regent-highland': '4:00 PM'
 };
 
 function buildRules() {
   var rules = [
-    { name: 'Self check-in', detail: 'SMART LOCK · 3:00 PM' },
+    { name: 'Self check-in', detail: 'SMART LOCK · ' + (CHECKIN_TIME[SLUG] || '3:00 PM') },
     { name: 'Checkout', detail: '11:00 AM' }
   ];
   // Whether pets are allowed is a fact about the property, not about whether
@@ -1940,6 +1971,10 @@ var NEIGHBOURHOODS = {
   'regent-texan': {
     desc: 'Round Rock, north of Austin. Five minutes to Dell\u2019s headquarters, ten to Kalahari and Dell Diamond, fifteen to the Premium Outlets and The Domain, and about twenty-five to downtown Austin.',
     tags: ['ROUND ROCK', 'DELL DIAMOND', 'KALAHARI', 'THE DOMAIN']
+  },
+  'regent-highland': {
+    desc: 'Jackson Meadows in Lake Highlands, northeast Dallas. White Rock Lake and the Dallas Arboretum are just south, with Lake Highlands Town Center, NorthPark Center and Richardson\u2019s Telecom Corridor close by and DART rail into downtown.',
+    tags: ['LAKE HIGHLANDS', 'WHITE ROCK LAKE', 'DALLAS ARBORETUM', 'NORTHPARK CENTER']
   }
 };
 

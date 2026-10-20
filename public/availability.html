@@ -813,7 +813,8 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
     'regent-crown': 'Hot Tub \xb7 Game Table \xb7 Google Fiber \xb7 Gated Drive',
     'regent-sol': 'Skyline View \xb7 Private Garage \xb7 Balcony \xb7 Gigabit Wi-Fi',
     'regent-soco': 'Home Theatre \xb7 Game Room \xb7 Private Garage \xb7 Backyard',
-    'regent-texan': 'Resort Pool \xb7 Arcade Hoops \xb7 75\" TV \xb7 24/7 Gym'
+    'regent-texan': 'Resort Pool \xb7 Arcade Hoops \xb7 75\" TV \xb7 24/7 Gym',
+    'regent-highland': 'Private Pool & Hot Tub \xb7 Game Room \xb7 Pool Table \xb7 Sleeps 16'
   };
 
   // ── Card renderers ──
@@ -1010,7 +1011,7 @@ button{border:none;background:none;cursor:pointer;font-family:inherit}
   searchBtn.addEventListener('click',function(){if(!cal.checkIn||!cal.checkOut)return;setSearchReady(false);fetchRange(cal.checkIn,cal.checkOut);});
 
   // ── Property filter ──
-  var PROP_NAMES={'regent-villa':'Regent Villa','regent-skyline':'Regent Skyline','cozy-designer':'Cozy Designer','designer-game':'Designer Game','lake-view':'Lake View','executive':'Executive','stunning-lake':'Stunning Lake','regent-crown':'Regent Crown','regent-sol':'Regent Sol','regent-soco':'Regent SoCo','regent-texan':'Regent Texan'};
+  var PROP_NAMES={'regent-villa':'Regent Villa','regent-skyline':'Regent Skyline','cozy-designer':'Cozy Designer','designer-game':'Designer Game','lake-view':'Lake View','executive':'Executive','stunning-lake':'Stunning Lake','regent-crown':'Regent Crown','regent-sol':'Regent Sol','regent-soco':'Regent SoCo','regent-texan':'Regent Texan','regent-highland':'Regent Highland'};
   var propertyFilter=null;
 
   function renderPropertyFiltered(data){
