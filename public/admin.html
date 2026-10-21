@@ -74,8 +74,16 @@ textarea{resize:vertical}
 .header-actions{display:flex;gap:.6rem;align-items:center}
 
 /* ── Hamburger (mobile) ── */
-.hamburger{display:none;position:fixed;top:1rem;left:1rem;z-index:200;width:40px;height:40px;border-radius:var(--radius-btn);background:var(--surface);border:1px solid var(--border);align-items:center;justify-content:center}
+.hamburger{display:none;position:fixed;top:1rem;left:1rem;z-index:200;width:40px;height:40px;border-radius:var(--radius-btn);background:var(--surface);border:1px solid var(--border);align-items:center;justify-content:center;transition:opacity .2s var(--ease),visibility .2s var(--ease)}
 .hamburger svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:2}
+/* The button is fixed at z-index 200, above the drawer's 100, so with the
+   drawer open it sat on top of the drawer's own brand row and read as a stray
+   icon beside the logo. Hide it properly while the drawer is open:
+   visibility:hidden keeps it out of the accessibility tree and out of
+   hit-testing, and pointer-events covers the fade itself, when visibility is
+   still 'visible'. It is position:fixed, so nothing reflows either way —
+   the brand row is untouched. Close the drawer and it fades back. */
+.hamburger.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;backdrop-filter:blur(2px)}
 .overlay.show{display:block}
 
@@ -1498,9 +1506,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
     const section = link.dataset.section;
     if (section === currentSection) return;
     switchSection(section);
-    // Close mobile sidebar
-    $('sidebar').classList.remove('open');
-    $('overlay').classList.remove('show');
+    setNav(false);   // close the mobile drawer
   });
 });
 
@@ -1543,14 +1549,30 @@ function refreshCurrentSection() {
   setTimeout(() => btn.classList.remove('spin'), 800);
 }
 
-// Mobile sidebar
-$('hamburger').addEventListener('click', () => {
-  $('sidebar').classList.toggle('open');
-  $('overlay').classList.toggle('show');
-});
-$('overlay').addEventListener('click', () => {
-  $('sidebar').classList.remove('open');
-  $('overlay').classList.remove('show');
+// Mobile sidebar. One function owns the open/closed state so the drawer, the
+// backdrop and the hamburger can't drift out of step — previously three call
+// sites each toggled the first two by hand.
+function setNav(open) {
+  $('sidebar').classList.toggle('open', open);
+  $('overlay').classList.toggle('show', open);
+  // Hide the hamburger while the drawer is open; it is fixed above the drawer
+  // and would otherwise sit on the drawer's own brand row.
+  const burger = $('hamburger');
+  burger.classList.toggle('is-hidden', open);
+  // inert drops it from the accessibility tree and from interaction at once,
+  // rather than waiting out the visibility transition.
+  burger.inert = open;
+}
+function navIsOpen() { return $('sidebar').classList.contains('open'); }
+
+$('hamburger').addEventListener('click', () => setNav(!navIsOpen()));
+$('overlay').addEventListener('click', () => setNav(false));
+// With the hamburger hidden, the backdrop and Escape are the ways out. A modal
+// on top owns Escape first — the modal handler above closes that.
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !navIsOpen()) return;
+  if (document.querySelector('.modal-overlay.show')) return;
+  setNav(false);
 });
 
 /* ═══════════════════════════════════════════════════════════
