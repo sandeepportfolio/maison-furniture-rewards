@@ -2626,16 +2626,17 @@ app.get('/management', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'management.html'));
 });
 
-// Serve Regent AI page
-// Regent Inbox (the product site) lives at /regent-inbox; its privacy policy
-// at /regent-inbox/privacy. /regent-ai was the old address — keep it working.
+// Regent Inbox product marketing remains at /regent-inbox, with its privacy
+// policy at /regent-inbox/privacy. The scripted playground lives at /regent-ai.
 app.get(['/regent-inbox', '/regent-inbox/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'regent-ai.html'));
 });
 app.get(['/regent-inbox/privacy', '/regent-inbox/privacy/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'regent-inbox-privacy.html'));
 });
-app.get('/regent-ai', (req, res) => res.redirect(301, '/regent-inbox'));
+app.get(['/regent-ai', '/regent-ai/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'regent-ai-playground.html'));
+});
 
 // Serve Careers page
 app.get('/careers', (req, res) => {
