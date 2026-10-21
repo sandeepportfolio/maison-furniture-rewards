@@ -328,6 +328,70 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
 .in{opacity:0;transform:translateY(10px);animation:rise 620ms var(--ease-out) forwards;animation-delay:var(--d,0ms)}
 @keyframes rise{to{opacity:1;transform:none}}
 
+/* ── Premium plan: highlight, per-feature stagger, voice waveform ──
+   Everything here is transform/opacity only, and every animation is gated on
+   the card's own reveal class so nothing runs before the card is on screen.
+   The waveform is four spans rather than an SVG: WebKit collapses an SVG with
+   a viewBox and no intrinsic size, and a 2px bar has no size to spare. */
+.plan--premium{position:relative;overflow:hidden}
+/* A slow, barely-there accent wash. Opacity only, behind the content, and it
+   never intercepts a pointer. */
+.plan--premium::before{
+  content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;z-index:0;
+  background:radial-gradient(120% 80% at 50% 0,var(--accent-soft),transparent 62%);
+  opacity:0;transition:opacity 900ms var(--ease-out)}
+.plan--premium.on::before{opacity:1}
+.plan--premium > *{position:relative;z-index:1}
+.plan--premium.on{border-color:var(--accent-line)}
+
+/* Per-feature reveal. --i is the row index; the card's .on gates the whole
+   sequence so the stagger reads as one gesture rather than eleven. */
+.plan .plist li{opacity:0;transform:translateY(6px);
+  transition:opacity 420ms var(--ease-out),transform 420ms var(--ease-out);
+  transition-delay:calc(var(--i,0) * 55ms + 120ms)}
+.plan.on .plist li{opacity:1;transform:none}
+.plan .plist .ck{transform:scale(.72);transition:transform 420ms var(--spring);
+  transition-delay:calc(var(--i,0) * 55ms + 180ms)}
+.plan.on .plist .ck{transform:none}
+
+/* The voice agent's signature. Paused until the card reveals, so an off-screen
+   card costs nothing. */
+.feat-voice{align-items:flex-start}
+.wave{display:inline-flex;align-items:center;gap:2px;height:11px;margin-left:7px;
+  color:var(--accent);vertical-align:-1px}
+.wave i{display:block;width:2px;height:100%;border-radius:1px;background:currentColor;
+  transform:scaleY(.3);transform-origin:50% 50%;
+  animation:wv 1180ms var(--ease-in-out) infinite;animation-play-state:paused}
+.plan.on .wave i{animation-play-state:running}
+.wave i:nth-child(2){animation-delay:150ms}
+.wave i:nth-child(3){animation-delay:300ms}
+.wave i:nth-child(4){animation-delay:450ms}
+@keyframes wv{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+
+/* ── "How does it work?" ──
+   Deliberately a quiet surface: the page's primary action is Book a demo, and
+   this must not read as a second one. */
+.howto{display:flex;align-items:center;gap:16px;margin-top:clamp(18px,2.4vw,26px);
+  padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surface);color:var(--text);
+  transition:transform 260ms var(--spring),border-color 220ms ease,background-color 220ms ease}
+@media(hover:hover) and (pointer:fine){.howto:hover{transform:translateY(-2px);border-color:var(--accent-line);background:var(--surface-2)}}
+.howto:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.howto-ic{flex:none;width:34px;height:34px;border-radius:11px;background:var(--accent-soft);
+  color:var(--accent);display:grid;place-items:center}
+.howto-ic svg{width:13px;height:13px;fill:currentColor}
+.howto-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.howto-txt b{font-size:15.5px;font-weight:650;letter-spacing:-.014em}
+.howto-txt i{font-style:normal;font-size:14px;color:var(--muted);line-height:1.5}
+.howto-go{flex:none;margin-left:auto;color:var(--faint);font-size:18px;line-height:1;
+  transition:transform 220ms var(--ease-out),color 220ms ease}
+@media(hover:hover) and (pointer:fine){.howto:hover .howto-go{transform:translateX(3px);color:var(--accent)}}
+@media(max-width:560px){
+  .howto{gap:13px;padding:14px 15px}
+  .howto-txt b{font-size:15px}
+  .howto-txt i{font-size:13.5px}
+}
+
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   /* Reduced motion means gentler, not none: opacity still carries the
@@ -338,6 +402,13 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
   .hero-glow{display:none}
   .btn:active,.chip:active,.icon-btn:active{transform:none}
   .step:hover,.plan:hover{transform:none}
+  /* Premium: keep the reveal, drop every movement and the looping waveform. */
+  .plan .plist li{transform:none;transition:opacity 220ms ease;transition-delay:0ms}
+  .plan .plist .ck{transform:none;transition:none;transition-delay:0ms}
+  .wave i{animation:none;transform:scaleY(.62)}
+  .plan--premium::before{transition:none}
+  .howto:hover{transform:none}
+  .howto:hover .howto-go{transform:none}
   .seg-thumb{transition:none}
   .faq-a{transition:none}
   .swap.changing{filter:none}
@@ -463,6 +534,18 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
         <p>Review and send with one tap, or turn on auto-send and let quiet-hours, privacy and policy checks decide. You can switch between the two per property.</p>
       </article>
     </div>
+
+    <!-- Quiet by design: the page's one primary action is Book a demo, so this
+         is a surface, not a second button. Routes to /regent-ai, the scripted
+         playground that walks a real thread end to end. -->
+    <a class="howto rv" href="/regent-ai" style="--d:210ms">
+      <span class="howto-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <span class="howto-txt">
+        <b>How does it work?</b>
+        <i>Watch Regent answer a real guest thread, step by step.</i>
+      </span>
+      <span class="howto-go" aria-hidden="true">&rarr;</span>
+    </a>
   </div>
 </section>
 
@@ -563,34 +646,34 @@ input[type=range]:active::-moz-range-thumb{transform:scale(1.14)}
           </div>
           <p class="plan-sub">Everything needed to hand the inbox over, and the platform the rest of the operation runs on.</p>
           <ul class="plist">
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>AI messaging on auto-send or draft mode</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Support team with a 48-hour response time</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Onboarding in about thirty seconds</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Learns your voice from past conversations</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Automated AI property-manager platform</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Add and remove collaborators</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Property records that sync with your channel manager</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Mobile app and desktop site</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Connect any platform</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Self-learning AI that improves over time</li>
+            <li style="--i:0"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>AI messaging on auto-send or draft mode</li>
+            <li style="--i:1"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Support team with a 48-hour response time</li>
+            <li style="--i:2"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Onboarding in about thirty seconds</li>
+            <li style="--i:3"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Learns your voice from past conversations</li>
+            <li style="--i:4"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Automated AI property-manager platform</li>
+            <li style="--i:5"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Add and remove collaborators</li>
+            <li style="--i:6"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Property records that sync with your channel manager</li>
+            <li style="--i:7"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Mobile app and desktop site</li>
+            <li style="--i:8"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Connect any platform</li>
+            <li style="--i:9"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Self-learning AI that improves over time</li>
           </ul>
         </article>
 
-        <article class="plan rv" id="planPremium" style="--d:120ms">
+        <article class="plan plan--premium rv" id="planPremium" style="--d:120ms">
           <div class="plan-top">
             <h3>Premium <span class="plan-tag">Add-on</span></h3>
             <div class="plan-price">+$10 / property / month</div>
           </div>
           <p class="plan-sub">For managers who want the AI to run settings and turnovers as well as the replies.</p>
           <ul class="plist">
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>The CEO's phone number for immediate support</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Chat interface that performs any action or setting</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Voice-to-reply for answering guests out loud</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Cleaner scheduling across every property</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Designated cleaner links and payment processing</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Cleaning photos and air-cover claims in one place</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Notes: documents, checklists and version history</li>
-            <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>Tone and style settings for how replies read</li>
+            <li style="--i:0"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>The CEO’s direct line for immediate support</span></li>
+            <li class="feat-voice" style="--i:1"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Voice agent that answers and acts — no screen needed<span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span></li>
+            <li style="--i:2"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Voice-to-reply for answering guests out loud</span></li>
+            <li style="--i:3"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Cleaner scheduling across every property</span></li>
+            <li style="--i:4"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Cleaner links with payment processing</span></li>
+            <li style="--i:5"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Cleaning photos and air-cover claims together</span></li>
+            <li style="--i:6"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Notes: documents, checklists and version history</span></li>
+            <li style="--i:7"><span class="ck"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span><span>Tone and style settings for every reply</span></li>
           </ul>
         </article>
 

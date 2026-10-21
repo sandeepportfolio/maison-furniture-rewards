@@ -45,6 +45,15 @@ const SCOPE = 'open-api';
 // version control.
 const TOKEN_FILE = path.join(__dirname, 'db', 'guesty-token.json');
 
+// How many OAuth tokens THIS process has minted, and when it last did.
+// Guesty's quota is 5 per 24h per client, so the number that matters
+// operationally is not "how many times did we deploy" but "how many times did
+// we actually spend a slot" — a deploy that adopts the peer's token via
+// guesty-token-handoff.js spends none. Surfaced on /api/guesty/token-status
+// and persisted so a restart within the same container keeps the tally.
+let mintCount = 0;
+let lastMintAt = null;
+
 // ── Allow-listed listings ──────────────────────────────────────────────
 // Maps the site's property slugs to their Guesty listing _id. The server
 // only ever talks to Guesty about these listings, so the routes can't be
@@ -337,6 +346,8 @@ function loadPersistedToken() {
     persisted = raw;
     // Restore burned-token hashes BEFORE evaluating any candidate token, so a
     // dead env bootstrap isn't re-adopted after a restart.
+    if (Number.isFinite(raw?.mintCount) && raw.mintCount > mintCount) mintCount = raw.mintCount;
+    if (Number.isFinite(raw?.lastMintAt)) lastMintAt = raw.lastMintAt;
     if (Array.isArray(raw?.burnedHashes)) {
       raw.burnedHashes.slice(-MAX_PERSISTED_BURNS).forEach(h => {
         if (typeof h === 'string' && /^[0-9a-f]{64}$/.test(h)) burnedHashes.add(h);
@@ -407,6 +418,10 @@ function persistToken() {
         // Hashes (never tokens) of tokens Guesty has 401'd, so restarts don't
         // re-adopt a dead bootstrap and burn an OAuth attempt finding out.
         burnedHashes: [...burnedHashes].slice(-MAX_PERSISTED_BURNS),
+        // Tally of slots actually spent, so a restart that re-reads this file
+        // does not report zero and hide a mint that already happened.
+        mintCount,
+        lastMintAt,
       }),
       { mode: 0o600 }
     );
@@ -444,6 +459,12 @@ async function requestTokenWithBackoff(id, secret) {
 
     if (res.ok) {
       clearRateLimit(); // success — reset backoff
+      mintCount += 1;
+      lastMintAt = Date.now();
+      // Deliberately loud: this line is the evidence that a deploy spent a
+      // slot. Never logs the token itself.
+      console.warn(`Guesty: OAuth token MINTED (slot spent) — ${mintCount} by this process since ${new Date(START_TIME).toISOString()}`);
+      persistToken();
       return res.json();
     }
     lastStatus = res.status;
@@ -601,6 +622,8 @@ function tokenStatus() {
     rateLimitScope,
     retryAfter: rateLimitRetryAfter(),
     skippingLiveFetch: shouldSkipLiveFetch(),
+    mintCount,
+    lastMintAt: lastMintAt ? new Date(lastMintAt).toISOString() : null,
     handoff: tokenHandoff.describe(),
   };
 }
