@@ -71,9 +71,7 @@ mark{background:none;color:inherit}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes roll{0%,26%{transform:translateY(0)}33%,59%{transform:translateY(-1.5em)}66%,92%{transform:translateY(-3em)}100%{transform:translateY(-4.5em)}}
 @keyframes wpulse{0%,24%{opacity:.18}29%{opacity:1}37%,57%{opacity:.18}62%{opacity:1}70%,90%{opacity:.18}95%{opacity:1}100%{opacity:.18}}
-@keyframes park1{0%{transform:translateX(-70px);opacity:0}6%{opacity:1}24%,100%{transform:none;opacity:1}}
-@keyframes park2{0%,22%{transform:translateX(-70px);opacity:0}28%{opacity:1}46%{transform:translateX(4px)}56%,100%{transform:translateX(-4px);opacity:1}}
-@keyframes qpop{0%,50%{opacity:0;transform:translateY(4px)}60%,100%{opacity:1;transform:none}}
+@keyframes qpop{0%,44%{opacity:0;transform:scale(.6)}52%,100%{opacity:1;transform:none}}
 @keyframes gapline{0%,55%{background-size:0 100%}70%,100%{background-size:100% 100%}}
 @keyframes lit1{0%,18%{opacity:.3}26%,100%{opacity:1}}
 @keyframes lit2{0%,30%{opacity:.3}38%,100%{opacity:1}}
@@ -365,16 +363,21 @@ mark{background:none;color:inherit}
 .vmsg{font-size:17px;font-weight:600;letter-spacing:-.01em}
 .vmsg u{text-decoration:none;border-bottom:2px solid var(--accent-line)}
 .lot{display:grid;grid-template-columns:1fr;gap:8px}
-.space{position:relative;height:56px;border-radius:14px;background:var(--bg-2);overflow:hidden;display:flex;align-items:center;padding-left:18px}
+.space{position:relative;min-height:56px;border-radius:14px;background:var(--bg-2);display:flex;align-items:center;gap:12px;padding:10px 14px 10px 12px}
 .space.unknown{background:var(--warn-soft);outline:1.5px dashed rgba(180,80,14,.45);outline-offset:-1.5px}
-.car{position:relative;width:46px;height:22px;border-radius:8px;background:var(--ink);flex:none}
-.car::before{content:'';position:absolute;left:12px;right:9px;top:5px;bottom:5px;border-radius:4px;background:#8e8e93}
-.car::after{content:'';position:absolute;left:7px;top:-3px;width:8px;height:5px;border-radius:2px;background:#48484a;box-shadow:23px 0 0 #48484a,0 23px 0 #48484a,23px 23px 0 #48484a}
-.car.c1{animation:park1 6.5s var(--ease-out) infinite}
-.car.c2{animation:park2 6.5s var(--ease-out) infinite}
-.space .tag{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+.item{flex:none;width:36px;height:36px;border-radius:11px;background:var(--ink);color:#fff;display:grid;place-items:center}
+.item svg{width:20px;height:20px}
+.item.ghost{background:transparent;color:var(--warn);outline:1.5px dashed rgba(180,80,14,.6);outline-offset:-1.5px}
+.item.c1{animation:itemIn 6.5s var(--ease-out) infinite}
+.item.ghost{animation:ghostIn 6.5s ease infinite}
+@keyframes itemIn{0%{opacity:0;transform:translateX(-14px)}9%,100%{opacity:1;transform:none}}
+@keyframes ghostIn{0%,26%{opacity:0}34%,100%{opacity:1}}
+@keyframes okPop{0%,11%{opacity:0;transform:scale(.6)}17%,100%{opacity:1;transform:none}}
+.space .tag{flex:1;font-size:12.5px;font-weight:600;color:var(--ink-2);line-height:1.3}
 .space.unknown .tag{color:var(--warn)}
-.space .q{position:absolute;left:74px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:var(--warn);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;animation:qpop 6.5s var(--ease-out) infinite}
+.space .ok{flex:none;width:20px;height:20px;border-radius:50%;background:var(--ink);display:grid;place-items:center;animation:okPop 6.5s var(--ease-out) infinite}
+.space .ok svg{width:10px;height:10px}
+.space .q{flex:none;width:20px;height:20px;border-radius:50%;background:var(--warn);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;animation:qpop 6.5s var(--ease-out) infinite}
 .vcard mark{background:var(--accent-soft);color:var(--accent-ink);padding:.02em .25em;border-radius:4px;font-weight:600;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .vcard mark.gap{background:linear-gradient(var(--warn-soft),var(--warn-soft)) no-repeat 0 0/0 100%;color:var(--warn);animation:gapline 6.5s var(--ease-out) infinite}
 .route{width:100%;height:auto;display:block;font-family:var(--sans)}
@@ -440,7 +443,6 @@ mark{background:none;color:inherit}
 @media(max-width:720px){
   .labbar .right{width:100%;justify-content:space-between}
   .labbar .right .pill{flex:1}
-  .space{height:62px}
 }
 @media(max-width:480px){
   .hero .acts .pill{width:100%}
@@ -455,10 +457,9 @@ mark{background:none;color:inherit}
   .sc-checks li.run i{animation:none!important}
   .scan{animation:none!important}
   .key,.fact .in,.rail .rline,.switch .thumb,.sc-msgs,.sc-msg,.fold,.sc-row,.sc-row .in,.sc-card,.cap,.sc-checks li i{transition-duration:1ms!important;transition-delay:0ms!important}
-  .roll span,.vwire,.car,.space .q,.vcard mark.gap,.route *{animation:none!important}
+  .roll span,.vwire,.item,.space .ok,.space .q,.vcard mark.gap,.route *{animation:none!important}
   .roll span{transform:translateY(-1.5em)}
-  .car.c2{transform:translateX(-16px)}
-  .space .q,.vcard mark.gap{opacity:1;background-size:100% 100%}
+  .item,.space .ok,.space .q,.vcard mark.gap{opacity:1;background-size:100% 100%}
   .route .p.gold{stroke-dashoffset:0}
   .route .c1,.route .c2,.route .c3,.route .you{opacity:1}
 }
@@ -511,7 +512,7 @@ mark{background:none;color:inherit}
           <div class="sc-row" data-a="2"><div><div class="in" style="--d:280ms"><span class="k">Checkout instructions</span><span class="v">Towels in the bathroom</span><i class="n" data-na="2"></i></div></div></div>
           <div class="sc-row gap" data-b="2"><div><div class="in" style="--d:280ms"><span class="k">Late-checkout approval</span><span class="v">No approval recorded</span><i class="n" data-nb="2"></i></div></div></div>
           <div class="sc-row"><div><div class="in"><span class="k">Wi‑Fi</span><span class="v">JuniperGuest</span></div></div></div>
-          <div class="sc-row"><div><div class="in"><span class="k">Parking</span><span class="v">One driveway space</span></div></div></div>
+          <div class="sc-row"><div><div class="in"><span class="k">Pool</span><span class="v">Heated · 8 AM – 10 PM</span></div></div></div>
           <div class="sc-row"><div><div class="in"><span class="k">Quiet hours</span><span class="v">10 PM – 8 AM</span></div></div></div>
         </div>
       </div></div>
@@ -537,7 +538,7 @@ mark{background:none;color:inherit}
     </div>
   </div>
   <div class="cap-col" id="captions">
-    <div class="cap on" data-s="1"><h3 class="h-m">A guest writes in.</h3><p>Checkout, parking, the TV. The same questions arrive from different people at all hours, and each one deserves a real answer.</p></div>
+    <div class="cap on" data-s="1"><h3 class="h-m">A guest writes in.</h3><p>Checkout, the crib, the TV. The same questions arrive from different people at all hours, and each one deserves a real answer.</p></div>
     <div class="cap" data-s="2"><h3 class="h-m">Regent reads your property record.</h3><p>Only the lines that answer this question light up. Nothing else about the home is used, and nothing is assumed.</p></div>
     <div class="cap" data-s="3"><h3 class="h-m">The reply assembles from your facts.</h3><p>Every claim is cited to a line in the record. Change the record, and the reply changes with it.</p></div>
     <div class="cap" data-s="4"><h3 class="h-m">Routine answers pass your checks and send.</h3><p>Quiet hours, privacy, policy, facts confirmed. When all four pass, auto-send can deliver it, if you have turned it on.</p></div>
@@ -591,14 +592,14 @@ mark{background:none;color:inherit}
       </article>
       <article class="tile reveal">
         <h3>Unknowns stay visible.</h3>
-        <p>When the record doesn’t answer the question, the draft says so. It never invents a second parking space to make the reply sound complete.</p>
+        <p>When the record answers half the question, the draft says which half. It never invents a high chair to make the reply sound complete.</p>
         <figure class="vig vig2" data-v="2">
-          <p class="vmsg">“Can we park <u>both cars</u> at the house?”</p>
+          <p class="vmsg">“Do you have a <u>crib and a high chair</u>?”</p>
           <div class="lot">
-            <div class="space"><span class="car c1"></span><span class="tag">Driveway · one space</span></div>
-            <div class="space unknown"><span class="car c2"></span><span class="q">?</span><span class="tag">Second car · unknown</span></div>
+            <div class="space"><span class="item c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="11" rx="2"/><path d="M7 7v11M12 7v11M17 7v11M3 12h18"/></svg></span><span class="tag">Travel crib · hall closet</span><i class="ok"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></i></div>
+            <div class="space unknown"><span class="item ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l-1 9H9zM9 12l-3 9M15 12l3 9M7.5 17h9"/></svg></span><span class="tag">High chair · not in the record</span><span class="q">?</span></div>
           </div>
-          <div class="vcard">There’s <mark>one reserved space in the driveway</mark>. I don’t have <mark class="gap">confirmed parking for a second car</mark>, so I’ll check with the host.</div>
+          <div class="vcard">Yes, there’s a <mark>travel crib in the hall closet</mark>. I don’t see a <mark class="gap">high chair in the home’s records</mark>, so I’ll check with the host.</div>
         </figure>
       </article>
       <article class="tile reveal">
@@ -797,8 +798,9 @@ const F = {
   checkout: { id:'checkout', key:'Checkout time', value:'11 AM' },
   towels:   { id:'towels',   key:'Checkout instructions', value:'Towels in the bathroom' },
   wifi:     { id:'wifi',     key:'Wi‑Fi', value:'JuniperGuest' },
-  parking:  { id:'parking',  key:'Reserved parking', value:'One driveway space' },
-  street:   { id:'street',   key:'Additional parking', value:'Not confirmed' },
+  crib:     { id:'crib',     key:'Travel crib', value:'Pack ’n Play · hall closet' },
+  highchair:{ id:'highchair',key:'High chair', value:'Not confirmed' },
+  pool:     { id:'pool',     key:'Pool', value:'Heated · 8 AM – 10 PM' },
   door:     { id:'door',     key:'Door code', value:'Active from check-in' },
   quiet:    { id:'quiet',    key:'Quiet hours', value:'10 PM – 8 AM' },
   tv:       { id:'tv',       key:'Living-room TV input', value:'HDMI 1' },
@@ -811,7 +813,7 @@ const SCENARIOS = [
     prior:{ who:'You', text:'Welcome in! Let us know if you need anything during your stay.' },
     message:'We’ve had such a nice stay! What time do we need to check out tomorrow?', key:'check out',
     problem:'The same question, from a different guest, on a different day. Start with what they asked.',
-    record:[ use(F.checkout, { editable:['10 AM','11 AM','12 PM'] }), use(F.towels), F.wifi, F.parking, F.door ],
+    record:[ use(F.checkout, { editable:['10 AM','11 AM','12 PM'] }), use(F.towels), F.wifi, F.pool, F.door ],
     insight:{ 1:'Two lines of the record answer this. Nothing else is needed, so nothing else is used.',
               2:'Each highlighted phrase is cited to a line in the record. Change the checkout time and watch it follow.',
               3:'A routine answer, fully grounded. In auto-send mode this one can pass the checks on its own.' },
@@ -819,24 +821,24 @@ const SCENARIOS = [
     outcome:'A routine answer, grounded in the sample record. You didn’t write it from scratch.',
     takeaway:'<strong>Less repetitive typing.</strong> Regent turns your property record into a usable first draft. Change the checkout time and the draft follows, because it never guessed.',
     safe:true },
-  { id:'parking', name:'Parking puzzle', desc:'Context changes the answer', initials:'JM', guest:'Jordan', channel:'Vrbo', time:'4:48 PM',
-    prior:{ who:'Jordan', text:'We’ll be arriving with two cars around 6 PM.' },
-    message:'Can we park both cars at the house?', key:'both cars',
-    problem:'A generic “yes” answers the wrong question. The earlier message matters.',
-    record:[ use(F.parking), use(F.street, { gap:true }), F.checkout, F.wifi, F.door ],
-    insight:{ 1:'The earlier message says two cars. The record confirms one space and says nothing about a second.',
-              2:'The draft states what is known and names what isn’t. The orange phrase is the gap.',
-              3:'An unconfirmed fact holds the message for you, even in auto-send mode.' },
-    draft:() => [ 'There’s ', { fact:'parking', text:'one reserved space in the driveway' }, '. I don’t have ', { fact:'street', text:'confirmed parking for a second car', gap:true }, ', so I’ll check with the host before suggesting another spot.' ],
-    outcome:'The draft explained the confirmed space without inventing a second one. The open question went to the host.',
-    takeaway:'<strong>Context beats a generic answer.</strong> Two cars, one confirmed space. Useful help keeps the unknown visible instead of papering over it.',
-    hold:'Additional parking is not confirmed in the record.',
+  { id:'baby', name:'Travelling with a baby', desc:'Half the answer is known', initials:'PR', guest:'Priya', channel:'Vrbo', time:'4:48 PM',
+    prior:{ who:'Priya', text:'We’re coming with our ten-month-old.' },
+    message:'Do you have a crib and a high chair we could use?', key:'crib and a high chair',
+    problem:'Two things asked in one breath. The record answers one of them.',
+    record:[ use(F.crib), use(F.highchair, { gap:true }), F.checkout, F.wifi, F.door ],
+    insight:{ 1:'The record lists a travel crib and where it lives. It says nothing about a high chair.',
+              2:'The draft confirms what the record knows and names what it doesn’t. The orange phrase is the gap.',
+              3:'An unconfirmed item holds the message for you, even in auto-send mode.' },
+    draft:() => [ 'Yes, there’s a ', { fact:'crib', text:'travel crib in the hall closet' }, ', ready to set up. I don’t see a ', { fact:'highchair', text:'high chair in the home’s records', gap:true }, ', so I’ll check with the host before promising one.' ],
+    outcome:'The draft confirmed the crib without inventing a high chair. The open question went to the host.',
+    takeaway:'<strong>Half an answer, given honestly.</strong> The crib is confirmed, the high chair isn’t. Useful help says which is which instead of rounding up to “yes”.',
+    hold:'A high chair is not confirmed in the record.',
     safe:false },
   { id:'tv', name:'The TV won’t cooperate', desc:'Instructions, not guesswork', initials:'SK', guest:'Sam', channel:'Direct', time:'8:05 PM',
     prior:{ who:'Sam', text:'We’re trying to watch the living-room TV.' },
     message:'The TV says “no signal.” Is there a trick to it?', key:'no signal',
     problem:'The right instructions are in a note somewhere, and the guest is waiting.',
-    record:[ use(F.tv), use(F.remote), F.wifi, F.checkout, F.parking ],
+    record:[ use(F.tv), use(F.remote), F.wifi, F.checkout, F.pool ],
     insight:{ 1:'The thread names the living-room TV. The record has a note for exactly that TV.',
               2:'The instructions come from the note, word for word where it matters.',
               3:'Explaining a fix is routine. Confirming it worked is not, so the draft asks the guest to say.' },
