@@ -1225,7 +1225,8 @@ var HERO_CAPTIONS = {
   'stunning-lake': 'THE LAKEFRONT',
   'regent-soco': 'THE HOME THEATRE',
   'regent-texan': 'THE LIVING ROOM',
-  'regent-highland': 'THE POOL'
+  'regent-highland': 'THE POOL',
+  'regent-edition': 'THE LIVING ROOM'
 };
 
 // ── Curated Tag Lines (match Airbnb listing subtitles) ──
@@ -1241,7 +1242,8 @@ var GLANCE_TAGS = {
   'regent-sol': 'SKYLINE VIEWS · GARAGE · BALCONY · GIGABIT WI-FI',
   'regent-soco': 'HOME THEATRE · GAME ROOM · GARAGE · BACKYARD',
   'regent-texan': 'RESORT POOL · ARCADE · 75\" TV · PATIO',
-  'regent-highland': 'PRIVATE POOL · HOT TUB · GAME ROOM · SLEEPS 16'
+  'regent-highland': 'PRIVATE POOL · HOT TUB · GAME ROOM · SLEEPS 16',
+  'regent-edition': 'ARCADE HOOPS · RESORT POOL · PRIVATE PATIO · SLEEPS 4'
 };
 
 // ── Init ──
@@ -1366,7 +1368,8 @@ function init() {
     'regent-sol': 'Scandinavian light.\nFive minutes from downtown.',
     'regent-soco': 'Brand new off South Congress.\nTheatre, game room, backyard.',
     'regent-texan': 'Designer one-bedroom.\nArcade hoops included.',
-    'regent-highland': 'Sixteen sleep here.\nPool, spa and a game room.'
+    'regent-highland': 'Sixteen sleep here.\nPool, spa and a game room.',
+    'regent-edition': 'Sunlit one-bedroom.\nArcade hoops, pool and patio.'
   };
   var tagline = taglines[SLUG] || PROP.name;
   document.getElementById('glTagline').innerHTML = tagline.replace(/\n/g, '<br>');
@@ -1594,6 +1597,11 @@ function getBedrooms() {
       { label: 'BEDROOM 5', type: '1 queen bed', note: 'SLEEPS 2' },
       { label: 'GAME ROOM', type: 'Sleeper couch', note: 'SLEEPS 2' },
       { label: 'GAME ROOM', type: 'Queen air mattress', note: 'SLEEPS UP TO 16 TOTAL' }
+    ],
+    'regent-edition': [
+      { label: 'BEDROOM', type: '1 queen bed', note: 'WALK-IN CLOSET · TV' },
+      { label: 'LIVING ROOM', type: 'Sleeper couch', note: '' },
+      { label: 'LIVING ROOM', type: 'Air mattress', note: 'SLEEPS UP TO 4 TOTAL' }
     ]
   };
   return bedrooms[SLUG] || [{ label: 'BEDROOM', type: '1 bed', note: '' }];
@@ -1708,6 +1716,15 @@ var FEATURED_AMENITIES = {
     { name: 'Kids\u2019 playroom', detail: 'TEEPEE · PLAY KITCHEN' },
     { name: 'Fire pit & outdoor dining', detail: 'BACKYARD' },
     { name: 'Washer & dryer', detail: 'LAUNDRY ROOM' }
+  ],
+  'regent-edition': [
+    { name: 'Dual-hoop arcade basketball', detail: 'IN UNIT' },
+    { name: 'Living room TV', detail: 'PLUS BEDROOM TV' },
+    { name: 'Resort-style pool', detail: 'ON SITE' },
+    { name: '24/7 fitness center', detail: 'ON SITE' },
+    { name: 'Private patio', detail: 'LOUNGE SEATING' },
+    { name: 'Walk-in closet', detail: 'PLUS VANITY MIRROR' },
+    { name: 'In-unit washer & dryer', detail: 'DETERGENT INCLUDED' }
   ]
 };
 
@@ -1844,7 +1861,8 @@ function buildBedrooms() {
 // phone still renders the original generic line byte-for-byte.
 var PARKING_DETAIL = {
   'regent-skyline': 'COMPLIMENTARY 24/7 VALET',
-  'regent-texan': 'FREE PARKING GARAGE'
+  'regent-texan': 'FREE PARKING GARAGE',
+  'regent-edition': 'FREE PARKING GARAGE'
 };
 
 // Villas used to assert "Pets welcome" for every slug, so pets are stated per
@@ -1868,7 +1886,8 @@ var PETS_ALLOWED = {
   'regent-sol': true,
   'regent-soco': true,
   'regent-texan': true,
-  'regent-highland': true
+  'regent-highland': true,
+  'regent-edition': false
 };
 // Same reason: "TWO-CAR GARAGE + DRIVE" is Regent Crown's driveway, not a fact
 // about villas in general.
@@ -1975,6 +1994,10 @@ var NEIGHBOURHOODS = {
   'regent-highland': {
     desc: 'Jackson Meadows in Lake Highlands, northeast Dallas. White Rock Lake and the Dallas Arboretum are just south, with Lake Highlands Town Center, NorthPark Center and Richardson\u2019s Telecom Corridor close by and DART rail into downtown.',
     tags: ['LAKE HIGHLANDS', 'WHITE ROCK LAKE', 'DALLAS ARBORETUM', 'NORTHPARK CENTER']
+  },
+  'regent-edition': {
+    desc: 'A quiet, upscale pocket of Round Rock, north of Austin, with quick access to I-35 and 45. The Domain, Kalahari Resort, Dell Diamond, Downtown Round Rock, the Premium Outlets and Dell headquarters are all close by.',
+    tags: ['ROUND ROCK', 'THE DOMAIN', 'KALAHARI', 'DELL DIAMOND']
   }
 };
 
