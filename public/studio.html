@@ -239,67 +239,52 @@ ul,ol{margin:0;padding:0;list-style:none}
 .sec-head .lede{max-width:52ch}
 @media(min-width:980px){.sec-head.split{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:end;column-gap:72px}.sec-head.split .eyebrow{grid-column:1/-1}}
 
-/* ── work ── */
+/* ── work: horizontal portfolio carousel ── */
 .work{border-top:1px solid var(--line)}
-.work-list{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(56px,8vw,128px)}
-.proj{min-width:0}
-.proj-shot{position:relative;display:block;color:inherit;text-decoration:none;margin-bottom:34px}
-.frame{border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--line-2);box-shadow:var(--shadow);transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
-.frame-bar{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;background:#F5F3EE;border-bottom:1px solid var(--line)}
-.frame-bar i{width:8px;height:8px;border-radius:50%;background:#D8D3C8;flex:none}
-.frame-bar span{margin-left:8px;font:500 11px/1 var(--mono);color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.frame-view{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--paper-2)}
-.frame-view img{position:absolute;left:0;top:0;width:100%;height:auto;transform:translate3d(0,0,0);transition:transform .9s var(--ease)}
-.phone-shot{position:absolute;right:12px;bottom:-20px;width:24%;max-width:128px;aspect-ratio:360/779;border-radius:16px;padding:3px;background:var(--ink);box-shadow:var(--shadow-lg);transition:transform .6s var(--ease)}
-.phone-shot img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:13px}
-.proj-meta{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:14px;align-items:baseline}
-.proj-num{font:500 12px/1 var(--mono);color:var(--cobalt)}
-.proj-meta h3{font:600 clamp(22px,2.1vw,28px)/1.1 var(--display);letter-spacing:-.028em}
-.proj-meta p,.proj-meta .tags,.proj-meta .proj-visit{grid-column:2}
-.proj-meta p{color:var(--ink-2);font-size:16px;line-height:1.5;margin-top:8px;max-width:48ch}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-.tags li{font:500 11px/1 var(--mono);letter-spacing:.03em;padding:7px 10px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line-2);color:var(--ink-2)}
-.proj-visit{justify-self:start;display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-weight:600;font-size:15px;color:var(--cobalt-ink);text-decoration:none;padding:4px 0}
-.proj-visit:hover{text-decoration:underline;text-underline-offset:4px}
-.proj-private{grid-column:2;margin-top:16px;font:500 12px/1.3 var(--mono);color:var(--ink-3)}
-@media(hover:hover) and (pointer:fine){
-  .proj-shot:hover .frame{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
-  .proj-shot:hover .frame-view img{transform:translate3d(0,var(--pan,0px),0);transition:transform var(--pd,2s) cubic-bezier(.45,0,.4,1)}
-  .proj-shot:hover .phone-shot{transform:translateY(-12px) rotate(-2deg)}
-}
-@media(min-width:900px){
-  .proj.feature{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:clamp(32px,4vw,64px);align-items:center}
-  .proj.feature.flip{grid-template-columns:minmax(0,1fr) minmax(0,1.75fr)}
-  .proj.feature.flip .proj-meta{order:-1}
-  .proj.feature .proj-shot{margin-bottom:0}
-  .proj.feature .proj-meta h3{font-size:clamp(28px,2.8vw,40px)}
-  .phone-shot{right:-14px;bottom:-26px}
-  .proj.feature.flip .phone-shot{right:auto;left:-14px}
-}
-
-.concepts{margin-top:clamp(72px,9vw,144px);padding-top:clamp(36px,4.4vw,56px);border-top:1px solid var(--line-2)}
-.concepts-head{display:grid;grid-template-columns:minmax(0,1fr);gap:12px 56px;margin-bottom:clamp(28px,4vw,48px)}
-.concepts-head h3{font:600 clamp(28px,3.4vw,46px)/1.04 var(--display);letter-spacing:-.035em;text-wrap:balance}
-.concepts-head h3 em{font:italic 400 1.06em var(--serif);color:var(--cobalt);letter-spacing:-.02em}
-.concepts-head p{color:var(--ink-2);font-size:16.5px;line-height:1.55;max-width:54ch;text-wrap:pretty}
-@media(min-width:980px){.concepts-head{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end}}
-.concept-grid{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1*var(--gutter));padding:4px var(--gutter) 8px;scroll-padding-inline:var(--gutter)}
-.concept-grid::-webkit-scrollbar{display:none}
-.concept{flex:0 0 min(80vw,400px);scroll-snap-align:start;min-width:0}
-@media(min-width:700px){.concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 24px;overflow:visible;margin:0;padding:0}}
-@media(min-width:1080px){.concept-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:52px 28px}}
-.concept-shot{display:block;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--paper-2);box-shadow:0 0 0 1px var(--line),var(--shadow);transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
-.concept-shot img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
-@media(hover:hover) and (pointer:fine){
-  .concept-shot:hover{transform:translateY(-6px);box-shadow:0 0 0 1px var(--line),var(--shadow-lg)}
-  .concept-shot:hover img{transform:scale(1.035)}
-}
-.concept-meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:16px;min-width:0}
-.concept-meta b{font:600 20px/1.2 var(--display);letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.concept-meta span{flex:none;font:500 11.5px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2)}
-.concept-credit{margin-top:6px;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
-.concept-credit a{color:var(--ink);font-weight:600;text-decoration:none;white-space:nowrap}
-.concept-credit a:hover{text-decoration:underline;text-underline-offset:3px}
+.car{--pad:calc((100% - min(var(--maxw),100% - 2*var(--gutter)))/2)}
+.js .car[data-reveal]{transform:none}
+.car-bar{display:flex;align-items:center;gap:18px;margin-bottom:22px}
+.car-count{flex:none;font:500 12.5px/1 var(--mono);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.car-count b{color:var(--ink);font-weight:600}
+.car-progress{flex:1;min-width:40px;height:2px;border-radius:2px;background:var(--line-2);overflow:hidden}
+.car-progress i{display:block;height:100%;background:var(--ink);transform-origin:left;transform:scaleX(var(--p,.15));transition:transform .3s var(--ease)}
+.car-btns{flex:none;display:flex;gap:8px}
+.car-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--line-2);color:var(--ink);transition:background-color .2s,color .2s,opacity .2s,box-shadow .2s}
+.car-btn svg{width:18px;height:18px}
+.car-btn:disabled{opacity:.3;cursor:default}
+@media(hover:hover) and (pointer:fine){.car-btn:not(:disabled):hover{background:var(--ink);color:var(--paper);box-shadow:none}}
+.car-track{display:flex;gap:clamp(14px,1.8vw,24px);overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px var(--pad) 4px;scroll-padding-inline:var(--pad);margin:0;outline:none}
+.car-track::-webkit-scrollbar{display:none}
+.car-track:focus-visible{box-shadow:inset 0 0 0 2px var(--cobalt)}
+.car-track.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}
+.car-track.dragging a{pointer-events:none}
+@media(hover:hover) and (pointer:fine){.car-track{cursor:grab}}
+.card{flex:0 0 clamp(272px,80vw,340px);scroll-snap-align:start;min-width:0}
+@media(min-width:700px){.card{flex-basis:clamp(320px,44vw,440px)}}
+@media(min-width:1080px){.card{flex-basis:clamp(380px,33vw,480px)}}
+.card-media{position:relative;display:block;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--paper-2);box-shadow:0 0 0 1px var(--line);container-type:inline-size;isolation:isolate}
+.card-media img{-webkit-user-drag:none;user-select:none}
+.card-media>img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+@media(hover:hover) and (pointer:fine){.card:hover .card-media>img{transform:scale(1.035)}}
+.media-live{background:var(--tone)}
+.mf{position:absolute;left:6%;top:8%;width:76%;border-radius:2cqi;overflow:hidden;background:#fff;box-shadow:0 2cqi 6cqi -2cqi rgba(0,0,0,.45)}
+.mf-bar{display:flex;align-items:center;gap:1cqi;height:5.4cqi;padding:0 2cqi;background:#F5F3EE;border-bottom:1px solid var(--line)}
+.mf-bar i{width:1.3cqi;height:1.3cqi;border-radius:50%;background:#D8D3C8;flex:none}
+.mf-bar span{margin-left:1.4cqi;font:500 2.3cqi/1 var(--mono);color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mf-view{display:block;aspect-ratio:16/10;overflow:hidden}
+.mf-view img{width:100%;height:100%;object-fit:cover;object-position:top}
+.mp{position:absolute;right:6%;bottom:7%;width:23%;aspect-ratio:360/779;border-radius:3.6cqi;padding:.7cqi;background:#121211;box-shadow:0 3cqi 6cqi -2cqi rgba(0,0,0,.5)}
+.mp img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:3cqi}
+.card-meta{padding:18px 2px 0}
+.card-tag{display:inline-flex;align-items:center;gap:8px;font:500 11.5px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+.card-tag::before{content:'';flex:none;width:7px;height:7px;border-radius:2px;background:var(--ink-3)}
+.card-tag.is-live{color:var(--cobalt-ink)}
+.card-tag.is-live::before{border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px rgba(63,217,154,.22)}
+.card-meta h3{margin-top:10px;font:600 clamp(22px,2vw,26px)/1.15 var(--display);letter-spacing:-.025em}
+.card-meta p{margin-top:8px;color:var(--ink-2);font-size:15.5px;line-height:1.5;max-width:44ch;text-wrap:pretty}
+.card-link{display:inline-flex;margin-top:12px;font-weight:600;font-size:15px;color:var(--cobalt-ink);text-decoration:none;padding:4px 0}
+.card-link:hover{text-decoration:underline;text-underline-offset:4px}
+.car-credit{margin-top:clamp(24px,3vw,36px);font-size:13px;line-height:1.5;color:var(--ink-3)}
 
 /* ── 01 websites ── */
 .web-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(48px,7vw,88px);align-items:center}
@@ -852,95 +837,118 @@ ul,ol{margin:0;padding:0;list-style:none}
   <div class="wrap">
     <div class="sec-head split">
       <p class="eyebrow" data-reveal><span class="pip"></span>Selected work</p>
-      <h2 class="h2" id="workTitle" data-reveal>Real products for <em>real businesses.</em></h2>
-      <p class="lede" data-reveal style="--rd:80ms">Two live builds from the studio: a luxury rental brand with its own booking engine and admin portal, and a South Dallas furniture store that sells online. Below them, concepts from designers we admire.</p>
+      <h2 class="h2" id="workTitle" data-reveal>Built for businesses <em>like yours.</em></h2>
+      <p class="lede" data-reveal style="--rd:80ms">Two of our live builds, followed by sample designs for the kinds of businesses we serve. Every one is something we can build for you, and take further.</p>
     </div>
-
-    <ol class="work-list" id="workList">
-      <li class="proj feature" data-reveal>
-        <a class="proj-shot" href="https://www.bookwithregent.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <figure class="frame"><div class="frame-bar"><i></i><i></i><i></i><span>bookwithregent.com</span></div>
-            <div class="frame-view"><img src="/images/studio/regent-stays.webp" alt="" width="1200" height="3333" loading="lazy" decoding="async"></div></figure>
-          <span class="phone-shot"><img src="/images/studio/regent-stays-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
-        </a>
-        <div class="proj-meta">
-          <span class="proj-num">01</span>
+  </div>
+  <div class="car" data-reveal>
+    <div class="wrap car-bar">
+      <span class="car-count" aria-hidden="true"><b id="carNow">01</b> / 11</span>
+      <span class="car-progress" aria-hidden="true"><i id="carProg"></i></span>
+      <span class="car-btns">
+        <button class="car-btn" id="carPrev" type="button" aria-label="Previous" aria-controls="carTrack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="car-btn" id="carNext" type="button" aria-label="Next" aria-controls="carTrack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      </span>
+    </div>
+    <ul class="car-track" id="carTrack" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Selected work. Scroll sideways to see more.">
+      <li class="card">
+        <div class="card-media media-live" style="--tone:linear-gradient(160deg,#2B2219,#0F0D0A)">
+          <span class="mf"><span class="mf-bar"><i></i><i></i><i></i><span>bookwithregent.com</span></span><span class="mf-view"><img src="/images/studio/regent-stays.webp" alt="" width="1200" height="750" loading="lazy" decoding="async" draggable="false"></span></span>
+          <span class="mp"><img src="/images/studio/regent-stays-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async" draggable="false"></span>
+        </div>
+        <div class="card-meta">
+          <span class="card-tag is-live">Live site · Booking website</span>
           <h3>Regent Stays</h3>
-          <p>A luxury short-term rental brand across Texas, with direct booking, live availability and pricing, an interactive map, guest rewards and a private admin portal behind it all.</p>
-          <ul class="tags"><li>Booking website</li><li>Admin portal</li><li>Payments</li></ul>
-          <a class="proj-visit" href="https://www.bookwithregent.com/" target="_blank" rel="noopener">Visit bookwithregent.com <span aria-hidden="true">↗</span></a>
+          <p>A luxury rental brand with direct booking, live pricing, guest rewards and its own admin portal.</p>
+          <a class="card-link" href="https://www.bookwithregent.com/" target="_blank" rel="noopener">Visit bookwithregent.com <span aria-hidden="true">↗</span></a>
         </div>
       </li>
-
-      <li class="proj feature flip" data-reveal>
-        <a class="proj-shot" href="https://thegaragesalestore.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <figure class="frame"><div class="frame-bar"><i></i><i></i><i></i><span>thegaragesalestore.com</span></div>
-            <div class="frame-view"><img src="/images/studio/garagesalestore.webp" alt="" width="1200" height="3333" loading="lazy" decoding="async"></div></figure>
-          <span class="phone-shot"><img src="/images/studio/garagesalestore-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
-        </a>
-        <div class="proj-meta">
-          <span class="proj-num">02</span>
+      <li class="card">
+        <div class="card-media media-live" style="--tone:linear-gradient(160deg,#DCE5CF,#BFCFAA)">
+          <span class="mf"><span class="mf-bar"><i></i><i></i><i></i><span>thegaragesalestore.com</span></span><span class="mf-view"><img src="/images/studio/garagesalestore.webp" alt="" width="1200" height="750" loading="lazy" decoding="async" draggable="false"></span></span>
+          <span class="mp"><img src="/images/studio/garagesalestore-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async" draggable="false"></span>
+        </div>
+        <div class="card-meta">
+          <span class="card-tag is-live">Live site · Online store</span>
           <h3>The Garage Sale Store</h3>
-          <p>A South Dallas furniture store that sells online: shop by category, add pieces to a bag, book furniture removal, and text the team in one tap.</p>
-          <ul class="tags"><li>Retail website</li><li>Online shop</li></ul>
-          <a class="proj-visit" href="https://thegaragesalestore.com/" target="_blank" rel="noopener">Visit thegaragesalestore.com <span aria-hidden="true">↗</span></a>
+          <p>A South Dallas furniture store that sells online, books furniture removal and lets shoppers text the team.</p>
+          <a class="card-link" href="https://thegaragesalestore.com/" target="_blank" rel="noopener">Visit thegaragesalestore.com <span aria-hidden="true">↗</span></a>
         </div>
       </li>
-    </ol>
-
-    <div class="concepts" role="region" aria-labelledby="conceptsTitle">
-      <div class="concepts-head" data-reveal>
-        <h3 id="conceptsTitle">Concepts we love, <em>from Dribbble.</em></h3>
-        <p>Standout work from independent designers, picked for the kinds of businesses we build for. Each is credited to its designer and links to the original; none are Regent Studio projects. They show the bar we design to.</p>
-      </div>
-      <ul class="concept-grid">
-        <li class="concept" data-reveal style="--rd:0ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/25431387-Stellar-Modern-Website-UI-UX-Design-for-Banking" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/stellar-banking.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Stellar</b><span>Banking website</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/phenomenonbranding" target="_blank" rel="noopener">Phenomenon Labs</a> · <a href="https://dribbble.com/shots/25431387-Stellar-Modern-Website-UI-UX-Design-for-Banking" target="_blank" rel="noopener" aria-label="View Stellar, a banking website concept by Phenomenon Labs, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:70ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/26361206-Granger-Landing-page-Animation" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/granger-landing.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Granger</b><span>Sports landing page</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/oneweekwonders" target="_blank" rel="noopener">One Week Wonders</a> · <a href="https://dribbble.com/shots/26361206-Granger-Landing-page-Animation" target="_blank" rel="noopener" aria-label="View Granger, a sports landing page concept by One Week Wonders, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:140ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/27310630-Luxury-Restaurant-Website-Design-The-Nocturne" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/nocturne.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>The Nocturne</b><span>Restaurant website</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/phenomenonstudio" target="_blank" rel="noopener">Phenomenon Studio</a> · <a href="https://dribbble.com/shots/27310630-Luxury-Restaurant-Website-Design-The-Nocturne" target="_blank" rel="noopener" aria-label="View The Nocturne, a restaurant website concept by Phenomenon Studio, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:0ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/24101205-Motion-an-excerpt-from-the-promo-video" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/motion-promo.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Motion</b><span>Appointment booking</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/mozaiq" target="_blank" rel="noopener">Mozaiq</a> · <a href="https://dribbble.com/shots/24101205-Motion-an-excerpt-from-the-promo-video" target="_blank" rel="noopener" aria-label="View Motion, a appointment booking concept by Mozaiq, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:70ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/25849429-Dashboard-Design-Overview-Analysis" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/dashboard-overview.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Overview analysis</b><span>Analytics dashboard</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/georai" target="_blank" rel="noopener">George Railean</a> · <a href="https://dribbble.com/shots/25849429-Dashboard-Design-Overview-Analysis" target="_blank" rel="noopener" aria-label="View Overview analysis, a analytics dashboard concept by George Railean, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:140ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/27782316-Barbershop-Booking-App-Beauty-Appointment-Scheduling-UI" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/barbershop-app.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Barbershop booking</b><span>Booking app</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/alaminhossen75" target="_blank" rel="noopener">Alamin Hossen</a> · <a href="https://dribbble.com/shots/27782316-Barbershop-Booking-App-Beauty-Appointment-Scheduling-UI" target="_blank" rel="noopener" aria-label="View Barbershop booking, a booking app concept by Alamin Hossen, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:0ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/26734775-Bakery-Website-Design" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/bakery.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Oven &amp; Co.</b><span>Bakery website</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/iamatifrafique" target="_blank" rel="noopener">Atif Rafique</a> · <a href="https://dribbble.com/shots/26734775-Bakery-Website-Design" target="_blank" rel="noopener" aria-label="View Oven &amp; Co., a bakery website concept by Atif Rafique, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:70ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/26924874-Dental-Clinic-Website" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/dental-clinic.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Tooth Care</b><span>Dental clinic website</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/growmelab" target="_blank" rel="noopener">Growmelab</a> · <a href="https://dribbble.com/shots/26924874-Dental-Clinic-Website" target="_blank" rel="noopener" aria-label="View Tooth Care, a dental clinic website concept by Growmelab, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-        <li class="concept" data-reveal style="--rd:140ms">
-          <a class="concept-shot" href="https://dribbble.com/shots/27632251-Luxury-Real-Estate-Website" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/real-estate.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
-          <div class="concept-meta"><b>Novarealty</b><span>Real estate website</span></div>
-          <p class="concept-credit">Design by <a href="https://dribbble.com/nexuxproduct" target="_blank" rel="noopener">NexUX Product</a> · <a href="https://dribbble.com/shots/27632251-Luxury-Real-Estate-Website" target="_blank" rel="noopener" aria-label="View Novarealty, a real estate website concept by NexUX Product, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
-        </li>
-      </ul>
-    </div>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/stellar-banking.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Banking website</span>
+          <h3>Stellar</h3>
+          <p>Account opening and support chat, wired straight into your back office.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/granger-landing.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Sports brand landing page</span>
+          <h3>Granger</h3>
+          <p>Product drops and a members area, with every order in your admin portal.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/nocturne.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Restaurant website</span>
+          <h3>The Nocturne</h3>
+          <p>Table booking, menus and private events, managed from your phone.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/motion-promo.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Appointment booking</span>
+          <h3>Motion</h3>
+          <p>Online booking with automatic reminders, so fewer people forget to show up.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/dashboard-overview.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Analytics dashboard</span>
+          <h3>Overview</h3>
+          <p>Live numbers from the tools you already use, together in one view.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/barbershop-app.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Booking app</span>
+          <h3>Barbershop booking</h3>
+          <p>Pick a barber, a service and a time, then pay a deposit in seconds.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/bakery.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Bakery website</span>
+          <h3>Oven &amp; Co.</h3>
+          <p>Order ahead for pickup, plus custom-cake requests that land in your inbox.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/dental-clinic.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Dental clinic website</span>
+          <h3>Tooth Care</h3>
+          <p>Online booking, insurance details and reminders, without the phone tag.</p>
+        </div>
+      </li>
+      <li class="card">
+        <div class="card-media"><img src="/images/studio/concepts/real-estate.webp" alt="" width="1200" height="900" loading="lazy" decoding="async" draggable="false"></div>
+        <div class="card-meta">
+          <span class="card-tag">Sample · Real estate website</span>
+          <h3>Novarealty</h3>
+          <p>Listings you update yourself, with tour requests sent straight to you.</p>
+        </div>
+      </li>
+    </ul>
+    <p class="wrap car-credit">Sample designs by Phenomenon Labs, One Week Wonders, Phenomenon Studio, Mozaiq, George Railean, Alamin Hossen, Atif Rafique, Growmelab and NexUX Product.</p>
   </div>
 </section>
 
@@ -1512,15 +1520,58 @@ tabsEl.addEventListener('keydown', e => {
 showFinal(0);
 const heroRun = reduced() ? { live: false } : whileVisible(say, () => play(cur), () => { heroSeq.stop(); say.classList.remove('talking'); });
 
-/* ── work: hover pan ── */
-const panImgs = $$('.frame-view img');
-function setPan(img) {
-  const view = img.parentElement, d = Math.max(0, img.offsetHeight - view.clientHeight);
-  img.style.setProperty('--pan', (-d).toFixed(0) + 'px');
-  img.style.setProperty('--pd', Math.min(7, Math.max(1.4, d / 520)).toFixed(2) + 's');
-}
-panImgs.forEach(img => { if (img.complete) setPan(img); img.addEventListener('load', () => setPan(img)); });
-let rT; addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => panImgs.forEach(setPan), 150); });
+/* ── work: horizontal portfolio carousel ── */
+(() => {
+  const track = $('#carTrack'); if (!track) return;
+  const cards = $$('.card', track), prev = $('#carPrev'), next = $('#carNext'), now = $('#carNow'), prog = $('#carProg');
+  const step = () => cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : track.clientWidth;
+  const pad2 = n => String(n).padStart(2, '0');
+  let raf = 0;
+  function update() {
+    raf = 0;
+    const max = Math.max(0, track.scrollWidth - track.clientWidth), x = track.scrollLeft;
+    const atEnd = x >= max - 2;
+    now.textContent = pad2(atEnd && max > 0 ? cards.length : Math.min(cards.length, Math.round(x / step()) + 1));
+    const shown = max > 0 ? track.clientWidth / track.scrollWidth : 1;
+    prog.style.setProperty('--p', (shown + (max > 0 ? x / max : 0) * (1 - shown)).toFixed(4));
+    prev.disabled = x <= 2;
+    next.disabled = atEnd;
+  }
+  const queue = () => { if (!raf) raf = requestAnimationFrame(update); };
+  track.addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  const go = dir => track.scrollBy({ left: dir * step(), behavior: reduced() ? 'auto' : 'smooth' });
+  prev.addEventListener('click', () => go(-1));
+  next.addEventListener('click', () => go(1));
+
+  // Mouse drag on desktop. Touch and trackpads scroll natively; the track
+  // only ever moves sideways.
+  let drag = null, moved = false;
+  track.addEventListener('dragstart', e => e.preventDefault());
+  track.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    drag = { x: e.clientX, left: track.scrollLeft }; moved = false;
+  });
+  addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    if (!moved && Math.abs(dx) > 5) { moved = true; track.classList.add('dragging'); }
+    if (moved) track.scrollLeft = drag.left - dx;
+  });
+  addEventListener('pointerup', () => {
+    if (!drag) return;
+    drag = null;
+    if (!moved) return;
+    const s = step(), target = Math.round(track.scrollLeft / s) * s;
+    track.classList.remove('dragging');
+    track.scrollTo({ left: target, behavior: reduced() ? 'auto' : 'smooth' });
+    setTimeout(() => { moved = false; }, 0);
+  });
+  track.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+  update();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+})();
+
 /* ── 01 websites: admin → live site ── */
 (() => {
   const host = $('.sync-in'), cursor = $('#aCursor'), field = $('#aField'), val = $('#aVal'), tgl = $('#aTgl'),
