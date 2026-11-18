@@ -277,6 +277,30 @@ ul,ol{margin:0;padding:0;list-style:none}
   .proj.feature.flip .phone-shot{right:auto;left:-14px}
 }
 
+.concepts{margin-top:clamp(72px,9vw,144px);padding-top:clamp(36px,4.4vw,56px);border-top:1px solid var(--line-2)}
+.concepts-head{display:grid;grid-template-columns:minmax(0,1fr);gap:12px 56px;margin-bottom:clamp(28px,4vw,48px)}
+.concepts-head h3{font:600 clamp(28px,3.4vw,46px)/1.04 var(--display);letter-spacing:-.035em;text-wrap:balance}
+.concepts-head h3 em{font:italic 400 1.06em var(--serif);color:var(--cobalt);letter-spacing:-.02em}
+.concepts-head p{color:var(--ink-2);font-size:16.5px;line-height:1.55;max-width:54ch;text-wrap:pretty}
+@media(min-width:980px){.concepts-head{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end}}
+.concept-grid{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1*var(--gutter));padding:4px var(--gutter) 8px;scroll-padding-inline:var(--gutter)}
+.concept-grid::-webkit-scrollbar{display:none}
+.concept{flex:0 0 min(80vw,400px);scroll-snap-align:start;min-width:0}
+@media(min-width:700px){.concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px 24px;overflow:visible;margin:0;padding:0}}
+@media(min-width:1080px){.concept-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:52px 28px}}
+.concept-shot{display:block;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--paper-2);box-shadow:0 0 0 1px var(--line),var(--shadow);transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.concept-shot img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
+@media(hover:hover) and (pointer:fine){
+  .concept-shot:hover{transform:translateY(-6px);box-shadow:0 0 0 1px var(--line),var(--shadow-lg)}
+  .concept-shot:hover img{transform:scale(1.035)}
+}
+.concept-meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:16px;min-width:0}
+.concept-meta b{font:600 20px/1.2 var(--display);letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.concept-meta span{flex:none;font:500 11.5px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2)}
+.concept-credit{margin-top:6px;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
+.concept-credit a{color:var(--ink);font-weight:600;text-decoration:none;white-space:nowrap}
+.concept-credit a:hover{text-decoration:underline;text-underline-offset:3px}
+
 /* ── 01 websites ── */
 .web-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(48px,7vw,88px);align-items:center}
 @media(min-width:980px){.web-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
@@ -829,7 +853,7 @@ ul,ol{margin:0;padding:0;list-style:none}
     <div class="sec-head split">
       <p class="eyebrow" data-reveal><span class="pip"></span>Selected work</p>
       <h2 class="h2" id="workTitle" data-reveal>Real products for <em>real businesses.</em></h2>
-      <p class="lede" data-reveal style="--rd:80ms">Two live builds from the studio: a luxury rental brand with its own booking engine and admin portal, and a South Dallas furniture store that sells online.</p>
+      <p class="lede" data-reveal style="--rd:80ms">Two live builds from the studio: a luxury rental brand with its own booking engine and admin portal, and a South Dallas furniture store that sells online. Below them, concepts from designers we admire.</p>
     </div>
 
     <ol class="work-list" id="workList">
@@ -863,6 +887,45 @@ ul,ol{margin:0;padding:0;list-style:none}
         </div>
       </li>
     </ol>
+
+    <div class="concepts" role="region" aria-labelledby="conceptsTitle">
+      <div class="concepts-head" data-reveal>
+        <h3 id="conceptsTitle">Concepts we love, <em>from Dribbble.</em></h3>
+        <p>Standout work from independent designers, picked for the kinds of businesses we build for. Each is credited to its designer and links to the original; none are Regent Studio projects. They show the bar we design to.</p>
+      </div>
+      <ul class="concept-grid">
+        <li class="concept" data-reveal style="--rd:0ms">
+          <a class="concept-shot" href="https://dribbble.com/shots/27310630-Luxury-Restaurant-Website-Design-The-Nocturne" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/nocturne.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
+          <div class="concept-meta"><b>The Nocturne</b><span>Restaurant website</span></div>
+          <p class="concept-credit">Design by <a href="https://dribbble.com/phenomenonstudio" target="_blank" rel="noopener">Phenomenon Studio</a> · <a href="https://dribbble.com/shots/27310630-Luxury-Restaurant-Website-Design-The-Nocturne" target="_blank" rel="noopener" aria-label="View The Nocturne, a restaurant website concept by Phenomenon Studio, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
+        </li>
+        <li class="concept" data-reveal style="--rd:70ms">
+          <a class="concept-shot" href="https://dribbble.com/shots/27782316-Barbershop-Booking-App-Beauty-Appointment-Scheduling-UI" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/barbershop-app.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
+          <div class="concept-meta"><b>Barbershop booking</b><span>Booking app</span></div>
+          <p class="concept-credit">Design by <a href="https://dribbble.com/alaminhossen75" target="_blank" rel="noopener">Alamin Hossen</a> · <a href="https://dribbble.com/shots/27782316-Barbershop-Booking-App-Beauty-Appointment-Scheduling-UI" target="_blank" rel="noopener" aria-label="View Barbershop booking, a booking app concept by Alamin Hossen, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
+        </li>
+        <li class="concept" data-reveal style="--rd:140ms">
+          <a class="concept-shot" href="https://dribbble.com/shots/26734775-Bakery-Website-Design" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/bakery.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
+          <div class="concept-meta"><b>Oven &amp; Co.</b><span>Bakery website</span></div>
+          <p class="concept-credit">Design by <a href="https://dribbble.com/iamatifrafique" target="_blank" rel="noopener">Atif Rafique</a> · <a href="https://dribbble.com/shots/26734775-Bakery-Website-Design" target="_blank" rel="noopener" aria-label="View Oven &amp; Co., a bakery website concept by Atif Rafique, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
+        </li>
+        <li class="concept" data-reveal style="--rd:0ms">
+          <a class="concept-shot" href="https://dribbble.com/shots/26924874-Dental-Clinic-Website" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/dental-clinic.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
+          <div class="concept-meta"><b>Tooth Care</b><span>Dental clinic website</span></div>
+          <p class="concept-credit">Design by <a href="https://dribbble.com/growmelab" target="_blank" rel="noopener">Growmelab</a> · <a href="https://dribbble.com/shots/26924874-Dental-Clinic-Website" target="_blank" rel="noopener" aria-label="View Tooth Care, a dental clinic website concept by Growmelab, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
+        </li>
+        <li class="concept" data-reveal style="--rd:70ms">
+          <a class="concept-shot" href="https://dribbble.com/shots/25931785-Lodge-Booking-App" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/lodge-app.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
+          <div class="concept-meta"><b>Lodge booking</b><span>Stays app</span></div>
+          <p class="concept-credit">Design by <a href="https://dribbble.com/Nixtio" target="_blank" rel="noopener">Nixtio</a> · <a href="https://dribbble.com/shots/25931785-Lodge-Booking-App" target="_blank" rel="noopener" aria-label="View Lodge booking, a stays app concept by Nixtio, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
+        </li>
+        <li class="concept" data-reveal style="--rd:140ms">
+          <a class="concept-shot" href="https://dribbble.com/shots/27632251-Luxury-Real-Estate-Website" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src="/images/studio/concepts/real-estate.webp" alt="" width="1200" height="900" loading="lazy" decoding="async"></a>
+          <div class="concept-meta"><b>Novarealty</b><span>Real estate website</span></div>
+          <p class="concept-credit">Design by <a href="https://dribbble.com/nexuxproduct" target="_blank" rel="noopener">NexUX Product</a> · <a href="https://dribbble.com/shots/27632251-Luxury-Real-Estate-Website" target="_blank" rel="noopener" aria-label="View Novarealty, a real estate website concept by NexUX Product, on Dribbble">View on Dribbble <span aria-hidden="true">↗</span></a></p>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>
 
