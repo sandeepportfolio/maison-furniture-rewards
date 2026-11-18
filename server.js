@@ -490,6 +490,7 @@ app.get('/sitemap.xml', (req, res) => {
     { loc: '/', priority: '1.0', changefreq: 'daily' },
     { loc: '/availability', priority: '0.9', changefreq: 'daily' },
     { loc: '/management', priority: '0.7', changefreq: 'monthly' },
+    { loc: '/studio', priority: '0.7', changefreq: 'monthly' },
     { loc: '/reward', priority: '0.6', changefreq: 'monthly' },
     { loc: '/regent-inbox', priority: '0.6', changefreq: 'monthly' },
     { loc: '/regent-inbox/privacy', priority: '0.3', changefreq: 'yearly' },
@@ -2636,6 +2637,11 @@ app.get(['/regent-inbox/privacy', '/regent-inbox/privacy/'], (req, res) => {
 });
 app.get(['/regent-ai', '/regent-ai/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'regent-ai-playground.html'));
+});
+
+// Regent Studio: websites, AI automation and custom apps for business owners.
+app.get(['/studio', '/studio/'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'studio.html'));
 });
 
 // Serve Careers page
