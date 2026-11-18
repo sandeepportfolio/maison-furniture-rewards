@@ -2258,10 +2258,31 @@ function sendContactEmail({ name, email, phone, property, subject, message }) {
       timeZone: 'America/New_York'
     });
 
+    // Leads from bookwithregent.com/studio send subjects like
+    // "Regent Studio: Website, AI automation". Label them so they stand out.
+    // The subject line, sender name and reply-to address are plain text, so
+    // they use the raw values; only the HTML body below is escaped.
+    const rawName = name, rawEmail = email;
+    const isStudio = /^Regent Studio\b/.test(subject || '');
+    const heading = isStudio ? 'New Regent Studio lead' : 'New Message from bookwithregent.com';
+    const emailSubject = isStudio
+      ? `New Regent Studio lead from ${name || 'a visitor'}: ${(subject.replace(/^Regent Studio:?\s*/, '') || 'New project')}`
+      : `New Contact: ${subject || 'General Inquiry'} from ${name || 'Guest'}`;
+
+    // Every value below comes straight from a public form, so escape it before
+    // it goes into the HTML email; otherwise a visitor can inject markup.
+    const h = (v) => String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    ({ name, email, phone, property, subject, message } = {
+      name: h(name), email: h(email), phone: h(phone),
+      property: h(property), subject: h(subject), message: h(message)
+    });
+
     const htmlBody = `
       <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;color:#333;">
-        <div style="background:#1a1a2e;padding:20px 24px;border-radius:8px 8px 0 0;">
-          <h2 style="margin:0;color:#ffffff;font-size:20px;">New Message from bookwithregent.com</h2>
+        <div style="background:${isStudio ? '#2E3BEF' : '#1a1a2e'};padding:20px 24px;border-radius:8px 8px 0 0;">
+          <h2 style="margin:0;color:#ffffff;font-size:20px;">${heading}</h2>
         </div>
         <div style="border:1px solid #e0e0e0;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
           <table style="width:100%;border-collapse:collapse;">
@@ -2299,9 +2320,9 @@ function sendContactEmail({ name, email, phone, property, subject, message }) {
 
     const payload = JSON.stringify({
       access_key: accessKey,
-      subject: `New Contact: ${subject || 'General Inquiry'} from ${name || 'Guest'}`,
-      from_name: name || 'Website Visitor',
-      email: email,
+      subject: emailSubject,
+      from_name: rawName || (isStudio ? 'Regent Studio visitor' : 'Website Visitor'),
+      email: rawEmail,
       cc: 'jatinshekara@gmail.com, sparx.sandeep@gmail.com',
       message: htmlBody
     });

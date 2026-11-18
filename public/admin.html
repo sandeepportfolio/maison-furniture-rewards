@@ -147,6 +147,8 @@ textarea{resize:vertical}
 .msg-contact a:hover{color:var(--copper-soft)}
 .msg-property-tag{display:inline-flex;align-items:center;gap:.3rem;margin-top:.4rem;padding:.2rem .6rem;background:var(--surface-2);border-radius:6px;font-size:.74rem;font-weight:500;color:var(--text-2)}
 .msg-property-tag svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.msg-studio-tag{display:inline-flex;align-items:center;gap:.35rem;margin-top:.4rem;padding:.2rem .6rem;background:rgba(124,134,255,.16);border-radius:6px;font-size:.74rem;font-weight:600;color:#A9B0FF}
+.msg-studio-tag::before{content:'';width:6px;height:6px;border-radius:2px;background:currentColor}
 .msg-subject{font-weight:600;font-size:.88rem;margin:.6rem 0 .3rem;color:var(--copper-soft)}
 .msg-body{font-size:.86rem;line-height:1.6;color:var(--text-2);padding:.8rem 1rem;background:var(--bg);border-radius:8px;border:1px solid var(--border);margin:.5rem 0;cursor:pointer;max-height:80px;overflow:hidden;transition:max-height .3s ease}
 .msg-body.expanded{max-height:1000px}
@@ -1815,6 +1817,7 @@ function renderMessages() {
             ${m.phone ? ` &middot; ${esc(m.phone)}` : ''}
           </div>
           ${m.property ? `<div class="msg-property-tag"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${esc(m.property)}</div>` : ''}
+          ${/^Regent Studio\b/.test(m.subject || '') ? `<div class="msg-studio-tag">Regent Studio lead</div>` : ''}
         </div>
         <span class="badge b-${m.status || 'unread'}">${m.status || 'unread'}</span>
       </div>
