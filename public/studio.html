@@ -287,6 +287,59 @@ ul,ol{margin:0;padding:0;list-style:none}
   .rail-ui{display:none}
 }
 
+/* ── style library ── */
+.styles{background:var(--paper-2)}
+.lib-filters{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1*var(--gutter)) clamp(28px,4vw,44px);padding:2px var(--gutter)}
+.lib-filters::-webkit-scrollbar{display:none}
+.fchip{flex:none;height:40px;padding:0 16px;border-radius:999px;box-shadow:inset 0 0 0 1.5px var(--line-2);font-weight:500;font-size:14.5px;color:var(--ink-2);white-space:nowrap;transition:background-color .25s,color .25s,box-shadow .25s}
+.fchip:hover{color:var(--ink)}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--paper);box-shadow:none}
+@media(min-width:760px){.lib-filters{flex-wrap:wrap;overflow:visible;margin-inline:0;padding-inline:2px}}
+@media(max-width:759px){.lib-filters{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}}
+.lib{display:grid;grid-template-columns:minmax(0,1fr)}
+.lib-list{display:none}
+.lib-stage{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1*var(--gutter));padding:4px var(--gutter) 8px;scroll-padding-inline:var(--gutter)}
+.lib-stage::-webkit-scrollbar{display:none}
+.lib-fig{flex:0 0 min(84vw,440px);scroll-snap-align:start;margin:0;min-width:0}
+.lib-shot{position:relative;display:block;color:inherit;text-decoration:none;margin-bottom:34px}
+.lib-shot .frame,.lib-shot .frame-bar,.lib-shot .frame-view{display:block}
+.lib-shot .frame-bar{display:flex}
+.lib-cap-top{display:flex;align-items:baseline;justify-content:space-between;gap:6px 14px;flex-wrap:wrap}
+.lib-cap-top b{font:600 clamp(22px,2.2vw,30px)/1.1 var(--display);letter-spacing:-.03em}
+.lib-cap-top span{font:500 11.5px/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2)}
+.lib-cap p{margin-top:10px;color:var(--ink-2);font-size:16px;line-height:1.5;max-width:54ch;text-wrap:pretty}
+.lib-acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin-top:18px}
+.lib-visit{font-weight:600;font-size:15px;color:var(--cobalt-ink);text-decoration:none;padding:6px 0}
+.lib-visit:hover{text-decoration:underline;text-underline-offset:4px}
+.lib-fine{margin-top:clamp(32px,4.4vw,52px);padding-top:18px;border-top:1px solid var(--line-2);font-size:13.5px;line-height:1.5;color:var(--ink-2);max-width:72ch}
+.lib-row{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:baseline;column-gap:12px;width:100%;padding:14px 0 15px;border-bottom:1px solid var(--line);text-align:left;color:var(--ink-3);transition:color .25s}
+.lib-row .n,.lib-row .ind{font:500 11.5px/1.2 var(--mono);color:var(--ink-2)}
+.lib-row .ind{text-transform:uppercase;letter-spacing:.05em;text-align:right;white-space:nowrap}
+.lib-row .nm{font:600 clamp(24px,2.2vw,32px)/1.1 var(--display);letter-spacing:-.032em;transition:transform .5s var(--ease)}
+.lib-row::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--cobalt);transform:scaleX(0);transform-origin:left}
+.lib-row:hover{color:var(--ink-2)}
+.lib-row.on{color:var(--ink)}
+.lib-row.on .n{color:var(--cobalt)}
+.lib-row.on .nm{transform:translateX(10px)}
+.lib-row.on::after{transform:scaleX(1);transition:transform .5s var(--ease)}
+.lib-row.on.run::after{transform:scaleX(0);transition:none;animation:fill var(--dur,4200ms) linear forwards}
+.lib-rail{margin-top:6px}
+@media(min-width:900px) and (max-width:979px){.lib-rail{display:flex}}
+@media(min-width:980px){
+  .lib{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);column-gap:clamp(40px,5vw,88px);align-items:start}
+  .lib-list{display:block;border-top:1px solid var(--line-2)}
+  .lib-stage{position:sticky;top:calc(var(--nav) + 28px);display:grid;overflow:visible;margin:0;padding:0}
+  .lib-fig{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .45s var(--ease),transform .7s var(--ease),visibility 0s linear .7s}
+  .lib-fig.on{opacity:1;visibility:visible;transform:none;transition:opacity .45s var(--ease),transform .7s var(--ease),visibility 0s}
+  .lib-fig .phone-shot{right:-14px;bottom:-26px}
+  .lib-shot{margin-bottom:40px}
+  .lib-rail{display:none}
+}
+@media(hover:hover) and (pointer:fine){
+  .lib-shot:hover .frame{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+  .lib-shot:hover .phone-shot{transform:translateY(-12px) rotate(-2deg)}
+}
+
 /* ── 01 websites ── */
 .web-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(56px,7vw,88px);align-items:center}
 @media(min-width:980px){.web-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
@@ -628,7 +681,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .mi-name h3{font:600 clamp(26px,3.3vw,44px)/1.05 var(--display);letter-spacing:-.035em}
 .mi-lead{display:none;flex:1;min-width:20px;border-bottom:2px dotted var(--line-2);transform:translateY(-.3em)}
 .mi-price{font:600 clamp(22px,2.6vw,34px)/1.1 var(--display);letter-spacing:-.03em;white-space:nowrap}
-.mi-price small{font:500 14px/1 var(--sans);letter-spacing:0;color:var(--ink-3)}
+.mi-price small{font:500 14px/1 var(--sans);letter-spacing:0;color:var(--ink-2)}
 .mi-desc{color:var(--ink-2);font-size:16.5px;line-height:1.5;max-width:58ch}
 @media(min-width:760px){
   .mi{grid-template-columns:auto minmax(0,1fr) auto;column-gap:24px}
@@ -741,6 +794,7 @@ ul,ol{margin:0;padding:0;list-style:none}
     <a class="brand" href="/studio" aria-label="Regent Studio, top of page"><span class="brand-r">REGENT</span><span class="brand-s">Studio</span></a>
     <nav class="nav-links" aria-label="Sections">
       <a href="#work">Work</a>
+      <a href="#styles">Styles</a>
       <a href="#websites">Websites</a>
       <a href="#automation">AI automation</a>
       <a href="#apps">Custom apps</a>
@@ -757,11 +811,12 @@ ul,ol{margin:0;padding:0;list-style:none}
 <div class="sheet" id="sheet" aria-hidden="true" inert>
   <nav aria-label="Menu">
     <a href="#work">Work <span>01</span></a>
-    <a href="#websites">Websites <span>02</span></a>
-    <a href="#automation">AI automation <span>03</span></a>
-    <a href="#apps">Custom apps <span>04</span></a>
-    <a href="#pricing">Pricing <span>05</span></a>
-    <a href="#faq">Questions <span>06</span></a>
+    <a href="#styles">Style library <span>02</span></a>
+    <a href="#websites">Websites <span>03</span></a>
+    <a href="#automation">AI automation <span>04</span></a>
+    <a href="#apps">Custom apps <span>05</span></a>
+    <a href="#pricing">Pricing <span>06</span></a>
+    <a href="#faq">Questions <span>07</span></a>
   </nav>
   <div class="sheet-foot">
     <a class="btn btn-primary" href="#contact">Tell us what&rsquo;s on your mind <span class="arr" aria-hidden="true">→</span></a>
@@ -948,6 +1003,191 @@ ul,ol{margin:0;padding:0;list-style:none}
       </li>
     </ol>
     <div class="rail-ui" aria-hidden="true"><span class="rail-track"><b id="railBar"></b></span><span class="rail-count" id="railCount">1 / 7</span></div>
+  </div>
+</section>
+
+<!-- ═══ STYLE LIBRARY ═══ -->
+<section class="section styles" id="styles" aria-labelledby="stylesTitle">
+  <div class="wrap">
+    <div class="sec-head split">
+      <p class="eyebrow" data-reveal><span class="pip"></span>Style library</p>
+      <h2 class="h2" id="stylesTitle" data-reveal>The best of the web, <em>as your starting point.</em></h2>
+      <p class="lede" data-reveal style="--rd:80ms">Not sure what you want yet? Browse some of the best-designed sites on the internet, pick a direction you love, and we&rsquo;ll design something original for your business in that spirit.</p>
+    </div>
+    <div data-reveal>
+      <div class="lib-filters" role="group" aria-label="Filter by style">
+        <button class="fchip" type="button" data-dir="all" aria-pressed="true">All</button>
+        <button class="fchip" type="button" data-dir="warm" aria-pressed="false">Warm &amp; friendly</button>
+        <button class="fchip" type="button" data-dir="calm" aria-pressed="false">Calm &amp; premium</button>
+        <button class="fchip" type="button" data-dir="bright" aria-pressed="false">Bright &amp; confident</button>
+        <button class="fchip" type="button" data-dir="dark" aria-pressed="false">Dark &amp; precise</button>
+        <button class="fchip" type="button" data-dir="loud" aria-pressed="false">Loud &amp; playful</button>
+      </div>
+      <div class="lib" id="lib">
+        <ol class="lib-list" aria-label="Sites">
+        <li><button class="lib-row" type="button" data-dir="warm" data-i="0" aria-controls="lib-tend" aria-pressed="false"><span class="n">01</span><span class="nm">Tend</span><span class="ind">Dental clinic</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="warm" data-i="1" aria-controls="lib-sweetgreen" aria-pressed="false"><span class="n">02</span><span class="nm">Sweetgreen</span><span class="ind">Restaurant</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="warm" data-i="2" aria-controls="lib-headspace" aria-pressed="false"><span class="n">03</span><span class="nm">Headspace</span><span class="ind">Wellness app</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="calm" data-i="3" aria-controls="lib-apple" aria-pressed="false"><span class="n">04</span><span class="nm">Apple</span><span class="ind">Consumer tech</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="calm" data-i="4" aria-controls="lib-ourplace" aria-pressed="false"><span class="n">05</span><span class="nm">Our Place</span><span class="ind">Cookware</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="bright" data-i="5" aria-controls="lib-stripe" aria-pressed="false"><span class="n">06</span><span class="nm">Stripe</span><span class="ind">Payments</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="bright" data-i="6" aria-controls="lib-notion" aria-pressed="false"><span class="n">07</span><span class="nm">Notion</span><span class="ind">Software</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="dark" data-i="7" aria-controls="lib-linear" aria-pressed="false"><span class="n">08</span><span class="nm">Linear</span><span class="ind">Software</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="dark" data-i="8" aria-controls="lib-raycast" aria-pressed="false"><span class="n">09</span><span class="nm">Raycast</span><span class="ind">Productivity app</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="loud" data-i="9" aria-controls="lib-glossier" aria-pressed="false"><span class="n">10</span><span class="nm">Glossier</span><span class="ind">Beauty</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="loud" data-i="10" aria-controls="lib-oatly" aria-pressed="false"><span class="n">11</span><span class="nm">Oatly</span><span class="ind">Food &amp; drink</span></button></li>
+        <li><button class="lib-row" type="button" data-dir="loud" data-i="11" aria-controls="lib-te" aria-pressed="false"><span class="n">12</span><span class="nm">Teenage Engineering</span><span class="ind">Electronics</span></button></li>
+        </ol>
+        <div class="lib-stage" id="libStage">
+        <figure class="lib-fig" id="lib-tend" data-dir="warm">
+          <a class="lib-shot" href="https://www.hellotend.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>hellotend.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/tend.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/tend-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Tend</b><span>Dental clinic · Warm &amp; friendly</span></div>
+            <p>Makes a dreaded appointment feel like something to look forward to: soft color, real smiling faces, and booking one tap away.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Tend (hellotend.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.hellotend.com/" target="_blank" rel="noopener">Visit hellotend.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-sweetgreen" data-dir="warm">
+          <a class="lib-shot" href="https://www.sweetgreen.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>sweetgreen.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/sweetgreen.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/sweetgreen-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Sweetgreen</b><span>Restaurant · Warm &amp; friendly</span></div>
+            <p>The food does the selling. Big, warm photography, a short menu bar and one bright Order button.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Sweetgreen (sweetgreen.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.sweetgreen.com/" target="_blank" rel="noopener">Visit sweetgreen.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-headspace" data-dir="warm">
+          <a class="lib-shot" href="https://www.headspace.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>headspace.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/headspace.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/headspace-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Headspace</b><span>Wellness app · Warm &amp; friendly</span></div>
+            <p>Rounded shapes, a sunny palette and friendly characters make a wellness product feel easy to start.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Headspace (headspace.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.headspace.com/" target="_blank" rel="noopener">Visit headspace.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-apple" data-dir="calm">
+          <a class="lib-shot" href="https://www.apple.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>apple.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/apple.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/apple-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Apple</b><span>Consumer tech · Calm &amp; premium</span></div>
+            <p>The product is the hero. Huge imagery, very few words, and nothing competing for your attention.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Apple (apple.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.apple.com/" target="_blank" rel="noopener">Visit apple.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-ourplace" data-dir="calm">
+          <a class="lib-shot" href="https://fromourplace.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>fromourplace.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/ourplace.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/ourplace-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Our Place</b><span>Cookware · Calm &amp; premium</span></div>
+            <p>Editorial serif headlines and kitchen-table photography make everyday cookware feel like a lifestyle.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Our Place (fromourplace.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://fromourplace.com/" target="_blank" rel="noopener">Visit fromourplace.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-stripe" data-dir="bright">
+          <a class="lib-shot" href="https://stripe.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>stripe.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/stripe.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/stripe-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Stripe</b><span>Payments · Bright &amp; confident</span></div>
+            <p>A signature gradient and crisp type make a complicated product feel simple and trustworthy.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Stripe (stripe.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://stripe.com/" target="_blank" rel="noopener">Visit stripe.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-notion" data-dir="bright">
+          <a class="lib-shot" href="https://www.notion.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>notion.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/notion.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/notion-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Notion</b><span>Software · Bright &amp; confident</span></div>
+            <p>Hand-drawn characters and plenty of white space make powerful software feel friendly.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Notion (notion.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.notion.com/" target="_blank" rel="noopener">Visit notion.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-linear" data-dir="dark">
+          <a class="lib-shot" href="https://linear.app/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>linear.app</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/linear.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/linear-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Linear</b><span>Software · Dark &amp; precise</span></div>
+            <p>Dark, quiet and precise. Fine typography and real product screens signal quality at a glance.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Linear (linear.app)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://linear.app/" target="_blank" rel="noopener">Visit linear.app <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-raycast" data-dir="dark">
+          <a class="lib-shot" href="https://www.raycast.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>raycast.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/raycast.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/raycast-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Raycast</b><span>Productivity app · Dark &amp; precise</span></div>
+            <p>One bold graphic, one headline and one button. Confidence through restraint.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Raycast (raycast.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.raycast.com/" target="_blank" rel="noopener">Visit raycast.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-glossier" data-dir="loud">
+          <a class="lib-shot" href="https://www.glossier.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>glossier.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/glossier.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/glossier-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Glossier</b><span>Beauty · Loud &amp; playful</span></div>
+            <p>One saturated color and giant type turn a simple sale into a brand moment.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Glossier (glossier.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.glossier.com/" target="_blank" rel="noopener">Visit glossier.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-oatly" data-dir="loud">
+          <a class="lib-shot" href="https://www.oatly.com/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>oatly.com</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/oatly.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/oatly-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Oatly</b><span>Food &amp; drink · Loud &amp; playful</span></div>
+            <p>Loud, hand-made and funny. The voice does as much work as the visuals.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Oatly (oatly.com)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://www.oatly.com/" target="_blank" rel="noopener">Visit oatly.com <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        <figure class="lib-fig" id="lib-te" data-dir="loud">
+          <a class="lib-shot" href="https://teenage.engineering/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+            <span class="frame"><span class="frame-bar"><i></i><i></i><i></i><span>teenage.engineering</span></span>
+              <span class="frame-view"><img src="/images/studio/styles/te.webp" alt="" width="1200" height="750" loading="lazy" decoding="async"></span></span>
+            <span class="phone-shot"><img src="/images/studio/styles/te-m.webp" alt="" width="360" height="779" loading="lazy" decoding="async"></span>
+          </a>
+          <figcaption class="lib-cap">
+            <div class="lib-cap-top"><b>Teenage Engineering</b><span>Electronics · Loud &amp; playful</span></div>
+            <p>Gallery-style product shots and an experimental menu that rewards curiosity.</p>
+            <div class="lib-acts"><a class="btn btn-ink btn-sm" href="#contact" data-style="Teenage Engineering (teenage.engineering)">Something like this <span class="arr" aria-hidden="true">→</span></a><a class="lib-visit" href="https://teenage.engineering/" target="_blank" rel="noopener">Visit teenage.engineering <span aria-hidden="true">↗</span></a></div>
+          </figcaption>
+        </figure>
+        </div>
+      </div>
+      <div class="rail-ui lib-rail" aria-hidden="true"><span class="rail-track"><b id="libBar"></b></span><span class="rail-count" id="libCount">1 / 12</span></div>
+      <p class="lib-fine">Every site in this library belongs to its owner and is shown here for inspiration only. None of them are Regent Studio projects. We design originals; we don&rsquo;t copy.</p>
+    </div>
   </div>
 </section>
 
@@ -1903,6 +2143,56 @@ const AUTO = {
   else whileVisible(cal, sweep, () => { dseq.stop(); day = 0; paint(); }, 0.4);
 })();
 
+/* ── style library ── */
+(() => {
+  const lib = $('#lib'); if (!lib) return;
+  const rows = $$('.lib-row', lib), figs = $$('.lib-fig', lib), chips = $$('.fchip'), stage = $('#libStage'),
+        bar = $('#libBar'), count = $('#libCount');
+  const desk = matchMedia('(min-width:980px)');
+  const DUR = 4200, seq = new Seq();
+  let cur = 0, touched = false, running = false;
+  const shown = () => rows.map((r, i) => i).filter(i => !rows[i].hidden);
+  function activate(i, run) {
+    cur = i;
+    rows.forEach((r, k) => { const on = k === i; r.classList.toggle('on', on); r.setAttribute('aria-pressed', String(on)); r.classList.remove('run'); });
+    figs.forEach((f, k) => f.classList.toggle('on', k === i));
+    if (run) { rows[i].style.setProperty('--dur', DUR + 'ms'); void rows[i].offsetWidth; rows[i].classList.add('run'); }
+  }
+  function cycle() {
+    seq.start(); activate(cur, true);
+    const step = () => { const v = shown(); activate(v[(v.indexOf(cur) + 1) % v.length], true); seq.at(DUR, step); };
+    seq.at(DUR, step);
+  }
+  function hold() { touched = true; seq.stop(); rows.forEach(r => r.classList.remove('run')); }
+  rows.forEach((r, i) => {
+    r.addEventListener('click', () => { hold(); activate(i); });
+    r.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && desk.matches) { hold(); activate(i); } });
+    r.addEventListener('focus', () => { if (desk.matches) { hold(); activate(i); } });
+  });
+  function railUpdate() {
+    const max = stage.scrollWidth - stage.clientWidth, v = shown();
+    if (max <= 0 || desk.matches) { bar.style.setProperty('--rp', '1'); count.textContent = v.length ? '1 / ' + v.length : ''; return; }
+    const p = stage.scrollLeft / max;
+    const first = figs[v[0]], second = figs[v[1]];
+    const step = second ? second.offsetLeft - first.offsetLeft : 1;
+    bar.style.setProperty('--rp', (1 / v.length + p * (1 - 1 / v.length)).toFixed(3));
+    count.textContent = Math.min(v.length, Math.round(stage.scrollLeft / step) + 1) + ' / ' + v.length;
+  }
+  stage.addEventListener('scroll', railUpdate, { passive: true });
+  chips.forEach(c => c.addEventListener('click', () => {
+    const dir = c.dataset.dir;
+    chips.forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+    rows.forEach((r, i) => { const show = dir === 'all' || r.dataset.dir === dir; r.parentElement.hidden = !show; r.hidden = !show; figs[i].hidden = !show; });
+    stage.scrollTo({ left: 0 });
+    activate(shown()[0]);
+    railUpdate();
+    if (running && !touched && desk.matches && !reduced()) cycle();
+  }));
+  activate(0); railUpdate();
+  if (!reduced()) whileVisible(lib, () => { running = true; if (desk.matches && !touched) cycle(); }, () => { running = false; seq.stop(); rows.forEach(r => r.classList.remove('run')); }, 0.3);
+  desk.addEventListener('change', () => { seq.stop(); rows.forEach(r => r.classList.remove('run')); railUpdate(); if (desk.matches && running && !touched && !reduced()) cycle(); });
+})();
+
 /* ── contact form ── */
 (() => {
   const form = $('#leadForm'), msgBox = $('#formMsg'), btn = $('#sendBtn'), done = $('#doneView'), doneText = $('#doneText'), phoneHint = $('#phoneHint');
@@ -1910,6 +2200,16 @@ const AUTO = {
     const box = form.querySelector(`input[name="service"][value="${a.dataset.service}"]`);
     if (box) box.checked = true;
   }));
+  const msgEl = $('#msg');
+  $$('[data-style]').forEach(a => a.addEventListener('click', () => {
+    if (!msgEl.value.trim() || msgEl.dataset.prefilled === '1') {
+      msgEl.value = 'I love the feel of ' + a.dataset.style + '. I’d like something in that direction for my business: ';
+      msgEl.dataset.prefilled = '1';
+    }
+    const box = form.querySelector('input[name="service"][value="website"]');
+    if (box) box.checked = true;
+  }));
+  msgEl.addEventListener('input', () => { msgEl.dataset.prefilled = '0'; });
   const followVal = () => (form.querySelector('input[name="follow"]:checked') || {}).value || 'Text';
   const followNeedsPhone = () => followVal() !== 'Email';
   const syncHint = () => { phoneHint.textContent = followNeedsPhone() ? '(so we can reach you)' : '(optional)'; };
