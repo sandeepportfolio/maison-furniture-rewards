@@ -491,10 +491,8 @@ app.get('/sitemap.xml', (req, res) => {
     { loc: '/availability', priority: '0.9', changefreq: 'daily' },
     { loc: '/management', priority: '0.7', changefreq: 'monthly' },
     { loc: '/studio', priority: '0.7', changefreq: 'monthly' },
-    { loc: '/reward', priority: '0.6', changefreq: 'monthly' },
     { loc: '/regent-inbox', priority: '0.6', changefreq: 'monthly' },
     { loc: '/regent-inbox/privacy', priority: '0.3', changefreq: 'yearly' },
-    { loc: '/careers', priority: '0.5', changefreq: 'monthly' },
     { loc: '/privacy-policy', priority: '0.3', changefreq: 'yearly' }
   ];
   // Property URLs are listed at /property/<slug> because that is what the

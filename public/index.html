@@ -1982,122 +1982,6 @@ ul{list-style:none}
   .rd-marquee{padding:16px 0!important}
 }
 
-/* ═══ REWARDS OVERLAY ═══ */
-.rewards-overlay{position:fixed;inset:0;z-index:9999;background:#080808;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .45s cubic-bezier(.4,0,.2,1)}
-.rewards-overlay.open{opacity:1;pointer-events:auto}
-.rewards-page{max-width:620px;margin:0 auto;padding:0 32px 80px}
-
-/* Top bar */
-.rewards-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;position:sticky;top:0;background:rgba(8,8,8,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10;border-bottom:1px solid rgba(255,255,255,.04)}
-.rewards-back{display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 0;color:rgba(255,255,255,.5);font-family:var(--sans);font-size:13px;letter-spacing:.01em;cursor:pointer;transition:color .25s}
-.rewards-back:hover{color:#fff}
-.rewards-topbar-logo{font-family:var(--sans);font-size:11px;font-weight:300;letter-spacing:.3em;color:rgba(255,255,255,.2)}
-
-/* Hero — editorial left-align */
-.rewards-hero{text-align:left;padding:64px 0 0}
-.rewards-hero .section-label{margin-bottom:16px;font-size:10px;letter-spacing:.18em;color:var(--accent);opacity:.6}
-.rewards-title{font-family:var(--serif);font-size:clamp(34px,6vw,52px);font-weight:400;color:#fff;line-height:1.08;letter-spacing:-.03em;margin-bottom:18px}
-.rewards-title em{font-style:italic;color:var(--accent-light)}
-.rewards-subtitle{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.38);line-height:1.7;max-width:440px;margin:0 0 48px}
-
-/* ── Amazon Gift Card ── */
-.rw-gift-card{position:relative;margin:0 0 48px;border-radius:0;background:none;padding:0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
-.rw-gift-card-inner{display:flex;align-items:center;gap:28px;padding:28px 0;border-radius:0;background:none;position:relative;overflow:visible}
-.rw-gift-card-inner::before,.rw-gift-card-inner::after{display:none}
-.rw-amazon-logo{flex-shrink:0;display:flex;align-items:center;opacity:.85}
-.rw-gift-card-content{flex:1;min-width:0;position:relative;z-index:1}
-.rw-gift-card-value{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
-.rw-gift-card-amount{font-family:var(--serif);font-size:44px;font-weight:400;color:#fff;letter-spacing:-.03em;line-height:1}
-.rw-gift-card-label{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.35);font-weight:300}
-.rw-gift-card-tag{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.25);letter-spacing:.02em;font-weight:400}
-.rw-gift-card-badge{position:absolute;top:28px;right:0;z-index:1;display:flex;align-items:center;gap:5px;padding:0;border-radius:0;background:none;border:none}
-.rw-gift-card-badge svg{color:var(--accent-light);opacity:.5}
-.rw-gift-card-badge span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);font-weight:400}
-
-/* ── Form section ── */
-.rewards-form-wrap{background:none;border:none;border-radius:0;padding:0;margin-bottom:48px;position:relative;border-top:1px solid rgba(255,255,255,.06);padding-top:36px}
-.rewards-form-title{font-family:var(--serif);font-size:24px;font-weight:400;color:#fff;margin-bottom:6px}
-.rewards-form-sub{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.3);margin-bottom:32px;line-height:1.6}
-.rw-field{margin-bottom:22px}
-.rw-field label{display:block;font-family:var(--sans);font-size:11px;font-weight:500;color:rgba(255,255,255,.25);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-.rw-field input,.rw-field select{width:100%;padding:13px 0;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.08);border-radius:0;color:#fff;font-family:var(--sans);font-size:15px;outline:none;transition:border-color .3s}
-.rw-field input:focus,.rw-field select:focus{border-bottom-color:var(--accent);background:none;box-shadow:none}
-.rw-field input::placeholder{color:rgba(255,255,255,.14)}
-.rw-field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;padding-right:28px}
-.rw-field select option{background:#131313;color:#fff}
-.rw-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-
-/* Upload */
-.rw-upload{position:relative;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .25s}
-.rw-upload:hover,.rw-upload.dragover{border-color:rgba(255,255,255,.12);background:none}
-.rw-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.rw-upload-icon{width:36px;height:36px;border-radius:0;background:none;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:rgba(255,255,255,.25);opacity:1}
-.rw-upload-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.45);margin-bottom:2px}
-.rw-upload-hint{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.15)}
-.rw-upload-preview{margin-top:12px;display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;text-align:left}
-.rw-upload-preview.visible{display:flex}
-.rw-upload-preview img{width:46px;height:46px;border-radius:4px;object-fit:cover;border:1px solid rgba(255,255,255,.06)}
-.rw-upload-preview-info{flex:1;min-width:0}
-.rw-upload-preview-name{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rw-upload-preview-size{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25)}
-.rw-upload-remove{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;padding:4px;transition:color .2s}
-.rw-upload-remove:hover{color:#fff}
-
-/* Submit */
-.rw-submit{width:100%;padding:15px 24px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-family:var(--sans);font-size:14px;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:opacity .25s;position:relative;overflow:hidden}
-.rw-submit::before{display:none}
-.rw-submit:hover{opacity:.85;transform:none;box-shadow:none}
-.rw-submit:active{opacity:.75;transform:none;box-shadow:none}
-.rw-submit:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
-.rw-submit .spinner-sm{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── How it works ── */
-.rw-how-section{margin-bottom:48px;border-top:1px solid rgba(255,255,255,.06);padding-top:36px}
-.rw-how-label{font-family:var(--serif);font-size:20px;font-weight:400;color:#fff;letter-spacing:-.01em;text-transform:none;text-align:left;margin-bottom:28px}
-.rewards-steps{display:flex;flex-direction:column;gap:0}
-.rewards-step{text-align:left;padding:18px 0;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.04);border-radius:0;display:flex;align-items:flex-start;gap:16px;transition:none}
-.rewards-step:hover{border-color:rgba(255,255,255,.04);background:none}
-.rewards-step:last-child{border-bottom:none}
-.rewards-step-icon{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;margin:0;flex-shrink:0;color:rgba(255,255,255,.35)}
-.rewards-step-num{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.08em;margin-bottom:3px}
-.rewards-step h4{font-family:var(--sans);font-size:14px;font-weight:500;color:rgba(255,255,255,.8);margin-bottom:2px}
-.rewards-step p{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.3);line-height:1.5}
-
-/* Success */
-.rw-success{display:none;text-align:left;padding:56px 0}
-.rw-success.visible{display:block}
-.rw-success-icon{width:48px;height:48px;border-radius:50%;background:rgba(76,175,80,.04);border:1px solid rgba(76,175,80,.08);display:flex;align-items:center;justify-content:center;margin:0 0 20px;color:#66bb6a}
-.rw-success h3{font-family:var(--serif);font-size:28px;font-weight:400;color:#fff;margin-bottom:8px}
-.rw-success p{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.35);line-height:1.7;max-width:400px;margin:0}
-.rw-success .rw-another{margin-top:24px;display:inline-block;padding:10px 24px;border:1px solid rgba(255,255,255,.07);border-radius:4px;color:rgba(255,255,255,.5);font-family:var(--sans);font-size:13px;cursor:pointer;background:none;transition:color .25s,border-color .25s}
-.rw-success .rw-another:hover{border-color:rgba(255,255,255,.15);color:#fff}
-
-/* Fine print */
-.rw-fine{text-align:left;font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.1);line-height:1.7;max-width:100%;margin:0}
-
-/* Responsive */
-@media(max-width:768px){
-  .rewards-page{padding:0 20px 60px}
-  .rewards-hero{padding:40px 0 0}
-  .rewards-title{font-size:30px}
-  .rewards-subtitle{font-size:13px;margin-bottom:36px}
-  .rw-gift-card{margin:0 0 36px}
-  .rw-gift-card-inner{flex-direction:row;gap:20px;padding:22px 0}
-  .rw-gift-card-amount{font-size:36px}
-  .rw-gift-card-badge{display:none}
-  .rewards-steps{flex-direction:column;gap:0}
-  .rewards-step{padding:14px 0}
-  .rewards-step-icon{width:28px;height:28px}
-  .rewards-step-num{margin-bottom:1px}
-  .rewards-form-wrap{padding-top:28px}
-  .rw-row{grid-template-columns:1fr}
-  .rw-upload{padding:24px 16px}
-}
-@media(min-width:769px) and (max-width:1024px){
-  .rewards-page{max-width:520px}
-}
-
 /* ══════════════════════════════════════════════════
    AVAILABLE NOW — floating button + drawer
    ══════════════════════════════════════════════════ */
@@ -2704,7 +2588,7 @@ ul{list-style:none}
    mode paints them solid deep gold (~6.4:1). */
 [data-theme="light"] .stat-number{background:none;color:#6E4B14;-webkit-text-fill-color:#6E4B14}
 [data-theme="light"] .stat-number .stat-suffix{color:#6E4B14;-webkit-text-fill-color:#6E4B14}
-[data-theme="light"] :is(.xplr-title,.rd-headline,.rd-lede,.rewards-title,.avail-drawer-title) em{color:#6E4B14}
+[data-theme="light"] :is(.xplr-title,.rd-headline,.rd-lede,.avail-drawer-title) em{color:#6E4B14}
 [data-theme="light"] .experience-grid{background:rgba(26,22,16,.08)}
 [data-theme="light"] .story-metric{border-color:rgba(26,22,16,.08)}
 [data-theme="light"] .story-metric:hover{border-color:rgba(184,137,46,.35)}
@@ -2742,10 +2626,8 @@ ul{list-style:none}
       <a href="#explore">Explore</a>
       <a href="#story">Our Story</a>
       <a href="/management">Management</a>
-      <a href="/reward">Rewards</a>
       <a href="/regent-inbox">Regent AI</a>
       <a href="/studio">Studio</a>
-      <a href="/careers">Careers</a>
       <a href="#contact">Contact</a>
       <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
         <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -2764,10 +2646,8 @@ ul{list-style:none}
   <a href="#explore" onclick="closeMobile()">Explore</a>
   <a href="#story" onclick="closeMobile()">Our Story</a>
   <a href="/management" onclick="closeMobile()">Management</a>
-  <a href="/reward" onclick="closeMobile()">Rewards</a>
   <a href="/regent-inbox" onclick="closeMobile()">Regent AI</a>
   <a href="/studio" onclick="closeMobile()">Studio</a>
-  <a href="/careers" onclick="closeMobile()">Careers</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
   <button class="theme-toggle-btn" onclick="regentThemeToggle()" aria-label="Switch to light mode">
     <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -2809,8 +2689,6 @@ ul{list-style:none}
         <span class="v2-fstat"><b>15%</b><i>AVG. SAVINGS</i></span>
         <span class="v2-fdiv"></span>
         <span class="v2-fstat"><b>&lt;1 hr</b><i>RESPONSE</i></span>
-        <span class="v2-fdiv"></span>
-        <span class="v2-fstat v2-fstat-link" onclick="showRewards()" style="cursor:pointer"><b>3x</b><i>REWARDS</i></span>
       </div>
       <div class="v2-spin-badge" data-plx="-0.03" aria-hidden="true">
         <svg viewBox="0 0 100 100"><defs><path id="rg-circ" d="M50,50 m-40,0 a40,40 0 1,1 80,0 a40,40 0 1,1 -80,0"></path></defs><text><textPath href="#rg-circ">BOOK DIRECT ✦ SAVE 15% ✦ BOOK DIRECT ✦</textPath></text></svg>
@@ -3279,145 +3157,6 @@ ul{list-style:none}
   </div>
 </section>
 
-<!-- ═══ REWARDS OVERLAY ═══ -->
-<div class="rewards-overlay" id="rewardsOverlay">
-  <div class="rewards-page">
-    <div class="rewards-topbar">
-      <button class="rewards-back" onclick="hideRewards()">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-        <span>Back to Site</span>
-      </button>
-      <span class="rewards-topbar-logo">R E G E N T</span>
-    </div>
-
-    <div class="rewards-hero">
-      <span class="section-label light">GUEST REWARDS</span>
-      <h2 class="rewards-title">Share your stay,<br><em>get rewarded.</em></h2>
-      <p class="rewards-subtitle">Leave a review on Google or Airbnb, submit your proof, and we&rsquo;ll send you a gift card as a thank you.</p>
-    </div>
-
-    <!-- Amazon gift card -->
-    <div class="rw-gift-card">
-      <div class="rw-gift-card-inner">
-        <div class="rw-gift-card-badge">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <span>Verified</span>
-        </div>
-        <div class="rw-amazon-logo">
-          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0">
-            <span style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:-.02em;line-height:1">amazon</span>
-            <svg viewBox="0 0 100 30" width="68" style="margin-top:-2px;margin-left:2px"><path fill="#FF9900" d="M2 22c15 9 38 14 56 14 19 0 40-5 56-14 2-1 4 1 2 3-16 12-38 19-58 19-27 0-52-9-58-19-2-2 0-4 2-3z"/><path fill="#FF9900" d="M60 18c-1-2 5-2 8-2 7 0 13 1 18 4 1 1 1 2 0 3-3 6-9 13-12 13-2 0-1-2-1-4 1-4 2-10 2-13 0-1-12 0-15-1z"/></svg>
-          </div>
-        </div>
-        <div class="rw-gift-card-content">
-          <div class="rw-gift-card-value">
-            <span class="rw-gift-card-amount">$5</span>
-            <span class="rw-gift-card-label">gift card</span>
-          </div>
-          <div class="rw-gift-card-tag">For every verified review</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Submission form — front and center -->
-    <div class="rewards-form-wrap" id="rewardsFormWrap">
-      <h3 class="rewards-form-title">Submit your review</h3>
-      <p class="rewards-form-sub">Fill out the details below and upload a screenshot of your review.</p>
-
-      <form id="rewardsForm" onsubmit="return submitRewardProof(event)">
-        <div class="rw-row">
-          <div class="rw-field">
-            <label for="rwName">Full Name</label>
-            <input type="text" id="rwName" name="name" placeholder="Jane Smith" required>
-          </div>
-          <div class="rw-field">
-            <label for="rwEmail">Email Address</label>
-            <input type="email" id="rwEmail" name="email" placeholder="jane@email.com" required>
-          </div>
-        </div>
-
-        <div class="rw-field">
-          <label for="rwPlatform">Where did you leave your review?</label>
-          <select id="rwPlatform" name="platform" required>
-            <option value="" disabled selected>Select platform</option>
-            <option value="google">Google</option>
-            <option value="airbnb">Airbnb</option>
-            <option value="vrbo">VRBO</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <div class="rw-field">
-          <label>Screenshot of Your Review</label>
-          <div class="rw-upload" id="rwUploadArea">
-            <input type="file" id="rwFile" name="proof" accept="image/*" required>
-            <div class="rw-upload-icon">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </div>
-            <div class="rw-upload-text">Drag &amp; drop or click to upload</div>
-            <div class="rw-upload-hint">PNG, JPG, or HEIC &mdash; max 10 MB</div>
-            <div class="rw-upload-preview" id="rwPreview">
-              <img id="rwPreviewImg" src="" alt="Preview">
-              <div class="rw-upload-preview-info">
-                <div class="rw-upload-preview-name" id="rwFileName"></div>
-                <div class="rw-upload-preview-size" id="rwFileSize"></div>
-              </div>
-              <button type="button" class="rw-upload-remove" onclick="clearRewardFile(event)" aria-label="Remove file">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="rw-submit" id="rwSubmitBtn">Submit for Gift Card</button>
-      </form>
-    </div>
-
-    <!-- How it works — below form -->
-    <div class="rw-how-section">
-    <div class="rw-how-label">How it works</div>
-    <div class="rewards-steps">
-      <div class="rewards-step">
-        <div class="rewards-step-icon">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div class="rewards-step-num">STEP 1</div>
-        <h4>Leave a Review</h4>
-        <p>Post on Google or Airbnb.</p>
-      </div>
-      <div class="rewards-step">
-        <div class="rewards-step-icon">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        </div>
-        <div class="rewards-step-num">STEP 2</div>
-        <h4>Submit Proof</h4>
-        <p>Upload a screenshot above.</p>
-      </div>
-      <div class="rewards-step">
-        <div class="rewards-step-icon">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21"/><path d="M3 12h18"/><path d="M12 8c-2-3-6-3-6 0s4 0 6 0c2-3 6-3 6 0s-4 0-6 0"/></svg>
-        </div>
-        <div class="rewards-step-num">STEP 3</div>
-        <h4>Get Rewarded</h4>
-        <p>Gift card within 7 days.</p>
-      </div>
-    </div>
-    </div>
-
-    <!-- Success state -->
-    <div class="rw-success" id="rwSuccess">
-      <div class="rw-success-icon">
-        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <h3>Thank you!</h3>
-      <p>We&rsquo;ve received your review submission. Your $5 Amazon gift card will be sent to your email within 7 days.</p>
-      <button class="rw-another" onclick="resetRewardForm()">Submit another review</button>
-    </div>
-
-    <p class="rw-fine">One gift card per review, per property. Gift cards are sent via email within 7 business days after verification. Regent Capital Ventures LLC reserves the right to modify or end this program at any time.</p>
-  </div>
-</div>
-
 <!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="footer-inner">
@@ -3427,10 +3166,8 @@ ul{list-style:none}
       <a href="#experience">Experience</a>
       <a href="#explore">Explore</a>
       <a href="#story">Our Story</a>
-      <a href="#rewards" onclick="event.preventDefault();showRewards()">Rewards</a>
       <a href="#contact">Contact</a>
       <a href="/studio">Studio</a>
-      <a href="/careers">Careers</a>
       <a href="/availability">Book Now</a>
     </div>
     <div class="footer-divider"></div>
@@ -6832,7 +6569,7 @@ function initPremiumReveals() {
 
 /* ═══ Keyboard ═══ */
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeGBE(); closeDetail(); closeContact(); closeTerms(); closeMobile(); hideRewards(); }
+  if (e.key === 'Escape') { closeLightbox(); closeBooking(); closeGBE(); closeDetail(); closeContact(); closeTerms(); closeMobile(); }
   if (document.getElementById('lightbox').classList.contains('open')) {
     if (e.key === 'ArrowLeft') lightboxNav(-1);
     if (e.key === 'ArrowRight') lightboxNav(1);
@@ -8709,92 +8446,6 @@ function initDetailGallerySwipe() {
   }, { passive: true });
 }
 
-/* ═══ Rewards Overlay ═══ */
-function showRewards() {
-  const overlay = document.getElementById('rewardsOverlay');
-  overlay.classList.add('open');
-  overlay.scrollTop = 0;
-  document.body.style.overflow = 'hidden';
-  history.pushState({ rewards: true }, '', '#rewards');
-}
-function hideRewards() {
-  const overlay = document.getElementById('rewardsOverlay');
-  overlay.classList.remove('open');
-  document.body.style.overflow = '';
-  if (location.hash === '#rewards') history.pushState({}, '', location.pathname);
-}
-
-/* ── Reward proof submission ── */
-(function initRewardForm() {
-  document.addEventListener('DOMContentLoaded', () => {
-    const area = document.getElementById('rwUploadArea');
-    const fileInput = document.getElementById('rwFile');
-    if (!area || !fileInput) return;
-
-    // Drag and drop
-    ['dragenter','dragover'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.classList.add('dragover'); }));
-    ['dragleave','drop'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.classList.remove('dragover'); }));
-    area.addEventListener('drop', ev => {
-      const files = ev.dataTransfer.files;
-      if (files.length) { fileInput.files = files; showRewardPreview(files[0]); }
-    });
-    fileInput.addEventListener('change', () => { if (fileInput.files[0]) showRewardPreview(fileInput.files[0]); });
-  });
-})();
-
-function showRewardPreview(file) {
-  const preview = document.getElementById('rwPreview');
-  const img = document.getElementById('rwPreviewImg');
-  const name = document.getElementById('rwFileName');
-  const size = document.getElementById('rwFileSize');
-  name.textContent = file.name;
-  size.textContent = (file.size / 1024 / 1024).toFixed(1) + ' MB';
-  if (file.type.startsWith('image/')) {
-    const reader = new FileReader();
-    reader.onload = e => { img.src = e.target.result; };
-    reader.readAsDataURL(file);
-  } else {
-    img.src = '';
-  }
-  preview.classList.add('visible');
-}
-
-function clearRewardFile(e) {
-  e.stopPropagation();
-  const fileInput = document.getElementById('rwFile');
-  fileInput.value = '';
-  document.getElementById('rwPreview').classList.remove('visible');
-}
-
-async function submitRewardProof(e) {
-  e.preventDefault();
-  const btn = document.getElementById('rwSubmitBtn');
-  const form = document.getElementById('rewardsForm');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-sm"></span>Submitting...';
-
-  const fd = new FormData(form);
-  try {
-    const resp = await fetch('/api/submit', { method: 'POST', body: fd });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Submission failed');
-    document.getElementById('rewardsFormWrap').style.display = 'none';
-    document.getElementById('rwSuccess').classList.add('visible');
-  } catch (err) {
-    alert(err.message || 'Something went wrong. Please try again.');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Submit for Gift Card';
-  }
-  return false;
-}
-
-function resetRewardForm() {
-  document.getElementById('rewardsForm').reset();
-  document.getElementById('rwPreview').classList.remove('visible');
-  document.getElementById('rwSuccess').classList.remove('visible');
-  document.getElementById('rewardsFormWrap').style.display = '';
-}
 window.addEventListener('popstate', (e) => {
   const state = e.state || {};
   // Back with the lightbox open: close it and stop — the entry pushed by
@@ -8846,13 +8497,7 @@ window.addEventListener('popstate', (e) => {
     document.body.style.overflow = '';
     return;
   }
-  // Handle rewards overlay
-  if (document.getElementById('rewardsOverlay').classList.contains('open')) hideRewards();
 });
-// Open rewards if URL has #rewards on load
-function initRewardsHash() {
-  if (location.hash === '#rewards') showRewards();
-}
 // Open map if URL has #map on page load (state persistence)
 function initMapHash() {
   if (!location.hash.startsWith('#map')) return;
@@ -8985,7 +8630,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initExplore();
   initCarouselSwipe();
   initDetailGallerySwipe();
-  initRewardsHash();
   initMapHash();
   initDetailHash();
 });
